@@ -6,14 +6,40 @@ We're likely to be using the Teensy 4.0 board for the ground station. Setup the 
 https://www.pjrc.com/teensy/td_download.html
 
 ### Windows users:
-Make sure to run:
+1. Make sure git is installed with symlink support
+
+During the install of git on Windows:
+
+<img src="https://i.stack.imgur.com/Am9L1.png" width="300"/>
+
+2. Tell Bash to create hardlinks instead of symlinks
+
+EDIT: (git folder)/etc/bash.bashrc
+
+ADD TO BOTTOM - `MSYS=winsymlinks:nativestrict`
+
+3. Set git config to use symlinks
 ```bash
 git config core.symlinks true
 ```
-And run as *administrator* when pulling the repo. Use this command to pull the repo:
+or
+
 ```bash
 git clone -c core.symlinks=true <URL>
 ```
+NOTE: I have tried adding this to the global git config and at the moment it is not working for me so I recommend adding this to each repo...
+
+4. Pull the repo
+
+NOTE: Unless you have enabled developer mode in the latest version of Windows 10, you need to run bash as **administrator** to create symlinks
+
+5. Reset all Symlinks (optional) If you have an existing repo, or are using submodules you may find that the symlinks are not being created correctly so to refresh all the symlinks in the repo you can run these commands.
+
+```bash
+find -type l -delete
+git reset --hard
+```
+NOTE: This will reset any changes since last commit so make sure you have committed first
 
 ## Query:
 The brain first initiates a query by sending a packet of format `"(ID)"` via RS485. ID is guaranteed to be two digits long, so an ID of 0 would be 00 and an ID of 23 would be 23. The `'('` and `')'` denotes a packet start and packet end respectively.
