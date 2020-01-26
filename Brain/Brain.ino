@@ -20,6 +20,9 @@ int sensorNum = 0;
 #define startChar '('
 #define endChar ')'
 
+#include "Helpers.h"
+#include "RS485Serial.h"
+
 void setup() {
   // Setup serials
   Serial.begin(usbBaud);
