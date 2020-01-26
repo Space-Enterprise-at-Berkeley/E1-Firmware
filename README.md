@@ -5,6 +5,16 @@ Read all sensor data from RS485, encode and send via RF. Also handle apogee logi
 We're likely to be using the Teensy 4.0 board for the ground station. Setup the environment according to the instructions here:
 https://www.pjrc.com/teensy/td_download.html
 
+**Important for Windows users!**
+Make sure to run:
+```bash
+git config core.symlinks true
+```
+And run as *administrator* when pulling the repo. Use this command to pull the repo:
+```bash
+git clone -c core.symlinks=true <URL>
+```
+
 ## Query:
 The brain first initiates a query by sending a packet of format `"(ID)"` via RS485. ID is guaranteed to be two digits long, so an ID of 0 would be 00 and an ID of 23 would be 23. The `'('` and `')'` denotes a packet start and packet end respectively.
 
