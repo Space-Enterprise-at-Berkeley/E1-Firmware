@@ -8,9 +8,9 @@ https://www.pjrc.com/teensy/td_download.html
 ### Windows users:
 1. Make sure git is installed with symlink support
 
-During the install of git on Windows:
+During the install of git on Windows, enable symbolic links:
 
-<img src="https://i.stack.imgur.com/Am9L1.png" width="300"/>
+<img src="https://i.stack.imgur.com/rQF1w.png" width="300"/>
 
 2. Tell Bash to create hardlinks instead of symlinks
 
