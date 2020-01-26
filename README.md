@@ -14,9 +14,7 @@ During the install of git on Windows:
 
 2. Tell Bash to create hardlinks instead of symlinks
 
-EDIT: (git folder)/etc/bash.bashrc
-
-ADD TO BOTTOM - `MSYS=winsymlinks:nativestrict`
+Edit: `(git folder)/etc/bash.bashrc` and add to bottom: `MSYS=winsymlinks:nativestrict`
 
 3. Set git config to use symlinks
 ```bash
