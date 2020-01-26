@@ -5,7 +5,7 @@ Read all sensor data from RS485, encode and send via RF. Also handle apogee logi
 We're likely to be using the Teensy 4.0 board for the ground station. Setup the environment according to the instructions here:
 https://www.pjrc.com/teensy/td_download.html
 
-**Important for Windows users!**
+### Windows users:
 Make sure to run:
 ```bash
 git config core.symlinks true
