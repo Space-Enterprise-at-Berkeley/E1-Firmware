@@ -2,7 +2,7 @@
 Read all sensor data from RS485, encode and send via RF. Also handle apogee logic and commands from ground station.
 
 ## Setup:
-We're likely to be using the Teensy 4.0 board for the ground station. Setup the environment according to the instructions here:
+We're using the Teensy 4.0 board. Setup the environment according to the instructions here:
 https://www.pjrc.com/teensy/td_download.html
 
 ### Windows users:
@@ -29,7 +29,7 @@ NOTE: I have tried adding this to the global git config and at the moment it is 
 
 4. Pull the repo
 
-NOTE: Unless you have enabled developer mode in the latest version of Windows 10, you need to run bash as **administrator** to create symlinks
+NOTE: Unless you have enabled developer mode in the latest version of Windows 10, you need to run bash as **administrator** to create symlinks.
 
 5. Reset all Symlinks (optional) If you have an existing repo, or are using submodules you may find that the symlinks are not being created correctly so to refresh all the symlinks in the repo you can run these commands.
 
@@ -37,7 +37,7 @@ NOTE: Unless you have enabled developer mode in the latest version of Windows 10
 find -type l -delete
 git reset --hard
 ```
-NOTE: This will reset any changes since last commit so make sure you have committed first
+NOTE: This will reset any changes since last commit so make sure you have committed first.
 
 ## Query:
 The brain first initiates a query by sending a packet of format `"(ID)"` via RS485. ID is guaranteed to be two digits long, so an ID of 0 would be 00 and an ID of 23 would be 23. The `'('` and `')'` denotes a packet start and packet end respectively.
