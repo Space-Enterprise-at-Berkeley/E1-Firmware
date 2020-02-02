@@ -25,7 +25,7 @@
 
 // ~~~~~~~~~~~~~~~~~~ Sensor Config ~~~~~~~~~~~~~~~~~~
 #define MAXSENSORID 10
-int sensorNum = 0;
+int sensorNum = 1;
 
 // ~~~~~~~~~~~~~~~~~~ Packet Config ~~~~~~~~~~~~~~~~~~
 #define STARTCHAR '('
@@ -72,6 +72,7 @@ void loop() {
   // Reflect the packet to the RF module if a valid one was received.
   if (packet.length() != 0) {
     RFSERIAL.print(packet);
+    // SD PRINT HERE
   }
 
   // Make sure we do not go over MAXSENSORID.
