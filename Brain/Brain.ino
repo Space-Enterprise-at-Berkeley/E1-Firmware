@@ -24,6 +24,7 @@
 #define MAXRETRIES 3
 
 // ~~~~~~~~~~~~~~~~~~ Sensor Config ~~~~~~~~~~~~~~~~~~
+// CHANGE THIS VALUE!!!
 #define MAXSENSORID 10
 int sensorNum = 1;
 
