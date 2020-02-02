@@ -1,5 +1,5 @@
 /*
-  Brain.ino - Is the brain of SEB rockets.
+  Brain.ino - This is the brain of SEB rockets.
   Created by Shao-Qian Mah, Jan 25, 2020.
 */
 
