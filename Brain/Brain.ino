@@ -25,7 +25,7 @@
 
 // ~~~~~~~~~~~~~~~~~~ Sensor Config ~~~~~~~~~~~~~~~~~~
 #define MAXSENSORID 10
-int sensorNum = 0;
+int sensorNum = 1;
 
 // ~~~~~~~~~~~~~~~~~~ Packet Config ~~~~~~~~~~~~~~~~~~
 #define STARTCHAR '('
