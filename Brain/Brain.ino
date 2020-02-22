@@ -8,9 +8,9 @@
 #define INTERNALSERIAL Serial1
 #define RFSERIAL Serial2
 #define USBBAUD 57600
-//Serial 1, for RFD900+ module, appears to be pins 0 - RX1, 1 - TX1.
+//Serial 1, for RFD900+ module, appears to be pins 0 - TX1, 1 - RX1.
 #define RFBAUD 57600
-//Serial 2, for RS485, appears to be pins 7 - RX2, 8 - TX2.
+//Serial 2, for RS485, appears to be pins 7 - TX2, 8 - RX2.
 #define RS485BAUD 57600
 
 // ~~~~~~~~~~~~~~~~~~ RS485 Config ~~~~~~~~~~~~~~~~~~
