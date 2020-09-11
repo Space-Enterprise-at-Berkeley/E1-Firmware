@@ -52,3 +52,8 @@ void loop() {
     delay(1000);
   }
 }
+
+bool write_to_SD(String message){
+  // every reading that we get from sensors should be written to sd and saved.
+  // TODO: Someone's code here
+}
