@@ -7,12 +7,6 @@ int board_address = 0;
 byte sensor_id = 0;
 uint8_t index = 0;
 
-void setup() {
-  Wire.begin();        // join i2c bus (address optional for master)
-  Serial.begin(9600);
-  RFSerial.begin(57600);
-}
-
 union floatArrToBytes {
   char buffer[24];
   float sensorReadings[6];
@@ -27,11 +21,32 @@ struct sensorInfo {
   sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
 };
 
-sensorInfo all_ids[2] = {sensorInfo("Pressure",8,0,20,1000), sensorInfo("Temp",8,1,21,500)};
+sensorInfo all_ids[2] = {sensorInfo("Pressure",8,0,20,2), sensorInfo("Temp",8,1,21,1)};
 sensorInfo sensor = sensorInfo("",0,0,0,0);
 
+//Global variables for the frequency of checking sensors 
+int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
+
+void setup() {
+  Wire.begin();        // join i2c bus (address optional for master)
+  Serial.begin(9600);
+  RFSerial.begin(57600);
+  for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
+    sensor_checks[i][0] = all_ids[i].clock_freq;
+    sensor_checks[i][1] = 1;
+  }
+}
+
 void loop() {  
-  for (int j = 0; j < sizeof(all_ids)/sizeof(all_ids[0]); j++) {
+  for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
+    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+      //get a sample 
+      sensor_checks[j][1] = 1;
+    } else {
+      sensor_checks[j][1] += 1;
+      delay(100);
+      continue;
+    }
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
@@ -57,33 +72,32 @@ void loop() {
     String packet = make_packet(sensor);
     Serial.println(packet);
     RFSerial.println(packet);
-    delay(sensor.clock_freq);
+    delay(100);
   }
 }
 
 String make_packet(struct sensorInfo sensor) {
-  String packet = "{";
-  packet += (String)sensor.overall_id;
-  packet += ",";
-  char *data = 0;
-  int count = 0;
+  String packet_content = (String)sensor.overall_id;
+  packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
     if (reading > 0) {
-      packet += (String)reading;
-      data += (char)reading;
-      packet += ",";
-      count += 1;
+      packet_content += (String)reading;
+      packet_content += ",";
     } else {
-      packet.remove(packet.length()-1);
-      packet += "|";
+      packet_content.remove(packet_content.length()-1);
+      int count = packet_content.length();
+      char const *data = packet_content.c_str();
+      uint16_t checksum = Fletcher16((uint8_t *) data, count);
+      packet_content += "|";
+      packet_content += (String)checksum;
       break;
     }
   }
-  packet += (String)Fletcher16(data, count);
-  packet += "}";
+  String packet = "{" + packet_content + "}";
   return packet;
 }
+
 uint16_t Fletcher16(uint8_t *data, int count) {
   
   uint16_t sum1 = 0;
