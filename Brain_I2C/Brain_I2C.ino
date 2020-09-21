@@ -38,7 +38,17 @@ struct sensorInfo {
 /*
  * Array of all sensors we would like to get data from.
  */
-sensorInfo all_ids[2] = {sensorInfo("Pressure",8,0,20,2), sensorInfo("Temp",8,1,21,1)};
+sensorInfo all_ids[8] = {
+  sensorInfo("Low Pressure",8,0,1,1), 
+  sensorInfo("High Pressure",8,1,2,2),
+  sensorInfo("Temperature",8,0,3,3),
+  sensorInfo("Load Cell",8,1,4,4),
+  sensorInfo("GPS",8,0,5,5),
+  sensorInfo("Barometer",8,1,6,6),
+  sensorInfo("Board Telemetry",8,0,7,7),
+  sensorInfo("Radio Telemetry",8,1,8,8)
+};
+
 sensorInfo sensor = sensorInfo("",0,0,0,0);
 
 /* 
