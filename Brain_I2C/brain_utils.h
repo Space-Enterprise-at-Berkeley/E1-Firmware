@@ -94,6 +94,11 @@ void decode_received_packet(String packet) {
         break;
       case 22:
         //call solenoids Lox gems 
+        if (action) {
+          sol.ventLOXGems();
+        } else {
+          sol.closeLOXGems();
+        }
         break;
       case 23:
         //call solenoids propane 2 way
@@ -108,16 +113,23 @@ void decode_received_packet(String packet) {
         if (action) {
           sol.openPropane();
         } else {
-          //sol.closePropane();
+          sol.closePropane();
         }
         break;
       case 25:
-        //call solenoids propane gems 
+        //call solenoids propane gems
+         if (action) {
+           sol.ventPropaneGems();
+         } else {
+          sol.closePropaneGems();
+         }
         break;
       case 26:
         //call solenoids high pressure solenoid
         if (action) {
           sol.activateHighPressureSolenoid();
+        } else {
+          sol.deactivateHighPressureSolenoid();
         }
         break;
     }
