@@ -7,52 +7,43 @@
  */
 
 #include <Wire.h>
-//#include <SoftwareSerial.h>
 #include "brain_utils.h"
+
 #include "GPS.h"
 #include "Barometer.h"
 
-#define TIMER_INTERRUPT_DEBUG      0
-
-#define USE_TIMER_1     true
-#define USE_TIMER_2     true
-#define USE_TIMER_3     false
-#define USE_TIMER_4     false
-#define USE_TIMER_5     false
-
-#include "TimerInterrupt.h"
-
-
-Serial2 RFSerial(2,3);
-
-int board_address = 0;
-byte sensor_id = 0;
-uint8_t index = 0;
+#define RFSerial Serial2
+#define GPSSerial Serial3
 
 // Initialize sensor libs
-GPS gps(&Wire);
+GPS gps(&GPSSerial);
 Barometer baro(&Wire);
 
+
+// within loop state variables
+int board_address = 0;
+int sensor_id = 0;
+int currIndex = 0;
 
 /*
  * Array of all sensors we would like to get data from.
  */
 sensorInfo all_ids[10] = {
   // local sensors
-  sensorInfo("LoX Injector Low Pressure",8,0,1,1, NULL),
-  sensorInfo("Prop Injector Low Pressure",8,1,2,1, NULL),
-  sensorInfo("LoX Tank Low Pressure",8,3,3,1, NULL),
-  sensorInfo("Prop Tank Low Pressure",8,4,4,1, NULL),
-  sensorInfo("High Pressure",8,5,5,2, NULL),
-  sensorInfo("Temperature",8,-1,6,3, ),
-  sensorInfo("GPS",8,-1,7,5, ),
-  sensorInfo("Barometer",8,-1,8,6, ),
-
-  // ground side board
-  sensorInfo("Load Cell Engine Left", 5, 0, 9, 5, NULL),
-  sensorInfo("Load Cell Engine Right", 5, 0, 10, 5, NULL),
+  sensorInfo("LoX Injector Low Pressure",  -1, -1, 1, 1, NULL),
+  sensorInfo("Prop Injector Low Pressure", -1, -1, 2, 1, NULL),
+  sensorInfo("LoX Tank Low Pressure",      -1, -1, 3, 1, NULL),
+  sensorInfo("Prop Tank Low Pressure",     -1, -1, 4, 1, NULL),
+  sensorInfo("High Pressure",              -1, -1, 5, 2, NULL),
+  sensorInfo("Temperature",                -1, -1, 6, 3, NULL),
+  sensorInfo("GPS",                        -1, -1, 7, 5, &gps.readPositionData),
+  sensorInfo("GPS Aux",                    -1, -1, 8, 8, &gps.readAuxilliaryData),
+  sensorInfo("Barometer",                  -1, -1, 8, 6, &baro.readAltitudeData),
+  sensorInfo("Load Cell Engine Left",      -1, -1, 9,  5, NULL),
+  sensorInfo("Load Cell Engine Right",     -1, -1, 10, 5, NULL),
 };
 
+//   name,    board id (depracated; no longer used),  sensor id,  overall id (unique) , clock freq, func
 sensorInfo sensor = sensorInfo("",0,0,0,0, NULL);
 
 /*
@@ -64,14 +55,15 @@ void setup() {
   Wire.begin();
   Serial.begin(9600);
   RFSerial.begin(57600);
-  for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
+  for (uint8_t i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 }
 
+
 void loop() {
-  for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
+  for (uint8_t j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
     } else {
@@ -111,4 +103,5 @@ void loop() {
 bool write_to_SD(String message){
   // every reading that we get from sensors should be written to sd and saved.
   // TODO: Someone's code here
+  return false;
 }

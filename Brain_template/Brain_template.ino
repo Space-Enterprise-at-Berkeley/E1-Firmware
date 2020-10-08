@@ -7,10 +7,10 @@
  */
 
 #include <Wire.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include "brain_utils.h"
 
-SoftwareSerial RFSerial(2,3);
+#define RFSerial Serial2
 
 int board_address = 0;
 byte sensor_id = 0;

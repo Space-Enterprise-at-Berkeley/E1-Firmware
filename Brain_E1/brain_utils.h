@@ -15,14 +15,15 @@ union floatArrToBytes {
 struct sensorInfo {
   String sensor_name;
   int board_address;
-  byte sensor_id;
+  int sensor_id;
   int overall_id;
   int clock_freq;
-  sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
+  void (*readDataFunc)(float * data);
+  sensorInfo(String n, int b, byte s, int o, int f, void *func(float *data)) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f), readDataFunc(func) {}
 };
 
 /*
- * Constructs packet in the following format: 
+ * Constructs packet in the following format:
  * {<sensor_ID>, <data1>, <data2>, ..., <dataN>|checksum}
  */
 String make_packet(struct sensorInfo sensor) {
@@ -52,7 +53,7 @@ String make_packet(struct sensorInfo sensor) {
  * sensor_ID and it's corresponding data points
  */
 uint16_t Fletcher16(uint8_t *data, int count) {
-  
+
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
 
