@@ -37,6 +37,18 @@ sensorInfo sensor = sensorInfo("",0,0,0,0);
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
+valveInfo valve_ids[7] = {
+  valveInfo("LOX 2 Way", 20),
+  valveInfo("LOX 5 Way", 21),
+  valveInfo("LOX GEMS", 22),
+  valveInfo("Propane 2 Way", 23),
+  valveInfo("Propane 5 Way", 24),
+  valveInfo("Propane GEMS", 25),
+  valveInfo("High Pressure Solenoid", 26)
+};
+
+valveInfo valve = valveInfo("",0);
+
 void setup() {
   Wire.begin();
   Serial.begin(9600);
@@ -48,6 +60,16 @@ void setup() {
 }
 
 void loop() {
+   String command = "";
+//  while (RFSerial.available()) {
+//    command += RFSerial.read();
+//  }
+  command = "{26,1|456}";
+  decode_received_packet(command);
+
+  /*
+   * Code for requesting data and relaying back to ground station
+   */
   for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
@@ -69,13 +91,8 @@ void loop() {
       farrbconvert.buffer[index] = Wire.read();
       index++;
     }
-    for (int i=0; i<6; i++) {
-      float reading = farrbconvert.sensorReadings[i];
-      if (reading > 0) {
-      }
-    }
     String packet = make_packet(sensor);
-    Serial.println(packet);
+    //Serial.println(packet);
     RFSerial.println(packet);
   }
   delay(100);
