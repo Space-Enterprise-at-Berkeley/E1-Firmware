@@ -46,6 +46,19 @@ sensorInfo all_ids[10] = {
 //   name,    board id (depracated; no longer used),  sensor id,  overall id (unique) , clock freq, func
 sensorInfo sensor = sensorInfo("",0,0,0,0, NULL);
 
+valveInfo valve_ids[7] = {
+  valveInfo("LOX 2 Way", 20),
+  valveInfo("LOX 5 Way", 21),
+  valveInfo("LOX GEMS", 22),
+  valveInfo("Propane 2 Way", 23),
+  valveInfo("Propane 5 Way", 24),
+  valveInfo("Propane GEMS", 25),
+  valveInfo("High Pressure Solenoid", 26)
+};
+                        // name, id
+valveInfo valve = valveInfo("",0);
+
+
 /*
  *  Stores how often we should be requesting data from each sensor.
  */
@@ -63,6 +76,17 @@ void setup() {
 
 
 void loop() {
+
+  String command = "";
+  //  while (RFSerial.available()) {
+  //    command += RFSerial.read();
+  //  }
+  command = "{26,1|456}";
+  decode_received_packet(command);
+
+  /*
+  * Code for requesting data and relaying back to ground station
+  */
   for (uint8_t j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
