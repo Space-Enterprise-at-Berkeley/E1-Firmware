@@ -1,86 +1,87 @@
 /*
-  Brain.ino - This is the brain of SEB rockets.
-  Created by Shao-Qian Mah, Jan 25, 2020.
-*/
+ * Brain_I2C.ino - A c++ program that uses I2C to establish communication between 
+ * the sensors and valves inside to the rocket with the ground station. Able to send
+ * data to the ground station via RF. Can receive and process commands sent from 
+ * ground station. 
+ * Created by Vainavi Viswanath, Aug 21, 2020.
+ */
 
-// ~~~~~~~~~~~~~~~~~~ Serial Config - Teensy 4.0 ~~~~~~~~~~~~~~~~~~
-#define USBSERIAL Serial
-#define INTERNALSERIAL Serial1
-#define RFSERIAL Serial2
-#define USBBAUD 57600
-//Serial 1, for RFD900+ module, appears to be pins 0 - TX1, 1 - RX1.
-#define RFBAUD 57600
-//Serial 2, for RS485, appears to be pins 7 - TX2, 8 - RX2.
-#define RS485BAUD 57600
+#include <Wire.h>
+#include <SoftwareSerial.h>
+#include "brain_utils.h"
 
-// ~~~~~~~~~~~~~~~~~~ RS485 Config ~~~~~~~~~~~~~~~~~~
-// Pin number for receive and transmit modes.
-#define RSCONTROL 3
-// Milliseconds to wait for non-malformed sensor packet before moving on to the next one.
-#define TIMEOUTMILLIS 500
-// Max number of chars in a message, including '(' and ')' chars.
-#define MAXCHARS 100
-// Max number of times to retry querying a sensor before giving up.
-#define MAXRETRIES 3
+SoftwareSerial RFSerial(2,3);
 
-// ~~~~~~~~~~~~~~~~~~ Sensor Config ~~~~~~~~~~~~~~~~~~
-// CHANGE THIS VALUE!!!
-#define MAXSENSORID 10
-int sensorNum = 1;
+int board_address = 0;
+byte sensor_id = 0;
+uint8_t index = 0;
 
-// ~~~~~~~~~~~~~~~~~~ Packet Config ~~~~~~~~~~~~~~~~~~
-#define STARTCHAR '('
-#define ENDCHAR ')'
+/*
+ * Array of all sensors we would like to get data from.
+ */
+sensorInfo all_ids[8] = {
+  sensorInfo("Low Pressure",8,0,1,1), 
+  sensorInfo("High Pressure",8,1,2,2),
+  sensorInfo("Temperature",8,0,3,3),
+  sensorInfo("Load Cell",8,1,4,4),
+  sensorInfo("GPS",8,0,5,5),
+  sensorInfo("Barometer",8,1,6,6),
+  sensorInfo("Board Telemetry",8,0,7,7),
+  sensorInfo("Radio Telemetry",8,1,8,8)
+};
+
+sensorInfo sensor = sensorInfo("",0,0,0,0);
+
+/* 
+ *  Stores how often we should be requesting data from each sensor.
+ */
+int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
 void setup() {
-  // Setup serials
-  USBSERIAL.begin(USBBAUD);
-  USBSERIAL.println("Set up USB serial.");
-  RFSERIAL.begin(RFBAUD);
-  USBSERIAL.println("Set up RF serial.");
-  INTERNALSERIAL.begin(RS485BAUD);
-  USBSERIAL.println("Set up internal serial.");
-  USBSERIAL.println("Serial setup complete.");
-
-  // Allow control of RS485 pins.
-  pinMode(RSCONTROL, OUTPUT);
-  digitalWrite(RSCONTROL, LOW);
+  Wire.begin();       
+  Serial.begin(9600);
+  RFSerial.begin(57600);
+  for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
+    sensor_checks[i][0] = all_ids[i].clock_freq;
+    sensor_checks[i][1] = 1;
+  }
 }
 
-void loop() {
-  // First listen for commands coming in over the RF communications.
-  while (RFSERIAL.available() > 0) {
-    // TODO: Parse and handle commands
-    // Will likely be of (IDdata)
-    // Will need to add something to wait for packet end or timeout.
-  }
-  if (not (sensorNum >= 1 && sensorNum <= MAXSENSORID)) {
-    // Just in case. HAS to be 1 or higher.
-    sensorNum = 1;
-  }
+void loop() {  
+  for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
+    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+      sensor_checks[j][1] = 1;
+    } else {
+      sensor_checks[j][1] += 1;
+      continue;
+    }
+    sensor = all_ids[j];
+    board_address = sensor.board_address;
+    sensor_id = sensor.sensor_id;
 
-  // Try sending a sensor request packet and read a response.
-  int tries = 0;
-  String packet = "";
-  String query = "(" + idToString(sensorNum) + ")";
-
-  while (packet.length() == 0 && query.length() > 2 && tries <= MAXRETRIES) {
-    internalTransmit(&query);
-    packet = readPacket(sensorNum, millis(), MAXCHARS, TIMEOUTMILLIS);
-    tries++;
+    Wire.beginTransmission(board_address);
+    Wire.write(sensor_id);
+    Wire.endTransmission();
+    Wire.requestFrom(board_address, 24); 
+  
+    index = 0;
+    while (Wire.available()){
+      farrbconvert.buffer[index] = Wire.read();
+      index++;
+    }
+    for (int i=0; i<6; i++) {
+      float reading = farrbconvert.sensorReadings[i];
+      if (reading > 0) {
+      }
+    }
+    String packet = make_packet(sensor);
+    Serial.println(packet);
+    RFSerial.println(packet);
   }
+  delay(100);
+}
 
-  // Reflect the packet to the RF module if a valid one was received.
-  if (packet.length() != 0) {
-    RFSERIAL.print(packet);
-    // SD PRINT HERE
-  }
-
-  // Make sure we do not go over MAXSENSORID.
-  if (sensorNum == MAXSENSORID) {
-    // Reset the sensorNum
-    sensorNum = 1;
-  } else {
-    sensorNum++;
-  }
+bool write_to_SD(String message){
+  // every reading that we get from sensors should be written to sd and saved.
+  // TODO: Someone's code here
 }
