@@ -60,12 +60,11 @@ void setup() {
 }
 
 void loop() { 
-   String command = "";
-//  while (RFSerial.available()) {
-//    command += RFSerial.read();
-//  }
+  String command = "";
+//  command = RFSerial.readString();
   command = "{26,1|456}";
-  decode_received_packet(command);
+  int action = decode_received_packet(command, valve);
+  take_action(valve, action);
   
   /*
    * Code for requesting data and relaying back to ground station
