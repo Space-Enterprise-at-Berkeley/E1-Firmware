@@ -63,8 +63,8 @@ void loop() {
   String command = "";
 //  command = RFSerial.readString();
   command = "{26,1|456}";
-  int action = decode_received_packet(command, valve);
-  take_action(valve, action);
+  int action = decode_received_packet(command, &valve);
+  take_action(&valve, action);
   
   /*
    * Code for requesting data and relaying back to ground station

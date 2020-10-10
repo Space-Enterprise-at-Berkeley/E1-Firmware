@@ -75,21 +75,21 @@ int decode_received_packet(String packet, valveInfo *valve) {
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
-    valve.valve_id = valve_id;
+    valve->valve_id = valve_id;
     if (valve_id == 20) {
-      valve.valve_name = "LOX 2 Way";
+      valve->valve_name = "LOX 2 Way";
     } else if (valve_id == 21) {
-      valve.valve_name = "LOX 5 Way";
+      valve->valve_name = "LOX 5 Way";
     } else if (valve_id == 22) {
-      valve.valve_name = "LOX GEMS";
+      valve->valve_name = "LOX GEMS";
     } else if (valve_id == 23) {
-      valve.valve_name = "Propane 2 Way";
+      valve->valve_name = "Propane 2 Way";
     } else if (valve_id == 24) {
-      valve.valve_name = "Propane 5 Way";
+      valve->valve_name = "Propane 5 Way";
     } else if (valve_id == 25) {
-      valve.valve_name = "Propane GEMS";
+      valve->valve_name = "Propane GEMS";
     } else if (valve_id == 26) {
-      valve.valve_name = "High Pressure Solenoid";
+      valve->valve_name = "High Pressure Solenoid";
     }
     return action;
   } else {
@@ -102,7 +102,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
-  int valve_id = valve.valve_id;
+  int valve_id = valve->valve_id;
   switch(valve_id) {
       case 20:
         //call solenoids Lox 2 way
