@@ -20,14 +20,7 @@ uint8_t index = 0;
  * Array of all sensors we would like to get data from.
  */
 sensorInfo all_ids[8] = {
-  sensorInfo("Low Pressure",8,0,1,1), 
-  sensorInfo("High Pressure",8,1,2,2),
-  sensorInfo("Temperature",8,0,3,3),
-  sensorInfo("Load Cell",8,1,4,4),
-  sensorInfo("GPS",8,0,5,5),
-  sensorInfo("Barometer",8,1,6,6),
-  sensorInfo("Board Telemetry",8,0,7,7),
-  sensorInfo("Radio Telemetry",8,1,8,8)
+  sensorInfo("Low Pressure",8,0,1,1) //example
 };
 
 sensorInfo sensor = sensorInfo("",0,0,0,0);
@@ -36,6 +29,12 @@ sensorInfo sensor = sensorInfo("",0,0,0,0);
  *  Stores how often we should be requesting data from each sensor.
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
+
+valveInfo valve_ids[7] = {
+  valveInfo("LOX 2 Way", 20) //example
+};
+
+valveInfo valve = valveInfo("",0);
 
 void setup() {
   Wire.begin();       
@@ -47,7 +46,15 @@ void setup() {
   }
 }
 
-void loop() {  
+void loop() { 
+  String command = "";
+  command = RFSerial.readString();
+  int action = decode_received_packet(command, &valve);
+  take_action(&valve, action);
+  
+  /*
+   * Code for requesting data and relaying back to ground station
+   */
   for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
@@ -69,13 +76,7 @@ void loop() {
       farrbconvert.buffer[index] = Wire.read();
       index++;
     }
-    for (int i=0; i<6; i++) {
-      float reading = farrbconvert.sensorReadings[i];
-      if (reading > 0) {
-      }
-    }
     String packet = make_packet(sensor);
-    Serial.println(packet);
     RFSerial.println(packet);
   }
   delay(100);
