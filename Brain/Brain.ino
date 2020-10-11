@@ -16,8 +16,8 @@
 #define GPSSerial Serial3
 
 // Initialize sensor libs
-GPS gps(&GPSSerial);
-Barometer baro(&Wire);
+//GPS gps(&GPSSerial);
+//Barometer baro(&Wire);
 
 
 // within loop state variables
@@ -28,7 +28,7 @@ int currIndex = 0;
 /*
  * Array of all sensors we would like to get data from.
  */
-sensorInfo all_ids[10] = {
+sensorInfo all_ids[11] = {
   // local sensors
   sensorInfo("LoX Injector Low Pressure",  -1, -1, 1, 1, NULL),
   sensorInfo("Prop Injector Low Pressure", -1, -1, 2, 1, NULL),
@@ -36,11 +36,11 @@ sensorInfo all_ids[10] = {
   sensorInfo("Prop Tank Low Pressure",     -1, -1, 4, 1, NULL),
   sensorInfo("High Pressure",              -1, -1, 5, 2, NULL),
   sensorInfo("Temperature",                -1, -1, 6, 3, NULL),
-  sensorInfo("GPS",                        -1, -1, 7, 5, &gps.readPositionData),
-  sensorInfo("GPS Aux",                    -1, -1, 8, 8, &gps.readAuxilliaryData),
-  sensorInfo("Barometer",                  -1, -1, 8, 6, &baro.readAltitudeData),
+  sensorInfo("GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)),
+  sensorInfo("GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)),
+  sensorInfo("Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)),
   sensorInfo("Load Cell Engine Left",      -1, -1, 9,  5, NULL),
-  sensorInfo("Load Cell Engine Right",     -1, -1, 10, 5, NULL),
+  sensorInfo("Load Cell Engine Right",     -1, -1, 10, 5, NULL)
 };
 
 //   name,    board id (depracated; no longer used),  sensor id,  overall id (unique) , clock freq, func

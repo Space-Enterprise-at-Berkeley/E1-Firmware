@@ -22,7 +22,8 @@ struct sensorInfo {
   byte sensor_id;
   int overall_id;
   int clock_freq;
-  sensorInfo(String n, int b, byte s, int o, int f, void *func(float *data)) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
+  void (*dataReadFunc)(float *data);
+  sensorInfo(String n, int b, byte s, int o, int f, void (*func)(float *data)) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f), dataReadFunc(func) {}
 };
 
 /*
