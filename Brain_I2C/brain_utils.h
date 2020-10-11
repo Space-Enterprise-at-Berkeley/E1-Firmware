@@ -1,3 +1,10 @@
+/*
+ * Brain_utils.h- A c++ program that uses I2C to establish communication between 
+ * the sensors and valves inside to the rocket with the ground station. Able to send
+ * data to the ground station via RF. Can receive and process commands sent from 
+ * ground station. This contains additional functions and structs used in Brain_I2C.ino.
+ * Created by Vainavi Viswanath, Aug 21, 2020.
+ */
 #include "solenoids.h"
 
 String make_packet(struct sensorInfo sensor);
