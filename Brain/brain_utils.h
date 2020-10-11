@@ -1,4 +1,11 @@
-#include <solenoids.h>
+/*
+ * Brain_utils.h- A c++ program that uses I2C to establish communication between
+ * the sensors and valves inside to the rocket with the ground station. Able to send
+ * data to the ground station via RF. Can receive and process commands sent from
+ * ground station. This contains additional functions and structs used in Brain_I2C.ino.
+ * Created by Vainavi Viswanath, Aug 21, 2020.
+ */
+#include "solenoids.h"
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
@@ -64,9 +71,9 @@ String make_packet(struct sensorInfo sensor) {
 /*
  * Decodes a packet sent from ground station in the following format:
  * {<valve_ID>,<open(1) or close(0)|checksum}
- * And calls the corresponding method in solenoids.h
+ * Populated the fields of the valve and returns the action to be taken
  */
-void decode_received_packet(String packet) {
+int decode_received_packet(String packet, valveInfo *valve) {
   int ind1 = packet.indexOf(',');
   int valve_id = packet.substring(1,ind1).toInt();
   int ind2 = packet.indexOf('|');
@@ -76,7 +83,35 @@ void decode_received_packet(String packet) {
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
-    switch(valve_id) {
+    valve->valve_id = valve_id;
+    if (valve_id == 20) {
+      valve->valve_name = "LOX 2 Way";
+    } else if (valve_id == 21) {
+      valve->valve_name = "LOX 5 Way";
+    } else if (valve_id == 22) {
+      valve->valve_name = "LOX GEMS";
+    } else if (valve_id == 23) {
+      valve->valve_name = "Propane 2 Way";
+    } else if (valve_id == 24) {
+      valve->valve_name = "Propane 5 Way";
+    } else if (valve_id == 25) {
+      valve->valve_name = "Propane GEMS";
+    } else if (valve_id == 26) {
+      valve->valve_name = "High Pressure Solenoid";
+    }
+    return action;
+  } else {
+    return -1;
+  }
+}
+
+/*
+ * Calls the corresponding method for this valve with the appropriate
+ * action in solenoids.h
+ */
+void take_action(valveInfo *valve, int action) {
+  int valve_id = valve->valve_id;
+  switch(valve_id) {
       case 20:
         //call solenoids Lox 2 way
         if (action) {
@@ -134,7 +169,6 @@ void decode_received_packet(String packet) {
         }
         break;
     }
-  }
 }
 
 /*
