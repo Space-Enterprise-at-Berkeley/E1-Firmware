@@ -7,11 +7,14 @@
  */
 
 #include <Wire.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include "brain_utils.h"
 
-SoftwareSerial RFSerial(2,3);
+//
+//SoftwareSerial RFSerial(2,3);
+//SoftwareSerial GPSSerial(7,8);
 
+//
 #define RFSerial Serial2
 #define GPSSerial Serial3
 
@@ -23,27 +26,27 @@ SoftwareSerial RFSerial(2,3);
 // within loop state variables
 int board_address = 0;
 byte sensor_id = 0;
-uint8_t index = 0;
+uint8_t val_index = 0;
 
 /*
  * Array of all sensors we would like to get data from.
  */
 sensorInfo all_ids[11] = {
   // local sensors
-  sensorInfo("LoX Injector Low Pressure",  -1, -1, 1, 1, NULL),
-  sensorInfo("Prop Injector Low Pressure", -1, -1, 2, 1, NULL),
-  sensorInfo("LoX Tank Low Pressure",      -1, -1, 3, 1, NULL),
-  sensorInfo("Prop Tank Low Pressure",     -1, -1, 4, 1, NULL),
-  sensorInfo("High Pressure",              -1, -1, 5, 2, NULL),
-  sensorInfo("Temperature",                -1, -1, 6, 3, NULL),
-  sensorInfo("GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)),
-  sensorInfo("GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)),
-  sensorInfo("Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)),
-  sensorInfo("Load Cell Engine Left",      -1, -1, 9,  5, NULL),
-  sensorInfo("Load Cell Engine Right",     -1, -1, 10, 5, NULL)
+   {"LoX Injector Low Pressure",  -1, -1, 1, 1, NULL},
+   {"Prop Injector Low Pressure", -1, -1, 2, 1, NULL},
+   {"LoX Tank Low Pressure",      -1, -1, 3, 1, NULL},
+   {"Prop Tank Low Pressure",     -1, -1, 4, 1, NULL},
+   {"High Pressure",              -1, -1, 5, 2, NULL},
+   {"Temperature",                -1, -1, 6, 3, NULL},
+   {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
+   {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
+   {"Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)},
+   {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
+   {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
-sensorInfo sensor = sensorInfo("",0,0,0,0);
+sensorInfo sensor {"", 0, 0, 0, 0, 0};
 
 /*
  *  Stores how often we should be requesting data from each sensor.
@@ -98,10 +101,10 @@ void loop() {
     Wire.endTransmission();
     Wire.requestFrom(board_address, 24);
 
-    index = 0;
+    val_index = 0;
     while (Wire.available()){
-      farrbconvert.buffer[index] = Wire.read();
-      index++;
+      farrbconvert.buffer[val_index] = Wire.read();
+      val_index++;
     }
     String packet = make_packet(sensor);
     //Serial.println(packet);
