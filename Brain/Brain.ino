@@ -7,20 +7,13 @@
  */
 
 #include <Wire.h>
-//#include <SoftwareSerial.h>
 #include "brain_utils.h"
+#include <GPS.h>
+#include <Barometer.h>
+#include <ducer.h>
 
-//
-//SoftwareSerial RFSerial(2,3);
-//SoftwareSerial GPSSerial(7,8);
-
-//
 #define RFSerial Serial2
 #define GPSSerial Serial3
-
-// Initialize sensor libs
-//GPS gps(&GPSSerial);
-//Barometer baro(&Wire);
 
 
 // within loop state variables
@@ -33,11 +26,11 @@ uint8_t val_index = 0;
  */
 sensorInfo all_ids[11] = {
   // local sensors
-   {"LoX Injector Low Pressure",  -1, -1, 1, 1, NULL},
-   {"Prop Injector Low Pressure", -1, -1, 2, 1, NULL},
-   {"LoX Tank Low Pressure",      -1, -1, 3, 1, NULL},
-   {"Prop Tank Low Pressure",     -1, -1, 4, 1, NULL},
-   {"High Pressure",              -1, -1, 5, 2, NULL},
+   {"LOX Injector Low Pressure",  -1, -1, 1, 1, &(Ducers::readLOXInjectorPressure)},
+   {"Prop Injector Low Pressure", -1, -1, 2, 1, &(Ducers::readPropaneInjectorPressure)},
+   {"LOX Tank Low Pressure",      -1, -1, 3, 1, &(Ducers::readLOXTankPressure)},
+   {"Prop Tank Low Pressure",     -1, -1, 4, 1, &(Ducers::readPropaneTankPressure)},
+   {"High Pressure",              -1, -1, 5, 2, &{Ducers::readHighPressure)},
    {"Temperature",                -1, -1, 6, 3, NULL},
    {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
    {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
@@ -73,6 +66,10 @@ void setup() {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
+
+  Ducers::init(&Wire);
+  Barometer::init(&Wire);
+  GPS::init(&GPSSerial);
 }
 
 void loop() {
@@ -95,16 +92,19 @@ void loop() {
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
+    if(sensor_id != -1) {
+      Wire.beginTransmission(board_address);
+      Wire.write(sensor_id);
+      Wire.endTransmission();
+      Wire.requestFrom(board_address, 24);
 
-    Wire.beginTransmission(board_address);
-    Wire.write(sensor_id);
-    Wire.endTransmission();
-    Wire.requestFrom(board_address, 24);
-
-    val_index = 0;
-    while (Wire.available()){
-      farrbconvert.buffer[val_index] = Wire.read();
-      val_index++;
+      val_index = 0;
+      while (Wire.available()){
+        farrbconvert.buffer[val_index] = Wire.read();
+        val_index++;
+      }
+    } else {
+      sensor.dataReadFunc(farrbconvert.sensorReadings);
     }
     String packet = make_packet(sensor);
     //Serial.println(packet);

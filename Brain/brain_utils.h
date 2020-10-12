@@ -6,8 +6,7 @@
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 #include "solenoids.h"
-#include <GPS.h>
-#include <Barometer.h>
+
 
 
 String  make_packet(struct sensorInfo sensor);
