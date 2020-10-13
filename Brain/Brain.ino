@@ -20,6 +20,7 @@
 int board_address = 0;
 byte sensor_id = 0;
 uint8_t val_index = 0;
+String command = "";
 
 /*
  * Array of all sensors we would like to get data from.
@@ -30,7 +31,7 @@ sensorInfo all_ids[11] = {
    {"Prop Injector Low Pressure", -1, -1, 2, 1, &(Ducers::readPropaneInjectorPressure)},
    {"LOX Tank Low Pressure",      -1, -1, 3, 1, &(Ducers::readLOXTankPressure)},
    {"Prop Tank Low Pressure",     -1, -1, 4, 1, &(Ducers::readPropaneTankPressure)},
-   {"High Pressure",              -1, -1, 5, 2, &{Ducers::readHighPressure)},
+   {"High Pressure",              -1, -1, 5, 2, &(Ducers::readHighPressure)},
    {"Temperature",                -1, -1, 6, 3, NULL},
    {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
    {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
@@ -72,12 +73,13 @@ void setup() {
   GPS::init(&GPSSerial);
 }
 
+
 void loop() {
-  String command = "";
-//  command = RFSerial.readString();
-  command = "{26,1|456}";
-  int action = decode_received_packet(command, &valve);
-  take_action(&valve, action);
+  if(RFSerial.available()){
+    command = RFSerial.readString();
+    int action = decode_received_packet(command, &valve);
+    take_action(&valve, action);
+  }
 
   /*
    * Code for requesting data and relaying back to ground station
