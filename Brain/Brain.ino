@@ -73,7 +73,6 @@ void setup() {
   GPS::init(&GPSSerial);
 }
 
-
 void loop() {
   if(RFSerial.available()){
     command = RFSerial.readString();

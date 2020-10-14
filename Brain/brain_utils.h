@@ -7,11 +7,8 @@
  */
 #include "solenoids.h"
 
-
-
-String  make_packet(struct sensorInfo sensor);
-uint16_t  Fletcher16(uint8_t *data, int count);
-
+String make_packet(struct sensorInfo sensor);
+uint16_t Fletcher16(uint8_t *data, int count);
 
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
