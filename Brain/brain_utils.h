@@ -9,8 +9,7 @@
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
-
-Solenoids sol;
+void chooseValveById(int id, struct valveInfo *valve);
 
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
@@ -37,15 +36,15 @@ struct sensorInfo {
  * Data structure to store all information relevant to a specific valve.
  */
 struct valveInfo {
-  String valve_name;
-  int valve_id;
+  String name;
+  int id;
   int (*openValve)();
   int (*closeValve)();
   //valveInfo(String n, int v): valve_name(n), valve_id(v) {}
 };
 
 valveInfo valve_ids[7] = {
-  valveInfo("LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)); //example
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)} //example
 };
 
 int numValves = 1;
@@ -99,14 +98,16 @@ int decode_received_packet(String packet, valveInfo *valve) {
   }
 }
 
+
 void chooseValveById(int id, valveInfo *valve) {
   for (int i = 0; i < numValves; i ++) {
     if (valve_ids[i].id == id) {
-      valve = valve_ids[i];
+      valve = &valve_ids[i];
       break;
     }
   }
 }
+
 
 /*
  * Calls the corresponding method for this valve with the appropriate

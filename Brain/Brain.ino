@@ -21,10 +21,10 @@ String command = "";
  * Array of all sensors we would like to get data from.
  */
 sensorInfo all_ids[8] = {
-  sensorInfo("Low Pressure",8,0,1,1,NULL) //example
+  {"Low Pressure",8,0,1,1,NULL} //example
 };
 
-sensorInfo sensor = sensorInfo("",0,0,0,0, NULL);
+sensorInfo sensor = {"",0,0,0,0, NULL};
 
 int numSensors = 1;
 
@@ -34,7 +34,7 @@ int numSensors = 1;
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
 
-valveInfo valve = valveInfo("",0, 0, 0);
+valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
   Wire.begin();
