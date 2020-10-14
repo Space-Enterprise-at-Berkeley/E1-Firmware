@@ -1,16 +1,17 @@
 /*
- * Brain_utils.h- A c++ program that uses I2C to establish communication between 
+ * Brain_utils.h- A c++ program that uses I2C to establish communication between
  * the sensors and valves inside to the rocket with the ground station. Able to send
- * data to the ground station via RF. Can receive and process commands sent from 
+ * data to the ground station via RF. Can receive and process commands sent from
  * ground station. This contains additional functions and structs used in Brain_I2C.ino.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 #include "solenoids.h"
 
-String make_packet(struct sensorInfo sensor);
-uint16_t Fletcher16(uint8_t *data, int count);
 
-Solenoids sol;
+
+String  make_packet(struct sensorInfo sensor);
+uint16_t  Fletcher16(uint8_t *data, int count);
+
 
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
@@ -26,10 +27,11 @@ union floatArrToBytes {
 struct sensorInfo {
   String sensor_name;
   int board_address;
-  byte sensor_id;
+  int sensor_id;
   int overall_id;
   int clock_freq;
-  sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
+  void  (*dataReadFunc)(float *data);
+  //sensorInfo(String n, int b, byte s, int o, int f, void (*func)(float *data)) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f), (*dataReadFunc)(func) {}
 };
 
 /*
@@ -38,11 +40,13 @@ struct sensorInfo {
 struct valveInfo {
   String valve_name;
   int valve_id;
+//  int (*openValve)();
+//  int (*closeValve)();
   valveInfo(String n, int v): valve_name(n), valve_id(v) {}
 };
 
 /*
- * Constructs packet in the following format: 
+ * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
 String make_packet(struct sensorInfo sensor) {
@@ -105,7 +109,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
 }
 
 /*
- * Calls the corresponding method for this valve with the appropriate 
+ * Calls the corresponding method for this valve with the appropriate
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
@@ -114,57 +118,57 @@ void take_action(valveInfo *valve, int action) {
       case 20:
         //call solenoids Lox 2 way
         if (action) {
-          sol.armLOX();
+          Solenoids::armLOX();
         } else {
-          sol.disarmLOX();
+          Solenoids::disarmLOX();
         }
         break;
       case 21:
         //call solenoids Lox 5 Way
         if (action) {
-          sol.openLOX();
+          Solenoids::openLOX();
         } else {
-          sol.closeLOX();
+          Solenoids::closeLOX();
         }
         break;
       case 22:
-        //call solenoids Lox gems 
+        //call solenoids Lox gems
         if (action) {
-          sol.ventLOXGems();
+          Solenoids::ventLOXGems();
         } else {
-          sol.closeLOXGems();
+          Solenoids::closeLOXGems();
         }
         break;
       case 23:
         //call solenoids propane 2 way
         if (action) {
-          sol.armPropane();
+          Solenoids::armPropane();
         } else {
-          sol.disarmPropane();
+          Solenoids::disarmPropane();
         }
         break;
       case 24:
         //call solenoids propane 5 way
         if (action) {
-          sol.openPropane();
+          Solenoids::openPropane();
         } else {
-          sol.closePropane();
+          Solenoids::closePropane();
         }
         break;
       case 25:
         //call solenoids propane gems
          if (action) {
-           sol.ventPropaneGems();
+           Solenoids::ventPropaneGems();
          } else {
-          sol.closePropaneGems();
+           Solenoids::closePropaneGems();
          }
         break;
       case 26:
         //call solenoids high pressure solenoid
         if (action) {
-          sol.activateHighPressureSolenoid();
+          Solenoids::activateHighPressureSolenoid();
         } else {
-          sol.deactivateHighPressureSolenoid();
+          Solenoids::deactivateHighPressureSolenoid();
         }
         break;
     }
@@ -175,7 +179,7 @@ void take_action(valveInfo *valve, int action) {
  * sensor_ID and it's corresponding data points
  */
 uint16_t Fletcher16(uint8_t *data, int count) {
-  
+
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
 
