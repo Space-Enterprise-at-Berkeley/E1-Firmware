@@ -10,8 +10,6 @@
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
 
-Solenoids sol;
-
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
@@ -29,7 +27,8 @@ struct sensorInfo {
   byte sensor_id;
   int overall_id;
   int clock_freq;
-  sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
+  void (*dataReadFunc)(float *data);
+  // sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
 };
 
 /*
@@ -54,14 +53,14 @@ String make_packet(struct sensorInfo sensor) {
       packet_content += (String)reading;
       packet_content += ",";
     } else {
-      packet_content.remove(packet_content.length()-1);
-      int count = packet_content.length();
-      char const *data = packet_content.c_str();
-      uint16_t checksum = Fletcher16((uint8_t *) data, count);
-      packet_content += "|";
-      packet_content += (String)checksum;
       break;
     }
+    packet_content.remove(packet_content.length()-1); 
+    int count = packet_content.length();
+    char const *data = packet_content.c_str();
+    uint16_t checksum = Fletcher16((uint8_t *) data, count);
+    packet_content += "|";
+    packet_content += (String)checksum;
   }
   String packet = "{" + packet_content + "}";
   return packet;
@@ -114,57 +113,57 @@ void take_action(valveInfo *valve, int action) {
       case 20:
         //call solenoids Lox 2 way
         if (action) {
-          sol.armLOX();
+          Solenoids::armLOX();
         } else {
-          sol.disarmLOX();
+          Solenoids::disarmLOX();
         }
         break;
       case 21:
         //call solenoids Lox 5 Way
         if (action) {
-          sol.openLOX();
+          Solenoids::openLOX();
         } else {
-          sol.closeLOX();
+          Solenoids::closeLOX();
         }
         break;
       case 22:
         //call solenoids Lox gems 
         if (action) {
-          sol.ventLOXGems();
+          Solenoids::ventLOXGems();
         } else {
-          sol.closeLOXGems();
+          Solenoids::closeLOXGems();
         }
         break;
       case 23:
         //call solenoids propane 2 way
         if (action) {
-          sol.armPropane();
+          Solenoids::armPropane();
         } else {
-          sol.disarmPropane();
+          Solenoids::disarmPropane();
         }
         break;
       case 24:
         //call solenoids propane 5 way
         if (action) {
-          sol.openPropane();
+          Solenoids::openPropane();
         } else {
-          sol.closePropane();
+          Solenoids::closePropane();
         }
         break;
       case 25:
         //call solenoids propane gems
          if (action) {
-           sol.ventPropaneGems();
+           Solenoids::ventPropaneGems();
          } else {
-          sol.closePropaneGems();
+          Solenoids::closePropaneGems();
          }
         break;
       case 26:
         //call solenoids high pressure solenoid
         if (action) {
-          sol.activateHighPressureSolenoid();
+          Solenoids::activateHighPressureSolenoid();
         } else {
-          sol.deactivateHighPressureSolenoid();
+          Solenoids::deactivateHighPressureSolenoid();
         }
         break;
     }
