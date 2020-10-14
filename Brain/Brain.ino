@@ -1,8 +1,8 @@
 /*
- * Brain_I2C.ino - A c++ program that uses I2C to establish communication between 
+ * Brain_I2C.ino - A c++ program that uses I2C to establish communication between
  * the sensors and valves inside to the rocket with the ground station. Able to send
- * data to the ground station via RF. Can receive and process commands sent from 
- * ground station. 
+ * data to the ground station via RF. Can receive and process commands sent from
+ * ground station.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 
@@ -15,29 +15,29 @@ SoftwareSerial RFSerial(2,3);
 int board_address = 0;
 byte sensor_id = 0;
 uint8_t index = 0;
+String command = "";
 
 /*
  * Array of all sensors we would like to get data from.
  */
 sensorInfo all_ids[8] = {
-  sensorInfo("Low Pressure",8,0,1,1) //example
+  sensorInfo("Low Pressure",8,0,1,1,NULL) //example
 };
 
-sensorInfo sensor = sensorInfo("",0,0,0,0);
+sensorInfo sensor = sensorInfo("",0,0,0,0, NULL);
 
-/* 
+int numSensors = 1;
+
+/*
  *  Stores how often we should be requesting data from each sensor.
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
-valveInfo valve_ids[7] = {
-  valveInfo("LOX 2 Way", 20) //example
-};
 
-valveInfo valve = valveInfo("",0);
+valveInfo valve = valveInfo("",0, 0, 0);
 
 void setup() {
-  Wire.begin();       
+  Wire.begin();
   Serial.begin(9600);
   RFSerial.begin(57600);
   for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
@@ -46,12 +46,13 @@ void setup() {
   }
 }
 
-void loop() { 
-  String command = "";
-  command = RFSerial.readString();
-  int action = decode_received_packet(command, &valve);
-  take_action(&valve, action);
-  
+void loop() {
+  if(RFSerial.available()) {
+    command = RFSerial.readString();
+    int action = decode_received_packet(command, &valve);
+    take_action(&valve, action);
+  }
+
   /*
    * Code for requesting data and relaying back to ground station
    */
@@ -69,8 +70,8 @@ void loop() {
     Wire.beginTransmission(board_address);
     Wire.write(sensor_id);
     Wire.endTransmission();
-    Wire.requestFrom(board_address, 24); 
-  
+    Wire.requestFrom(board_address, 24);
+
     index = 0;
     while (Wire.available()){
       farrbconvert.buffer[index] = Wire.read();
