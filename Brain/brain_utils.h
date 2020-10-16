@@ -1,7 +1,7 @@
 /*
- * Brain_utils.h- A c++ program that uses I2C to establish communication between
+ * Brain_utils.h- A c++ program that uses I2C to establish communication between 
  * the sensors and valves inside to the rocket with the ground station. Able to send
- * data to the ground station via RF. Can receive and process commands sent from
+ * data to the ground station via RF. Can receive and process commands sent from 
  * ground station. This contains additional functions and structs used in Brain_I2C.ino.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
@@ -28,7 +28,8 @@ struct sensorInfo {
   int sensor_id;
   int overall_id;
   int clock_freq;
-  void  (*dataReadFunc)(float *data);
+  void (*dataReadFunc)(float *data);
+  // sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
 };
 
 /*
@@ -39,18 +40,16 @@ struct valveInfo {
   int id;
   int (*openValve)();
   int (*closeValve)();
-  //valveInfo(String n, int v): valve_name(n), valve_id(v) {}
 };
 
 valveInfo valve_ids[7] = {
-  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)} //example
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
 };
 
 int numValves = 1;
 
-
 /*
- * Constructs packet in the following format:
+ * Constructs packet in the following format: 
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
 String make_packet(struct sensorInfo sensor) {
@@ -62,14 +61,14 @@ String make_packet(struct sensorInfo sensor) {
       packet_content += (String)reading;
       packet_content += ",";
     } else {
-      packet_content.remove(packet_content.length()-1);
-      int count = packet_content.length();
-      char const *data = packet_content.c_str();
-      uint16_t checksum = Fletcher16((uint8_t *) data, count);
-      packet_content += "|";
-      packet_content += (String)checksum;
       break;
     }
+    packet_content.remove(packet_content.length()-1); 
+    int count = packet_content.length();
+    char const *data = packet_content.c_str();
+    uint16_t checksum = Fletcher16((uint8_t *) data, count);
+    packet_content += "|";
+    packet_content += (String)checksum;
   }
   String packet = "{" + packet_content + "}";
   return packet;
@@ -97,7 +96,6 @@ int decode_received_packet(String packet, valveInfo *valve) {
   }
 }
 
-
 void chooseValveById(int id, valveInfo *valve) {
   for (int i = 0; i < numValves; i ++) {
     if (valve_ids[i].id == id) {
@@ -107,9 +105,8 @@ void chooseValveById(int id, valveInfo *valve) {
   }
 }
 
-
 /*
- * Calls the corresponding method for this valve with the appropriate
+ * Calls the corresponding method for this valve with the appropriate 
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
@@ -125,7 +122,7 @@ void take_action(valveInfo *valve, int action) {
  * sensor_ID and it's corresponding data points
  */
 uint16_t Fletcher16(uint8_t *data, int count) {
-
+  
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
 
