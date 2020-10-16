@@ -9,8 +9,7 @@
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
-
-Solenoids sol;
+void chooseValveById(int id, struct valveInfo *valve);
 
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
@@ -26,20 +25,29 @@ union floatArrToBytes {
 struct sensorInfo {
   String sensor_name;
   int board_address;
-  byte sensor_id;
+  int sensor_id;
   int overall_id;
   int clock_freq;
-  sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
+  void  (*dataReadFunc)(float *data);
 };
 
 /*
  * Data structure to store all information relevant to a specific valve.
  */
 struct valveInfo {
-  String valve_name;
-  int valve_id;
-  valveInfo(String n, int v): valve_name(n), valve_id(v) {}
+  String name;
+  int id;
+  int (*openValve)();
+  int (*closeValve)();
+  //valveInfo(String n, int v): valve_name(n), valve_id(v) {}
 };
+
+valveInfo valve_ids[7] = {
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)} //example
+};
+
+int numValves = 1;
+
 
 /*
  * Constructs packet in the following format:
@@ -82,42 +90,34 @@ int decode_received_packet(String packet, valveInfo *valve) {
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
-    valve->valve_id = valve_id;
-    if (valve_id == 20) { // example actuators
-      valve->valve_name = "LOX 2 Way";
-    } else if (valve_id == 21) {
-      valve->valve_name = "LOX 5 Way";
-    }
+    chooseValveById(valve_id, valve);
     return action;
   } else {
     return -1;
   }
 }
 
+
+void chooseValveById(int id, valveInfo *valve) {
+  for (int i = 0; i < numValves; i ++) {
+    if (valve_ids[i].id == id) {
+      valve = &valve_ids[i];
+      break;
+    }
+  }
+}
+
+
 /*
  * Calls the corresponding method for this valve with the appropriate
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
-  int valve_id = valve->valve_id;
-  switch(valve_id) { // example actuators
-      case 20:
-        //call solenoids Lox 2 way
-        if (action) {
-          sol.armLOX();
-        } else {
-          sol.disarmLOX();
-        }
-        break;
-      case 21:
-        //call solenoids Lox 5 Way
-        if (action) {
-          sol.openLOX();
-        } else {
-          sol.closeLOX();
-        }
-        break;
-    }
+  if (action) {
+    valve->openValve();
+  } else {
+    valve->closeValve();
+  }
 }
 
 /*

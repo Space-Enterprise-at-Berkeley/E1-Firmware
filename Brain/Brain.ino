@@ -18,46 +18,27 @@
 
 // within loop state variables
 int board_address = 0;
-int sensor_id = 0;
+byte sensor_id = 0;
 uint8_t val_index = 0;
 String command = "";
 
 /*
  * Array of all sensors we would like to get data from.
  */
-sensorInfo all_ids[11] = {
-  // local sensors
-   {"LOX Injector Low Pressure",  -1, -1, 1, 1, &(Ducers::readLOXInjectorPressure)},
-   {"Prop Injector Low Pressure", -1, -1, 2, 1, &(Ducers::readPropaneInjectorPressure)},
-   {"LOX Tank Low Pressure",      -1, -1, 3, 1, &(Ducers::readLOXTankPressure)},
-   {"Prop Tank Low Pressure",     -1, -1, 4, 1, &(Ducers::readPropaneTankPressure)},
-   {"High Pressure",              -1, -1, 5, 2, &(Ducers::readHighPressure)},
-   {"Temperature",                -1, -1, 6, 3, NULL},
-   {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
-   {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
-   {"Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)},
-   {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
-   {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
+sensorInfo all_ids[8] = {
+  {"Low Pressure",8,0,1,1,NULL} //example
 };
 
-sensorInfo sensor {"", 0, 0, 0, 0, 0};
+sensorInfo sensor = {"",0,0,0,0, NULL};
+
+int numSensors = 1;
 
 /*
  *  Stores how often we should be requesting data from each sensor.
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
-valveInfo valve_ids[7] = {
-  valveInfo("LOX 2 Way", 20),
-  valveInfo("LOX 5 Way", 21),
-  valveInfo("LOX GEMS", 22),
-  valveInfo("Propane 2 Way", 23),
-  valveInfo("Propane 5 Way", 24),
-  valveInfo("Propane GEMS", 25),
-  valveInfo("High Pressure Solenoid", 26)
-};
-
-valveInfo valve = valveInfo("",0);
+valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
   Wire.begin();
@@ -74,7 +55,7 @@ void setup() {
 }
 
 void loop() {
-  if(RFSerial.available()){
+  if(RFSerial.available()) {
     command = RFSerial.readString();
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
