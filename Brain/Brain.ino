@@ -34,9 +34,9 @@ sensorInfo all_ids[11] = {
    {"Temperature",                -1, -1, 6, 3, NULL},
    {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
    {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
-   {"Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)},
-   {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
-   {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
+   {"Barometer",                  -1, -1, 9, 6, &(Barometer::readAltitudeData)},
+   {"Load Cell Engine Left",      -1, -1, 10,  5, NULL},
+   {"Load Cell Engine Right",     -1, -1, 11, 5, NULL}
 };
 
 sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
