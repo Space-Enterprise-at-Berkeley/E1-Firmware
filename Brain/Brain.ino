@@ -7,14 +7,19 @@
  */
 
 #include <Wire.h>
-#include <SoftwareSerial.h>
 #include "brain_utils.h"
+#include <GPS.h>
+#include <Barometer.h>
+#include <ducer.h>
 
-SoftwareSerial RFSerial(2,3);
+#define RFSerial Serial2
+#define GPSSerial Serial3
 
+
+// within loop state variables
 int board_address = 0;
 byte sensor_id = 0;
-uint8_t index = 0;
+uint8_t val_index = 0;
 String command = "";
 
 /*
@@ -33,7 +38,6 @@ int numSensors = 1;
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
-
 valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
@@ -44,6 +48,10 @@ void setup() {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
+
+  Ducers::init(&Wire);
+  Barometer::init(&Wire);
+  GPS::init(&GPSSerial);
 }
 
 void loop() {
@@ -66,24 +74,30 @@ void loop() {
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
+    if(sensor_id != -1) {
+      Wire.beginTransmission(board_address);
+      Wire.write(sensor_id);
+      Wire.endTransmission();
+      Wire.requestFrom(board_address, 24);
 
-    Wire.beginTransmission(board_address);
-    Wire.write(sensor_id);
-    Wire.endTransmission();
-    Wire.requestFrom(board_address, 24);
-
-    index = 0;
-    while (Wire.available()){
-      farrbconvert.buffer[index] = Wire.read();
-      index++;
+      val_index = 0;
+      while (Wire.available()){
+        farrbconvert.buffer[val_index] = Wire.read();
+        val_index++;
+      }
+    } else {
+      sensor.dataReadFunc(farrbconvert.sensorReadings);
     }
     String packet = make_packet(sensor);
+    //Serial.println(packet);
     RFSerial.println(packet);
   }
   delay(100);
 }
 
+
 bool write_to_SD(String message){
   // every reading that we get from sensors should be written to sd and saved.
   // TODO: Someone's code here
+  return false;
 }

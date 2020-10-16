@@ -25,11 +25,10 @@ union floatArrToBytes {
 struct sensorInfo {
   String sensor_name;
   int board_address;
-  byte sensor_id;
+  int sensor_id;
   int overall_id;
   int clock_freq;
   void  (*dataReadFunc)(float *data);
-  //sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
 };
 
 /*
