@@ -1,8 +1,8 @@
 /*
- * Brain_I2C.ino - A c++ program that uses I2C to establish communication between
+ * Brain_I2C.ino - A c++ program that uses I2C to establish communication between 
  * the sensors and valves inside to the rocket with the ground station. Able to send
- * data to the ground station via RF. Can receive and process commands sent from
- * ground station.
+ * data to the ground station via RF. Can receive and process commands sent from 
+ * ground station. 
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 
@@ -14,7 +14,6 @@
 
 #define RFSerial Serial2
 #define GPSSerial Serial3
-
 
 // within loop state variables
 int board_address = 0;
@@ -40,9 +39,7 @@ sensorInfo all_ids[11] = {
    {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
-sensorInfo sensor {"", 0, 0, 0, 0, 0};
-
-int numSensors = 11;
+sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
 
 /*
  *  Stores how often we should be requesting data from each sensor.
@@ -52,7 +49,7 @@ int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
-  Wire.begin();
+  Wire.begin();       
   Serial.begin(9600);
   RFSerial.begin(57600);
   for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
@@ -85,12 +82,12 @@ void loop() {
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
-    if(sensor_id != -1) {
+
+    if (sensor_id != -1) {
       Wire.beginTransmission(board_address);
       Wire.write(sensor_id);
       Wire.endTransmission();
-      Wire.requestFrom(board_address, 24);
-
+      Wire.requestFrom(board_address, 24); 
       val_index = 0;
       while (Wire.available()){
         farrbconvert.buffer[val_index] = Wire.read();
@@ -99,6 +96,7 @@ void loop() {
     } else {
       sensor.dataReadFunc(farrbconvert.sensorReadings);
     }
+    
     String packet = make_packet(sensor);
     //Serial.println(packet);
     RFSerial.println(packet);
