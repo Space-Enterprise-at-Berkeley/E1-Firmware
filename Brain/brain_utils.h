@@ -42,7 +42,7 @@ struct valveInfo {
 };
 
 valveInfo valve_ids[7] = {
-  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)},
   {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
   {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
   {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane)},
