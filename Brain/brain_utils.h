@@ -25,7 +25,7 @@ union floatArrToBytes {
 struct sensorInfo {
   String sensor_name;
   int board_address;
-  byte sensor_id;
+  int sensor_id;
   int overall_id;
   int clock_freq;
   void (*dataReadFunc)(float *data);
@@ -44,12 +44,6 @@ struct valveInfo {
 
 valveInfo valve_ids[7] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
-  {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
-  {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
-  {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane)},
-  {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane)},
-  {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems)},
-  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)}
 };
 
 int numValves = 1;
