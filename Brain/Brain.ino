@@ -16,8 +16,8 @@
 #define GPSSerial Serial3
 
 int board_address = 0;
-byte sensor_id = 0;
-uint8_t index = 0;
+int sensor_id = 0;
+uint8_t val_index = 0;
 String command = "";
 
 /*
@@ -38,24 +38,14 @@ sensorInfo all_ids[11] = {
    {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
-sensorInfo sensor {"", 0, 0, 0, 0};
+sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
 
 /* 
  *  Stores how often we should be requesting data from each sensor.
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
-valveInfo valve_ids[7] = {
-  valveInfo("LOX 2 Way", 20),
-  valveInfo("LOX 5 Way", 21),
-  valveInfo("LOX GEMS", 22),
-  valveInfo("Propane 2 Way", 23),
-  valveInfo("Propane 5 Way", 24),
-  valveInfo("Propane GEMS", 25),
-  valveInfo("High Pressure Solenoid", 26)
-};
-
-valveInfo valve = valveInfo("",0);
+valveInfo valve = {"",0,0,0};
 
 void setup() {
   Wire.begin();       
@@ -100,11 +90,11 @@ void loop() {
     
       val_index = 0;
       while (Wire.available()){
-        farrbconvert.buffer[index] = Wire.read();
+        farrbconvert.buffer[val_index] = Wire.read();
         val_index++;
       }
     } else {
-      sensor.dataReadFunc(faarbconvert.sensorReadings);
+      sensor.dataReadFunc(farrbconvert.sensorReadings);
     }
     
     String packet = make_packet(sensor);
