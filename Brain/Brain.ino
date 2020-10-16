@@ -25,17 +25,7 @@ String command = "";
  */
 sensorInfo all_ids[11] = {
   // local sensors
-   {"LOX Injector Low Pressure",  -1, -1, 1, 1, &(Ducers::readLOXInjectorPressure)},
-   {"Prop Injector Low Pressure", -1, -1, 2, 1, &(Ducers::readPropaneInjectorPressure)},
-   {"LOX Tank Low Pressure",      -1, -1, 3, 1, &(Ducers::readLOXTankPressure)},
-   {"Prop Tank Low Pressure",     -1, -1, 4, 1, &(Ducers::readPropaneTankPressure)},
-   {"High Pressure",              -1, -1, 5, 2, &(Ducers::readHighPressure)},
-   {"Temperature",                -1, -1, 6, 3, NULL},
-   {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
-   {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
-   {"Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)},
-   {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
-   {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
+   {"LOX Injector Low Pressure",  -1, -1, 1, 1, &(Ducers::readLOXInjectorPressure)} //example
 };
 
 sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
