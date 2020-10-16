@@ -42,22 +42,14 @@ sensorInfo all_ids[11] = {
 
 sensorInfo sensor {"", 0, 0, 0, 0, 0};
 
+int numSensors = 11;
+
 /*
  *  Stores how often we should be requesting data from each sensor.
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
-valveInfo valve_ids[7] = {
-  valveInfo("LOX 2 Way", 20),
-  valveInfo("LOX 5 Way", 21),
-  valveInfo("LOX GEMS", 22),
-  valveInfo("Propane 2 Way", 23),
-  valveInfo("Propane 5 Way", 24),
-  valveInfo("Propane GEMS", 25),
-  valveInfo("High Pressure Solenoid", 26)
-};
-
-valveInfo valve = valveInfo("",0);
+valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
   Wire.begin();
@@ -74,7 +66,7 @@ void setup() {
 }
 
 void loop() {
-  if(RFSerial.available()){
+  if(RFSerial.available()) {
     command = RFSerial.readString();
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
