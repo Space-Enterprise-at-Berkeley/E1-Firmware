@@ -25,11 +25,10 @@ union floatArrToBytes {
 struct sensorInfo {
   String sensor_name;
   int board_address;
-  byte sensor_id;
+  int sensor_id;
   int overall_id;
   int clock_freq;
-  void (*dataReadFunc)(float *data);
-  // sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
+  void  (*dataReadFunc)(float *data);
 };
 
 /*
@@ -108,6 +107,19 @@ void chooseValveById(int id, valveInfo *valve) {
       valve = &valve_ids[i];
       break;
     }
+  }
+}
+
+
+/*
+ * Calls the corresponding method for this valve with the appropriate
+ * action in solenoids.h
+ */
+void take_action(valveInfo *valve, int action) {
+  if (action) {
+    valve->openValve();
+  } else {
+    valve->closeValve();
   }
 }
 

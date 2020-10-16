@@ -15,8 +15,9 @@
 #define RFSerial Serial2
 #define GPSSerial Serial3
 
+// within loop state variables
 int board_address = 0;
-int sensor_id = 0;
+byte sensor_id = 0;
 uint8_t val_index = 0;
 String command = "";
 
@@ -40,12 +41,12 @@ sensorInfo all_ids[11] = {
 
 sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
 
-/* 
+/*
  *  Stores how often we should be requesting data from each sensor.
  */
 int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
 
-valveInfo valve = {"",0,0,0};
+valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
   Wire.begin();       
@@ -55,7 +56,7 @@ void setup() {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-  
+
   Ducers::init(&Wire);
   Barometer::init(&Wire);
   GPS::init(&GPSSerial);
@@ -87,7 +88,6 @@ void loop() {
       Wire.write(sensor_id);
       Wire.endTransmission();
       Wire.requestFrom(board_address, 24); 
-    
       val_index = 0;
       while (Wire.available()){
         farrbconvert.buffer[val_index] = Wire.read();
@@ -103,6 +103,7 @@ void loop() {
   }
   delay(100);
 }
+
 
 bool write_to_SD(String message){
   // every reading that we get from sensors should be written to sd and saved.
