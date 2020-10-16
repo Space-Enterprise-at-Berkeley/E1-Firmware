@@ -11,6 +11,9 @@
 #include <GPS.h>
 #include <Barometer.h>
 #include <ducer.h>
+#include <SD.h>
+#include <SPI.h>
+#include <TimeLib.h>
 
 #define RFSerial Serial2
 #define GPSSerial Serial3
@@ -21,6 +24,7 @@ int board_address = 0;
 byte sensor_id = 0;
 uint8_t val_index = 0;
 String command = "";
+String file_name = "E1_" + String(month()) + "/" + String(day()) + "/" + String(year()) + "_" + String(hour()) + ":" + String(minute()) + ":" + String(second()) + "_log.txt";
 
 /*
  * Array of all sensors we would like to get data from.
@@ -91,6 +95,7 @@ void loop() {
     String packet = make_packet(sensor);
     //Serial.println(packet);
     RFSerial.println(packet);
+    bool did_write = write_to_SD(packet);
   }
   delay(100);
 }
@@ -99,5 +104,16 @@ void loop() {
 bool write_to_SD(String message){
   // every reading that we get from sensors should be written to sd and saved.
   // TODO: Someone's code here
-  return false;
+    if (!SD.begin(BUILTIN_SDCARD))
+        return false;
+   
+    File myFile = SD.open(file_name.c_str(), FILE_WRITE);
+
+    if (myFile) {
+      myFile.println(message);
+      myFile.close();
+      return true;
+    } else {
+      return false;
+    }
 }
