@@ -52,6 +52,8 @@ void setup() {
   Wire.begin();       
   //Serial.begin(9600);
   RFSerial.begin(57600);
+  delay(1000);
+  RFSerial.println("setup 1");
   for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
