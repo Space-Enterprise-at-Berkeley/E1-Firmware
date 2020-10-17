@@ -12,7 +12,7 @@
 #include <Barometer.h>
 #include <ducer.h>
 
-#define RFSerial Serial6
+#define RFSerial Serial
 #define GPSSerial Serial8
 
 // within loop state variables
