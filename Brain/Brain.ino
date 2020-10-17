@@ -13,7 +13,7 @@
 #include <ducer.h>
 
 #define RFSerial Serial2
-#define GPSSerial Serial3
+#define GPSSerial Serial6
 
 // within loop state variables
 int board_address = 0;
