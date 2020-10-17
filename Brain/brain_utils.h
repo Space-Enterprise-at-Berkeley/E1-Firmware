@@ -124,18 +124,6 @@ void take_action(valveInfo *valve, int action) {
 }
 
 /*
- * Calls the corresponding method for this valve with the appropriate 
- * action in solenoids.h
- */
-void take_action(valveInfo *valve, int action) {
-  if (action) {
-    valve->openValve();
-  } else {
-    valve->closeValve();
-  }
-}
-
-/*
  * Calculates checksum for key values being sent to ground station:
  * sensor_ID and it's corresponding data points
  */
