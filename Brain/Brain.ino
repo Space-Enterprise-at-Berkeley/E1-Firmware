@@ -56,6 +56,7 @@ void setup() {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
+  RFSerial.println("setup");
 
   Ducers::init(&Wire);
   Barometer::init(&Wire);
@@ -63,7 +64,7 @@ void setup() {
 }
 
 void loop() {
-  
+  RFSerial.println("top of loop");
   if(RFSerial.available()) {
     command = RFSerial.readString();
     int action = decode_received_packet(command, &valve);
