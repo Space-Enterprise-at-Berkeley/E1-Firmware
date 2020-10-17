@@ -12,8 +12,8 @@
 #include <Barometer.h>
 #include <ducer.h>
 
-#define RFSerial Serial2
-#define GPSSerial Serial6
+#define RFSerial Serial6
+#define GPSSerial Serial8
 
 // within loop state variables
 int board_address = 0;
@@ -50,7 +50,7 @@ valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
   Wire.begin();       
-  Serial.begin(9600);
+  //Serial.begin(9600);
   RFSerial.begin(57600);
   for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
     sensor_checks[i][0] = all_ids[i].clock_freq;
@@ -63,10 +63,12 @@ void setup() {
 }
 
 void loop() {
+  
   if(RFSerial.available()) {
     command = RFSerial.readString();
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
+    RFSerial.print("got command");
   }
 
   /*
@@ -89,12 +91,13 @@ void loop() {
       Wire.endTransmission();
       Wire.requestFrom(board_address, 24); 
       val_index = 0;
-      while (Wire.available()){
+      while (Wire.available()) {
         farrbconvert.buffer[val_index] = Wire.read();
         val_index++;
       }
     } else {
       sensor.dataReadFunc(farrbconvert.sensorReadings);
+      RFSerial.println("read straight from board");
     }
     
     String packet = make_packet(sensor);
