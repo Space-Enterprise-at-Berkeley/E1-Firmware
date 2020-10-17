@@ -8,16 +8,16 @@
 
 #include <Wire.h>
 #include "brain_utils.h"
-#include <GPS.h>
-#include <Barometer.h>
+//#include <GPS.h>
+//#include <Barometer.h>
 #include <ducer.h>
 
-#define RFSerial Serial
+#define RFSerial Serial6
 #define GPSSerial Serial8
 
 // within loop state variables
 int board_address = 0;
-byte sensor_id = 0;
+int sensor_id = 0;
 uint8_t val_index = 0;
 String command = "";
 
@@ -32,14 +32,14 @@ sensorInfo all_ids[11] = {
    {"Prop Tank Low Pressure",     -1, -1, 4, 1, &(Ducers::readPropaneTankPressure)},
    {"High Pressure",              -1, -1, 5, 2, &(Ducers::readHighPressure)},
    {"Temperature",                -1, -1, 6, 3, NULL},
-   {"GPS",                        -1, -1, 7, 5, &(GPS::readPositionData)},
-   {"GPS Aux",                    -1, -1, 8, 8, &(GPS::readAuxilliaryData)},
-   {"Barometer",                  -1, -1, 8, 6, &(Barometer::readAltitudeData)},
+   {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
+   {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
+   {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
    {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
    {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
-sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
+sensorInfo sensor = {"temp", 23, 23, 23, 23, NULL};
 
 /*
  *  Stores how often we should be requesting data from each sensor.
@@ -50,28 +50,50 @@ valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
   Wire.begin();       
-  //Serial.begin(9600);
+  Serial.begin(9600);
   RFSerial.begin(57600);
+  
   delay(1000);
+  
   RFSerial.println("setup 1");
+  Serial.println("setup 1");
+
+  
   for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
   RFSerial.println("setup");
+  Serial.println("setup");
 
-  Ducers::init(&Wire);
-  Barometer::init(&Wire);
-  GPS::init(&GPSSerial);
+  
+  farrbconvert.sensorReadings[0] = 98;
+  farrbconvert.sensorReadings[1] = 45;
+  farrbconvert.sensorReadings[2] = 16;
+  farrbconvert.sensorReadings[3] = 0;
+  farrbconvert.sensorReadings[4] = -1;
+  farrbconvert.sensorReadings[5] = -1;
+  RFSerial.println(make_packet(sensor));
+  Serial.println(make_packet(sensor));
+
+
+//  Ducers::init(&Wire);
+//  Barometer::init(&Wire);
+//  GPS::init(&GPSSerial);
 }
 
 void loop() {
   RFSerial.println("top of loop");
-  if(RFSerial.available()) {
-    command = RFSerial.readString();
+  Serial.println("top of loop");
+
+  if(false) {
+    //command = RFSerial.readString();
+    command = "{21,1|E5C0}";
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
     RFSerial.print("got command");
+    Serial.print("got command");
+
   }
 
   /*
@@ -87,8 +109,12 @@ void loop() {
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
+    RFSerial.print("sensor id: ");
+    RFSerial.println(sensor_id);
 
     if (sensor_id != -1) {
+      Serial.println("doing i2c request");
+
       Wire.beginTransmission(board_address);
       Wire.write(sensor_id);
       Wire.endTransmission();
@@ -100,11 +126,12 @@ void loop() {
       }
     } else {
       sensor.dataReadFunc(farrbconvert.sensorReadings);
-      RFSerial.println("read straight from board");
+      Serial.println("read straight from board");
+
     }
     
     String packet = make_packet(sensor);
-    //Serial.println(packet);
+    Serial.println(packet);
     RFSerial.println(packet);
   }
   delay(100);

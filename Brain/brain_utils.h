@@ -23,7 +23,7 @@ union floatArrToBytes {
  * Data structure to store all information relevant to a specific sensor type.
  */
 struct sensorInfo {
-  String sensor_name;
+  String name;
   int board_address;
   int sensor_id;
   int overall_id;
@@ -59,23 +59,27 @@ int numValves = 1;
  */
 String make_packet(struct sensorInfo sensor) {
   String packet_content = (String)sensor.overall_id;
+//  Serial.println("make packet start");
   packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
-    if (reading > 0) {
+    if (reading >= 0) {
       packet_content += (String)reading;
       packet_content += ",";
+      //Serial.print(" current packet content: ");
+//      Serial.print(packet_content);
     } else {
       break;
     }
-    packet_content.remove(packet_content.length()-1); 
-    int count = packet_content.length();
-    char const *data = packet_content.c_str();
-    uint16_t checksum = Fletcher16((uint8_t *) data, count);
-    packet_content += "|";
-    packet_content += (String)checksum;
   }
+  packet_content.remove(packet_content.length()-1); 
+  int count = packet_content.length();
+  char const *data = packet_content.c_str();
+  uint16_t checksum = Fletcher16((uint8_t *) data, count);
+  packet_content += "|";
+  packet_content += String(checksum, HEX);
   String packet = "{" + packet_content + "}";
+  
   return packet;
 }
 
@@ -87,10 +91,15 @@ String make_packet(struct sensorInfo sensor) {
 int decode_received_packet(String packet, valveInfo *valve) {
   int ind1 = packet.indexOf(',');
   int valve_id = packet.substring(1,ind1).toInt();
+  Serial.print("valve id");
+  Serial.println(valve_id);
   int ind2 = packet.indexOf('|');
   int action = packet.substring(ind1+1,ind2).toInt();
+  Serial.print("action: ");
+  Serial.println(action);
   uint16_t checksum = (uint16_t)packet.substring(ind2+1, packet.length()-1).toInt();
   char const *data = packet.substring(1,ind2).c_str();
+  Serial.println(*data);
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
@@ -118,6 +127,7 @@ void chooseValveById(int id, valveInfo *valve) {
 void take_action(valveInfo *valve, int action) {
   if (action) {
     valve->openValve();
+    Serial.println("opening valve");
   } else {
     valve->closeValve();
   }
