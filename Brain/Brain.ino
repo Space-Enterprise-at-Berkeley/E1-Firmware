@@ -63,7 +63,7 @@ void setup() {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-  RFSerial.println("setup");
+
   Serial.println("setup");
 
   
@@ -73,7 +73,7 @@ void setup() {
   farrbconvert.sensorReadings[3] = 0;
   farrbconvert.sensorReadings[4] = -1;
   farrbconvert.sensorReadings[5] = -1;
-  RFSerial.println(make_packet(sensor));
+
   Serial.println(make_packet(sensor));
 
 
@@ -83,7 +83,6 @@ void setup() {
 }
 
 void loop() {
-  RFSerial.println("top of loop");
   Serial.println("top of loop");
 
   if(RFSerial.available()) {
