@@ -10,27 +10,27 @@
 #include "brain_utils.h"
 //#include <GPS.h>
 //#include <Barometer.h>
-#include <ducer.h>
+//#include <ducer.h>
 
 #define RFSerial Serial6
-#define GPSSerial Serial8
+//#define GPSSerial Serial8
 
 // within loop state variables
 int board_address = 0;
 int sensor_id = 0;
 uint8_t val_index = 0;
 String command = "";
-
+  
 /*
  * Array of all sensors we would like to get data from.
  */
 sensorInfo all_ids[11] = {
   // local sensors
-   {"LOX Injector Low Pressure",  -1, -1, 1, 1, &(Ducers::readLOXInjectorPressure)},
-   {"Prop Injector Low Pressure", -1, -1, 2, 1, &(Ducers::readPropaneInjectorPressure)},
-   {"LOX Tank Low Pressure",      -1, -1, 3, 1, &(Ducers::readLOXTankPressure)},
-   {"Prop Tank Low Pressure",     -1, -1, 4, 1, &(Ducers::readPropaneTankPressure)},
-   {"High Pressure",              -1, -1, 5, 2, &(Ducers::readHighPressure)},
+   {"LOX Injector Low Pressure",  -1, -1, 1, 1, NULL}, //&(Ducers::readLOXInjectorPressure)},
+   {"Prop Injector Low Pressure", -1, -1, 2, 1, NULL}, //&(Ducers::readPropaneInjectorPressure)},
+   {"LOX Tank Low Pressure",      -1, -1, 3, 1, NULL}, //&(Ducers::readLOXTankPressure)},
+   {"Prop Tank Low Pressure",     -1, -1, 4, 1, NULL}, //&(Ducers::readPropaneTankPressure)},
+   {"High Pressure",              -1, -1, 5, 2, NULL}, //&(Ducers::readHighPressure)},
    {"Temperature",                -1, -1, 6, 3, NULL},
    {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
    {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
@@ -86,20 +86,20 @@ void loop() {
   RFSerial.println("top of loop");
   Serial.println("top of loop");
 
-  if(false) {
+  if(RFSerial.available()) {
     //command = RFSerial.readString();
     command = "{21,1|E5C0}";
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
     RFSerial.print("got command");
     Serial.print("got command");
-
   }
 
   /*
    * Code for requesting data and relaying back to ground station
    */
   for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
+    Serial.println("Inner for loop");
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
     } else {
@@ -109,21 +109,21 @@ void loop() {
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
-    RFSerial.print("sensor id: ");
-    RFSerial.println(sensor_id);
+    Serial.print("sensor id: ");
+    Serial.println(sensor_id);
 
     if (sensor_id != -1) {
       Serial.println("doing i2c request");
 
-      Wire.beginTransmission(board_address);
-      Wire.write(sensor_id);
-      Wire.endTransmission();
-      Wire.requestFrom(board_address, 24); 
+//      Wire.beginTransmission(board_address);
+//      Wire.write(sensor_id);
+//      Wire.endTransmission();
+//      Wire.requestFrom(board_address, 24); 
       val_index = 0;
-      while (Wire.available()) {
-        farrbconvert.buffer[val_index] = Wire.read();
-        val_index++;
-      }
+//      while (Wire.available()) {
+//        farrbconvert.buffer[val_index] = Wire.read();
+//        val_index++;
+//      }
     } else {
       sensor.dataReadFunc(farrbconvert.sensorReadings);
       Serial.println("read straight from board");
