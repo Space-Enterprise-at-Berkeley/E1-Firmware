@@ -59,15 +59,12 @@ int numValves = 1;
  */
 String make_packet(struct sensorInfo sensor) {
   String packet_content = (String)sensor.overall_id;
-//  Serial.println("make packet start");
   packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
     if (reading >= 0) {
       packet_content += (String)reading;
       packet_content += ",";
-      //Serial.print(" current packet content: ");
-//      Serial.print(packet_content);
     } else {
       break;
     }

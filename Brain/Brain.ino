@@ -6,11 +6,12 @@
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 
-#include <Wire.h>
+#include <i2c_driver_wire.h> // https://github.com/Richard-Gemmell/teensy4_i2c
 #include "brain_utils.h"
 //#include <GPS.h>
 //#include <Barometer.h>
 //#include <ducer.h>
+#include <Thermocouple.h>
 
 #define RFSerial Serial6
 //#define GPSSerial Serial8
@@ -20,18 +21,26 @@ int board_address = 0;
 int sensor_id = 0;
 uint8_t val_index = 0;
 String command = "";
+
   
+
+void testTempRead(float *data) {
+  Thermocouple::readTemperatureData(data);
+}
+
 /*
  * Array of all sensors we would like to get data from.
  */
-sensorInfo all_ids[11] = {
+const int numSensors = 11; // can use sizeof(all_ids)/sizeof(sensorInfo)
+
+sensorInfo all_ids[numSensors] = {
   // local sensors
-   {"LOX Injector Low Pressure",  -1, -1, 1, 1, NULL}, //&(Ducers::readLOXInjectorPressure)},
-   {"Prop Injector Low Pressure", -1, -1, 2, 1, NULL}, //&(Ducers::readPropaneInjectorPressure)},
-   {"LOX Tank Low Pressure",      -1, -1, 3, 1, NULL}, //&(Ducers::readLOXTankPressure)},
-   {"Prop Tank Low Pressure",     -1, -1, 4, 1, NULL}, //&(Ducers::readPropaneTankPressure)},
-   {"High Pressure",              -1, -1, 5, 2, NULL}, //&(Ducers::readHighPressure)},
-   {"Temperature",                -1, -1, 6, 3, NULL},
+   {"LOX Injector Low Pressure",  8, -1, 1, 1, NULL}, //&(Ducers::readLOXInjectorPressure)},
+   {"Prop Injector Low Pressure", 8, 2, 2, 1, NULL}, //&(Ducers::readPropaneInjectorPressure)},
+   {"LOX Tank Low Pressure",      8, 3, 3, 1, NULL}, //&(Ducers::readLOXTankPressure)},
+   {"Prop Tank Low Pressure",     8, 4, 4, 1, NULL}, //&(Ducers::readPropaneTankPressure)},
+   {"High Pressure",              8, 5, 5, 2, NULL}, //&(Ducers::readHighPressure)},
+   {"Temperature",                -1, -1, 6, 3, NULL}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
    {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
    {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
    {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
@@ -41,45 +50,35 @@ sensorInfo all_ids[11] = {
 
 sensorInfo sensor = {"temp", 23, 23, 23, 23, NULL};
 
+
 /*
  *  Stores how often we should be requesting data from each sensor.
  */
-int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
+int sensor_checks[numSensors][2];
 
 valveInfo valve  = {"",0, 0, 0};
 
 void setup() {
-  Wire.begin();       
+  Wire.setClock(100 * 1000);   // Set the clock speed before calling begin()
+  Wire.begin();
   Serial.begin(9600);
   RFSerial.begin(57600);
   
   delay(1000);
   
-  RFSerial.println("setup 1");
   Serial.println("setup 1");
 
   
-  for (int i=0; i<sizeof(all_ids)/sizeof(sensorInfo); i++) {
+  for (int i=0; i<numSensors; i++) {
     sensor_checks[i][0] = all_ids[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-
   Serial.println("setup");
 
-  
-  farrbconvert.sensorReadings[0] = 98;
-  farrbconvert.sensorReadings[1] = 45;
-  farrbconvert.sensorReadings[2] = 16;
-  farrbconvert.sensorReadings[3] = 0;
-  farrbconvert.sensorReadings[4] = -1;
-  farrbconvert.sensorReadings[5] = -1;
-
-  Serial.println(make_packet(sensor));
-
-
-//  Ducers::init(&Wire);
-//  Barometer::init(&Wire);
-//  GPS::init(&GPSSerial);
+  Thermocouple::init(1, 11);
+////  Ducers::init(&Wire);
+////  Barometer::init(&Wire);
+////  GPS::init(&GPSSerial);
 }
 
 void loop() {
@@ -90,50 +89,72 @@ void loop() {
     command = "{21,1|E5C0}";
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
-    RFSerial.print("got command");
     Serial.print("got command");
   }
 
   /*
    * Code for requesting data and relaying back to ground station
    */
-  for (int j = 0; j < sizeof(all_ids)/sizeof(sensorInfo); j++) {
+  for (int j = 0; j < numSensors; j++) {
     Serial.println("Inner for loop");
-    if (sensor_checks[j][0] == sensor_checks[j][1]) {
-      sensor_checks[j][1] = 1;
-    } else {
-      sensor_checks[j][1] += 1;
-      continue;
-    }
+//    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+//      sensor_checks[j][1] = 1;
+//    } else {
+//      sensor_checks[j][1] += 1;
+//      continue;
+//    }
     sensor = all_ids[j];
     board_address = sensor.board_address;
     sensor_id = sensor.sensor_id;
     Serial.print("sensor id: ");
-    Serial.println(sensor_id);
-
+    Serial.print(sensor_id);
+    Serial.println(", " + sensor.name);
+    
     if (sensor_id != -1) {
       Serial.println("doing i2c request");
 
-//      Wire.beginTransmission(board_address);
-//      Wire.write(sensor_id);
-//      Wire.endTransmission();
-//      Wire.requestFrom(board_address, 24); 
+      Wire.beginTransmission(board_address);
+      Serial.println(Wire.write(sensor_id));
+      Serial.println("wrote 1 byte");
+      delay(100);
+      Serial.println("delayed");
+      Serial.println(Wire.endTransmission());
+      
+      Serial.println(Wire.requestFrom(board_address, 24));
       val_index = 0;
-//      while (Wire.available()) {
-//        farrbconvert.buffer[val_index] = Wire.read();
-//        val_index++;
-//      }
+      while (Wire.available()) {
+        Serial.println("wire available, reading");
+        farrbconvert.buffer[val_index] = Wire.read();
+        val_index++;
+      } 
+      for (int i = val_index; i < 24; i++){
+        farrbconvert.buffer[i] = 0;
+      }
     } else {
-      sensor.dataReadFunc(farrbconvert.sensorReadings);
-      Serial.println("read straight from board");
-
+//      sensor.dataReadFunc(farrbconvert.sensorReadings);
+      sensorReadFunc(sensor.overall_id);
     }
-    
+//    
     String packet = make_packet(sensor);
     Serial.println(packet);
-    RFSerial.println(packet);
+//    RFSerial.println(packet);
   }
   delay(100);
+}
+
+void sensorReadFunc(int id) {
+  switch(id){
+    case 1:
+      Ducers::readLOXInjectorPressure(farrbconvert.sensorReadings);
+      break;
+    case 6:
+      Thermocouple::setSensor(0);
+      Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
+      break;
+    default:
+      //Serial.println("some other, not temp sensor");  
+      break;
+  }
 }
 
 
