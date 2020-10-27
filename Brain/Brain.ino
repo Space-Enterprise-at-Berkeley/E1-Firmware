@@ -142,12 +142,9 @@ void loop() {
 }
 
 void sensorReadFunc(int id) {
-  Serial.print("in sensor Read: ");
-  Serial.println(id);
   switch (id) {
     case 1:
       Ducers::readLOXInjectorPressure(farrbconvert.sensorReadings);
-      Serial.println("reading lox pressure");
       break;
     case 2:
       Ducers::readPropaneInjectorPressure(farrbconvert.sensorReadings);
@@ -170,7 +167,9 @@ void sensorReadFunc(int id) {
     case 6:
       Thermocouple::setSensor(0);
       Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
+      Serial.println(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+      Serial.println(farrbconvert.sensorReadings[1]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:
