@@ -25,10 +25,8 @@ union floatArrToBytes {
 struct sensorInfo {
   String name;
   int board_address;
-  int sensor_id;
-  int overall_id;
+  int id;
   int clock_freq;
-  void  (*dataReadFunc)(float *data);
 };
 
 /*
@@ -41,14 +39,16 @@ struct valveInfo {
   int (*closeValve)();
 };
 
-valveInfo valve_ids[7] = {
+valveInfo valve_ids[9] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
   {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
   {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
   {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane)},
   {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane)},
   {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems)},
-  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)}
+  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)},
+  {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll)},
+  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)}
 };
 
 int numValves = 1;
@@ -58,7 +58,7 @@ int numValves = 1;
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
 String make_packet(struct sensorInfo sensor) {
-  String packet_content = (String)sensor.overall_id;
+  String packet_content = (String)sensor.id;
   packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
