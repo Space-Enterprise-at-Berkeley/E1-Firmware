@@ -87,7 +87,8 @@ void loop() {
 
   if (Serial.available()) {
     RFSerial.println("got command");
-    command = Serial.read();
+    command = "{21,1|E5C0}";
+//    command = Serial.read();
     RFSerial.println(command);
     int action = decode_received_packet(command, &valve);
     take_action(valve.id, action);
