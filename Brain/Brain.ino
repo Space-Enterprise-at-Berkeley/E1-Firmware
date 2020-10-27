@@ -87,7 +87,7 @@ void loop() {
 
   if (Serial.available()) {
     RFSerial.println("got command");
-    command = Serial.readStringUntil('\n');
+    command = Serial.read();
     RFSerial.println(command);
     int action = decode_received_packet(command, &valve);
     take_action(valve.id, action);
