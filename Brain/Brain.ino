@@ -30,7 +30,7 @@ String command = "";
 /*
    Array of all sensors we would like to get data from.
 */
-const int numSensors = 11; // can use sizeof(all_ids)/sizeof(sensorInfo)
+const int numSensors = 7; // can use sizeof(all_ids)/sizeof(sensorInfo)
 
 sensorInfo sensors[numSensors] = {
   // local sensors
