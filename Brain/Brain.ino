@@ -98,8 +98,9 @@ void loop() {
       Serial.print(command[j]);
     }
     Serial.println("");
+    Serial.flush();
 //    RFSerial.println(command);
-    int action = decode_received_packet(command, &valve);
+    int action = decode_received_packet(String(command), &valve);
     Serial.println(action);
     take_action(&valve, action);
     //Serial.print("got command");
