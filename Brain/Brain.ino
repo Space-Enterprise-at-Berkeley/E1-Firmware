@@ -94,13 +94,14 @@ void loop() {
     }
     //command = "{21,1|E5C0}";
 //    int len = Serial.readBytesUntil('\n', command, 50);
-//    for (int j = 0 ; j < i; j++){
-//      Serial.print(command[j]);
-//    }
-//    Serial.println("");
+    for (int j = 0 ; j < i; j++){
+      Serial.print(command[j]);
+    }
+    Serial.println("");
 //    RFSerial.println(command);
     int action = decode_received_packet(command, &valve);
-    take_action(valve.id, action);
+    Serial.println(action);
+    take_action(&valve, action);
     //Serial.print("got command");
   }
 
@@ -173,9 +174,11 @@ void sensorReadFunc(int id) {
 
       break;
     case 8:
+          Serial.println("reading batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 6:
+      Serial.println("reading temp");
       Thermocouple::setSensor(0);
       Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
 //      Serial.println(farrbconvert.sensorReadings[0]);
@@ -184,7 +187,7 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:
-      //Serial.println("some other, not temp sensor");
+      Serial.println("some other sensor");
       break;
   }
 }
