@@ -88,6 +88,7 @@ String make_packet(struct sensorInfo sensor) {
 int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println("in decode received packet");
     Serial.println(packet);
+    Serial.flushd();
 
   int ind1 = packet.indexOf(',');
   int valve_id = packet.substring(1,ind1).toInt();
