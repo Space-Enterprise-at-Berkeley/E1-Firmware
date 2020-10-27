@@ -85,22 +85,22 @@ void setup() {
 void loop() {
 //  Serial.println("top of loop");
 
-  if (Serial.available() > 0) {
+  if (RFSerial.available() > 0) {
     Serial.println("got command");
     int i = 0;
-    while(Serial.available()){
-      command[i] = Serial.read();
+    while(RFSerial.available()) {
+      command[i] = RFSerial.read();
       i++;
     }
     //command = "{21,1|E5C0}";
 //    int len = Serial.readBytesUntil('\n', command, 50);
-    for (int j = 0 ; j < i; j++){
-      Serial.print(command[j]);
-    }
-    Serial.println("");
+//    for (int j = 0 ; j < i; j++){
+//      Serial.print(command[j]);
+//    }
+//    Serial.println("");
 //    RFSerial.println(command);
-//    int action = decode_received_packet(command, &valve);
-//    take_action(valve.id, action);
+    int action = decode_received_packet(command, &valve);
+    take_action(valve.id, action);
     //Serial.print("got command");
   }
 
