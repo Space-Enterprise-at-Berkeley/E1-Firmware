@@ -62,7 +62,7 @@ valveInfo valve  = {"", 0, 0, 0};
 void setup() {
   Wire.begin();
   Serial.begin(9600);
-  RFSerial.begin(57600);
+  RFSerial.begin(9600);
 
   delay(1000);
 
