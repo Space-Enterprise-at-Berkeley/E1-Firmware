@@ -13,6 +13,7 @@
 #include <ducer.h>
 #include <Thermocouple.h>
 #include <tempController.h>
+#include <batteryMonitor.h>
 
 #define RFSerial Serial6
 //#define GPSSerial Serial8
@@ -40,6 +41,7 @@ sensorInfo sensors[numSensors] = {
   {"Pressurant Tank",            FLIGHT_BRAIN_ADDR, 5, 2}, //&(Ducers::readHighPressure)},
   {"Temperature",                FLIGHT_BRAIN_ADDR, 6, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
 //  {"All Pressure",               FLIGHT_BRAIN_ADDR, 7, 1},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 8, 5},
 //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
 //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
 //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
@@ -75,6 +77,7 @@ void setup() {
   Thermocouple::init(1, 11);
   tempController::init(20, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
   Ducers::init(&Wire);
+  batteryMonitor::init();
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
 }
@@ -157,6 +160,9 @@ void sensorReadFunc(int id) {
       break;
     case 7:
 
+      break;
+    case 8:
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 6:
       Thermocouple::setSensor(0);
