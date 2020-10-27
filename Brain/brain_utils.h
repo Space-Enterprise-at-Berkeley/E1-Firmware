@@ -122,12 +122,15 @@ void chooseValveById(int id, valveInfo *valve) {
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
+  Serial.println("called take action");
   if (action) {
-    valve->openValve();
     Serial.println("opening valve");
+    valve->openValve();
   } else {
+    Serial.println("closing valve");
     valve->closeValve();
   }
+  Serial.println(" finished command");
 }
 
 /*
