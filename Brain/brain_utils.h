@@ -106,8 +106,8 @@ int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println("checksum str");
   Serial.println(checksumstr);
   Serial.flush();
-  char checksum_char[4];
-  checksumstr.toCharArray(checksum_char, 4);
+  char checksum_char[5];
+  checksumstr.toCharArray(checksum_char, 5);
   uint16_t checksum = strtol(checksum_char, NULL, 16); //checksumstr.toInt();//std::stoi(checksumstr, 0, 16);
   Serial.println("checksum");
   Serial.println(checksum);
