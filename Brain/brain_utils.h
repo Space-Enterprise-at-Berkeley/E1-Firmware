@@ -62,7 +62,7 @@ String make_packet(struct sensorInfo sensor) {
   packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
-    if (reading >= 0) {
+    if (reading != -1) {
       packet_content += (String)reading;
       packet_content += ",";
     } else {
