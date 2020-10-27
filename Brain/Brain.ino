@@ -108,48 +108,48 @@ void loop() {
   /*
      Code for requesting data and relaying back to ground station
   */
-  for (int j = 0; j < numSensors; j++) {
-    //    if (sensor_checks[j][0] == sensor_checks[j][1]) {
-    //      sensor_checks[j][1] = 1;
-    //    } else {
-    //      sensor_checks[j][1] += 1;
-    //      continue;
-    //    }
-    sensor = sensors[j];
-    board_address = sensor.board_address;
-    sensor_id = sensor.id;
-//    Serial.print("sensor id: ");
-//    Serial.print(sensor_id);
-//    Serial.println(", " + sensor.name);
-
-    if (board_address != FLIGHT_BRAIN_ADDR) {
-      // Don't worry about this code. Vainavi is handling this.
-      Serial.println("doing i2c request");
-
-      Wire.beginTransmission(board_address);
-      Serial.println(Wire.write(sensor_id));
-      Serial.println("wrote 1 byte");
-      delay(100);
-      Serial.println("delayed");
-      Serial.println(Wire.endTransmission());
-
-      Serial.println(Wire.requestFrom(board_address, 24));
-      val_index = 0;
-      while (Wire.available()) {
-        Serial.println("wire available, reading");
-        farrbconvert.buffer[val_index] = Wire.read();
-        val_index++;
-      }
-      for (int i = val_index; i < 24; i++) {
-        farrbconvert.buffer[i] = 0;
-      }
-    } else {
-      sensorReadFunc(sensor.id);
-    }
-    String packet = make_packet(sensor);
-    Serial.println(packet);
-    RFSerial.println(packet);
-  }
+//  for (int j = 0; j < numSensors; j++) {
+//    //    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+//    //      sensor_checks[j][1] = 1;
+//    //    } else {
+//    //      sensor_checks[j][1] += 1;
+//    //      continue;
+//    //    }
+//    sensor = sensors[j];
+//    board_address = sensor.board_address;
+//    sensor_id = sensor.id;
+////    Serial.print("sensor id: ");
+////    Serial.print(sensor_id);
+////    Serial.println(", " + sensor.name);
+//
+//    if (board_address != FLIGHT_BRAIN_ADDR) {
+//      // Don't worry about this code. Vainavi is handling this.
+//      Serial.println("doing i2c request");
+//
+//      Wire.beginTransmission(board_address);
+//      Serial.println(Wire.write(sensor_id));
+//      Serial.println("wrote 1 byte");
+//      delay(100);
+//      Serial.println("delayed");
+//      Serial.println(Wire.endTransmission());
+//
+//      Serial.println(Wire.requestFrom(board_address, 24));
+//      val_index = 0;
+//      while (Wire.available()) {
+//        Serial.println("wire available, reading");
+//        farrbconvert.buffer[val_index] = Wire.read();
+//        val_index++;
+//      }
+//      for (int i = val_index; i < 24; i++) {
+//        farrbconvert.buffer[i] = 0;
+//      }
+//    } else {
+//      sensorReadFunc(sensor.id);
+//    }
+//    String packet = make_packet(sensor);
+//    Serial.println(packet);
+//    RFSerial.println(packet);
+//  }
   delay(10);
 }
 
