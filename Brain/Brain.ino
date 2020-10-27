@@ -24,7 +24,7 @@
 int board_address = 0;
 int sensor_id = 0;
 uint8_t val_index = 0;
-String command = "";
+char command[50];
 
 
 /*
@@ -83,12 +83,16 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("top of loop");
+//  Serial.println("top of loop");
 
   if (Serial.available()) {
-    RFSerial.println("got command");
+    Serial.println("got command");
     //command = "{21,1|E5C0}";
-    command = Serial.readStringUntil('\n');
+    int len = Serial.readBytesUntil('\n', &command, 50);
+    for (int i = 0 ; i < len; i ++){
+      Serial.print(command[i]);
+    }
+    Serial.println("");
     RFSerial.println(command);
     int action = decode_received_packet(command, &valve);
     take_action(valve.id, action);
