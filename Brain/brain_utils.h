@@ -103,8 +103,15 @@ int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println(action);
   Serial.flush();
   uint16_t checksum = (uint16_t)packet.substring(ind2+1, packet.length()-1).toInt();
+  Serial.println(checksum);
+  Serial.flush();
   char const *data = packet.substring(1,ind2).c_str();
-  Serial.println(*data);
+  int i = 0;
+  while(i < 10){
+    Serial.print(data[i]);
+    i++;
+  }
+  Serial.println();
   Serial.flush();
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
