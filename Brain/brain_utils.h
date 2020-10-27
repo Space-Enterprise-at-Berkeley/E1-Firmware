@@ -102,12 +102,17 @@ int decode_received_packet(String packet, valveInfo *valve) {
   Serial.print("action: ");
   Serial.println(action);
   Serial.flush();
-  uint16_t checksum = (uint16_t)packet.substring(ind2+1, packet.length()-1).toInt();
+  String checksumstr = packet.substring(ind2+1, packet.length()-1);
+  Serial.println("checksum str");
+  Serial.println(checksumstr);
+  Serial.flush();
+  uint16_t checksum = (uint16_t) checksumstr.toInt();
+  Serial.println("checksum");
   Serial.println(checksum);
   Serial.flush();
   char const *data = packet.substring(1,ind2).c_str();
   int i = 0;
-  while(i < 10){
+  while(i < ind2){
     Serial.print(data[i]);
     i++;
   }
