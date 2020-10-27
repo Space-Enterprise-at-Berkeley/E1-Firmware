@@ -88,22 +88,29 @@ String make_packet(struct sensorInfo sensor) {
 int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println("in decode received packet");
     Serial.println(packet);
-    Serial.flushd();
+    Serial.flush();
 
   int ind1 = packet.indexOf(',');
+  Serial.println(ind1);
+  Serial.flush();
   int valve_id = packet.substring(1,ind1).toInt();
   Serial.print("valve id");
   Serial.println(valve_id);
+  Serial.flush();
   int ind2 = packet.indexOf('|');
   int action = packet.substring(ind1+1,ind2).toInt();
   Serial.print("action: ");
   Serial.println(action);
+  Serial.flush();
   uint16_t checksum = (uint16_t)packet.substring(ind2+1, packet.length()-1).toInt();
   char const *data = packet.substring(1,ind2).c_str();
   Serial.println(*data);
+  Serial.flush();
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
+    Serial.println("valid command, choosing valve");
+    Serial.flush();
     chooseValveById(valve_id, valve);
     return action;
   } else {
