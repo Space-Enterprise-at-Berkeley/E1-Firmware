@@ -146,7 +146,7 @@ void loop() {
       sensorReadFunc(sensor.id);
     }
     String packet = make_packet(sensor);
-//    Serial.println(packet);
+    Serial.println(packet);
     RFSerial.println(packet);
   }
   delay(10);
