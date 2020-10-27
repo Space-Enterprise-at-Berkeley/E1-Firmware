@@ -86,8 +86,8 @@ void loop() {
   Serial.println("top of loop");
 
   if (RFSerial.available()) {
-    //command = RFSerial.readString();
-    command = "{21,1|E5C0}";
+    command = RFSerial.readString();
+    //command = "{21,1|E5C0}";
     int action = decode_received_packet(command, &valve);
     take_action(&valve, action);
     Serial.print("got command");
@@ -106,9 +106,9 @@ void loop() {
     sensor = sensors[j];
     board_address = sensor.board_address;
     sensor_id = sensor.id;
-    Serial.print("sensor id: ");
-    Serial.print(sensor_id);
-    Serial.println(", " + sensor.name);
+//    Serial.print("sensor id: ");
+//    Serial.print(sensor_id);
+//    Serial.println(", " + sensor.name);
 
     if (board_address != FLIGHT_BRAIN_ADDR) {
       // Don't worry about this code. Vainavi is handling this.
@@ -167,9 +167,9 @@ void sensorReadFunc(int id) {
     case 6:
       Thermocouple::setSensor(0);
       Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
-      Serial.println(farrbconvert.sensorReadings[0]);
+//      Serial.println(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
-      Serial.println(farrbconvert.sensorReadings[1]);
+//      Serial.println(farrbconvert.sensorReadings[1]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:
