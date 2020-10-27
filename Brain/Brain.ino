@@ -85,11 +85,11 @@ void setup() {
 void loop() {
 //  Serial.println("top of loop");
 
-  if (RFSerial.available() > 0) {
+  if (Serial.available() > 0) {
     Serial.println("got command");
     int i = 0;
-    while(RFSerial.available()) {
-      command[i] = RFSerial.read();
+    while(Serial.available()) {
+      command[i] = Serial.read();
       i++;
     }
     //command = "{21,1|E5C0}";
