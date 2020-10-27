@@ -142,9 +142,12 @@ void loop() {
 }
 
 void sensorReadFunc(int id) {
+  Serial.print("in sensor Read: ");
+  Serial.println(id);
   switch (id) {
     case 1:
       Ducers::readLOXInjectorPressure(farrbconvert.sensorReadings);
+      Serial.println("reading lox pressure");
       break;
     case 2:
       Ducers::readPropaneInjectorPressure(farrbconvert.sensorReadings);
