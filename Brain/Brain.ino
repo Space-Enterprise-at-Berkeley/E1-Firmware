@@ -87,12 +87,12 @@ void loop() {
 
   if (Serial.available()) {
     RFSerial.println("got command");
-    command = "{21,1|E5C0}";
-//    command = Serial.read();
+    //command = "{21,1|E5C0}";
+    command = Serial.readStringUntil('\n');
     RFSerial.println(command);
     int action = decode_received_packet(command, &valve);
     take_action(valve.id, action);
-    Serial.print("got command");
+    //Serial.print("got command");
   }
 
   /*
@@ -137,7 +137,7 @@ void loop() {
       sensorReadFunc(sensor.id);
     }
     String packet = make_packet(sensor);
-    Serial.println(packet);
+//    Serial.println(packet);
     RFSerial.println(packet);
   }
   delay(10);
