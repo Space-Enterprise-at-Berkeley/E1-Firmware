@@ -109,6 +109,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
     Serial.println(checksum);
     Serial.flush();
     chooseValveById(valve_id, valve);
+    Serial.println("finished choose valve");
     return action;
   } else {
     return -1;
@@ -135,12 +136,17 @@ void chooseValveById(int id, valveInfo *valve) {
  */
 void take_action(valveInfo *valve, int action) {
   Serial.println("called take action");
+  Serial.flush();
   if (action) {
     Serial.println("opening valve");
     valve->openValve();
+    Serial.println("done");
+    Serial.flush();
   } else {
     Serial.println("closing valve");
     valve->closeValve();
+    Serial.println("done");
+    Serial.flush();
   }
   Serial.println(" finished command");
 }
@@ -148,9 +154,20 @@ void take_action(valveInfo *valve, int action) {
 void take_action_2 (int id, int action){
   switch(id){
     case 20:
-
+      if(action){
+        Solenoids::armLOX();
+      } else {
+        Solenoids::disarmLOX();
+      }
       break;
     case 21:
+      if(action){
+        Solenoids::openLOX();
+      } else {
+        Solenoids::closeLOX();
+      }
+      break;
+    case 22:
 
       break;
     
