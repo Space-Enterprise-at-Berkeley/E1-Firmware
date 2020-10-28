@@ -149,14 +149,16 @@ void take_action(valveInfo *valve, int action) {
     Serial.println("done");
     Serial.flush();
   }
-  Serial.println(" finished command");
+  Serial.println("finished command");
 }
 
-void take_action_2 (int id, int action){
+void take_action_2 (int id, int action) {
   Serial.println("called take action 2");
-  switch(id){
+  Serial.println(id);
+  Serial.println(action);
+  switch(id) {
     case 20:
-      if(action){
+      if(action) {
         Solenoids::armLOX();
       } else {
         Solenoids::disarmLOX();
@@ -165,7 +167,7 @@ void take_action_2 (int id, int action){
     case 21:
       Serial.println("lox 2 way");
       Serial.flush();
-      if(action){
+      if(action == 1) {
         Solenoids::openLOX();
       } else {
         Solenoids::closeLOX();
