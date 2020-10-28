@@ -57,7 +57,7 @@ sensorInfo sensor = {"temp", 23, 23, 23};
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve  = {"", 0, 0, 0};
+valveInfo *valve;//  = {"", 0, 0, 0};
 
 void setup() {
   Wire.begin();
@@ -101,12 +101,12 @@ void loop() {
     Serial.println(String(command));
     Serial.flush();
 //    RFSerial.println(command);
-    int action = decode_received_packet(String(command), &valve);
+    int action = decode_received_packet(String(command), valve);
     Serial.println(action);
-    Serial.println(valve.name);
-    Serial.println(valve.id);
+    Serial.println(valve->name);
+    Serial.println(valve->id);
     Serial.flush();
-    take_action_2(valve.id, action);
+    take_action_2(valve->id, action);
     //Serial.print("got command");
   }
 
