@@ -104,7 +104,7 @@ void loop() {
     int action = decode_received_packet(String(command), &valve);
     Serial.println(action);
     Serial.flush();
-    take_action(&valve, action);
+    take_action_2(valve.id, action);
     //Serial.print("got command");
   }
 
