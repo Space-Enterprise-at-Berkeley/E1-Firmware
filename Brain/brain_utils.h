@@ -117,8 +117,10 @@ int decode_received_packet(String packet, valveInfo *valve) {
 
 void chooseValveById(int id, valveInfo *valve) {
   Serial.println("called choose valve");
+  Serial.flush();
   for (int i = 0; i < numValves; i++) {
     Serial.println(valves[i].id);
+    Serial.flush();
     if (valves[i].id == id) {
       valve = &valves[i];
       break;
@@ -144,7 +146,15 @@ void take_action(valveInfo *valve, int action) {
 }
 
 void take_action_2 (int id, int action){
-  
+  switch(id){
+    case 20:
+
+      break;
+    case 21:
+
+      break;
+    
+  }
   
 }
 
