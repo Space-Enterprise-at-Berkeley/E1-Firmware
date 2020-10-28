@@ -94,7 +94,7 @@ void loop() {
     }
     //command = "{21,1|E5C0}";
 //    int len = Serial.readBytesUntil('\n', command, 50);
-    for (int j = 0 ; j < i; j++){
+    for (int j = 0 ; j < i; j++) {
       Serial.print(command[j]);
     }
     Serial.println("");
