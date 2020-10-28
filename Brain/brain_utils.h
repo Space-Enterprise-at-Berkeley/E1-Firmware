@@ -91,10 +91,14 @@ int decode_received_packet(String packet, valveInfo *valve) {
   int valve_id = packet.substring(1,ind1).toInt();
   int ind2 = packet.indexOf('|');
   int action = packet.substring(ind1+1,ind2).toInt();
+  Serial.println(action);
+  Serial.flush();
   String checksumstr = packet.substring(ind2+1, packet.length()-2);
   char checksum_char[5];
   checksumstr.toCharArray(checksum_char, 5);
   uint16_t checksum = strtol(checksum_char, NULL, 16); //checksumstr.toInt();//std::stoi(checksumstr, 0, 16);
+  Serial.println(checksum);
+  Serial.flush();
   char const *data = packet.substring(1,ind2).c_str();
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
@@ -103,6 +107,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
     Serial.println(valve_id);
     Serial.println(action);
     Serial.println(checksum);
+    Serial.flush();
     chooseValveById(valve_id, valve);
     return action;
   } else {
