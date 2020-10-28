@@ -113,7 +113,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
       Serial.println(valves[i].id);
       Serial.flush();
       if (valves[i].id == valve_id) {
-        valve = &valves[i];
+        valve = &(valves[i]);
         Serial.println("id: ");
         Serial.println(valve->id);
         break;
