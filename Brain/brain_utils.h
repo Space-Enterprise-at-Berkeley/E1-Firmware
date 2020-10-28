@@ -99,6 +99,10 @@ int decode_received_packet(String packet, valveInfo *valve) {
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
+    Serial.println("got valid command");
+    Serial.println(valve_id);
+    Serial.println(action);
+    Serial.println(checksum);
     chooseValveById(valve_id, valve);
     return action;
   } else {
@@ -107,6 +111,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
 }
 
 void chooseValveById(int id, valveInfo *valve) {
+  Serial.println("called choose valve");
   for (int i = 0; i < numValves; i++) {
     Serial.println(valves[i].id);
     if (valves[i].id == id) {
@@ -131,6 +136,11 @@ void take_action(valveInfo *valve, int action) {
     valve->closeValve();
   }
   Serial.println(" finished command");
+}
+
+void take_action_2 (int id, int action){
+  
+  
 }
 
 /*
