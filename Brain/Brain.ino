@@ -103,6 +103,8 @@ void loop() {
 //    RFSerial.println(command);
     int action = decode_received_packet(String(command), &valve);
     Serial.println(action);
+    Serial.println(valve.name);
+    Serial.println(valve.id);
     Serial.flush();
     take_action_2(valve.id, action);
     //Serial.print("got command");
