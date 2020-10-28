@@ -108,12 +108,12 @@ int decode_received_packet(String packet, valveInfo *valve) {
     Serial.println(action);
     Serial.println(checksum);
     Serial.flush();
-//    chooseValveById(valve_id, &valve);
+//    chooseValveById(valve_id, valve);
     for (int i = 0; i < numValves; i++) {
       Serial.println(valves[i].id);
       Serial.flush();
       if (valves[i].id == valve_id) {
-        valve = &(valves[i]);
+        *valve = valves[i];
         Serial.println("id: ");
         Serial.println(valve->id);
         Serial.flush();
@@ -183,9 +183,14 @@ void take_action_2 (int id, int action) {
       Serial.println("lox 2 way");
       Serial.flush();
       if(action == 1) {
-        Solenoids::openLOX();
+        Serial.println("open");
+        Serial.flush();
+        Serial.println(Solenoids::toggleLOX2Way());
+        Serial.flush();
       } else {
-        Solenoids::closeLOX();
+        Serial.println("close");
+        Serial.flush();
+        Solenoids::disarmLOX();
       }
       break;
     case 22:

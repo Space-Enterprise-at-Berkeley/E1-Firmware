@@ -57,7 +57,7 @@ sensorInfo sensor = {"temp", 23, 23, 23};
 */
 int sensor_checks[numSensors][2];
 
-valveInfo *valve;//  = {"", 0, 0, 0};
+valveInfo valve;//  = {"", 0, 0, 0};
 
 void setup() {
   Wire.begin();
@@ -74,6 +74,7 @@ void setup() {
   }
   Serial.println("setup");
 
+  Solenoids::init();
   Thermocouple::init(1, 11);
   tempController::init(20, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
   Ducers::init(&Wire);
@@ -86,28 +87,13 @@ void loop() {
 //  Serial.println("top of loop");
 
   if (Serial.available() > 0) {
-    Serial.println("got command");
     int i = 0;
     while(Serial.available()) {
       command[i] = Serial.read();
       i++;
     }
-    //command = "{21,1|E5C0}";
-//    int len = Serial.readBytesUntil('\n', command, 50);
-    for (int j = 0 ; j < i; j++) {
-      Serial.print(command[j]);
-    }
-    Serial.println("");
-    Serial.println(String(command));
-    Serial.flush();
-//    RFSerial.println(command);
-    int action = decode_received_packet(String(command), valve);
-    Serial.println(action);
-    Serial.println((*valve).name);
-    Serial.println((*valve).id);
-    Serial.flush();
-    take_action_2((*valve).id, action);
-    //Serial.print("got command");
+    int action = decode_received_packet(String(command), &valve);
+    take_action_2(valve.id, action);
   }
 
   /*
