@@ -122,6 +122,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
     }
     Serial.println("finished choose valve");
     Serial.println(valve->id);
+    Serial.flush();
     return action;
   } else {
     return -1;
