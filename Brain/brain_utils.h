@@ -116,6 +116,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
         valve = &(valves[i]);
         Serial.println("id: ");
         Serial.println(valve->id);
+        Serial.flush();
         break;
       }
     }
