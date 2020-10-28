@@ -108,7 +108,17 @@ int decode_received_packet(String packet, valveInfo *valve) {
     Serial.println(action);
     Serial.println(checksum);
     Serial.flush();
-    chooseValveById(valve_id, &valve);
+//    chooseValveById(valve_id, &valve);
+    for (int i = 0; i < numValves; i++) {
+      Serial.println(valves[i].id);
+      Serial.flush();
+      if (valves[i].id == valve_id) {
+        valve = &valves[i];
+        Serial.println("id: ");
+        Serial.println(valve->id);
+        break;
+      }
+    }
     Serial.println("finished choose valve");
     Serial.println(valve->id);
     return action;
