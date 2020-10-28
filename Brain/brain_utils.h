@@ -39,7 +39,9 @@ struct valveInfo {
   int (*closeValve)();
 };
 
-valveInfo valve_ids[9] = {
+const int numValves = 9;
+
+valveInfo valves[9] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
   {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
   {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
@@ -51,7 +53,6 @@ valveInfo valve_ids[9] = {
   {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)}
 };
 
-int numValves = 1;
 
 /*
  * Constructs packet in the following format: 
@@ -86,45 +87,18 @@ String make_packet(struct sensorInfo sensor) {
  * Populated the fields of the valve and returns the action to be taken
  */
 int decode_received_packet(String packet, valveInfo *valve) {
-  Serial.println("in decode received packet");
-    Serial.println(packet);
-    Serial.flush();
-
   int ind1 = packet.indexOf(',');
-  Serial.println(ind1);
-  Serial.flush();
   int valve_id = packet.substring(1,ind1).toInt();
-  Serial.print("valve id");
-  Serial.println(valve_id);
-  Serial.flush();
   int ind2 = packet.indexOf('|');
   int action = packet.substring(ind1+1,ind2).toInt();
-  Serial.print("action: ");
-  Serial.println(action);
-  Serial.flush();
   String checksumstr = packet.substring(ind2+1, packet.length()-2);
-  Serial.println("checksum str");
-  Serial.println(checksumstr);
-  Serial.flush();
   char checksum_char[5];
   checksumstr.toCharArray(checksum_char, 5);
   uint16_t checksum = strtol(checksum_char, NULL, 16); //checksumstr.toInt();//std::stoi(checksumstr, 0, 16);
-  Serial.println("checksum");
-  Serial.println(checksum);
-  Serial.flush();
   char const *data = packet.substring(1,ind2).c_str();
-  int i = 0;
-  while(i < ind2){
-    Serial.print(data[i]);
-    i++;
-  }
-  Serial.println();
-  Serial.flush();
   int count = packet.substring(1,ind2).length();
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
-    Serial.println("valid command, choosing valve");
-    Serial.flush();
     chooseValveById(valve_id, valve);
     return action;
   } else {
@@ -133,9 +107,10 @@ int decode_received_packet(String packet, valveInfo *valve) {
 }
 
 void chooseValveById(int id, valveInfo *valve) {
-  for (int i = 0; i < numValves; i ++) {
-    if (valve_ids[i].id == id) {
-      valve = &valve_ids[i];
+  for (int i = 0; i < numValves; i++) {
+    Serial.println(valves[i].id);
+    if (valves[i].id == id) {
+      valve = &valves[i];
       break;
     }
   }
