@@ -41,7 +41,7 @@ struct valveInfo {
 
 const int numValves = 9;
 
-valveInfo valves[9] = {
+valveInfo valves[numValves] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
   {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
   {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
