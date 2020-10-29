@@ -158,12 +158,12 @@ void take_action_2 (int id, int action) {
       if(action == 1) {
         Serial.println("open");
         Serial.flush();
-        Serial.println(Solenoids::toggleLOX2Way());
+        Serial.println(Solenoids::openLOX());
         Serial.flush();
       } else {
         Serial.println("close");
         Serial.flush();
-        Solenoids::disarmLOX();
+        Solenoids::closeLOX();
       }
       break;
     case 22:
