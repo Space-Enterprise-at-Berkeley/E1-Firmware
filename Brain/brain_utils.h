@@ -89,40 +89,19 @@ String make_packet(struct sensorInfo sensor) {
 int decode_received_packet(String packet, valveInfo *valve) {
   int ind1 = packet.indexOf(',');
   int valve_id = packet.substring(1,ind1).toInt();
-  int ind2 = packet.indexOf('|');
+  const int ind2 = packet.indexOf('|');
   int action = packet.substring(ind1+1,ind2).toInt();
-  Serial.println(action);
-  Serial.flush();
+  
   String checksumstr = packet.substring(ind2+1, packet.length()-2);
   char checksum_char[5];
   checksumstr.toCharArray(checksum_char, 5);
-  uint16_t checksum = strtol(checksum_char, NULL, 16); //checksumstr.toInt();//std::stoi(checksumstr, 0, 16);
-  Serial.println(checksum);
-  Serial.flush();
+  uint16_t checksum = strtol(checksum_char, NULL, 16);
+  
   char const *data = packet.substring(1,ind2).c_str();
-  int count = packet.substring(1,ind2).length();
+  int count = ind2 - 1; // sanity check; is this right? off by 1 error?
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
-    Serial.println("got valid command");
-    Serial.println(valve_id);
-    Serial.println(action);
-    Serial.println(checksum);
-    Serial.flush();
-//    chooseValveById(valve_id, valve);
-    for (int i = 0; i < numValves; i++) {
-      Serial.println(valves[i].id);
-      Serial.flush();
-      if (valves[i].id == valve_id) {
-        *valve = valves[i];
-        Serial.println("id: ");
-        Serial.println(valve->id);
-        Serial.flush();
-        break;
-      }
-    }
-    Serial.println("finished choose valve");
-    Serial.println(valve->id);
-    Serial.flush();
+    chooseValveById(valve_id, valve);
     return action;
   } else {
     return -1;
@@ -130,15 +109,9 @@ int decode_received_packet(String packet, valveInfo *valve) {
 }
 
 void chooseValveById(int id, valveInfo *valve) {
-  Serial.println("called choose valve");
-  Serial.flush();
   for (int i = 0; i < numValves; i++) {
-    Serial.println(valves[i].id);
-    Serial.flush();
     if (valves[i].id == id) {
-      valve = &valves[i];
-      Serial.println("id: ");
-      Serial.println(valve->id);
+      *valve = valves[i];
       break;
     }
   }

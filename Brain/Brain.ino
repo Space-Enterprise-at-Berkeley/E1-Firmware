@@ -24,13 +24,13 @@
 int board_address = 0;
 int sensor_id = 0;
 uint8_t val_index = 0;
-char command[50];
+char command[50]; //input command from GS
 
 
 /*
    Array of all sensors we would like to get data from.
 */
-const int numSensors = 7; // can use sizeof(all_ids)/sizeof(sensorInfo)
+const int numSensors = 8; // can use sizeof(all_ids)/sizeof(sensorInfo)
 
 sensorInfo sensors[numSensors] = {
   // local sensors
@@ -40,8 +40,8 @@ sensorInfo sensors[numSensors] = {
   {"Prop Tank Low Pressure",     FLIGHT_BRAIN_ADDR, 4, 1}, //&(Ducers::readPropaneTankPressure)},
   {"Pressurant Tank",            FLIGHT_BRAIN_ADDR, 5, 2}, //&(Ducers::readHighPressure)},
   {"Temperature",                FLIGHT_BRAIN_ADDR, 6, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-//  {"All Pressure",               FLIGHT_BRAIN_ADDR, 7, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 8, 5},
+  {"All Pressure",               FLIGHT_BRAIN_ADDR, 7, 1},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 8, 20},
 //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
 //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
 //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
@@ -66,13 +66,10 @@ void setup() {
 
   delay(1000);
 
-  Serial.println("setup 1");
-
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-  Serial.println("setup");
 
   Solenoids::init();
   Thermocouple::init(1, 11);
@@ -84,8 +81,6 @@ void setup() {
 }
 
 void loop() {
-//  Serial.println("top of loop");
-
   if (Serial.available() > 0) {
     int i = 0;
     while(Serial.available()) {
@@ -93,55 +88,51 @@ void loop() {
       i++;
     }
     int action = decode_received_packet(String(command), &valve);
-    take_action_2(valve.id, action);
+    take_action(&valve, action);
   }
 
   /*
      Code for requesting data and relaying back to ground station
   */
-//  for (int j = 0; j < numSensors; j++) {
-//    //    if (sensor_checks[j][0] == sensor_checks[j][1]) {
-//    //      sensor_checks[j][1] = 1;
-//    //    } else {
-//    //      sensor_checks[j][1] += 1;
-//    //      continue;
-//    //    }
-//    sensor = sensors[j];
-//    board_address = sensor.board_address;
-//    sensor_id = sensor.id;
-////    Serial.print("sensor id: ");
-////    Serial.print(sensor_id);
-////    Serial.println(", " + sensor.name);
-//
-//    if (board_address != FLIGHT_BRAIN_ADDR) {
-//      // Don't worry about this code. Vainavi is handling this.
-//      Serial.println("doing i2c request");
-//
-//      Wire.beginTransmission(board_address);
-//      Serial.println(Wire.write(sensor_id));
-//      Serial.println("wrote 1 byte");
-//      delay(100);
-//      Serial.println("delayed");
-//      Serial.println(Wire.endTransmission());
-//
-//      Serial.println(Wire.requestFrom(board_address, 24));
-//      val_index = 0;
-//      while (Wire.available()) {
-//        Serial.println("wire available, reading");
-//        farrbconvert.buffer[val_index] = Wire.read();
-//        val_index++;
-//      }
-//      for (int i = val_index; i < 24; i++) {
-//        farrbconvert.buffer[i] = 0;
-//      }
-//    } else {
-//      sensorReadFunc(sensor.id);
-//    }
-//    String packet = make_packet(sensor);
-//    Serial.println(packet);
-//    RFSerial.println(packet);
-//  }
-  delay(10);
+  for (int j = 0; j < numSensors; j++) {
+    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+      sensor_checks[j][1] = 1;
+    } else {
+      sensor_checks[j][1] += 1;
+      continue;
+    }
+    sensor = sensors[j];
+    board_address = sensor.board_address;
+    sensor_id = sensor.id;
+
+    if (board_address != FLIGHT_BRAIN_ADDR) {
+      // Don't worry about this code. Vainavi is handling this.
+      Serial.println("doing i2c request");
+
+      Wire.beginTransmission(board_address);
+      Serial.println(Wire.write(sensor_id));
+      Serial.println("wrote 1 byte");
+      delay(100);
+      Serial.println("delayed");
+      Serial.println(Wire.endTransmission());
+
+      Serial.println(Wire.requestFrom(board_address, 24));
+      val_index = 0;
+      while (Wire.available()) {
+        Serial.println("wire available, reading");
+        farrbconvert.buffer[val_index] = Wire.read();
+        val_index++;
+      }
+      for (int i = val_index; i < 24; i++) {
+        farrbconvert.buffer[i] = 0;
+      }
+    } else {
+      sensorReadFunc(sensor.id);
+    }
+    String packet = make_packet(sensor);
+    Serial.println(packet);
+    RFSerial.println(packet);
+  }
 }
 
 void sensorReadFunc(int id) {
@@ -162,19 +153,15 @@ void sensorReadFunc(int id) {
       Ducers::readPressurantTankPressure(farrbconvert.sensorReadings);
       break;
     case 7:
-
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 8:
-          Serial.println("reading batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 6:
-      Serial.println("reading temp");
       Thermocouple::setSensor(0);
       Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
-//      Serial.println(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
-//      Serial.println(farrbconvert.sensorReadings[1]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:
