@@ -26,21 +26,21 @@ uint8_t val_index = 0;
 String command = "";
 String file_name = "E1_" + String(month()) + "/" + String(day()) + "/" + String(year()) + "_" + String(hour()) + ":" + String(minute()) + ":" + String(second()) + "_log.txt";
 
-//Doesnt matter what goes here at initialization
-const char packet0[] PROGMEM = "Packet0";
-const char packet1[] PROGMEM = "Packet1";
-const char packet2[] PROGMEM = "Packet2";
-const char packet3[] PROGMEM = "Packet3";
-const char packet4[] PROGMEM = "Packet4";
-const char packet5[] PROGMEM = "Packet5";
-const char packet6[] PROGMEM = "Packet6";
-const char packet7[] PROGMEM = "Packet7";
-const char packet8[] PROGMEM = "Packet8";
-const char packet9[] PROGMEM = "Packet9";
+char packet0[] PROGMEM = "Packet0";
+char packet1[] PROGMEM = "Packet1";
+char packet2[] PROGMEM = "Packet2";
+char packet3[] PROGMEM = "Packet3";
+char packet4[] PROGMEM = "Packet4";
+char packet5[] PROGMEM = "Packet5";
+char packet6[] PROGMEM = "Packet6";
+char packet7[] PROGMEM = "Packet7";
+char packet8[] PROGMEM = "Packet8";
+char packet9[] PROGMEM = "Packet9";
+
 
 int bfr_idx = 0;
-char buffer[64]; //Can hold string/c-strings of at most 64 char
-const char *const packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9}; //can only hold 10 strings
+char buffer[64];
+char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9};
 
 /*
  * Array of all sensors we would like to get data from.
@@ -123,7 +123,7 @@ bool write_to_SD(String message){
     if (!SD.begin(BUILTIN_SDCARD))
         return false;
 
-    packet_table[bfr_idx] = message;
+    packet_table[bfr_idx] = message.c_str();
     bfr_idx++;
     
     if(bfr_idx == 10) {
