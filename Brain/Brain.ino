@@ -39,9 +39,9 @@ sensorInfo sensors[numSensors] = {
   {"LOX Tank Low Pressure",      FLIGHT_BRAIN_ADDR, 3, 1}, //&(Ducers::readLOXTankPressure)},
   {"Prop Tank Low Pressure",     FLIGHT_BRAIN_ADDR, 4, 1}, //&(Ducers::readPropaneTankPressure)},
   {"Pressurant Tank",            FLIGHT_BRAIN_ADDR, 5, 2}, //&(Ducers::readHighPressure)},
-  {"Temperature",                FLIGHT_BRAIN_ADDR, 6, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+//  {"Temperature",                FLIGHT_BRAIN_ADDR, 6, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 7, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 8, 20},
+//  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 8, 20},
 //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
 //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
 //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
@@ -51,6 +51,8 @@ sensorInfo sensors[numSensors] = {
 
 sensorInfo sensor = {"temp", 23, 23, 23};
 
+long startTime= 0;
+int loopCounter = 0;
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -78,6 +80,7 @@ void setup() {
   batteryMonitor::init();
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
+  startTime = millis();
 }
 
 void loop() {
@@ -132,6 +135,11 @@ void loop() {
     String packet = make_packet(sensor);
     Serial.println(packet);
     RFSerial.println(packet);
+    loopCounter++;
+  }
+  if(millis() / 1000 % 10) {
+    Serial.print("total time per loop:");
+    Serial.println((millis() - startTime) / (loopCounter * 10));
   }
 }
 

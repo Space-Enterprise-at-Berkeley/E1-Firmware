@@ -117,7 +117,6 @@ void chooseValveById(int id, valveInfo *valve) {
   }
 }
 
-
 /*
  * Calls the corresponding method for this valve with the appropriate
  * action in solenoids.h
@@ -137,58 +136,6 @@ void take_action(valveInfo *valve, int action) {
     Serial.println("done");
     Serial.flush();
   }
-  Serial.println("finished command");
-}
-
-void take_action_2 (int id, int action) {
-  Serial.println("called take action 2");
-  Serial.println(id);
-  Serial.println(action);
-  switch(id) {
-    case 20:
-      if(action) {
-        Solenoids::armLOX();
-      } else {
-        Solenoids::disarmLOX();
-      }
-      break;
-    case 21:
-      Serial.println("lox 2 way");
-      Serial.flush();
-      if(action == 1) {
-        Serial.println("open");
-        Serial.flush();
-        Serial.println(Solenoids::openLOX());
-        Serial.flush();
-      } else {
-        Serial.println("close");
-        Serial.flush();
-        Solenoids::closeLOX();
-      }
-      break;
-    case 22:
-      if(action){
-        Solenoids::ventLOXGems();
-      } else {
-        Solenoids::closeLOXGems();
-      }
-      break;
-    case 23:
-      if(action){
-        Solenoids::armPropane();
-      } else {
-        Solenoids::disarmPropane();
-      }
-      break;
-    case 24:
-      if(action){
-        Solenoids::openPropane();
-      } else {
-        Solenoids::closePropane();
-      }
-      break;
-  }
-  
 }
 
 /*
