@@ -132,6 +132,12 @@ void loop() {
     } else {
       sensorReadFunc(sensor.id);
     }
+    for (int i = 0; i < 6; i++){
+      Serial.print(farbbconvert.sensorReadings[i];
+      Serial.print(", ");
+    }
+    Serial.println();
+    
     String packet = make_packet(sensor);
     Serial.println(packet);
     RFSerial.println(packet);
