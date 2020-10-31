@@ -23,12 +23,10 @@ union floatArrToBytes {
  * Data structure to store all information relevant to a specific sensor type.
  */
 struct sensorInfo {
-  String sensor_name;
+  String name;
   int board_address;
-  int sensor_id;
-  int overall_id;
+  int id;
   int clock_freq;
-  void  (*dataReadFunc)(float *data);
 };
 
 /*
@@ -41,41 +39,45 @@ struct valveInfo {
   int (*closeValve)();
 };
 
-valveInfo valve_ids[7] = {
-  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)},
+const int numValves = 9;
+
+valveInfo valves[numValves] = {
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
   {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
   {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
   {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane)},
   {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane)},
   {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems)},
-  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)}
+  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)},
+  {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll)},
+  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)}
 };
 
-int numValves = 1;
 
 /*
  * Constructs packet in the following format: 
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
 String make_packet(struct sensorInfo sensor) {
-  String packet_content = (String)sensor.overall_id;
+  String packet_content = (String)sensor.id;
   packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
-    if (reading > 0) {
+    if (reading != -1) {
       packet_content += (String)reading;
       packet_content += ",";
     } else {
       break;
     }
-    packet_content.remove(packet_content.length()-1); 
-    int count = packet_content.length();
-    char const *data = packet_content.c_str();
-    uint16_t checksum = Fletcher16((uint8_t *) data, count);
-    packet_content += "|";
-    packet_content += (String)checksum;
   }
+  packet_content.remove(packet_content.length()-1); 
+  int count = packet_content.length();
+  char const *data = packet_content.c_str();
+  uint16_t checksum = Fletcher16((uint8_t *) data, count);
+  packet_content += "|";
+  packet_content += String(checksum, HEX);
   String packet = "{" + packet_content + "}";
+  
   return packet;
 }
 
@@ -85,13 +87,19 @@ String make_packet(struct sensorInfo sensor) {
  * Populated the fields of the valve and returns the action to be taken
  */
 int decode_received_packet(String packet, valveInfo *valve) {
-  int ind1 = packet.indexOf(',');
-  int valve_id = packet.substring(1,ind1).toInt();
-  int ind2 = packet.indexOf('|');
-  int action = packet.substring(ind1+1,ind2).toInt();
-  uint16_t checksum = (uint16_t)packet.substring(ind2+1, packet.length()-1).toInt();
-  char const *data = packet.substring(1,ind2).c_str();
-  int count = packet.substring(1,ind2).length();
+  int data_start_index = packet.indexOf(',');
+  int valve_id = packet.substring(1,data_start_index).toInt();
+  const int data_end_index = packet.indexOf('|');
+  int action = packet.substring(data_start_index + 1,data_end_index).toInt();
+  
+  String checksumstr = packet.substring(data_end_index + 1, packet.length()-2);
+//  char checksum_char[5];
+//  checksumstr.toCharArray(checksum_char, 5);
+  char *checksum_char = checksumstr.c_str();
+  uint16_t checksum = strtol(checksum_char, NULL, 16);
+  
+  char const *data = packet.substring(1,data_end_index).c_str();
+  int count = data_end_index - 1; // sanity check; is this right? off by 1 error?
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
     chooseValveById(valve_id, valve);
@@ -102,29 +110,16 @@ int decode_received_packet(String packet, valveInfo *valve) {
 }
 
 void chooseValveById(int id, valveInfo *valve) {
-  for (int i = 0; i < numValves; i ++) {
-    if (valve_ids[i].id == id) {
-      valve = &valve_ids[i];
+  for (int i = 0; i < numValves; i++) {
+    if (valves[i].id == id) {
+      *valve = valves[i];
       break;
     }
   }
 }
 
-
 /*
  * Calls the corresponding method for this valve with the appropriate
- * action in solenoids.h
- */
-void take_action(valveInfo *valve, int action) {
-  if (action) {
-    valve->openValve();
-  } else {
-    valve->closeValve();
-  }
-}
-
-/*
- * Calls the corresponding method for this valve with the appropriate 
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
