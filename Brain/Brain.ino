@@ -67,10 +67,10 @@ void setup() {
   }
 
   Solenoids::init();
-  Thermocouple::init(1, 11);
-  tempController::init(20, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
   Ducers::init(&Wire);
   batteryMonitor::init();
+//  Thermocouple::init();
+  tempController::init(20, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
 }
@@ -103,7 +103,7 @@ void loop() {
     if (board_address != FLIGHT_BRAIN_ADDR) {
       // Don't worry about this code. Vainavi is handling this.
       Wire.beginTransmission(board_address);
-      delay(100);
+      //delay(100);
       val_index = 0;
       while (Wire.available()) {
         farrbconvert.buffer[val_index] = Wire.read();
@@ -126,8 +126,8 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      Thermocouple::setSensor(0);
-      Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
+      //Thermocouple::setSensor(0);
+      Ducers::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
