@@ -87,18 +87,19 @@ String make_packet(struct sensorInfo sensor) {
  * Populated the fields of the valve and returns the action to be taken
  */
 int decode_received_packet(String packet, valveInfo *valve) {
-  int ind1 = packet.indexOf(',');
-  int valve_id = packet.substring(1,ind1).toInt();
-  const int ind2 = packet.indexOf('|');
-  int action = packet.substring(ind1+1,ind2).toInt();
+  int data_start_index = packet.indexOf(',');
+  int valve_id = packet.substring(1,data_start_index).toInt();
+  const int data_end_index = packet.indexOf('|');
+  int action = packet.substring(data_start_index + 1,data_end_index).toInt();
   
-  String checksumstr = packet.substring(ind2+1, packet.length()-2);
-  char checksum_char[5];
-  checksumstr.toCharArray(checksum_char, 5);
+  String checksumstr = packet.substring(data_end_index + 1, packet.length()-2);
+//  char checksum_char[5];
+//  checksumstr.toCharArray(checksum_char, 5);
+  char *checksum_char = checksumstr.c_str();
   uint16_t checksum = strtol(checksum_char, NULL, 16);
   
-  char const *data = packet.substring(1,ind2).c_str();
-  int count = ind2 - 1; // sanity check; is this right? off by 1 error?
+  char const *data = packet.substring(1,data_end_index).c_str();
+  int count = data_end_index - 1; // sanity check; is this right? off by 1 error?
   uint16_t check = Fletcher16((uint8_t *) data, count);
   if (check == checksum) {
     chooseValveById(valve_id, valve);
@@ -122,19 +123,10 @@ void chooseValveById(int id, valveInfo *valve) {
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
-  Serial.println("called take action");
-  Serial.flush();
   if (action) {
-    Serial.println("opening valve");
-    Serial.flush();
     valve->openValve();
-    Serial.println("done");
-    Serial.flush();
   } else {
-    Serial.println("closing valve");
     valve->closeValve();
-    Serial.println("done");
-    Serial.flush();
   }
 }
 

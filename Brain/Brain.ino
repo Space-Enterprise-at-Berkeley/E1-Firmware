@@ -34,14 +34,9 @@ const int numSensors = 8; // can use sizeof(all_ids)/sizeof(sensorInfo)
 
 sensorInfo sensors[numSensors] = {
   // local sensors
-  {"LOX Injector Low Pressure",  FLIGHT_BRAIN_ADDR, 1, 1}, //&(Ducers::readLOXInjectorPressure)},
-  {"Prop Injector Low Pressure", FLIGHT_BRAIN_ADDR, 2, 1}, //&(Ducers::readPropaneInjectorPressure)},
-  {"LOX Tank Low Pressure",      FLIGHT_BRAIN_ADDR, 3, 1}, //&(Ducers::readLOXTankPressure)},
-  {"Prop Tank Low Pressure",     FLIGHT_BRAIN_ADDR, 4, 1}, //&(Ducers::readPropaneTankPressure)},
-  {"Pressurant Tank",            FLIGHT_BRAIN_ADDR, 5, 2}, //&(Ducers::readHighPressure)},
-//  {"Temperature",                FLIGHT_BRAIN_ADDR, 6, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-  {"All Pressure",               FLIGHT_BRAIN_ADDR, 7, 1},
-//  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 8, 20},
+  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+  {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 20},
 //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
 //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
 //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
@@ -49,7 +44,6 @@ sensorInfo sensors[numSensors] = {
 //  {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
-sensorInfo sensor = {"temp", 23, 23, 23};
 
 long startTime= 0;
 int loopCounter = 0;
@@ -59,7 +53,8 @@ int loopCounter = 0;
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;//  = {"", 0, 0, 0};
+valveInfo valve;
+sensorInfo sensor = {"temp", 23, 23, 23};
 
 void setup() {
   Wire.begin();
@@ -80,13 +75,12 @@ void setup() {
   batteryMonitor::init();
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
-  startTime = millis();
 }
 
 void loop() {
-  if (Serial.available() > 0) {
+  if (RFSerial.available() > 0) {
     int i = 0;
-    while(Serial.available()) {
+    while(RFSerial.available()) {
       command[i] = Serial.read();
       i++;
     }
@@ -110,19 +104,10 @@ void loop() {
 
     if (board_address != FLIGHT_BRAIN_ADDR) {
       // Don't worry about this code. Vainavi is handling this.
-      Serial.println("doing i2c request");
-
       Wire.beginTransmission(board_address);
-      Serial.println(Wire.write(sensor_id));
-      Serial.println("wrote 1 byte");
       delay(100);
-      Serial.println("delayed");
-      Serial.println(Wire.endTransmission());
-
-      Serial.println(Wire.requestFrom(board_address, 24));
       val_index = 0;
       while (Wire.available()) {
-        Serial.println("wire available, reading");
         farrbconvert.buffer[val_index] = Wire.read();
         val_index++;
       }
@@ -132,51 +117,27 @@ void loop() {
     } else {
       sensorReadFunc(sensor.id);
     }
-    for (int i = 0; i < 6; i++){
-      Serial.print(farbbconvert.sensorReadings[i];
-      Serial.print(", ");
-    }
-    Serial.println();
-    
+
     String packet = make_packet(sensor);
     Serial.println(packet);
     RFSerial.println(packet);
     loopCounter++;
   }
-  if(millis() / 1000 % 10) {
-    Serial.print("total time per loop:");
-    Serial.println((millis() - startTime) / (loopCounter * 10));
-  }
 }
 
 void sensorReadFunc(int id) {
   switch (id) {
-    case 1:
-      Ducers::readLOXInjectorPressure(farrbconvert.sensorReadings);
-      break;
-    case 2:
-      Ducers::readPropaneInjectorPressure(farrbconvert.sensorReadings);
-      break;
-    case 3:
-      Ducers::readLOXTankPressure(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      Ducers::readPropaneTankPressure(farrbconvert.sensorReadings);
-      break;
-    case 5:
-      Ducers::readPressurantTankPressure(farrbconvert.sensorReadings);
-      break;
-    case 7:
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
-      break;
-    case 8:
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 6:
+    case 0:
       Thermocouple::setSensor(0);
       Thermocouple::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 1:
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
+      break;
+    case 2:
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
