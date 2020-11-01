@@ -38,7 +38,7 @@ sensorInfo sensors[numSensors] = {
   // local sensors
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 10},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
 //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
 //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
 //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
