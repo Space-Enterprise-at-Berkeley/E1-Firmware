@@ -38,7 +38,7 @@ sensorInfo sensors[numSensors] = {
   // local sensors
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 20},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 10},
 //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
 //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
 //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
@@ -79,7 +79,7 @@ void loop() {
   if (RFSerial.available() > 0) {
     int i = 0;
     while(RFSerial.available()) {
-      command[i] = Serial.read();
+      command[i] = RFSerial.read();
       i++;
     }
     int action = decode_received_packet(String(command), &valve);
@@ -111,7 +111,7 @@ void loop() {
 //      }
 //      for (int i = val_index; i < 24; i++) {
 //        farrbconvert.buffer[i] = 0;
-//      }
+//      }.
     } else {
       sensorReadFunc(sensor.id);
     }

@@ -87,22 +87,48 @@ String make_packet(struct sensorInfo sensor) {
  * Populated the fields of the valve and returns the action to be taken
  */
 int decode_received_packet(String packet, valveInfo *valve) {
+  Serial.println(packet);
   int data_start_index = packet.indexOf(',');
+//  Serial.print("start ind: ");
+//  Serial.println(data_start_index);
+  if(data_start_index == -1){
+    return -1;
+  }
   int valve_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
+//  Serial.print("end ind: ");
+//  Serial.println(data_end_index);
+  if(data_end_index == -1){
+    return -1;
+  }
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
   
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-2);
-//  char checksum_char[5];
-//  checksumstr.toCharArray(checksum_char, 5);
-  char *checksum_char = checksumstr.c_str();
+  Serial.println(checksumstr);
+  char checksum_char[5];
+  checksumstr.toCharArray(checksum_char, 5);
+//  char *checksum_char = checksumstr.c_str();
   uint16_t checksum = strtol(checksum_char, NULL, 16);
+  Serial.print("check: ");
+  Serial.println(checksum);
   
-  char const *data = packet.substring(1,data_end_index).c_str();
-  int count = data_end_index - 1; // sanity check; is this right? off by 1 error?
-  uint16_t check = Fletcher16((uint8_t *) data, count);
-  if (check == checksum) {
+  const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
+  Serial.println(count);
+  char data[count+1];// = packet.substring(1,data_end_index).c_str();
+  packet.substring(1, data_end_index).toCharArray(data, count + 1);
+  
+  for (int i =0; i <= count; i++){
+    Serial.print(data[i]);
+  }
+  Serial.println();
+  uint16_t _check = Fletcher16((uint8_t *) data, count);
+  Serial.print("check 2: ");
+  Serial.println(_check);
+  Serial.println("got command");
+  if (_check == checksum) {
     chooseValveById(valve_id, valve);
+    Serial.println(valve->id);
+    Serial.println(valve->name);
     return action;
   } else {
     return -1;
@@ -123,9 +149,9 @@ void chooseValveById(int id, valveInfo *valve) {
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
-  if (action) {
+  if (action == 1) {
     valve->openValve();
-  } else {
+  } else if (action == 0) {
     valve->closeValve();
   }
 }
