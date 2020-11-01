@@ -70,7 +70,7 @@ void setup() {
   Ducers::init(&Wire);
   batteryMonitor::init();
 //  Thermocouple::init();
-  tempController::init(20, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
+  tempController::init(10, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
 }
@@ -101,17 +101,17 @@ void loop() {
     sensor_id = sensor.id;
 
     if (board_address != FLIGHT_BRAIN_ADDR) {
-      // Don't worry about this code. Vainavi is handling this.
-      Wire.beginTransmission(board_address);
-      //delay(100);
-      val_index = 0;
-      while (Wire.available()) {
-        farrbconvert.buffer[val_index] = Wire.read();
-        val_index++;
-      }
-      for (int i = val_index; i < 24; i++) {
-        farrbconvert.buffer[i] = 0;
-      }
+//      // Don't worry about this code. Vainavi is handling this.
+//      Wire.beginTransmission(board_address);
+//      //delay(100);
+//      val_index = 0;
+//      while (Wire.available()) {
+//        farrbconvert.buffer[val_index] = Wire.read();
+//        val_index++;
+//      }
+//      for (int i = val_index; i < 24; i++) {
+//        farrbconvert.buffer[i] = 0;
+//      }
     } else {
       sensorReadFunc(sensor.id);
     }
@@ -119,7 +119,7 @@ void loop() {
     String packet = make_packet(sensor);
     Serial.println(packet);
     RFSerial.println(packet);
-    bool did_write = write_to_SD(packet);
+    //bool did_write = write_to_SD(packet);
   }
 }
 
