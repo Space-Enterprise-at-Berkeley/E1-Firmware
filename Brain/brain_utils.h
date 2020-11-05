@@ -6,6 +6,10 @@
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 #include "solenoids.h"
+#include <ducer.h>
+#include <Thermocouple.h>
+#include <tempController.h>
+#include <batteryMonitor.h>
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
@@ -54,6 +58,28 @@ valveInfo valves[numValves] = {
 };
 
 
+
+void sensorReadFunc(int id) {
+  switch (id) {
+    case 0:
+      //Thermocouple::setSensor(0);
+      Ducers::readTemperatureData(farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 1:
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
+      break;
+    case 2:
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    default:
+      Serial.println("some other sensor");
+      break;
+  }
+}
+
+
 /*
  * Constructs packet in the following format: 
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
@@ -89,15 +115,11 @@ String make_packet(struct sensorInfo sensor) {
 int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
-//  Serial.print("start ind: ");
-//  Serial.println(data_start_index);
   if(data_start_index == -1){
     return -1;
   }
   int valve_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
-//  Serial.print("end ind: ");
-//  Serial.println(data_end_index);
   if(data_end_index == -1){
     return -1;
   }
@@ -113,22 +135,13 @@ int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println(checksum);
   
   const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
-  Serial.println(count);
   char data[count+1];// = packet.substring(1,data_end_index).c_str();
   packet.substring(1, data_end_index).toCharArray(data, count + 1);
   
-  for (int i =0; i <= count; i++){
-    Serial.print(data[i]);
-  }
-  Serial.println();
   uint16_t _check = Fletcher16((uint8_t *) data, count);
-  Serial.print("check 2: ");
-  Serial.println(_check);
-  Serial.println("got command");
   if (_check == checksum) {
+    Serial.println("Checksum correct, taking action");
     chooseValveById(valve_id, valve);
-    Serial.println(valve->id);
-    Serial.println(valve->name);
     return action;
   } else {
     return -1;

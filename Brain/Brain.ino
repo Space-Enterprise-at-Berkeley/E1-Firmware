@@ -10,10 +10,6 @@
 #include "brain_utils.h"
 //#include <GPS.h>
 //#include <Barometer.h>
-#include <ducer.h>
-#include <Thermocouple.h>
-#include <tempController.h>
-#include <batteryMonitor.h>
 
 #define RFSerial Serial6
 //#define GPSSerial Serial8
@@ -111,7 +107,7 @@ void loop() {
 //      }
 //      for (int i = val_index; i < 24; i++) {
 //        farrbconvert.buffer[i] = 0;
-//      }.
+//      }
     } else {
       sensorReadFunc(sensor.id);
     }
@@ -120,26 +116,6 @@ void loop() {
     Serial.println(packet);
     RFSerial.println(packet);
     //bool did_write = write_to_SD(packet);
-  }
-}
-
-void sensorReadFunc(int id) {
-  switch (id) {
-    case 0:
-      //Thermocouple::setSensor(0);
-      Ducers::readTemperatureData(farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
-      break;
-    case 1:
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
-      break;
-    case 2:
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    default:
-      Serial.println("some other sensor");
-      break;
   }
 }
 
