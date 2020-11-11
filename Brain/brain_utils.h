@@ -5,7 +5,8 @@
  * ground station. This contains additional functions and structs used in Brain_I2C.ino.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
-#include "solenoids.h"
+#include <solenoids.h>
+#include <recovery.h>
 #include <ducer.h>
 #include <Thermocouple.h>
 #include <tempController.h>
@@ -43,7 +44,7 @@ struct valveInfo {
   int (*closeValve)();
 };
 
-const int numValves = 9;
+const int numValves = 10;
 
 valveInfo valves[numValves] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
@@ -54,7 +55,8 @@ valveInfo valves[numValves] = {
   {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems)},
   {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)},
   {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll)},
-  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)}
+  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)},
+  {"Fill QD", 29, &(Recovery::releaseDrogueChute), &(Recovery::closeDrogueActuator)}
 };
 
 
@@ -101,7 +103,11 @@ String make_packet(struct sensorInfo sensor) {
   char const *data = packet_content.c_str();
   uint16_t checksum = Fletcher16((uint8_t *) data, count);
   packet_content += "|";
-  packet_content += String(checksum, HEX);
+  String check_ = String(checksum, HEX);
+  while(check_.length() < 4){
+    check_ = "0" + check_;
+  }
+  packet_content += check_;
   String packet = "{" + packet_content + "}";
   
   return packet;
@@ -115,12 +121,12 @@ String make_packet(struct sensorInfo sensor) {
 int decode_received_packet(String packet, valveInfo *valve) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
-  if(data_start_index == -1){
+  if(data_start_index == -1) {
     return -1;
   }
   int valve_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
-  if(data_end_index == -1){
+  if(data_end_index == -1) {
     return -1;
   }
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();

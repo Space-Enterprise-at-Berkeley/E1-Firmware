@@ -6,7 +6,7 @@
    Created by Vainavi Viswanath, Aug 21, 2020.
 */
 
-#include <Wire.h> // https://github.com/Richard-Gemmell/teensy4_i2c
+#include <Wire.h>
 #include "brain_utils.h"
 //#include <GPS.h>
 //#include <Barometer.h>
@@ -35,11 +35,13 @@ sensorInfo sensors[numSensors] = {
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-//  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
-//  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
-//  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
-//  {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
-//  {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 4, -1},
+
+  //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
+  //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
+  //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
+  //  {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
+  //  {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
 /*
@@ -65,7 +67,7 @@ void setup() {
   Solenoids::init();
   Ducers::init(&Wire);
   batteryMonitor::init();
-//  Thermocouple::init();
+  //  Thermocouple::init();
   tempController::init(10, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
@@ -74,12 +76,14 @@ void setup() {
 void loop() {
   if (RFSerial.available() > 0) {
     int i = 0;
-    while(RFSerial.available()) {
+    while (RFSerial.available()) {
       command[i] = RFSerial.read();
       i++;
     }
     int action = decode_received_packet(String(command), &valve);
     take_action(&valve, action);
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+    make_packet(sensors[3]);
   }
 
   /*
@@ -97,19 +101,21 @@ void loop() {
     sensor_id = sensor.id;
 
     if (board_address != FLIGHT_BRAIN_ADDR) {
-//      // Don't worry about this code. Vainavi is handling this.
-//      Wire.beginTransmission(board_address);
-//      //delay(100);
-//      val_index = 0;
-//      while (Wire.available()) {
-//        farrbconvert.buffer[val_index] = Wire.read();
-//        val_index++;
-//      }
-//      for (int i = val_index; i < 24; i++) {
-//        farrbconvert.buffer[i] = 0;
-//      }
-    } else {
+      //      // Don't worry about this code. Vainavi is handling this.
+      //      Wire.beginTransmission(board_address);
+      //      //delay(100);
+      //      val_index = 0;
+      //      while (Wire.available()) {
+      //        farrbconvert.buffer[val_index] = Wire.read();
+      //        val_index++;
+      //      }
+      //      for (int i = val_index; i < 24; i++) {
+      //        farrbconvert.buffer[i] = 0;
+      //      }
+    } else if (sensor.clock_freq != -1) {
       sensorReadFunc(sensor.id);
+    } else {
+      // do nothing; these are on request packets
     }
 
     String packet = make_packet(sensor);
@@ -141,26 +147,26 @@ char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, pac
 bool write_to_SD(String message) {
   // every reading that we get from sensors should be written to sd and saved.
   // TODO: Someone's code here
-    if (!SD.begin(BUILTIN_SDCARD))
-        return false;
+  if (!SD.begin(BUILTIN_SDCARD))
+    return false;
 
-    packet_table[bfr_idx] = message.c_str();
-    bfr_idx++;
-    
-    if(bfr_idx == 10) {
-      File myFile = SD.open(file_name.c_str(), FILE_WRITE);
+  packet_table[bfr_idx] = message.c_str();
+  bfr_idx++;
 
-      if(myFile) {                                                      //If the file opened
-        for(int i = 0; i <= bfr_idx; i++){
-          strcpy_P(buffer, (char *)pgm_read_word(&(packet_table[i])));  // Necessary casts and dereferencing, just copy.
-          myFile.println(buffer);
-        }
-        myFile.close();
-        bfr_idx = 0;
-        return true;
-      } 
-      else {                                                            //If the file didn't open
-        return false;
+  if (bfr_idx == 10) {
+    File myFile = SD.open(file_name.c_str(), FILE_WRITE);
+
+    if (myFile) {                                                     //If the file opened
+      for (int i = 0; i <= bfr_idx; i++) {
+        strcpy_P(buffer, (char *)pgm_read_word(&(packet_table[i])));  // Necessary casts and dereferencing, just copy.
+        myFile.println(buffer);
       }
+      myFile.close();
+      bfr_idx = 0;
+      return true;
     }
+    else {                                                            //If the file didn't open
+      return false;
+    }
+  }
 }
