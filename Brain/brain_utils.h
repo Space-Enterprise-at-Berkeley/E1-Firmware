@@ -42,21 +42,22 @@ struct valveInfo {
   int id;
   int (*openValve)();
   int (*closeValve)();
+  void (*ackFunc)(float *data);
 };
 
 const int numValves = 10;
 
 valveInfo valves[numValves] = {
-  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
-  {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
-  {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
-  {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane)},
-  {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane)},
-  {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems)},
-  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)},
-  {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll)},
-  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)},
-  {"Fill QD", 29, &(Recovery::releaseDrogueChute), &(Recovery::closeDrogueActuator)}
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)},
+  {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)},
+  {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)},
+  {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)},
+  {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)},
+  {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)},
+  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)},
+  {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)},
+  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)},
+  {"Fill QD", 29, &(Recovery::releaseDrogueChute), &(Recovery::closeDrogueActuator), &(Recovery::getAllStates)}
 };
 
 
@@ -86,8 +87,8 @@ void sensorReadFunc(int id) {
  * Constructs packet in the following format: 
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
-String make_packet(struct sensorInfo sensor) {
-  String packet_content = (String)sensor.id;
+String make_packet(int id) {
+  String packet_content = (String)id;
   packet_content += ",";
   for (int i=0; i<6; i++) {
     float reading = farrbconvert.sensorReadings[i];
@@ -173,6 +174,7 @@ void take_action(valveInfo *valve, int action) {
   } else if (action == 0) {
     valve->closeValve();
   }
+  valve->ackFunc(farrbconvert.sensorReadings);
 }
 
 /*

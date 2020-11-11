@@ -35,7 +35,8 @@ sensorInfo sensors[numSensors] = {
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 4, -1},
+  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
+  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
 
   //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
   //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
@@ -82,8 +83,7 @@ void loop() {
     }
     int action = decode_received_packet(String(command), &valve);
     take_action(&valve, action);
-    Solenoids::getAllStates(farrbconvert.sensorReadings);
-    make_packet(sensors[3]);
+    make_packet(valve.id); // this might need to be valve->id
   }
 
   /*
@@ -118,7 +118,7 @@ void loop() {
       // do nothing; these are on request packets
     }
 
-    String packet = make_packet(sensor);
+    String packet = make_packet(sensor.id);
     Serial.println(packet);
     RFSerial.println(packet);
     //bool did_write = write_to_SD(packet);
