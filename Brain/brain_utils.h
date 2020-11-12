@@ -132,7 +132,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
   }
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
   
-  String checksumstr = packet.substring(data_end_index + 1, packet.length()-2);
+  String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   Serial.println(checksumstr);
   char checksum_char[5];
   checksumstr.toCharArray(checksum_char, 5);
@@ -174,7 +174,10 @@ void take_action(valveInfo *valve, int action) {
   } else if (action == 0) {
     valve->closeValve();
   }
-  valve->ackFunc(farrbconvert.sensorReadings);
+  Serial.println("finished doing whatever valve stuff");
+  Serial.flush();
+  if(action != -1)
+    valve->ackFunc(farrbconvert.sensorReadings);
 }
 
 /*

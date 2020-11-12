@@ -12,7 +12,7 @@
 //#include <Barometer.h>
 
 #define RFSerial Serial6
-//#define GPSSerial Serial8
+#define GPSSerial Serial8
 #include <SD.h>
 #include <SPI.h>
 #include <TimeLib.h>
@@ -32,11 +32,15 @@ const int numSensors = 8; // can use sizeof(all_ids)/sizeof(sensorInfo)
 
 sensorInfo sensors[numSensors] = {
   // local sensors
-  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 1}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
-  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 1},
+  {"Load Cells",                 1, 3, 1},
+  {"Aux temp",                   1, 4, 1},
+
+
+//  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
+//  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
 
   //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
   //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
@@ -57,6 +61,7 @@ void setup() {
   Wire.begin();
   Serial.begin(9600);
   RFSerial.begin(57600);
+  GPSSerial.begin(9600);
 
   delay(1000);
 
@@ -65,6 +70,7 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
+  Recovery::init();
   Solenoids::init();
   Ducers::init(&Wire);
   batteryMonitor::init();
@@ -82,8 +88,12 @@ void loop() {
       i++;
     }
     int action = decode_received_packet(String(command), &valve);
-    take_action(&valve, action);
-    make_packet(valve.id); // this might need to be valve->id
+    if (action != -1) {
+      take_action(&valve, action);
+      String packet = make_packet(valve.id); // this might need to be valve->id
+      Serial.println(packet);
+      RFSerial.println(packet);
+    }
   }
 
   /*
@@ -101,7 +111,13 @@ void loop() {
     sensor_id = sensor.id;
 
     if (board_address != FLIGHT_BRAIN_ADDR) {
-      //      // Don't worry about this code. Vainavi is handling this.
+//      //      // Don't worry about this code. Vainavi is handling this.
+//      GPSSerial.print(sensor_id);
+//      while(!GPSSerial.available());
+//      String packet = GPSSerial.readStringUntil('\n');
+//      Serial.println(packet);
+//      RFSerial.println(packet);        
+//      
       //      Wire.beginTransmission(board_address);
       //      //delay(100);
       //      val_index = 0;
