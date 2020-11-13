@@ -32,11 +32,11 @@ const int numSensors = 8; // can use sizeof(all_ids)/sizeof(sensorInfo)
 
 sensorInfo sensors[numSensors] = {
   // local sensors
-  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 1}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 1},
-  {"Load Cells",                 1, 3, 1},
-  {"Aux temp",                   1, 4, 1},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
+  {"Load Cells",                 1, 3, 5},
+  {"Aux temp",                   1, 4, 5},
 
 
 //  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
@@ -57,11 +57,14 @@ int sensor_checks[numSensors][2];
 valveInfo valve;
 sensorInfo sensor = {"temp", 23, 23, 23};
 
+long startTime;
+String packet;
+
 void setup() {
   Wire.begin();
   Serial.begin(9600);
   RFSerial.begin(57600);
-  GPSSerial.begin(9600);
+  GPSSerial.begin(4608000);
 
   delay(1000);
 
@@ -90,7 +93,7 @@ void loop() {
     int action = decode_received_packet(String(command), &valve);
     if (action != -1) {
       take_action(&valve, action);
-      String packet = make_packet(valve.id); // this might need to be valve->id
+      packet = make_packet(valve.id);
       Serial.println(packet);
       RFSerial.println(packet);
     }
@@ -112,11 +115,15 @@ void loop() {
 
     if (board_address != FLIGHT_BRAIN_ADDR) {
 //      //      // Don't worry about this code. Vainavi is handling this.
-//      GPSSerial.print(sensor_id);
-//      while(!GPSSerial.available());
-//      String packet = GPSSerial.readStringUntil('\n');
-//      Serial.println(packet);
-//      RFSerial.println(packet);        
+      GPSSerial.println(sensor_id);
+      GPSSerial.flush();
+      startTime = millis();
+      while(!GPSSerial.available() && (millis() - startTime) < 100);
+      if (GPSSerial.available()){
+        packet = GPSSerial.readStringUntil('\n');
+        Serial.println(packet);
+        RFSerial.println(packet); 
+      }      
 //      
       //      Wire.beginTransmission(board_address);
       //      //delay(100);
@@ -130,13 +137,14 @@ void loop() {
       //      }
     } else if (sensor.clock_freq != -1) {
       sensorReadFunc(sensor.id);
+      packet = make_packet(sensor.id);
+      Serial.println(packet);
+      RFSerial.println(packet);
     } else {
       // do nothing; these are on request packets
     }
 
-    String packet = make_packet(sensor.id);
-    Serial.println(packet);
-    RFSerial.println(packet);
+    
     //bool did_write = write_to_SD(packet);
   }
 }
