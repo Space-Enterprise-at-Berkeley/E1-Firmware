@@ -124,7 +124,7 @@ void loop() {
         Serial.println(packet);
         RFSerial.println(packet); 
       }      
-//      
+// ====================== I2C COMMS; NOT WORKING ON TEENSY =================      
       //      Wire.beginTransmission(board_address);
       //      //delay(100);
       //      val_index = 0;
@@ -143,8 +143,6 @@ void loop() {
     } else {
       // do nothing; these are on request packets
     }
-
-    
     //bool did_write = write_to_SD(packet);
   }
 }
