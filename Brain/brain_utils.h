@@ -20,8 +20,8 @@ void chooseValveById(int id, struct valveInfo *valve);
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[24];
-  float sensorReadings[6];
+  char buffer[28];
+  float sensorReadings[7];
 } farrbconvert;
 
 /*
@@ -90,7 +90,7 @@ void sensorReadFunc(int id) {
 String make_packet(int id) {
   String packet_content = (String)id;
   packet_content += ",";
-  for (int i=0; i<6; i++) {
+  for (int i=0; i<7; i++) {
     float reading = farrbconvert.sensorReadings[i];
     if (reading != -1) {
       packet_content += (String)reading;
