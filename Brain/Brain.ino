@@ -122,9 +122,9 @@ void loop() {
       if (GPSSerial.available()){
         packet = GPSSerial.readStringUntil('\n');
         Serial.println(packet);
-        RFSerial.println(packet); 
-      }      
-// ====================== I2C COMMS; NOT WORKING ON TEENSY =================      
+        RFSerial.println(packet);
+      }
+// ====================== I2C COMMS; NOT WORKING ON TEENSY =================
       //      Wire.beginTransmission(board_address);
       //      //delay(100);
       //      val_index = 0;
@@ -161,14 +161,11 @@ char packet7[] PROGMEM = "Packet7";
 char packet8[] PROGMEM = "Packet8";
 char packet9[] PROGMEM = "Packet9";
 
-
 int bfr_idx = 0;
 char buffer[64];
 char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9};
 
 bool write_to_SD(String message) {
-  // every reading that we get from sensors should be written to sd and saved.
-  // TODO: Someone's code here
   if (!SD.begin(BUILTIN_SDCARD))
     return false;
 
