@@ -35,8 +35,8 @@ sensorInfo sensors[numSensors] = {
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-  {"Load Cells",                 1, 3, 5},
-  {"Aux temp",                   1, 4, 5},
+  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
+  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 5},
 
 
 //  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
@@ -112,37 +112,10 @@ void loop() {
     sensor = sensors[j];
     board_address = sensor.board_address;
     sensor_id = sensor.id;
-
-    if (board_address != FLIGHT_BRAIN_ADDR) {
-//      //      // Don't worry about this code. Vainavi is handling this.
-      GPSSerial.println(sensor_id);
-      GPSSerial.flush();
-      startTime = millis();
-      while(!GPSSerial.available() && (millis() - startTime) < 100);
-      if (GPSSerial.available()){
-        packet = GPSSerial.readStringUntil('\n');
-        Serial.println(packet);
-        RFSerial.println(packet);
-      }
-// ====================== I2C COMMS; NOT WORKING ON TEENSY =================
-      //      Wire.beginTransmission(board_address);
-      //      //delay(100);
-      //      val_index = 0;
-      //      while (Wire.available()) {
-      //        farrbconvert.buffer[val_index] = Wire.read();
-      //        val_index++;
-      //      }
-      //      for (int i = val_index; i < 24; i++) {
-      //        farrbconvert.buffer[i] = 0;
-      //      }
-    } else if (sensor.clock_freq != -1) {
-      sensorReadFunc(sensor.id);
-      packet = make_packet(sensor.id);
-      Serial.println(packet);
-      RFSerial.println(packet);
-    } else {
-      // do nothing; these are on request packets
-    }
+    sensorReadFunc(sensor.id);
+    packet = make_packet(sensor.id);
+    Serial.println(packet);
+    RFSerial.println(packet);
     //bool did_write = write_to_SD(packet);
   }
 }
