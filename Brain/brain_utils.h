@@ -1,7 +1,7 @@
 /*
- * Brain_utils.h- A c++ program that uses I2C to establish communication between 
+ * Brain_utils.h- A c++ program that uses I2C to establish communication between
  * the sensors and valves inside to the rocket with the ground station. Able to send
- * data to the ground station via RF. Can receive and process commands sent from 
+ * data to the ground station via RF. Can receive and process commands sent from
  * ground station. This contains additional functions and structs used in Brain_I2C.ino.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
@@ -57,7 +57,6 @@ valveInfo valves[numValves] = {
   {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)},
   {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)},
   {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)},
-  {"Fill QD", 29, &(Recovery::releaseDrogueChute), &(Recovery::closeDrogueActuator), &(Recovery::getAllStates)}
 };
 
 
@@ -84,7 +83,7 @@ void sensorReadFunc(int id) {
 
 
 /*
- * Constructs packet in the following format: 
+ * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
 String make_packet(int id) {
@@ -99,7 +98,7 @@ String make_packet(int id) {
       break;
     }
   }
-  packet_content.remove(packet_content.length()-1); 
+  packet_content.remove(packet_content.length()-1);
   int count = packet_content.length();
   char const *data = packet_content.c_str();
   uint16_t checksum = Fletcher16((uint8_t *) data, count);
@@ -110,7 +109,7 @@ String make_packet(int id) {
   }
   packet_content += check_;
   String packet = "{" + packet_content + "}";
-  
+
   return packet;
 }
 
@@ -131,7 +130,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
     return -1;
   }
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
-  
+
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   Serial.println(checksumstr);
   char checksum_char[5];
@@ -140,11 +139,11 @@ int decode_received_packet(String packet, valveInfo *valve) {
   uint16_t checksum = strtol(checksum_char, NULL, 16);
   Serial.print("check: ");
   Serial.println(checksum);
-  
+
   const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
   char data[count+1];// = packet.substring(1,data_end_index).c_str();
   packet.substring(1, data_end_index).toCharArray(data, count + 1);
-  
+
   uint16_t _check = Fletcher16((uint8_t *) data, count);
   if (_check == checksum) {
     Serial.println("Checksum correct, taking action");
@@ -174,8 +173,6 @@ void take_action(valveInfo *valve, int action) {
   } else if (action == 0) {
     valve->closeValve();
   }
-  Serial.println("finished doing whatever valve stuff");
-  Serial.flush();
   if(action != -1)
     valve->ackFunc(farrbconvert.sensorReadings);
 }
@@ -185,7 +182,7 @@ void take_action(valveInfo *valve, int action) {
  * sensor_ID and it's corresponding data points
  */
 uint16_t Fletcher16(uint8_t *data, int count) {
-  
+
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
 
