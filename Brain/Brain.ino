@@ -20,16 +20,16 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 
 // within loop state variables
-int board_address = 0;
-int sensor_id = 0;
+uint8_t board_address = 0;
+uint8_t sensor_id = 0;
 uint8_t val_index = 0;
 char command[50]; //input command from GS
+
+const uint8_t numSensors = 8;
 
 /*
    Array of all sensors we would like to get data from.
 */
-const int numSensors = 8; // can use sizeof(all_ids)/sizeof(sensorInfo)
-
 sensorInfo sensors[numSensors] = {
   // local sensors
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
