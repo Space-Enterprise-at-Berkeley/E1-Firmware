@@ -35,8 +35,8 @@ sensorInfo sensors[numSensors] = {
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
-  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 5},
+//  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
+//  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 5},
 
 
 //  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
@@ -78,18 +78,21 @@ void setup() {
   Ducers::init(&Wire);
   batteryMonitor::init();
   //  Thermocouple::init();
-  tempController::init(10, 2, 7); // setPoint = 20 C, alg = PID, heaterPin = 7
+  tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
 }
 
 void loop() {
-  if (RFSerial.available() > 0) {
+  if (Serial.available() > 0) {
     int i = 0;
-    while (RFSerial.available()) {
-      command[i] = RFSerial.read();
+    while (Serial.available()) {
+      command[i] = Serial.read();
+      Serial.print(command[i]);
       i++;
     }
+    Serial.println();
+    Serial.println(String(command));
     int action = decode_received_packet(String(command), &valve);
     if (action != -1) {
       take_action(&valve, action);

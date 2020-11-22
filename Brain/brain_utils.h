@@ -104,7 +104,7 @@ String make_packet(int id) {
   uint16_t checksum = Fletcher16((uint8_t *) data, count);
   packet_content += "|";
   String check_ = String(checksum, HEX);
-  while(check_.length() < 4){
+  while(check_.length() < 4) {
     check_ = "0" + check_;
   }
   packet_content += check_;
