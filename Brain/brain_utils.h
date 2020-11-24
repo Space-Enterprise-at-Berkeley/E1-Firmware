@@ -1,11 +1,16 @@
 /*
- * Brain_utils.h- A c++ program that uses I2C to establish communication between 
+ * Brain_utils.h- A c++ program that uses I2C to establish communication between
  * the sensors and valves inside to the rocket with the ground station. Able to send
- * data to the ground station via RF. Can receive and process commands sent from 
+ * data to the ground station via RF. Can receive and process commands sent from
  * ground station. This contains additional functions and structs used in Brain_I2C.ino.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
-#include "solenoids.h"
+#include <solenoids.h>
+#include <recovery.h>
+#include <ducer.h>
+#include <Thermocouple.h>
+#include <tempController.h>
+#include <batteryMonitor.h>
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
@@ -15,8 +20,8 @@ void chooseValveById(int id, struct valveInfo *valve);
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[24];
-  float sensorReadings[6];
+  char buffer[28];
+  float sensorReadings[7];
 } farrbconvert;
 
 /*
@@ -37,31 +42,54 @@ struct valveInfo {
   int id;
   int (*openValve)();
   int (*closeValve)();
+  void (*ackFunc)(float *data);
 };
 
-const int numValves = 9;
+const int numValves = 10;
 
 valveInfo valves[numValves] = {
-  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
-  {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX)},
-  {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems)},
-  {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane)},
-  {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane)},
-  {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems)},
-  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid)},
-  {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll)},
-  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn)}
+  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)},
+  {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)},
+  {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)},
+  {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)},
+  {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)},
+  {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)},
+  {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)},
+  {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)},
+  {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)},
 };
+
+
+
+void sensorReadFunc(int id) {
+  switch (id) {
+    case 0:
+      //Thermocouple::setSensor(0);
+      Ducers::readTemperatureData(farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 1:
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
+      break;
+    case 2:
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    default:
+      Serial.println("some other sensor");
+      break;
+  }
+}
 
 
 /*
- * Constructs packet in the following format: 
+ * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
-String make_packet(struct sensorInfo sensor) {
-  String packet_content = (String)sensor.id;
+String make_packet(int id) {
+  String packet_content = (String)id;
   packet_content += ",";
-  for (int i=0; i<6; i++) {
+  for (int i=0; i<7; i++) {
     float reading = farrbconvert.sensorReadings[i];
     if (reading != -1) {
       packet_content += (String)reading;
@@ -70,14 +98,18 @@ String make_packet(struct sensorInfo sensor) {
       break;
     }
   }
-  packet_content.remove(packet_content.length()-1); 
+  packet_content.remove(packet_content.length()-1);
   int count = packet_content.length();
   char const *data = packet_content.c_str();
   uint16_t checksum = Fletcher16((uint8_t *) data, count);
   packet_content += "|";
-  packet_content += String(checksum, HEX);
+  String check_ = String(checksum, HEX);
+  while(check_.length() < 4) {
+    check_ = "0" + check_;
+  }
+  packet_content += check_;
   String packet = "{" + packet_content + "}";
-  
+
   return packet;
 }
 
@@ -87,21 +119,34 @@ String make_packet(struct sensorInfo sensor) {
  * Populated the fields of the valve and returns the action to be taken
  */
 int decode_received_packet(String packet, valveInfo *valve) {
+  Serial.println(packet);
   int data_start_index = packet.indexOf(',');
+  if(data_start_index == -1) {
+    return -1;
+  }
   int valve_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
+  if(data_end_index == -1) {
+    return -1;
+  }
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
-  
-  String checksumstr = packet.substring(data_end_index + 1, packet.length()-2);
-//  char checksum_char[5];
-//  checksumstr.toCharArray(checksum_char, 5);
-  char *checksum_char = checksumstr.c_str();
+
+  String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
+  Serial.println(checksumstr);
+  char checksum_char[5];
+  checksumstr.toCharArray(checksum_char, 5);
+//  char *checksum_char = checksumstr.c_str();
   uint16_t checksum = strtol(checksum_char, NULL, 16);
-  
-  char const *data = packet.substring(1,data_end_index).c_str();
-  int count = data_end_index - 1; // sanity check; is this right? off by 1 error?
-  uint16_t check = Fletcher16((uint8_t *) data, count);
-  if (check == checksum) {
+  Serial.print("check: ");
+  Serial.println(checksum);
+
+  const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
+  char data[count+1];// = packet.substring(1,data_end_index).c_str();
+  packet.substring(1, data_end_index).toCharArray(data, count + 1);
+
+  uint16_t _check = Fletcher16((uint8_t *) data, count);
+  if (_check == checksum) {
+    Serial.println("Checksum correct, taking action");
     chooseValveById(valve_id, valve);
     return action;
   } else {
@@ -123,11 +168,13 @@ void chooseValveById(int id, valveInfo *valve) {
  * action in solenoids.h
  */
 void take_action(valveInfo *valve, int action) {
-  if (action) {
+  if (action == 1) {
     valve->openValve();
-  } else {
+  } else if (action == 0) {
     valve->closeValve();
   }
+  if(action != -1)
+    valve->ackFunc(farrbconvert.sensorReadings);
 }
 
 /*
@@ -135,7 +182,7 @@ void take_action(valveInfo *valve, int action) {
  * sensor_ID and it's corresponding data points
  */
 uint16_t Fletcher16(uint8_t *data, int count) {
-  
+
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
 
