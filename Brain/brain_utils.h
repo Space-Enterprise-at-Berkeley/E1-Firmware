@@ -75,6 +75,9 @@ void sensorReadFunc(int id) {
     case 2:
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
+    case 4:
+      Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
+      break;
     default:
       Serial.println("some other sensor");
       break;
