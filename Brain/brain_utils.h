@@ -6,6 +6,7 @@
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
 #include "solenoids.h"
+#include "brain_constants.h"
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
@@ -18,35 +19,6 @@ union floatArrToBytes {
   char buffer[24];
   float sensorReadings[6];
 } farrbconvert;
-
-/*
- * Data structure to store all information relevant to a specific sensor type.
- */
-struct sensorInfo {
-  String sensor_name;
-  int board_address;
-  int sensor_id;
-  int overall_id;
-  int clock_freq;
-  void (*dataReadFunc)(float *data);
-  // sensorInfo(String n, int b, byte s, int o, int f) : sensor_name(n), board_address(b), sensor_id(s), overall_id(o), clock_freq(f) {}
-};
-
-/*
- * Data structure to store all information relevant to a specific valve.
- */
-struct valveInfo {
-  String name;
-  int id;
-  int (*openValve)();
-  int (*closeValve)();
-};
-
-valveInfo valve_ids[7] = {
-  {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX)}, //example
-};
-
-int numValves = 1;
 
 /*
  * Constructs packet in the following format: 
@@ -66,6 +38,11 @@ String make_packet(struct sensorInfo sensor) {
     packet_content.remove(packet_content.length()-1); 
     int count = packet_content.length();
     char const *data = packet_content.c_str();
+    // c_str converts the String to it's underlying c-string type array and returns a
+    // const char* to avoid tampering of the data. The toCharArray makes a copy of the 
+    // string and you have to specify a length of the elements copied. Previously may not
+    // have been working due to length variations or possibly incorrect copying, not enough
+    // space to copy.
     uint16_t checksum = Fletcher16((uint8_t *) data, count);
     packet_content += "|";
     packet_content += (String)checksum;

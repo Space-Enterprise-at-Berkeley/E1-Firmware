@@ -35,27 +35,9 @@ char packet7[] PROGMEM = "Packet7";
 char packet8[] PROGMEM = "Packet8";
 char packet9[] PROGMEM = "Packet9";
 
-
 int bfr_idx = 0;
 char buffer[64];
 char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9};
-
-/*
- * Array of all sensors we would like to get data from.
- */
-sensorInfo all_ids[11] = {
-  // local sensors
-   {"LOX Injector Low Pressure",  -1, -1, 1, 1, &(Ducers::readLOXInjectorPressure)} //example
-};
-
-sensorInfo sensor = {"", 0, 0, 0, 0, NULL};
-
-/* 
- *  Stores how often we should be requesting data from each sensor.
- */
-int sensor_checks[sizeof(all_ids)/sizeof(sensorInfo)][2];
-
-valveInfo valve = {"",0,0,0};
 
 void setup() {
   Wire.begin();       
@@ -116,10 +98,10 @@ void loop() {
 }
 
 bool write_to_SD(String message){
-  // every reading that we get from sensors should be written to sd and saved.
-  // TODO: Someone's code here
-    if (!SD.begin(BUILTIN_SDCARD))
-        return false;
+    if (!SD.begin(BUILTIN_SDCARD)) {
+      RFSerial.println("unable to write to SD");
+      return false;
+    }
 
     packet_table[bfr_idx] = message.c_str();
     bfr_idx++;
@@ -137,6 +119,7 @@ bool write_to_SD(String message){
         return true;
       } 
       else {                                                            //If the file didn't open
+        RFSerial.println("unable to open and write to file " + file_name);
         return false;
       }
     }
