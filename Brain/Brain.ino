@@ -108,8 +108,9 @@ void loop() {
       packet = make_packet(valve.id);
       Serial.println(packet);
       RFSerial.println(packet);
-      Serial.flush();
-      write_to_SD(packet.c_str());
+      if(!write_to_SD(packet.c_str())){
+        // send some error over rf
+      }
     }
   }
 
@@ -130,7 +131,6 @@ void loop() {
     packet = make_packet(sensor.id);
     Serial.println(packet);
     RFSerial.println(packet);
-    Serial.flush();
     if (!write_to_SD(packet.c_str())){
       // send some error packet
     }
