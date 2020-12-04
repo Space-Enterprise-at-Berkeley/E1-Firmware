@@ -12,9 +12,97 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
+#include <SPI.h>
+#include <string>
+#include <SdFat.h>
+#include <TimeLib.h>
+
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
 void chooseValveById(int id, struct valveInfo *valve);
+
+// SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
+// 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
+#define SD_FAT_TYPE 0
+
+#if SD_FAT_TYPE == 0
+SdFat sd;
+File file;
+#elif SD_FAT_TYPE == 1
+SdFat32 sd;
+File32 file;
+#elif SD_FAT_TYPE == 2
+SdExFat sd;
+ExFile file;
+#elif SD_FAT_TYPE == 3
+SdFs sd;
+FsFile file;
+#endif  // SD_FAT_TYPE
+
+struct Queue {
+
+  struct Node {
+    struct Node *next;
+    char *message;
+    int length; //length doesn't include the null terminator
+  };
+
+  uint16_t length = 0;
+
+  struct Node *end = 0;
+  struct Node *front = 0;
+
+  Queue() {
+    length = 0;
+    end = nullptr;
+    front = nullptr;
+  }
+
+  void enqueue(std::string message) {
+    struct Node *temp;
+    length++;
+    temp = (struct Node *)malloc(sizeof(struct Node));
+
+    temp->length = message.length();
+    temp->message = (char *)malloc(temp->length + 2);
+
+    strncpy(temp->message, message.c_str(), temp->length + 1);
+    temp->message[temp->length] = '\n'; // add \n to string when enqueue
+    temp->message[temp->length + 1] = '\0';
+
+    temp->next = nullptr;
+    if (!front) {
+      front = temp;
+    } else {
+      end->next = temp;
+    }
+    end = temp;
+  }
+
+  char * dequeue() { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
+    if(length > 0) {
+      length--;
+      struct Node *tmp = front;
+      char *msg = tmp->message;
+
+      if(length != 0) {
+        front = tmp->next;
+      } else {
+        front = nullptr;
+        end = nullptr;
+      }
+
+      tmp->message = nullptr;
+      tmp->next = nullptr;
+      free(tmp);
+
+      return msg;
+    }
+    return nullptr;
+  }
+};
+
+struct Queue *sdBuffer;
 
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
