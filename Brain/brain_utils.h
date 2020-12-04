@@ -16,6 +16,9 @@ String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
 void chooseValveById(int id, struct valveInfo *valve);
 
+const int numCryoTherms = 3;
+int cryoThermAddrs[3] = {0x67, 0x6A, 0x6E}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2 
+
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
@@ -59,8 +62,6 @@ valveInfo valves[numValves] = {
   {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)},
 };
 
-
-
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
@@ -83,7 +84,6 @@ void sensorReadFunc(int id) {
       break;
   }
 }
-
 
 /*
  * Constructs packet in the following format:

@@ -78,7 +78,7 @@ void setup() {
   Ducers::init(&Wire);
   batteryMonitor::init();
 
-  Thermocouple::Cryo::init();
+  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs);
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
@@ -125,44 +125,44 @@ void loop() {
 }
 
 
-String file_name = "E1_" + String(month()) + "/" + String(day()) + "/" + String(year()) + "_" + String(hour()) + ":" + String(minute()) + ":" + String(second()) + "_log.txt";
-
-char packet0[] PROGMEM = "Packet0";
-char packet1[] PROGMEM = "Packet1";
-char packet2[] PROGMEM = "Packet2";
-char packet3[] PROGMEM = "Packet3";
-char packet4[] PROGMEM = "Packet4";
-char packet5[] PROGMEM = "Packet5";
-char packet6[] PROGMEM = "Packet6";
-char packet7[] PROGMEM = "Packet7";
-char packet8[] PROGMEM = "Packet8";
-char packet9[] PROGMEM = "Packet9";
-
-int bfr_idx = 0;
-char buffer[64];
-char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9};
-
-bool write_to_SD(String message) {
-  if (!SD.begin(BUILTIN_SDCARD))
-    return false;
-
-  packet_table[bfr_idx] = message.c_str();
-  bfr_idx++;
-
-  if (bfr_idx == 10) {
-    File myFile = SD.open(file_name.c_str(), FILE_WRITE);
-
-    if (myFile) {                                                     //If the file opened
-      for (int i = 0; i <= bfr_idx; i++) {
-        strcpy_P(buffer, (char *)pgm_read_word(&(packet_table[i])));  // Necessary casts and dereferencing, just copy.
-        myFile.println(buffer);
-      }
-      myFile.close();
-      bfr_idx = 0;
-      return true;
-    }
-    else {                                                            //If the file didn't open
-      return false;
-    }
-  }
-}
+//String file_name = "E1_" + String(month()) + "/" + String(day()) + "/" + String(year()) + "_" + String(hour()) + ":" + String(minute()) + ":" + String(second()) + "_log.txt";
+//
+//char packet0[] PROGMEM = "Packet0";
+//char packet1[] PROGMEM = "Packet1";
+//char packet2[] PROGMEM = "Packet2";
+//char packet3[] PROGMEM = "Packet3";
+//char packet4[] PROGMEM = "Packet4";
+//char packet5[] PROGMEM = "Packet5";
+//char packet6[] PROGMEM = "Packet6";
+//char packet7[] PROGMEM = "Packet7";
+//char packet8[] PROGMEM = "Packet8";
+//char packet9[] PROGMEM = "Packet9";
+//
+//int bfr_idx = 0;
+//char buffer[64];
+//char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9};
+//
+//bool write_to_SD(String message) {
+//  if (!SD.begin(BUILTIN_SDCARD))
+//    return false;
+//
+//  packet_table[bfr_idx] = message.c_str();
+//  bfr_idx++;
+//
+//  if (bfr_idx == 10) {
+//    File myFile = SD.open(file_name.c_str(), FILE_WRITE);
+//
+//    if (myFile) {                                                     //If the file opened
+//      for (int i = 0; i <= bfr_idx; i++) {
+//        strcpy_P(buffer, (char *)pgm_read_word(&(packet_table[i])));  // Necessary casts and dereferencing, just copy.
+//        myFile.println(buffer);
+//      }
+//      myFile.close();
+//      bfr_idx = 0;
+//      return true;
+//    }
+//    else {                                                            //If the file didn't open
+//      return false;
+//    }
+//  }
+//}
