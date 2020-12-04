@@ -52,6 +52,12 @@ struct Queue {
   struct Node *end = 0;
   struct Node *front = 0;
 
+  Queue() {
+    length = 0;
+    end = nullptr;
+    front = nullptr;
+  }
+
   void enqueue(std::string message) {
     struct Node *temp;
     length++;
@@ -95,14 +101,6 @@ struct Queue {
     return nullptr;
   }
 };
-
-struct Queue * newQueue() {
-  struct Queue *q = (struct Queue *)malloc(sizeof(struct Queue));
-  q->length = 0;
-  q->front=nullptr;
-  q->end=nullptr;
-  return q;
-}
 
 struct Queue *sdBuffer;
 

@@ -80,7 +80,7 @@ void setup() {
   }
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
-  sdBuffer = newQueue();
+  sdBuffer = new Queue();
 
   Recovery::init();
   Solenoids::init();
