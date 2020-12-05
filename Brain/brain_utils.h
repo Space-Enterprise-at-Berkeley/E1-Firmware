@@ -21,8 +21,8 @@ String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
 void chooseValveById(int id, struct valveInfo *valve);
 
-const int numCryoTherms = 3;
-int cryoThermAddrs[3] = {0x67, 0x6A, 0x6E}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
+const int numCryoTherms = 2;
+int cryoThermAddrs[numCryoTherms] = {0x60, 0x67}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
