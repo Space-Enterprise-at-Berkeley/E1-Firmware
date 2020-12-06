@@ -33,8 +33,7 @@ sensorInfo sensors[numSensors] = {
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
 //  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
-  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 5},
-
+  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 1},
 
 //  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
 //  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
@@ -87,17 +86,17 @@ void setup() {
   Ducers::init(&Wire);
   batteryMonitor::init();
 
-  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs);
+  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
 }
 
 void loop() {
-  if (Serial.available() > 0) {
+  if (RFSerial.available() > 0) {
     int i = 0;
-    while (Serial.available()) {
-      command[i] = Serial.read();
+    while (RFSerial.available()) {
+      command[i] = RFSerial.read();
       Serial.print(command[i]);
       i++;
     }

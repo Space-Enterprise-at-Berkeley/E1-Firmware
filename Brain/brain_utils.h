@@ -23,6 +23,7 @@ void chooseValveById(int id, struct valveInfo *valve);
 
 const int numCryoTherms = 2;
 int cryoThermAddrs[numCryoTherms] = {0x60, 0x67}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
+_themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T};
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
@@ -166,6 +167,10 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
+      //farrbconvert.sensorReadings[1]=0;
+      farrbconvert.sensorReadings[2]=0;
+      farrbconvert.sensorReadings[3]=0;
+      farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");
