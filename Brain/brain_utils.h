@@ -132,19 +132,16 @@ int decode_received_packet(String packet, valveInfo *valve) {
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
 
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
-  Serial.println(checksumstr);
-  char checksum_char[5];
-  checksumstr.toCharArray(checksum_char, 5);
-//  char *checksum_char = checksumstr.c_str();
-  uint16_t checksum = strtol(checksum_char, NULL, 16);
-  Serial.print("check: ");
-  Serial.println(checksum);
+  char *checksum_char = checksumstr.c_str();
+  int checksum = strtol(checksum_char, NULL, 16);
 
   const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
-  char data[count+1];// = packet.substring(1,data_end_index).c_str();
-  packet.substring(1, data_end_index).toCharArray(data, count + 1);
+  String str_data= packet.substring(1,data_end_index);
+  char const *data = str_data.c_str(); 
+  Serial.println(data);
 
-  uint16_t _check = Fletcher16((uint8_t *) data, count);
+  int _check = (int)Fletcher16((uint8_t *) data, count);
+  Serial.println(_check);
   if (_check == checksum) {
     Serial.println("Checksum correct, taking action");
     chooseValveById(valve_id, valve);

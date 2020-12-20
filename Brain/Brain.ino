@@ -84,7 +84,8 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
+  Serial.println("in loop");
+  if (Serial.available() >= 0) {
     int i = 0;
     while (Serial.available()) {
       command[i] = Serial.read();
@@ -92,8 +93,10 @@ void loop() {
       i++;
     }
     Serial.println();
-    Serial.println(String(command));
-    int action = decode_received_packet(String(command), &valve);
+    //Serial.println(String(command));
+    //int action = decode_received_packet(String(command), &valve);
+    Serial.println("{20,12|12345}");
+    int action = decode_received_packet("{20,12|12345}", &valve);
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id);
