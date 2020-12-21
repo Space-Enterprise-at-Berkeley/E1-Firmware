@@ -134,6 +134,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   char *checksum_char = checksumstr.c_str();
   int checksum = strtol(checksum_char, NULL, 16);
+  Serial.println(checksum);
 
   const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
   String str_data= packet.substring(1,data_end_index);
