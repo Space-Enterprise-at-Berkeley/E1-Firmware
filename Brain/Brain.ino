@@ -13,9 +13,6 @@
 
 #define RFSerial Serial6
 #define GPSSerial Serial8
-#include <SD.h>
-#include <SPI.h>
-#include <TimeLib.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -36,8 +33,7 @@ sensorInfo sensors[numSensors] = {
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
 //  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
-//  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 5},
-
+  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 1},
 
 //  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
 //  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
@@ -57,12 +53,15 @@ int sensor_checks[numSensors][2];
 valveInfo valve;
 sensorInfo sensor = {"temp", 23, 23, 23};
 
+std::string str_file_name = "E1_speed_test_results.txt";
+const char * file_name = str_file_name.c_str();
+
 long startTime;
 String packet;
 
 void setup() {
   Wire.begin();
-  Serial.begin(9600);
+  Serial.begin(57600);
   RFSerial.begin(57600);
   GPSSerial.begin(4608000);
 
@@ -73,22 +72,31 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
+  int res = sd.begin(SdioConfig(FIFO_SDIO));
+  if (!res) {
+      // make packet with this status. print, and send over rf
+      // do additional error handling; what if no sd?
+  }
+  file.open(file_name, O_RDWR | O_CREAT);
+  file.close();
+  sdBuffer = new Queue();
+
   Recovery::init();
   Solenoids::init();
   Ducers::init(&Wire);
   batteryMonitor::init();
-  //  Thermocouple::init();
+
+  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
 }
 
 void loop() {
-  Serial.println("in loop");
-  if (Serial.available() > 0) {
+  if (RFSerial.available() > 0) {
     int i = 0;
-    while (Serial.available()) {
-      command[i] = Serial.read();
+    while (RFSerial.available()) {
+      command[i] = RFSerial.read();
       Serial.print(command[i]);
       i++;
     }
@@ -100,6 +108,9 @@ void loop() {
       packet = make_packet(valve.id);
       Serial.println(packet);
       RFSerial.println(packet);
+      if(!write_to_SD(packet.c_str())){
+        // send some error over rf
+      }
     }
   }
 
@@ -120,49 +131,29 @@ void loop() {
     packet = make_packet(sensor.id);
     Serial.println(packet);
     RFSerial.println(packet);
-    //bool did_write = write_to_SD(packet);
+    if (!write_to_SD(packet.c_str())){
+      // send some error packet
+    }
   }
 }
 
+bool write_to_SD(std::string message) {
+  // every reading that we get from sensors should be written to sd and saved.
 
-String file_name = "E1_" + String(month()) + "/" + String(day()) + "/" + String(year()) + "_" + String(hour()) + ":" + String(minute()) + ":" + String(second()) + "_log.txt";
-
-char packet0[] PROGMEM = "Packet0";
-char packet1[] PROGMEM = "Packet1";
-char packet2[] PROGMEM = "Packet2";
-char packet3[] PROGMEM = "Packet3";
-char packet4[] PROGMEM = "Packet4";
-char packet5[] PROGMEM = "Packet5";
-char packet6[] PROGMEM = "Packet6";
-char packet7[] PROGMEM = "Packet7";
-char packet8[] PROGMEM = "Packet8";
-char packet9[] PROGMEM = "Packet9";
-
-int bfr_idx = 0;
-char buffer[64];
-char* packet_table[] PROGMEM = {packet0, packet1, packet2, packet3, packet4, packet5, packet6, packet7, packet8, packet9};
-
-bool write_to_SD(String message) {
-  if (!SD.begin(BUILTIN_SDCARD))
-    return false;
-
-  packet_table[bfr_idx] = message.c_str();
-  bfr_idx++;
-
-  if (bfr_idx == 10) {
-    File myFile = SD.open(file_name.c_str(), FILE_WRITE);
-
-    if (myFile) {                                                     //If the file opened
-      for (int i = 0; i <= bfr_idx; i++) {
-        strcpy_P(buffer, (char *)pgm_read_word(&(packet_table[i])));  // Necessary casts and dereferencing, just copy.
-        myFile.println(buffer);
+    sdBuffer->enqueue(message);
+    if(sdBuffer->length >= 40) {
+      if(file.open(file_name, O_RDWR | O_APPEND)) {
+        int initialLength = sdBuffer->length;
+        for(int i = 0; i < initialLength; i++) {
+          char *msg = sdBuffer->dequeue();
+          file.write(msg);
+          free(msg);
+        }
+        file.close();
+        return true;
+      } else {                                                            //If the file didn't open
+        return false;
       }
-      myFile.close();
-      bfr_idx = 0;
-      return true;
     }
-    else {                                                            //If the file didn't open
-      return false;
-    }
-  }
+    return true;
 }
