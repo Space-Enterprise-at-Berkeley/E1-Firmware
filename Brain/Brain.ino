@@ -8,8 +8,12 @@
 
 #include <Wire.h>
 #include "brain_utils.h"
-//#include <GPS.h>
-//#include <Barometer.h>
+#include <GPS.h>
+#include <Barometer.h>
+#include <ducer.h>
+#include <SD.h>
+#include <SPI.h>
+#include <TimeLib.h>
 
 #define RFSerial Serial6
 #define GPSSerial Serial8
