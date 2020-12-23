@@ -58,6 +58,7 @@ const char * file_name = str_file_name.c_str();
 
 long startTime;
 String packet;
+String error_packet;
 
 void setup() {
   Wire.begin();
@@ -105,11 +106,12 @@ void loop() {
     int action = decode_received_packet(String(command), &valve);
     if (action != -1) {
       take_action(&valve, action);
-      packet = make_packet(valve.id);
+      packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
       if(!write_to_SD(packet.c_str())){
-        // send some error over rf
+        error_packet = make_packet(101, true);
+        RFSerial.println(error_packet);
       }
     }
   }
@@ -128,11 +130,13 @@ void loop() {
     board_address = sensor.board_address;
     sensor_id = sensor.id;
     sensorReadFunc(sensor.id);
-    packet = make_packet(sensor.id);
+    packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
     if (!write_to_SD(packet.c_str())){
       // send some error packet
+      error_packet = make_packet(101, true);
+      RFSerial.println(error_packet);
     }
   }
 }
