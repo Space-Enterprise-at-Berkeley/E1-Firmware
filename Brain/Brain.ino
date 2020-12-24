@@ -58,7 +58,6 @@ const char * file_name = str_file_name.c_str();
 
 long startTime;
 String packet;
-String error_packet;
 
 void setup() {
   Wire.begin();
@@ -95,8 +94,8 @@ void setup() {
   //test SD card is there
   String start = "beginning writing data";
   if(!write_to_SD(start)){
-    error_packet = make_packet(101, true);
-    RFSerial.println(error_packet);
+    packet = make_packet(101, true);
+    RFSerial.println(packet);
   }
 }
 
@@ -116,10 +115,6 @@ void loop() {
       packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
-//      if(!write_to_SD(packet.c_str())){
-//        error_packet = make_packet(101, true);
-//        RFSerial.println(error_packet);
-//      }
     }
   }
 
@@ -140,11 +135,6 @@ void loop() {
     packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
-//    if (!write_to_SD(packet.c_str())){
-//      // send some error packet
-//      error_packet = make_packet(101, true);
-//      RFSerial.println(error_packet);
-//    }
   }
 }
 
