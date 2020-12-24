@@ -94,6 +94,13 @@ void setup() {
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
   ////  Barometer::init(&Wire);
   ////  GPS::init(&GPSSerial);
+
+  //test SD card is there
+  String start = "beginning writing data";
+  if(!write_to_SD(start)){
+    packet = make_packet(101, true);
+    RFSerial.println(packet);
+  }
 }
 
 void loop() {
@@ -109,12 +116,10 @@ void loop() {
     int action = decode_received_packet(String(command), &valve);
     if (action != -1) {
       take_action(&valve, action);
-      packet = make_packet(valve.id);
+      packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
-      if(!write_to_SD(packet.c_str())){
-        // send some error over rf
-      }
+      write_to_SD(packet.c_str()));
     }
   }
 
@@ -132,12 +137,10 @@ void loop() {
     board_address = sensor.board_address;
     sensor_id = sensor.id;
     sensorReadFunc(sensor.id);
-    packet = make_packet(sensor.id);
+    packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
-    if (!write_to_SD(packet.c_str())){
-      // send some error packet
-    }
+    write_to_SD(packet.c_str()));
   }
 }
 

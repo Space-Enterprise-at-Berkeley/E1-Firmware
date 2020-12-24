@@ -182,18 +182,23 @@ void sensorReadFunc(int id) {
  * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
-String make_packet(int id) {
+String make_packet(int id, bool error) {
   String packet_content = (String)id;
   packet_content += ",";
-  for (int i=0; i<7; i++) {
-    float reading = farrbconvert.sensorReadings[i];
-    if (reading != -1) {
-      packet_content += (String)reading;
-      packet_content += ",";
-    } else {
-      break;
+  if (!error) {
+    for (int i=0; i<7; i++) {
+      float reading = farrbconvert.sensorReadings[i];
+      if (reading != -1) {
+        packet_content += (String)reading;
+        packet_content += ",";
+      } else {
+        break;
+      }
     }
+  } else {
+    packet_content += "0,";
   }
+  
   packet_content.remove(packet_content.length()-1);
   int count = packet_content.length();
   char const *data = packet_content.c_str();
