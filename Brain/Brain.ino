@@ -115,6 +115,7 @@ void loop() {
       packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
+      write_to_SD(packet.c_str()));
     }
   }
 
@@ -135,6 +136,7 @@ void loop() {
     packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
+    write_to_SD(packet.c_str()));
   }
 }
 
