@@ -25,6 +25,11 @@ const int numCryoTherms = 2;
 int cryoThermAddrs[numCryoTherms] = {0x60, 0x67}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T};
 
+const int numADCSensors = 2;
+int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
+int adcDataReadyPins[numADCSensors] = {29, 28};
+ADS1219 ** ads;
+
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
 #define SD_FAT_TYPE 0
@@ -234,7 +239,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
 
   const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
   String str_data= packet.substring(1,data_end_index);
-  char const *data = str_data.c_str(); 
+  char const *data = str_data.c_str();
   Serial.println(data);
 
   int _check = (int)Fletcher16((uint8_t *) data, count);

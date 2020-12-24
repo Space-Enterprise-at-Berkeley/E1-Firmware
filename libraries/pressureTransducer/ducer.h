@@ -133,7 +133,7 @@ namespace Ducers {
 
   void readTemperatureData(float *data) { // FIGURE OUT WHICH IN THIS WILL BE ON THE PCB
     //rawRead = ads2.readData(1); // thermocouple on AIN1 of ADC2
-    rawRead = ads1.readData(1);
+    rawRead = ads2.readData(1);
     // Serial.println(rawRead);
     // Serial.println(ads.readData(2));
     // Serial.println(ads.readData(3));

@@ -85,15 +85,20 @@ void setup() {
   file.close();
   sdBuffer = new Queue();
 
+  // initialize all ADCs
+  ads = (ADS1219 **) malloc(numADCSensors * sizeof(ADS1219));
+  for (int i = 0; i < numADCSensors; i++) {
+    ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
+  }
+
   Recovery::init();
   Solenoids::init();
-  Ducers::init(&Wire);
+  // Ducers::init(&Wire);
   batteryMonitor::init();
 
+  Thermocouple::Analog::init(1, {{1}}, {ads[1]});
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
-  ////  Barometer::init(&Wire);
-  ////  GPS::init(&GPSSerial);
 }
 
 void loop() {
