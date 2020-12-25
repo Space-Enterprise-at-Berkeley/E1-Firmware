@@ -16,19 +16,36 @@
 #include <string>
 #include <SdFat.h>
 #include <TimeLib.h>
+#include <vector>
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
 void chooseValveById(int id, struct valveInfo *valve);
 
 const int numCryoTherms = 2;
-int cryoThermAddrs[numCryoTherms] = {0x60, 0x67}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
+int cryoThermAddrs[numCryoTherms] = {0x60, 0x67};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T};
 
 const int numADCSensors = 2;
 int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 int adcDataReadyPins[numADCSensors] = {29, 28};
 ADS1219 ** ads;
+
+// sparse matrix representation of mapping
+int adc1ThermMap[] = {0, 0, 0, 0};
+int adc2ThermMap[] = {0, 0, 1, 0};
+int * adcThermMap[] = {adc1ThermMap, adc2ThermMap};
+
+std::vector<int> *analogThermADCMap;
+
+void initConfig() {
+  analogThermADCMap = (std::vector<int> *)malloc(numADCSensors * sizeof(std::vector<int>));
+  for (int i = 0; i < numADCSensors; i++) {
+    // initialize vector w/ iterator to beginning and end of array
+    analogThermADCMap[i] = std::vector<int>(adcThermMap[i], adcThermMap[i] + sizeof(adcThermMap[i]) / sizeof(int) );
+    analogThermADCMap[i].shrink_to_fit();
+  }
+}
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.

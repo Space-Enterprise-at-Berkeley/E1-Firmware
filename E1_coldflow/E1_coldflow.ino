@@ -11,9 +11,6 @@
 #include <GPS.h>
 #include <Barometer.h>
 #include <ducer.h>
-#include <SD.h>
-#include <SPI.h>
-#include <TimeLib.h>
 
 #define RFSerial Serial6
 #define GPSSerial Serial8
@@ -96,7 +93,7 @@ void setup() {
   // Ducers::init(&Wire);
   batteryMonitor::init();
 
-  Thermocouple::Analog::init(1, {{1}}, {ads[1]});
+  Thermocouple::Analog::init(numADCSensors, analogThermADCMap, ads);
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
 }

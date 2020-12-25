@@ -15,6 +15,8 @@
 #include <Wire.h>
 #include <typeinfo>
 
+#include <vector>
+
 using namespace std;
 
 namespace Thermocouple {
@@ -99,16 +101,12 @@ namespace Thermocouple {
   }
 
   namespace Analog { //TMP36
-    // calibration = 25 C at 750mV
 
-//    ADS1219 ads1(DTRDY_PIN_1, ADC1_ADDR, localWire);
+    // calibration = 25 C at 750mV
 
     ADS1219 ** _adcs;
 
-    // which analog in on each of the adcs has an analog temp;
-    // 2d array; first dimension lines up w/ adcs;
-    // second dimension up to length 4; with termination by -1
-    int ** _analogInNumMap;
+    vector<int> * _analogInNumMap;
 
     int _numSensors;
 
@@ -119,35 +117,32 @@ namespace Thermocouple {
     float voltageRead;
     float tempRead;
 
-    void init (int numSensors, int ** analogInMap, ADS1219 ** _adc) {
+    void init (int numSensors, vector<int> * analogInMap, ADS1219 ** adcs) {
       _numSensors = numSensors;
-      _analogInNumMap = (int **)malloc(numSensors * 4);
-      _adcs = _adc;
-
-      for (int i = 0; i < _numSensors; i++) {
-        int j = 0;
-        do {
-          _analogInNumMap[i][j] = analogInMap[i][j];
-          j++;
-        } while (analogInMap[i][j] != -1);
-      }
+      _analogInNumMap = analogInMap; // since this variable is coming from the config, I don't think I need to copy it, since it's not going to change/ be deallocated
+      _adcs = _adcs;
     }
 
+    // float *data is only of size 7 rn, ensure that we only expect <= 7 readings.
     void readTemperatureData(float *data) {
-      int index = 0
+      int index = 0;
       for (int i = 0; i < _numSensors; i++) {
-        int j = 0;
-        while(_analogInNumMap[i][j] != -1) {
-          rawRead = _adcs[i]->readData(_analogInNumMap[i][j]);
-          voltageRead = (float) rawRead * (5.0 / pow(2,23));
-          tempRead = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
-          data[index] = tempRead;
-          index++;
-          j++;
+        int ainCounter = 0;
+        for (std::vector<int>::iterator it = _analogInNumMap[i].begin();
+             it != _analogInNumMap[i].end(); ++it ) {
+          if(*it != 0) {
+            rawRead = _adcs[i]->readData(ainCounter);
+            voltageRead = (float) rawRead * (5.0 / pow(2,23));
+            tempRead = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
+            data[index] = tempRead;
+            index++;
+          }
+          ainCounter++;
         }
       }
-      data[index] = -1
+      data[index] = -1;
     }
+
   }
 
   namespace Cryo {
