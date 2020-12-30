@@ -72,6 +72,14 @@ void ADS1219::powerDown(){
   Wire.endTransmission();
 }
 
+void ADS1219::calibrate(){
+  uint64_t calibrate = 0;
+  for (int i = 0; i <  10; i++){
+    calibrate += readShorted();
+  }
+  calibration = uint32_t (calibrate / 10);
+}
+
 uint8_t ADS1219::readRegister(uint8_t reg){
   Wire.beginTransmission(address);
   i2cWrite(reg);
@@ -97,7 +105,7 @@ long ADS1219::readConversionResult(){
   data32 |= i2cRead();
   data32 <<= 8;
   data32 |= i2cRead();
-  return (data32 << 8) >> 8;
+  return ((data32 << 8) >> 8) - calibration;
 }
 
 void ADS1219::resetConfig(){

@@ -16,7 +16,6 @@
 #include <string>
 #include <SdFat.h>
 #include <TimeLib.h>
-#include <vector>
 
 String make_packet(struct sensorInfo sensor);
 uint16_t Fletcher16(uint8_t *data, int count);
@@ -34,6 +33,10 @@ ADS1219 ** ads;
 const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
 int thermAdcChannels[numAnalogThermocouples] = {2};
+
+const int numPressureTransducers = 5;
+int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
+int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
 
 void initConfig() {
 
@@ -168,8 +171,7 @@ valveInfo valves[numValves] = {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      //Thermocouple::setSensor(0);
-      Ducers::readTemperatureData(farrbconvert.sensorReadings);
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
@@ -212,7 +214,7 @@ String make_packet(int id, bool error) {
   } else {
     packet_content += "0,";
   }
-  
+
   packet_content.remove(packet_content.length()-1);
   int count = packet_content.length();
   char const *data = packet_content.c_str();

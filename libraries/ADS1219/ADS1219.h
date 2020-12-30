@@ -65,25 +65,27 @@ class ADS1219 {
 
     // Methods
     void begin();
-	void resetConfig();
-	long readData(int channel);
-  long getData(uint8_t config);
-	long readDifferential_0_1();
-	long readDifferential_2_3();
-	long readDifferential_1_2();
-	long readShorted();
-	void setGain(adsGain_t gain);
-	void setDataRate(int rate);
-	void setConversionMode(adsMode_t mode);
-	void setVoltageReference(adsRef_t vref);
-	void powerDown();
-  private:
-	void start();
-	uint8_t readRegister(uint8_t reg);
-	void writeRegister(uint8_t data);
-	long readConversionResult();
-	uint8_t config;
-	boolean singleShot;
-	int data_ready;
+  	void resetConfig();
+    void calibrate();
+  	long readData(int channel);
+    long getData(uint8_t config);
+  	long readDifferential_0_1();
+  	long readDifferential_2_3();
+  	long readDifferential_1_2();
+  	long readShorted();
+  	void setGain(adsGain_t gain);
+  	void setDataRate(int rate);
+  	void setConversionMode(adsMode_t mode);
+  	void setVoltageReference(adsRef_t vref);
+  	void powerDown();
+    private:
+  	void start();
+  	uint8_t readRegister(uint8_t reg);
+  	void writeRegister(uint8_t data);
+  	long readConversionResult();
+  	uint8_t config;
+  	boolean singleShot;
+  	int data_ready;
+    uint32_t calibration = 0;
 };
 #endif
