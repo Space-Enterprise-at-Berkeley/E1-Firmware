@@ -80,6 +80,11 @@ void setup() {
   }
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
+  String start = "beginning writing data";
+  if(!write_to_SD(start)) { // if unable to write to SD, send error packet
+    packet = make_packet(101, true);
+    RFSerial.println(packet);
+  }
   sdBuffer = new Queue();
 
   // initialize all ADCs
@@ -112,12 +117,10 @@ void loop() {
     int action = decode_received_packet(String(command), &valve);
     if (action != -1) {
       take_action(&valve, action);
-      packet = make_packet(valve.id);
+      packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
-      if(!write_to_SD(packet.c_str())){
-        // send some error over rf
-      }
+      write_to_SD(packet.c_str()));
     }
   }
 
@@ -135,12 +138,10 @@ void loop() {
     board_address = sensor.board_address;
     sensor_id = sensor.id;
     sensorReadFunc(sensor.id);
-    packet = make_packet(sensor.id);
+    packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
-    if (!write_to_SD(packet.c_str())){
-      // send some error packet
-    }
+    write_to_SD(packet.c_str()));
   }
 }
 
