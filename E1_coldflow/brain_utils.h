@@ -134,7 +134,20 @@ struct valveInfo {
   void (*ackFunc)(float *data);
 };
 
-const int numValves = 10;
+struct dataCollector {
+  String name;
+  int id;
+  int (*collection)(float *data);
+};
+
+
+const int numCollectors = 1;
+
+dataCollectors collectors[numCollectors] = {
+  {"Thermocouple", 30, &(Thermocouple::readTemperatureData)}
+};
+
+const int numValves = 9;
 
 valveInfo valves[numValves] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)},
@@ -147,6 +160,8 @@ valveInfo valves[numValves] = {
   {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)},
   {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)},
 };
+
+
 
 void sensorReadFunc(int id) {
   switch (id) {
@@ -179,12 +194,131 @@ void sensorReadFunc(int id) {
  * Calls the corresponding method for this valve with the appropriate
  * action in solenoids.h
  */
-void take_action(valveInfo *valve, int action) {
+void take_action(valveInfo *valve, dataCollector *collector, int action) {
   if (action == 1) {
     valve->openValve();
   } else if (action == 0) {
     valve->closeValve();
+  } else if (action == 2) {
+    //call the reading function
+    collector->collection(farrbconvert.sensorReadings);
   }
   if(action != -1)
     valve->ackFunc(farrbconvert.sensorReadings);
+}
+
+String make_packet(struct sensorInfo sensor);
+uint16_t Fletcher16(uint8_t *data, int count);
+void chooseById(int id, struct valveInfo *valve);
+
+/*
+ * Constructs packet in the following format:
+ * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
+ */
+String make_packet(int id, bool error) {
+  String packet_content = (String)id;
+  packet_content += ",";
+  if (!error) {
+    for (int i=0; i<7; i++) {
+      float reading = farrbconvert.sensorReadings[i];
+      if (reading != -1) {
+        packet_content += (String)reading;
+        packet_content += ",";
+      } else {
+        break;
+      }
+    }
+  } else {
+    packet_content += "0,";
+  }
+  
+  packet_content.remove(packet_content.length()-1);
+  int count = packet_content.length();
+  char const *data = packet_content.c_str();
+  uint16_t checksum = Fletcher16((uint8_t *) data, count);
+  packet_content += "|";
+  String check_ = String(checksum, HEX);
+  while(check_.length() < 4) {
+    check_ = "0" + check_;
+  }
+  packet_content += check_;
+  String packet = "{" + packet_content + "}";
+
+  return packet;
+}
+
+/*
+ * Decodes a packet sent from ground station in the following format:
+ * {<ID>,<command (optional)>|checksum}
+ * Populated the fields of the valve and returns the action to be taken
+ */
+int decode_received_packet(String packet, valveInfo *valve, dataCollector *data_collector) {
+  Serial.println(packet);
+  int data_start_index = packet.indexOf(',');
+  data_request = false;
+  int action = 2;
+  if(data_start_index == -1) {
+    data_request = true;
+  }
+  int id = packet.substring(1,data_start_index).toInt();
+  const int data_end_index = packet.indexOf('|');
+  if(data_end_index == -1) {
+    return -1;
+  }
+  if (!data_request) {
+    int action = packet.substring(data_start_index + 1,data_end_index).toInt();
+  }
+
+  String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
+  char *checksum_char = checksumstr.c_str();
+  int checksum = strtol(checksum_char, NULL, 16);
+  Serial.println(checksum);
+
+  const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
+  String str_data= packet.substring(1,data_end_index);
+  char const *data = str_data.c_str(); 
+  Serial.println(data);
+
+  int _check = (int)Fletcher16((uint8_t *) data, count);
+  Serial.println(_check);
+  if (_check == checksum) {
+    Serial.println("Checksum correct, taking action");
+    chooseById(id, valve, data_collector);
+    return action;
+  } else {
+    return -1;
+  }
+}
+
+void chooseById(int id, valveInfo *valve, dataCollector *data_collector) {
+  for (int i = 0; i < numValves; i++) {
+    if (valves[i].id == id) {
+      *valve = valves[i];
+      return;
+    }
+  }
+  for (int i=0; i < numCollectors; i++) {
+    if (collectors[i].id == id) {
+      *data_collector = collectors[i];
+      return;
+    }
+  }
+}
+
+/*
+ * Calculates checksum for key values being sent to ground station:
+ * sensor_ID and it's corresponding data points
+ */
+uint16_t Fletcher16(uint8_t *data, int count) {
+
+  uint16_t sum1 = 0;
+  uint16_t sum2 = 0;
+
+  for (int index=0; index<count; index++) {
+    if (data[index] > 0) {
+      sum1 = (sum1 + data[index]) % 255;
+      sum2 = (sum2 + sum1) % 255;
+    }
+  }
+  return (sum2 << 8) | sum1;
 }

@@ -55,6 +55,7 @@ sensorInfo sensors[numSensors] = {
 int sensor_checks[numSensors][2];
 
 valveInfo valve;
+dataCollector collector;
 sensorInfo sensor = {"temp", 23, 23, 23};
 
 std::string str_file_name = "E1_speed_test_results.txt";
@@ -113,14 +114,18 @@ void loop() {
     }
     Serial.println();
     Serial.println(String(command));
-    int action = decode_received_packet(String(command), &valve);
+    int action = decode_received_packet(String(command), &valve, &collector);
     if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+      take_action(&valve, &collector, action);
+      if (action == 2) {
+        packet = make_packet(collector.id, false);
+      } else {
+        packet = make_packet(valve.id, false);
+      }
       Serial.println(packet);
       RFSerial.println(packet);
       write_to_SD(packet.c_str()));
-    }
+    }å
   }
 
   /*

@@ -159,6 +159,9 @@ namespace Thermocouple {
     void readCryoTemp(float *data) {
       data[0] = mcp.readThermocouple();
       data[1] = -1;
+      data[2] = 0;
+      data[3] = 0;
+      data[4] = -1;
     }
 
   }
