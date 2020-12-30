@@ -1,53 +1,33 @@
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 #include <Wire.h>
 #include "ADS1219.h"
-
-static uint8_t i2cRead(void) {
-  #if ARDUINO >= 100
-  return Wire.read();
-  #else
-  return Wire.receive();
-  #endif
-}
-
-static void i2cWrite(uint8_t x) {
-  #if ARDUINO >= 100
-  Wire.write(x);
-  #else
-  Wire.send(x);
-  #endif
-}
 
 ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
   data_ready = drdy;
   address = addr;
   config = 0x00;
   singleShot = true;
-  //localWire = wire;
+  localWire = wire;
 }
 
 long ADS1219::getData(uint8_t conf) {
-  Wire.beginTransmission(address);
-  Wire.write(CONFIG_REGISTER_ADDRESS);
-  Wire.write(conf);
-  Wire.endTransmission();
+  localWire->beginTransmission(address);
+  localWire->write(CONFIG_REGISTER_ADDRESS);
+  localWire->write(conf);
+  localWire->endTransmission();
 
-  Wire.beginTransmission(address);
-  Wire.write(0x08);
-  Wire.endTransmission();
+  localWire->beginTransmission(address);
+  localWire->write(0x08);
+  localWire->endTransmission();
 
   while(digitalRead(data_ready)==1);
   delay(1);
-  Wire.beginTransmission(address);
-  Wire.write(0x10);
-  Wire.endTransmission();
+  localWire->beginTransmission(address);
+  localWire->write(0x10);
+  localWire->endTransmission();
 
-  Wire.requestFrom((uint8_t)address,(uint8_t)3);
+  localWire->requestFrom((uint8_t)address,(uint8_t)3);
   long data32 = Wire.read();
   data32 <<= 8;
   data32 |= Wire.read();
@@ -56,20 +36,16 @@ long ADS1219::getData(uint8_t conf) {
   return (data32 << 8) >> 8;
 }
 
-void ADS1219::begin() {
-  // Wire.begin();
-}
-
 void ADS1219::start(){
-  Wire.beginTransmission(address);
-  i2cWrite(0x08);
-  Wire.endTransmission();
+  localWire->beginTransmission(address);
+  localWire->write(0x08);
+  localWire->endTransmission();
 }
 
 void ADS1219::powerDown(){
-  Wire.beginTransmission(address);
-  i2cWrite(0x02);
-  Wire.endTransmission();
+  localWire->beginTransmission(address);
+  localWire->write(0x02);
+  localWire->endTransmission();
 }
 
 void ADS1219::calibrate(){
@@ -81,30 +57,30 @@ void ADS1219::calibrate(){
 }
 
 uint8_t ADS1219::readRegister(uint8_t reg){
-  Wire.beginTransmission(address);
-  i2cWrite(reg);
-  Wire.endTransmission();
-  Wire.requestFrom((uint8_t)address,(uint8_t)1);
-  return i2cRead();
+  localWire->beginTransmission(address);
+  localWire->write(reg);
+  localWire->endTransmission();
+  localWire->requestFrom((uint8_t)address,(uint8_t)1);
+  return localWire->read();
 }
 
 void ADS1219::writeRegister(uint8_t data){
-  Wire.beginTransmission(address);
-  i2cWrite(CONFIG_REGISTER_ADDRESS);
-  i2cWrite(data);
-  Wire.endTransmission();
+  localWire->beginTransmission(address);
+  localWire->write(CONFIG_REGISTER_ADDRESS);
+  localWire->write(data);
+  localWire->endTransmission();
 }
 
 long ADS1219::readConversionResult(){
-  Wire.beginTransmission(address);
-  i2cWrite(0x10);
-  Wire.endTransmission();
-  Wire.requestFrom((uint8_t)address,(uint8_t)3);
-  long data32 = i2cRead();
+  localWire->beginTransmission(address);
+  localWire->write(0x10);
+  localWire->endTransmission();
+  localWire->requestFrom((uint8_t)address, (uint8_t)3);
+  long data32 = localWire->read();
   data32 <<= 8;
-  data32 |= i2cRead();
+  data32 |= localWire->read();
   data32 <<= 8;
-  data32 |= i2cRead();
+  data32 |= localWire->read();
   return ((data32 << 8) >> 8) - calibration;
 }
 

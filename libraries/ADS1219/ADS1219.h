@@ -64,7 +64,6 @@ class ADS1219 {
     ADS1219(int drdy, uint8_t addr, TwoWire *wire);
 
     // Methods
-    void begin();
   	void resetConfig();
     void calibrate();
   	long readData(int channel);
@@ -78,7 +77,7 @@ class ADS1219 {
   	void setConversionMode(adsMode_t mode);
   	void setVoltageReference(adsRef_t vref);
   	void powerDown();
-    private:
+  private:
   	void start();
   	uint8_t readRegister(uint8_t reg);
   	void writeRegister(uint8_t data);
