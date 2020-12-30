@@ -31,20 +31,12 @@ int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 int adcDataReadyPins[numADCSensors] = {29, 28};
 ADS1219 ** ads;
 
-// sparse matrix representation of mapping
-int adc1ThermMap[] = {0, 0, 0, 0};
-int adc2ThermMap[] = {0, 0, 1, 0};
-int * adcThermMap[] = {adc1ThermMap, adc2ThermMap};
-
-std::vector<int> *analogThermADCMap;
+const int numAnalogThermocouples = 1;
+int thermAdcIndices[numAnalogThermocouples] = {1};
+int thermAdcChannels[numAnalogThermocouples] = {2};
 
 void initConfig() {
-  analogThermADCMap = (std::vector<int> *)malloc(numADCSensors * sizeof(std::vector<int>));
-  for (int i = 0; i < numADCSensors; i++) {
-    // initialize vector w/ iterator to beginning and end of array
-    analogThermADCMap[i] = std::vector<int>(adcThermMap[i], adcThermMap[i] + sizeof(adcThermMap[i]) / sizeof(int) );
-    analogThermADCMap[i].shrink_to_fit();
-  }
+
 }
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,

@@ -93,8 +93,9 @@ void setup() {
   // Ducers::init(&Wire);
   batteryMonitor::init();
 
-  Thermocouple::Analog::init(numADCSensors, analogThermADCMap, ads);
+  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
+
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
 }
 

@@ -106,41 +106,34 @@ namespace Thermocouple {
 
     ADS1219 ** _adcs;
 
-    vector<int> * _analogInNumMap;
+    int * _adcIndices; // array of size _numSensors
+    int * _adcChannels;
 
-    int _numSensors;
+    int _numSensors; // number of analog thermocouples, not number of adcs
 
     float tempOverVoltageScale = 1 / 0.01;
     float voltageOffset = 0.75, tempOffset = 25; // 25 C = 0.450 V
 
     long rawRead;
     float voltageRead;
-    float tempRead;
 
-    void init (int numSensors, vector<int> * analogInMap, ADS1219 ** adcs) {
+    void init (int numSensors, int * adcIndices, int * adcChannels, ADS1219 ** adcs) {
       _numSensors = numSensors;
-      _analogInNumMap = analogInMap; // since this variable is coming from the config, I don't think I need to copy it, since it's not going to change/ be deallocated
+      _adcIndices = adcIndices;
+      _adcChannels = adcChannels;
       _adcs = _adcs;
     }
 
     // float *data is only of size 7 rn, ensure that we only expect <= 7 readings.
     void readTemperatureData(float *data) {
-      int index = 0;
-      for (int i = 0; i < _numSensors; i++) {
-        int ainCounter = 0;
-        for (std::vector<int>::iterator it = _analogInNumMap[i].begin();
-             it != _analogInNumMap[i].end(); ++it ) {
-          if(*it != 0) {
-            rawRead = _adcs[i]->readData(ainCounter);
-            voltageRead = (float) rawRead * (5.0 / pow(2,23));
-            tempRead = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
-            data[index] = tempRead;
-            index++;
-          }
-          ainCounter++;
-        }
+      int i = 0;
+      while (i < _numSensors) {
+        rawRead = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
+        voltageRead = (float) rawRead * (5.0 / pow(2,23));
+        data[i] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
+        i++;
       }
-      data[index] = -1;
+      data[i] = -1;
     }
 
   }
