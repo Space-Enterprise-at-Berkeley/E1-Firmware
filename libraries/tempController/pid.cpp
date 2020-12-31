@@ -29,7 +29,6 @@ float PID::calculate( float setpoint, float pv ) {
 
     // Calculate error
     float error = setpoint - pv;
-		// Serial.println(error);
     // Proportional term
     float Pout = Kp_ * error;
     // Integral term
@@ -39,11 +38,6 @@ float PID::calculate( float setpoint, float pv ) {
     float derivative = (error - lastError_) / dt;
     float Dout = Kd_ * derivative;
     // Calculate total output
-		// Serial.print(Pout);
-		// Serial.print(", ");
-		// Serial.print(Iout);
-		// Serial.print(", ");
-		// Serial.println(Dout);
     float output = Pout + Iout + Dout;
 
     // Restrict to max/min
@@ -52,7 +46,6 @@ float PID::calculate( float setpoint, float pv ) {
     else if ( output < min_ )
         output = min_;
 
-		// Serial.println(output);
     // Save error to previous error
     lastError_ = error;
 

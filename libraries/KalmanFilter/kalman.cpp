@@ -6,7 +6,7 @@
  */
 
 #include "kalman.h"
-
+#include <iostream>
 using namespace std;
 
 Kalman::Kalman(int stateDim, MatrixXd F, int measurementDim, int inputDim,
@@ -27,6 +27,20 @@ Kalman::Kalman(int stateDim, MatrixXd F, int measurementDim, int inputDim,
 		_x = VectorXd::Zero(_n);
 		_z = VectorXd(_m);
 		_y = VectorXd(_m);
+
+		cout << "F:\n" << _F << endl;
+		cout << "H:\n" << _H << endl;
+		cout << "B:\n" << _B << endl;
+		cout << "Q:\n" << _Q << endl;
+		cout << "R:\n" << _R << endl;
+		cout << "K:\n" << _K << endl;
+		cout << "S:\n" << _S << endl;
+		cout << "P:\n" << _P << endl;
+		cout << "x:\n" << _x << endl;
+
+
+
+
 }
 
 void Kalman::predict(VectorXd u) {

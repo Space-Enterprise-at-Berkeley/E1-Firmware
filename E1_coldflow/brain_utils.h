@@ -182,7 +182,7 @@ void sensorReadFunc(int id) {
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      Thermocouple::Cryo::readCryoTemp(farrbconvert.sensorReadings);
+      Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
       //farrbconvert.sensorReadings[1]=0;
       farrbconvert.sensorReadings[2]=0;
       farrbconvert.sensorReadings[3]=0;

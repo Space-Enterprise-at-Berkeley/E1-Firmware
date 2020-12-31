@@ -35,7 +35,7 @@ class Kalman
       MatrixXd _B; // nxl
       MatrixXd _Q;
       MatrixXd _R;
-      MatrixXd _S; // mxm
+      MatrixXd _S;
 
       VectorXd _z; // might not even need to store anything here if it gets passed in all the time
       VectorXd _y;
