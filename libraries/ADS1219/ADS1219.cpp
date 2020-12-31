@@ -9,6 +9,7 @@ ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
   config = 0x00;
   singleShot = true;
   localWire = wire;
+  localWire->begin();
 }
 
 long ADS1219::getData(uint8_t conf) {
