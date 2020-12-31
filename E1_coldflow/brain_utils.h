@@ -22,8 +22,25 @@ uint16_t Fletcher16(uint8_t *data, int count);
 void chooseValveById(int id, struct valveInfo *valve);
 
 const int numCryoTherms = 2;
-int cryoThermAddrs[numCryoTherms] = {0x60, 0x67}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
+int cryoThermAddrs[numCryoTherms] = {0x60, 0x67};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T};
+
+const int numADCSensors = 2;
+int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
+int adcDataReadyPins[numADCSensors] = {29, 28};
+ADS1219 ** ads;
+
+const int numAnalogThermocouples = 1;
+int thermAdcIndices[numAnalogThermocouples] = {1};
+int thermAdcChannels[numAnalogThermocouples] = {2};
+
+const int numPressureTransducers = 5;
+int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
+int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
+
+void initConfig() {
+
+}
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
@@ -154,8 +171,7 @@ valveInfo valves[numValves] = {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      //Thermocouple::setSensor(0);
-      Ducers::readTemperatureData(farrbconvert.sensorReadings);
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
@@ -198,7 +214,7 @@ String make_packet(int id, bool error) {
   } else {
     packet_content += "0,";
   }
-  
+
   packet_content.remove(packet_content.length()-1);
   int count = packet_content.length();
   char const *data = packet_content.c_str();
@@ -239,7 +255,7 @@ int decode_received_packet(String packet, valveInfo *valve) {
 
   const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
   String str_data= packet.substring(1,data_end_index);
-  char const *data = str_data.c_str(); 
+  char const *data = str_data.c_str();
   Serial.println(data);
 
   int _check = (int)Fletcher16((uint8_t *) data, count);

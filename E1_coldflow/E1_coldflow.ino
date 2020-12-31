@@ -11,10 +11,6 @@
 #include <GPS.h>
 #include <Barometer.h>
 #include <ducer.h>
-#include <SD.h>
-#include <SPI.h>
-#include <TimeLib.h>
-#include <kalman.h>
 
 #define RFSerial Serial6
 #define GPSSerial Serial8
@@ -33,21 +29,10 @@ const uint8_t numSensors = 8;
    Array of all sensors we would like to get data from.
 */
 sensorInfo sensors[numSensors] = {
-  // local sensors
   {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
   {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
   {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-//  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
   {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 1},
-
-//  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
-//  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
-
-  //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
-  //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
-  //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
-  //  {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
-  //  {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
 /*
@@ -79,29 +64,40 @@ void setup() {
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
-      // make packet with this status. print, and send over rf
-      // do additional error handling; what if no sd?
-  }
-  file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
-  sdBuffer = new Queue();
-
-  Recovery::init();
-  Solenoids::init();
-  Ducers::init(&Wire);
-  batteryMonitor::init();
-
-  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
-  tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
-  ////  Barometer::init(&Wire);
-  ////  GPS::init(&GPSSerial);
-
-  //test SD card is there
-  String start = "beginning writing data";
-  if(!write_to_SD(start)){
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
+  file.open(file_name, O_RDWR | O_CREAT);
+  file.close();
+  std::string start = "beginning writing data";
+  if(!write_to_SD(start)) { // if unable to write to SD, send error packet
+    packet = make_packet(101, true);
+    RFSerial.println(packet);
+  }
+  sdBuffer = new Queue();
+
+  // initialize all ADCs
+  ads = (ADS1219 **) malloc(numADCSensors * sizeof(ADS1219));
+  for (int i = 0; i < numADCSensors; i++) {
+    ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
+    ads[i]->setConversionMode(SINGLE_SHOT);
+    ads[i]->setVoltageReference(REF_EXTERNAL);
+    ads[i]->setGain(GAIN_ONE);
+    ads[i]->setDataRate(90);
+    pinMode(adcDataReadyPins[i], INPUT_PULLUP);
+    ads[i]->calibrate();
+  }
+
+  Recovery::init();
+  Solenoids::init();
+  batteryMonitor::init();
+
+
+  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ads);
+  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
+  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
+
+  tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
 }
 
 void loop() {
@@ -120,7 +116,7 @@ void loop() {
       packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
-      write_to_SD(packet.c_str()));
+      write_to_SD(packet.c_str());
     }
   }
 
@@ -141,7 +137,7 @@ void loop() {
     packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
-    write_to_SD(packet.c_str()));
+    write_to_SD(packet.c_str());
   }
 }
 
