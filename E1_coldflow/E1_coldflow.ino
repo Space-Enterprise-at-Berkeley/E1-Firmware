@@ -14,6 +14,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include <TimeLib.h>
+#include <kalman.h>
 
 #define RFSerial Serial6
 #define GPSSerial Serial8
