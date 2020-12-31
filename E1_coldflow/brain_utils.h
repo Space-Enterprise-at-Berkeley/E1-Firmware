@@ -11,12 +11,22 @@
 #include <Thermocouple.h>
 #include <tempController.h>
 #include <batteryMonitor.h>
-#include <commands.h>
+//#include <commands.h>
 
 #include <SPI.h>
 #include <string>
 #include <SdFat.h>
 #include <TimeLib.h>
+
+#define FLIGHT_BRAIN_ADDR 0x00
+
+std::string str_file_name = "E1_speed_test_results.txt";
+const char * file_name = str_file_name.c_str();
+
+String make_packet(struct sensorInfo sensor);
+uint16_t Fletcher16(uint8_t *data, int count);
+void chooseById(int id, struct valveInfo *valve);
+void readTemp();
 
 const int numCryoTherms = 2;
 int cryoThermAddrs[numCryoTherms] = {0x60, 0x67}; //the second one is 6A or 6B, not sure which for Addr pin set to 1/2
@@ -121,6 +131,7 @@ struct sensorInfo {
   int board_address;
   int id;
   int clock_freq;
+  void (*readData)(float *data);
 };
 
 /*
@@ -134,17 +145,27 @@ struct valveInfo {
   void (*ackFunc)(float *data);
 };
 
-struct dataCollector {
-  String name;
-  int id;
-  int (*collection)(float *data);
-};
+const uint8_t numSensors = 8;
 
+/*
+   Array of all sensors we would like to get data from.
+*/
+sensorInfo sensors[numSensors] = {
+  // local sensors
+  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3, &(readTemp)}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+  {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1, &(Ducers::readAllPressures)},
+  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3, &(batteryMonitor::readAllBatteryStats)},
+//  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
+  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 1, &(Thermocouple::Cryo::readCryoTemps)},
 
-const int numCollectors = 1;
+//  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
+//  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
 
-dataCollectors collectors[numCollectors] = {
-  {"Thermocouple", 30, &(Thermocouple::readTemperatureData)}
+  //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
+  //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
+  //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
+  //  {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
+  //  {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
 };
 
 const int numValves = 9;
@@ -163,53 +184,48 @@ valveInfo valves[numValves] = {
 
 
 
-void sensorReadFunc(int id) {
-  switch (id) {
-    case 0:
-      //Thermocouple::setSensor(0);
-      Ducers::readTemperatureData(farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
-      break;
-    case 1:
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
-      break;
-    case 2:
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      //farrbconvert.sensorReadings[1]=0;
-      farrbconvert.sensorReadings[2]=0;
-      farrbconvert.sensorReadings[3]=0;
-      farrbconvert.sensorReadings[4]=-1;
-      break;
-    default:
-      Serial.println("some other sensor");
-      break;
-  }
+//void sensorReadFunc(int id) {
+//  switch (id) {
+//    case 0:
+//      readTemp();
+//      break;
+//    case 1:
+//      Ducers::readAllPressures(farrbconvert.sensorReadings);
+//      break;
+//    case 2:
+//      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+//      break;
+//    case 4:
+//      Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
+//      break;
+//    default:
+//      Serial.println("some other sensor");
+//      break;
+//  }
+//}
+
+void readTemp() {
+  Ducers::readTemperatureData(farrbconvert.sensorReadings);
+  farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+  farrbconvert.sensorReadings[2] = -1;
 }
 
 /*
  * Calls the corresponding method for this valve with the appropriate
  * action in solenoids.h
  */
-void take_action(valveInfo *valve, dataCollector *collector, int action) {
+void take_action(valveInfo *valve, sensorInfo *sensor, int action) {
   if (action == 1) {
     valve->openValve();
   } else if (action == 0) {
     valve->closeValve();
   } else if (action == 2) {
     //call the reading function
-    collector->collection(farrbconvert.sensorReadings);
+    sensor->readData(farrbconvert.sensorReadings);
   }
-  if(action != -1)
+  if(action != -1 && action != 2)
     valve->ackFunc(farrbconvert.sensorReadings);
 }
-
-String make_packet(struct sensorInfo sensor);
-uint16_t Fletcher16(uint8_t *data, int count);
-void chooseById(int id, struct valveInfo *valve);
 
 /*
  * Constructs packet in the following format:
@@ -252,10 +268,10 @@ String make_packet(int id, bool error) {
  * {<ID>,<command (optional)>|checksum}
  * Populated the fields of the valve and returns the action to be taken
  */
-int decode_received_packet(String packet, valveInfo *valve, dataCollector *data_collector) {
+int decode_received_packet(String packet, valveInfo *valve, sensorInfo *sensor) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
-  data_request = false;
+  boolean data_request = false;
   int action = 2;
   if(data_start_index == -1) {
     data_request = true;
@@ -283,23 +299,22 @@ int decode_received_packet(String packet, valveInfo *valve, dataCollector *data_
   Serial.println(_check);
   if (_check == checksum) {
     Serial.println("Checksum correct, taking action");
-    chooseById(id, valve, data_collector);
     return action;
   } else {
     return -1;
   }
 }
 
-void chooseById(int id, valveInfo *valve, dataCollector *data_collector) {
+void chooseById(int id, valveInfo *valve, sensorInfo *sensor) {
   for (int i = 0; i < numValves; i++) {
     if (valves[i].id == id) {
       *valve = valves[i];
       return;
     }
   }
-  for (int i=0; i < numCollectors; i++) {
-    if (collectors[i].id == id) {
-      *data_collector = collectors[i];
+  for (int i=0; i < numSensors; i++) {
+    if (sensors[i].id == id) {
+      *sensor = sensors[i];
       return;
     }
   }
@@ -321,4 +336,25 @@ uint16_t Fletcher16(uint8_t *data, int count) {
     }
   }
   return (sum2 << 8) | sum1;
+}
+
+bool write_to_SD(std::string message) {
+  // every reading that we get from sensors should be written to sd and saved.
+
+    sdBuffer->enqueue(message);
+    if(sdBuffer->length >= 40) {
+      if(file.open(file_name, O_RDWR | O_APPEND)) {
+        int initialLength = sdBuffer->length;
+        for(int i = 0; i < initialLength; i++) {
+          char *msg = sdBuffer->dequeue();
+          file.write(msg);
+          free(msg);
+        }
+        file.close();
+        return true;
+      } else {                                                            //If the file didn't open
+        return false;
+      }
+    }
+    return true;
 }

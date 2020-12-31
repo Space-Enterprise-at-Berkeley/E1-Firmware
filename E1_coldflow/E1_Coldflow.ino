@@ -11,43 +11,13 @@
 #include <GPS.h>
 #include <Barometer.h>
 #include <ducer.h>
-#include <SD.h>
-#include <SPI.h>
-#include <TimeLib.h>
 
 #define RFSerial Serial6
 #define GPSSerial Serial8
 
-#define FLIGHT_BRAIN_ADDR 0x00
-
 // within loop state variables
-uint8_t board_address = 0;
-uint8_t sensor_id = 0;
 uint8_t val_index = 0;
 char command[50]; //input command from GS
-
-const uint8_t numSensors = 8;
-
-/*
-   Array of all sensors we would like to get data from.
-*/
-sensorInfo sensors[numSensors] = {
-  // local sensors
-  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-  {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-//  {"Load Cells",                 FLIGHT_BRAIN_ADDR, 3, 5},
-  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 1},
-
-//  {"Solenoid Ack",               FLIGHT_BRAIN_ADDR, 4, -1},
-//  {"Recovery Ack",               FLIGHT_BRAIN_ADDR, 5, -1},
-
-  //  {"GPS",                        -1, -1, 7, 5, NULL}, //&(GPS::readPositionData)},
-  //  {"GPS Aux",                    -1, -1, 8, 8, NULL}, //&(GPS::readAuxilliaryData)},
-  //  {"Barometer",                  -1, -1, 8, 6, NULL}, //&(Barometer::readAltitudeData)},
-  //  {"Load Cell Engine Left",      -1, -1, 9,  5, NULL},
-  //  {"Load Cell Engine Right",     -1, -1, 10, 5, NULL}
-};
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -55,11 +25,7 @@ sensorInfo sensors[numSensors] = {
 int sensor_checks[numSensors][2];
 
 valveInfo valve;
-dataCollector collector;
 sensorInfo sensor = {"temp", 23, 23, 23};
-
-std::string str_file_name = "E1_speed_test_results.txt";
-const char * file_name = str_file_name.c_str();
 
 long startTime;
 String packet;
@@ -98,7 +64,7 @@ void setup() {
 
   //test SD card is there
   String start = "beginning writing data";
-  if(!write_to_SD(start)){
+  if(!write_to_SD(start.c_str())){
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
@@ -114,18 +80,18 @@ void loop() {
     }
     Serial.println();
     Serial.println(String(command));
-    int action = decode_received_packet(String(command), &valve, &collector);
+    int action = decode_received_packet(String(command), &valve, &sensor);
     if (action != -1) {
-      take_action(&valve, &collector, action);
+      take_action(&valve, &sensor, action);
       if (action == 2) {
-        packet = make_packet(collector.id, false);
+        packet = make_packet(sensor.id, false);
       } else {
         packet = make_packet(valve.id, false);
       }
       Serial.println(packet);
       RFSerial.println(packet);
-      write_to_SD(packet.c_str()));
-    }å
+      write_to_SD(packet.c_str());
+    }
   }
 
   /*
@@ -139,33 +105,10 @@ void loop() {
       continue;
     }
     sensor = sensors[j];
-    board_address = sensor.board_address;
-    sensor_id = sensor.id;
-    sensorReadFunc(sensor.id);
+    take_action(&valve, &sensor, 2);
     packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
-    write_to_SD(packet.c_str()));
+    write_to_SD(packet.c_str());
   }
-}
-
-bool write_to_SD(std::string message) {
-  // every reading that we get from sensors should be written to sd and saved.
-
-    sdBuffer->enqueue(message);
-    if(sdBuffer->length >= 40) {
-      if(file.open(file_name, O_RDWR | O_APPEND)) {
-        int initialLength = sdBuffer->length;
-        for(int i = 0; i < initialLength; i++) {
-          char *msg = sdBuffer->dequeue();
-          file.write(msg);
-          free(msg);
-        }
-        file.close();
-        return true;
-      } else {                                                            //If the file didn't open
-        return false;
-      }
-    }
-    return true;
 }
