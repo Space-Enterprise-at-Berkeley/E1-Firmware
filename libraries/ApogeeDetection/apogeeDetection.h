@@ -30,7 +30,6 @@ class ApogeeDetection
       MatrixXd* _H; // mxn
       MatrixXd* _Q;
       MatrixXd* _R;
-      //MatrixXd* _B;
 
       VectorXd* _z; // might not even need to store anything here if it gets passed in all the time
 

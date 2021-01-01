@@ -33,13 +33,11 @@ class Kalman
       MatrixXd _F; // nxn
       MatrixXd _H; // mxn
       MatrixXd _B; // nxl
-      MatrixXd _Q;
-      MatrixXd _R;
-      MatrixXd _S;
+      MatrixXd _Q; // nxn
+      MatrixXd _R; // mxm
+      MatrixXd _S; // mxm
 
-      VectorXd _z; // might not even need to store anything here if it gets passed in all the time
       VectorXd _y;
-
 };
 
 #endif /* KALMAN_H_ */

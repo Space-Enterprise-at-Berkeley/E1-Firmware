@@ -7,7 +7,6 @@
 
 #include "kalman.h"
 #include "apogeeDetection.h"
-#include <iostream>
 
 using namespace std;
 
@@ -59,36 +58,4 @@ bool ApogeeDetection::atApogee(double altitude, double accel_z) {
 }
 
 ApogeeDetection::~ApogeeDetection() {
-}
-
-
-#include <iostream>
-#include <fstream>
-#include <stdlib.h>
-#include <stdio.h>
-//temporary
-int main(int argc, char ** argv){
-	ApogeeDetection sentientOne(0.001, 0.25, 0.25);
-	bool reachedApogee = false;
-	ifstream fileIn;
-	string strData;
-	double currT, alt, accel;
-
-	fileIn.open("sim_measured_data_for_cpp_test.txt");
-	fileIn>>strData;
-
-	char* pEnd;
-
-	while(!fileIn.eof() && !reachedApogee) {
-		getline(fileIn, strData, ','); // don't care about index
-		getline(fileIn, strData, ',');
-		currT = strtod(strData.c_str(), &pEnd);
-		getline(fileIn, strData, ',');
-		alt = strtod(strData.c_str(), &pEnd);
-		getline(fileIn, strData);
-		accel = strtod(strData.c_str(), &pEnd);
-		reachedApogee = sentientOne.atApogee(alt, accel);
-	}
-	cout << "AT APOGEE: currT: " << currT << ", alt: " << alt << ", accel: " << accel << endl;
-
 }
