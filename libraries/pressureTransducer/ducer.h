@@ -28,7 +28,7 @@ namespace Ducers {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
-    _adcs = _adcs;
+    _adcs = adcs;
   }
 
   // All the following reads are blocking calls.
@@ -38,8 +38,13 @@ namespace Ducers {
     while (i < _numSensors) {
       Serial.println(_adcIndices[i]);
       Serial.println(_adcChannels[i]);
+	Serial.flush();
+	 Serial.print("readAllPressures ADC 0 pointer: ");
+	Serial.flush();
+  	Serial.println((int32_t) _adcs[0]);
+	Serial.flush();
       //data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
-      data[i] = _adcs[0]->readData(i%4);
+      data[i] = (*(_adcs[0])).readData(i%4);
       Serial.println(data[i]);
       i++;
     }

@@ -90,6 +90,8 @@ void ADS1219::resetConfig(){
 }
 
 long ADS1219::readData(int channel){
+	Serial.println("Reading ADS1219 Data");
+	Serial.flush();
 	config &= MUX_MASK;
 	switch (channel){
     case (0):

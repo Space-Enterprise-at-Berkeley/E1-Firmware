@@ -113,10 +113,10 @@ void setup() {
     pinMode(adcDataReadyPins[i], INPUT_PULLUP);
     Serial.println("Calibrating ADC");
     Serial.flush();
-    Serial.println(ads[i]->readData(0));
-    Serial.println(ads[i]->readData(1));
-    Serial.println(ads[i]->readData(2));
-    Serial.println(ads[i]->readData(3));
+//    Serial.println(ads[i]->readData(0));
+//    Serial.println(ads[i]->readData(1));
+//    Serial.println(ads[i]->readData(2));
+//    Serial.println(ads[i]->readData(3));
 //    ads[i]->calibrate();
   }
 
@@ -135,6 +135,12 @@ void setup() {
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
 
   tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
+
+  Serial.println(ads[0]->readData(0));
+  Serial.print("ADC 0 pointer: ");
+  Serial.println((int32_t) ads[0]);
+  Serial.print("ADC 1 pointer: ");
+  Serial.println((int32_t) ads[1]);
 }
 
 void loop() {
@@ -179,6 +185,7 @@ void loop() {
     }
     Serial.println("reading sensor");
     Serial.flush();
+//    Serial.println(ads[0]->readData(0));
     sensor = sensors[j];
     board_address = sensor.board_address;
     sensor_id = sensor.id;
