@@ -13,13 +13,16 @@
 #include <Adafruit_I2CRegister.h>
 #include "Adafruit_MCP9600.h"
 #include <Wire.h>
+#include <typeinfo>
+
+#include <vector>
 
 using namespace std;
 
 namespace Thermocouple {
 
 
-  namespace OW {
+  namespace OW { //onewire
     int OW_DATA_PIN;
 
     byte sensorData[12];
@@ -97,71 +100,88 @@ namespace Thermocouple {
     }
   }
 
-  // namespace Analog { //TMP36
-  //   // calibration = 25 C at 750mV
-  //
-  //   int DTRDY_PIN = 28;
-  //   int RESET_PIN = 29;
-  //
-  //   // first 7 bits for Arduino Wire
-  //   uint8_t ADC2_ADDR = 0b1001000;
-  //
-  //   float tempOverVoltageScale = 1 / 0.01;
-  //   float voltageOffset = 0.75, tempOffset = 25; // 25 C = 0.450 V
-  //
-  //   long rawRead;
-  //   float voltageRead;
-  //   float tempRead;
-  //
-  //   ADS1219 ads(DTRDY_PIN, ADC2_ADDR, NULL);
-  //
-  //   void init() {
-  //     // ads.begin();
-  //
-  //     ads.setConversionMode(CONTINUOUS);
-  //
-  //     ads.setVoltageReference(REF_EXTERNAL);
-  //
-  //     ads.setGain(GAIN_ONE);
-  //
-  //     ads.setDataRate(90);
-  //   }
-  // 
-  //   void readTemperatureData(float *data) {
-  //     rawRead = ads.readData(2); // thermocouple on AIN1 of ADC2
-  //     // Serial.println(rawRead);
-  //     // Serial.println(ads.readData(2));
-  //     // Serial.println(ads.readData(3));
-  //     voltageRead = (float) rawRead * (5.0 / pow(2,23));
-  //     Serial.println(voltageRead);
-  //     tempRead = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
-  //     data[0] = tempRead;
-  //     data[1] = -1;
-  //   }
-  // }
+  namespace Analog { //TMP36
 
-  namespace Cryo {
-    #define CRYO_THERM_I2C_ADDRESS (0x67)
-    Adafruit_MCP9600 mcp;
+    // calibration = 25 C at 750mV
 
-    int init() {
-      if (!mcp.begin(CRYO_THERM_I2C_ADDRESS)) {
-        Serial.println("Sensor not found");
-        return -1;
-      }
-      mcp.setADCresolution(MCP9600_ADCRESOLUTION_18);
-      mcp.setThermocoupleType(MCP9600_TYPE_J);
-      mcp.setFilterCoefficient(3);
-      mcp.enable(true);
-      return 0;
+    ADS1219 ** _adcs;
+
+    int * _adcIndices; // array of size _numSensors
+    int * _adcChannels;
+
+    int _numSensors; // number of analog thermocouples, not number of adcs
+
+    float tempOverVoltageScale = 1 / 0.01;
+    float voltageOffset = 0.75, tempOffset = 25; // 25 C = 0.450 V
+
+    long rawRead;
+    float voltageRead;
+
+    void init (int numSensors, int * adcIndices, int * adcChannels, ADS1219 ** adcs) {
+      _numSensors = numSensors;
+      _adcIndices = adcIndices;
+      _adcChannels = adcChannels;
+      _adcs = adcs;
     }
 
-    void readCryoTemp(float *data) {
-      data[0] = mcp.readThermocouple();
-      data[1] = -1;
+    // float *data is only of size 7 rn, ensure that we only expect <= 7 readings.
+    void readTemperatureData(float *data) {
+      int i = 0;
+      while (i < _numSensors) {
+        rawRead = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
+        voltageRead = (float) rawRead * (5.0 / pow(2,23));
+        data[i] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
+        i++;
+      }
+      data[i] = -1;
     }
 
   }
 
-};
+  namespace Cryo {
+
+    Adafruit_MCP9600 ** _cryo_amp_boards;
+    int * _addrs;
+    int _numSensors;
+
+    int init(int numSensors, int * addrs, _themotype * types) { // assume that numSensors is < max Size of packet. Add some error checking here
+      _addrs = (int *)malloc(numSensors);
+      _cryo_amp_boards = (Adafruit_MCP9600 **)malloc(numSensors * sizeof(Adafruit_MCP9600));
+
+      _numSensors = numSensors;
+
+      for (int i = 0; i < numSensors; i++) {
+        _addrs[i] = addrs[i];
+        _cryo_amp_boards[i] = new Adafruit_MCP9600();
+
+        if (!_cryo_amp_boards[i]->begin(addrs[i])) {
+          Serial.println("Error initializing cryo board at Addr 0x" + String(addrs[i], HEX));
+          return -1;
+        }
+
+        _cryo_amp_boards[i]->setADCresolution(MCP9600_ADCRESOLUTION_18);
+        _cryo_amp_boards[i]->setThermocoupleType(types[i]);
+        _cryo_amp_boards[i]->setFilterCoefficient(3);
+        _cryo_amp_boards[i]->enable(true);
+      }
+
+      return 0;
+    }
+
+    void readCryoTemps(float *data) {
+      for (int i = 0; i < _numSensors; i++) {
+        data[i] = _cryo_amp_boards[i]->readThermocouple();
+      }
+      data[_numSensors] = -1;
+    }
+
+    int freeAllResources() {
+        free(_cryo_amp_boards);
+        free(_addrs);
+        return 0;
+    }
+  }
+
+}
+
 #endif
