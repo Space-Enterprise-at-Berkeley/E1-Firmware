@@ -121,7 +121,7 @@ namespace Thermocouple {
       _numSensors = numSensors;
       _adcIndices = adcIndices;
       _adcChannels = adcChannels;
-      _adcs = _adcs;
+      _adcs = adcs;
     }
 
     // float *data is only of size 7 rn, ensure that we only expect <= 7 readings.
