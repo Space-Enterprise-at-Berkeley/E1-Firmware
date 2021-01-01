@@ -81,6 +81,6 @@ class ADS1219 {
   	uint8_t config;
   	boolean singleShot;
   	int data_ready;
-    uint32_t calibration;
+    uint32_t calibration = 0;
 };
 #endif
