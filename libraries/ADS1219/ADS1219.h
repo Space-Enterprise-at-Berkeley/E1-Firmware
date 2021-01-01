@@ -1,11 +1,7 @@
 #ifndef ADS1219_H
 #define ADS1219_H
 
-#if (ARDUINO >=100)
-  #include "Arduino.h"
-#else
-  #include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 #include <Wire.h>
 
@@ -58,7 +54,6 @@ typedef enum{
 class ADS1219 {
   protected:
 	uint8_t address;
-  TwoWire *localWire;
   public:
     // Constructor
     ADS1219(int drdy, uint8_t addr, TwoWire *wire);
@@ -86,5 +81,7 @@ class ADS1219 {
   	boolean singleShot;
   	int data_ready;
     uint32_t calibration = 0;
+    TwoWire* _wire;
+
 };
 #endif

@@ -9,26 +9,26 @@ ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
   config = 0x00;
   singleShot = true;
   localWire = wire;
-  localWire->begin();
+  Wire.begin();
 }
 
 long ADS1219::getData(uint8_t conf) {
-  localWire->beginTransmission(address);
-  localWire->write(CONFIG_REGISTER_ADDRESS);
-  localWire->write(conf);
-  localWire->endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(CONFIG_REGISTER_ADDRESS);
+  Wire.write(conf);
+  Wire.endTransmission();
 
-  localWire->beginTransmission(address);
-  localWire->write(0x08);
-  localWire->endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(0x08);
+  Wire.endTransmission();
 
   while(digitalRead(data_ready)==1);
   delay(1);
-  localWire->beginTransmission(address);
-  localWire->write(0x10);
-  localWire->endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(0x10);
+  Wire.endTransmission();
 
-  localWire->requestFrom((uint8_t)address,(uint8_t)3);
+  Wire.requestFrom((uint8_t)address,(uint8_t)3);
   long data32 = Wire.read();
   data32 <<= 8;
   data32 |= Wire.read();
@@ -38,15 +38,15 @@ long ADS1219::getData(uint8_t conf) {
 }
 
 void ADS1219::start(){
-  localWire->beginTransmission(address);
-  localWire->write(0x08);
-  localWire->endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(0x08);
+  Wire.endTransmission();
 }
 
 void ADS1219::powerDown(){
-  localWire->beginTransmission(address);
-  localWire->write(0x02);
-  localWire->endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(0x02);
+  Wire.endTransmission();
 }
 
 void ADS1219::calibrate(){
@@ -58,30 +58,30 @@ void ADS1219::calibrate(){
 }
 
 uint8_t ADS1219::readRegister(uint8_t reg){
-  localWire->beginTransmission(address);
-  localWire->write(reg);
-  localWire->endTransmission();
-  localWire->requestFrom((uint8_t)address,(uint8_t)1);
-  return localWire->read();
+  Wire.beginTransmission(address);
+  Wire.write(reg);
+  Wire.endTransmission();
+  Wire.requestFrom((uint8_t)address,(uint8_t)1);
+  return Wire.read();
 }
 
 void ADS1219::writeRegister(uint8_t data){
-  localWire->beginTransmission(address);
-  localWire->write(CONFIG_REGISTER_ADDRESS);
-  localWire->write(data);
-  localWire->endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(CONFIG_REGISTER_ADDRESS);
+  Wire.write(data);
+  Wire.endTransmission();
 }
 
 long ADS1219::readConversionResult(){
-  localWire->beginTransmission(address);
-  localWire->write(0x10);
-  localWire->endTransmission();
-  localWire->requestFrom((uint8_t)address, (uint8_t)3);
-  long data32 = localWire->read();
+  Wire.beginTransmission(address);
+  Wire.write(0x10);
+  Wire.endTransmission();
+  Wire.requestFrom((uint8_t)address, (uint8_t)3);
+  long data32 = Wire.read();
   data32 <<= 8;
-  data32 |= localWire->read();
+  data32 |= Wire.read();
   data32 <<= 8;
-  data32 |= localWire->read();
+  data32 |= Wire.read();
   return ((data32 << 8) >> 8) - calibration;
 }
 
