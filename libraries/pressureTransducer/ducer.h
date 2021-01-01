@@ -28,7 +28,7 @@ namespace Ducers {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
-    _adcs = _adcs;
+    _adcs = adcs;
   }
 
   // All the following reads are blocking calls.
