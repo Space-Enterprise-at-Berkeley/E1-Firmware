@@ -86,6 +86,10 @@ void setup() {
     ads[i]->setDataRate(90);
     pinMode(adcDataReadyPins[i], INPUT_PULLUP);
     ads[i]->calibrate();
+    Serial.println(ads[i]->readData(0));
+    Serial.println(ads[i]->readData(1));
+    Serial.println(ads[i]->readData(2));
+    Serial.println(ads[i]->readData(3));
   }
 
   Recovery::init();

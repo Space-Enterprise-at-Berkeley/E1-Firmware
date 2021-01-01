@@ -36,6 +36,8 @@ namespace Ducers {
   void readAllPressures(float *data) {
     int i = 0;
     while (i < _numSensors) {
+      Serial.println(_adcIndices[i]);
+      Serial.println(_adcChannels[i]);
       data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
       i++;
     }
