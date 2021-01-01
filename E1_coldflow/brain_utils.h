@@ -176,6 +176,8 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
+      Serial.println("reading pressures");
+      Serial.flush();
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
