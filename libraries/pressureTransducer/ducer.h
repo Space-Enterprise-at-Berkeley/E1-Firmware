@@ -9,7 +9,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <ADS1219.h>
-// #include <TwoWire.h>
 
 using namespace std;
 
@@ -37,8 +36,6 @@ namespace Ducers {
     int i = 0;
     while (i < _numSensors) {
       data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
-      //data[i] = (*(_adcs[0])).readData(i%4);
-      Serial.println(data[i]);
       i++;
     }
     data[i] = -1;
