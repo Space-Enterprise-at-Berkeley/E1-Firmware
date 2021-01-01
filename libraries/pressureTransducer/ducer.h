@@ -9,7 +9,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <ADS1219.h>
-// #include <TwoWire.h>
 
 using namespace std;
 
@@ -28,7 +27,7 @@ namespace Ducers {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
-    _adcs = _adcs;
+    _adcs = adcs;
   }
 
   // All the following reads are blocking calls.

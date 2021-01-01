@@ -1,12 +1,7 @@
 #ifndef ADS1219_H
 #define ADS1219_H
 
-#if (ARDUINO >=100)
-  #include "Arduino.h"
-#else
-  #include "WProgram.h"
-#endif
-
+#include "Arduino.h"
 #include <Wire.h>
 
 #define CONFIG_REGISTER_ADDRESS 0x40
@@ -58,12 +53,13 @@ typedef enum{
 class ADS1219 {
   protected:
 	uint8_t address;
-  TwoWire *localWire;
+  TwoWire *_wire;
   public:
     // Constructor
     ADS1219(int drdy, uint8_t addr, TwoWire *wire);
 
     // Methods
+    void begin();
   	void resetConfig();
     void calibrate();
   	long readData(int channel);

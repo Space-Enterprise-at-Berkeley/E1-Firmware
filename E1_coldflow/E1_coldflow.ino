@@ -77,7 +77,7 @@ void setup() {
   sdBuffer = new Queue();
 
   // initialize all ADCs
-  ads = (ADS1219 **) malloc(numADCSensors * sizeof(ADS1219));
+  ads = new ADS1219*[numADCSensors];
   for (int i = 0; i < numADCSensors; i++) {
     ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
     ads[i]->setConversionMode(SINGLE_SHOT);
@@ -91,7 +91,6 @@ void setup() {
   Recovery::init();
   Solenoids::init();
   batteryMonitor::init();
-
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ads);
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
