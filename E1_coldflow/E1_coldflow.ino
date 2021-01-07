@@ -17,6 +17,8 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
+#define DEBUG 0
+
 // within loop state variables
 uint8_t board_address = 0;
 uint8_t sensor_id = 0;
@@ -55,7 +57,8 @@ void setup() {
   RFSerial.begin(57600);
   GPSSerial.begin(4608000);
 
-  delay(1000);
+  delay(3000);
+  Serial.println("Initializing Libraries");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
@@ -67,15 +70,24 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
+  Serial.println("Opening File");
+  Serial.flush();
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
+  
+  Serial.println("Writing Dummy Data");
+  Serial.flush();
+  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
+  sdBuffer = new Queue();
+  
   std::string start = "beginning writing data";
   if(!write_to_SD(start)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
-  sdBuffer = new Queue();
 
+  Serial.println("Initializing ADCs");
+  Serial.flush();
   // initialize all ADCs
   ads = new ADS1219*[numADCSensors];
   for (int i = 0; i < numADCSensors; i++) {
@@ -85,9 +97,11 @@ void setup() {
     ads[i]->setGain(GAIN_ONE);
     ads[i]->setDataRate(90);
     pinMode(adcDataReadyPins[i], INPUT_PULLUP);
-    ads[i]->calibrate();
+//    ads[i]->calibrate();
   }
 
+  Serial.println("Initializing Libraries");
+  Serial.flush();
   Recovery::init();
   Solenoids::init();
   batteryMonitor::init();
