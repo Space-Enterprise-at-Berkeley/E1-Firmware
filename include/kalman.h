@@ -24,7 +24,7 @@ class Kalman
       void predict(VectorXd u);
       void update(VectorXd z);
       VectorXd _x;
-      MatrixXd _P; // nxn
+      MatrixXd __P; // nxn
       MatrixXd _K; // nxm
     private:
       int _n;
@@ -32,10 +32,10 @@ class Kalman
       int _l; // size of input vector
       MatrixXd _F; // nxn
       MatrixXd _H; // mxn
-      MatrixXd _B; // nxl
+      MatrixXd __B; // nxl
       MatrixXd _Q; // nxn
       MatrixXd _R; // mxm
-      MatrixXd _S; // mxm
+      MatrixXd __S; // mxm
 
       VectorXd _y;
 };
