@@ -7,7 +7,7 @@
  * (c) 2018 Bogdan Necula
  *
 **/
-#include "HX711.h"
+#include <HX711.h>
 
 namespace LoadCell {
 		HX711 _lc1;

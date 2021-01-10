@@ -9,9 +9,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "brain_utils.h"
-#include "GPS.h"
-#include "Barometer.h"
-#include "ducer.h"
+#include <GPS.h>
+#include <Barometer.h>
+#include <ducer.h>
 
 #define RFSerial Serial6
 #define GPSSerial Serial8

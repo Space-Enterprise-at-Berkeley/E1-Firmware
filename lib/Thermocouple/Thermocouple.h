@@ -7,7 +7,7 @@
 #define __THERMS__
 
 #include <OneWire.h>
-#include "ADS1219.h"
+#include <ADS1219.h>
 
 #include <Adafruit_I2CDevice.h>
 #include <Adafruit_I2CRegister.h>

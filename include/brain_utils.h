@@ -5,12 +5,12 @@
  * ground station. This contains additional functions and structs used in Brain_I2C.ino.
  * Created by Vainavi Viswanath, Aug 21, 2020.
  */
-#include "solenoids.h"
-#include "recovery.h"
-#include "ducer.h"
-#include "Thermocouple.h"
-#include "tempController.h"
-#include "batteryMonitor.h"
+#include <solenoids.h>
+#include <recovery.h>
+#include <ducer.h>
+#include <Thermocouple.h>
+#include <tempController.h>
+#include <batteryMonitor.h>
 
 #include <SPI.h>
 #include <string>
