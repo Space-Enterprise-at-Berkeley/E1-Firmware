@@ -5,7 +5,7 @@
 #ifndef __BATT_MON__
 #define __BATT_MON__
 
-#include "INA226.h" //https://github.com/jarzebski/Arduino-INA226
+#include <INA226.h> //https://github.com/jarzebski/Arduino-INA226
 
 using namespace std;
 

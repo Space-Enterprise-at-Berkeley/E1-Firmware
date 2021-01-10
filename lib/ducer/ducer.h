@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include "ADS1219.h"
+#include <ADS1219.h>
 
 using namespace std;
 
