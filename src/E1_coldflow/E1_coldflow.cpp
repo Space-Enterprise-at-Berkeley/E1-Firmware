@@ -5,38 +5,23 @@
    ground station.
    Created by Vainavi Viswanath, Aug 21, 2020.
 */
-
 #include <Arduino.h>
 #include <Wire.h>
-#include "brain_utils.h"
-#include <GPS.h>
-#include <Barometer.h>
+
+#include "config.h"
+
+#include <common_fw.h>
 #include <ducer.h>
+#include <tempController.h>
+#include <batteryMonitor.h>
 
 #define RFSerial Serial6
-#define GPSSerial Serial8
-
-#define FLIGHT_BRAIN_ADDR 0x00
-
-#define DEBUG 0
 
 // within loop state variables
 uint8_t board_address = 0;
 uint8_t sensor_id = 0;
 uint8_t val_index = 0;
 char command[50]; //input command from GS
-
-const uint8_t numSensors = 8;
-
-/*
-   Array of all sensors we would like to get data from.
-*/
-sensorInfo sensors[numSensors] = {
-  {"Temperature",                FLIGHT_BRAIN_ADDR, 0, 3}, //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-  {"All Pressure",               FLIGHT_BRAIN_ADDR, 1, 1},
-  {"Battery Stats",              FLIGHT_BRAIN_ADDR, 2, 3},
-  {"Aux temp",                   FLIGHT_BRAIN_ADDR, 4, 1},
-};
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -46,19 +31,15 @@ int sensor_checks[numSensors][2];
 valveInfo valve;
 sensorInfo sensor = {"temp", 23, 23, 23};
 
-std::string str_file_name = "E1_speed_test_results.txt";
-const char * file_name = str_file_name.c_str();
-
 long startTime;
 String packet;
 
-bool write_to_SD(std::string message);
+void sensorReadFunc(int id);
 
 void setup() {
   Wire.begin();
   Serial.begin(57600);
   RFSerial.begin(57600);
-  GPSSerial.begin(4608000);
 
   delay(3000);
   Serial.println("Initializing Libraries");
@@ -77,14 +58,14 @@ void setup() {
   Serial.flush();
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
-  
+
   Serial.println("Writing Dummy Data");
   Serial.flush();
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
-  
+
   std::string start = "beginning writing data";
-  if(!write_to_SD(start)) { // if unable to write to SD, send error packet
+  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
@@ -100,12 +81,12 @@ void setup() {
     ads[i]->setGain(GAIN_ONE);
     ads[i]->setDataRate(90);
     pinMode(adcDataReadyPins[i], INPUT_PULLUP);
-//    ads[i]->calibrate();
+    ads[i]->calibrate();
   }
 
   Serial.println("Initializing Libraries");
   Serial.flush();
-  Recovery::init();
+
   Solenoids::init();
   batteryMonitor::init();
 
@@ -126,13 +107,13 @@ void loop() {
     }
     Serial.println();
     Serial.println(String(command));
-    int action = decode_received_packet(String(command), &valve);
+    int action = decode_received_packet(String(command), &valve, &valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
       Serial.println(packet);
       RFSerial.println(packet);
-      write_to_SD(packet.c_str());
+      write_to_SD(packet.c_str(), file_name);
     }
   }
 
@@ -153,27 +134,36 @@ void loop() {
     packet = make_packet(sensor.id, false);
     Serial.println(packet);
     RFSerial.println(packet);
-    write_to_SD(packet.c_str());
+    write_to_SD(packet.c_str(), file_name);
   }
 }
 
-bool write_to_SD(std::string message) {
-  // every reading that we get from sensors should be written to sd and saved.
 
-    sdBuffer->enqueue(message);
-    if(sdBuffer->length >= 40) {
-      if(file.open(file_name, O_RDWR | O_APPEND)) {
-        int initialLength = sdBuffer->length;
-        for(int i = 0; i < initialLength; i++) {
-          char *msg = sdBuffer->dequeue();
-          file.write(msg);
-          free(msg);
-        }
-        file.close();
-        return true;
-      } else {                                                            //If the file didn't open
-        return false;
-      }
-    }
-    return true;
+/**
+ *
+ */
+void sensorReadFunc(int id) {
+  switch (id) {
+    case 0:
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 1:
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
+      break;
+    case 2:
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 4:
+      Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
+      //farrbconvert.sensorReadings[1]=0;
+      farrbconvert.sensorReadings[2]=0;
+      farrbconvert.sensorReadings[3]=0;
+      farrbconvert.sensorReadings[4]=-1;
+      break;
+    default:
+      Serial.println("some other sensor");
+      break;
+  }
 }
