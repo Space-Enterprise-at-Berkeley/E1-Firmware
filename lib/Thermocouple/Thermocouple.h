@@ -143,9 +143,11 @@ namespace Thermocouple {
     Adafruit_MCP9600 ** _cryo_amp_boards;
     int * _addrs;
     int _numSensors;
+    int * _initStatus;
 
     int init(int numSensors, int * addrs, _themotype * types) { // assume that numSensors is < max Size of packet. Add some error checking here
       _addrs = (int *)malloc(numSensors);
+      _initStatus = (int *)malloc(numSensors);
       _cryo_amp_boards = (Adafruit_MCP9600 **)malloc(numSensors * sizeof(Adafruit_MCP9600));
 
       _numSensors = numSensors;
@@ -156,7 +158,11 @@ namespace Thermocouple {
 
         if (!_cryo_amp_boards[i]->begin(addrs[i])) {
           Serial.println("Error initializing cryo board at Addr 0x" + String(addrs[i], HEX));
-          return -1;
+          Serial.println("Continuing anyway. Will get garbage data.");
+          _initStatus[i] = -1;
+          //return -1;
+        } else {
+          _initStatus[i] = 0;
         }
 
         _cryo_amp_boards[i]->setADCresolution(MCP9600_ADCRESOLUTION_18);
@@ -170,7 +176,11 @@ namespace Thermocouple {
 
     void readCryoTemps(float *data) {
       for (int i = 0; i < _numSensors; i++) {
-        data[i] = _cryo_amp_boards[i]->readThermocouple();
+        if(_initStatus[i] == 0) {
+          data[i] = _cryo_amp_boards[i]->readThermocouple();
+        } else if (_initStatus == -1) {
+          data[i] = 99999; // random data to signify no data.
+        }
       }
       data[_numSensors] = -1;
     }

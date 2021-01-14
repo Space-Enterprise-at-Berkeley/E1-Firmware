@@ -77,12 +77,12 @@ void setup() {
   Serial.flush();
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
-  
+
   Serial.println("Writing Dummy Data");
   Serial.flush();
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
-  
+
   std::string start = "beginning writing data";
   if(!write_to_SD(start)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
