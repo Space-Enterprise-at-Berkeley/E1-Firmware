@@ -5,10 +5,15 @@
  */
 #include "common_fw.h"
 
+SdFat sd;
+File file;
+struct Queue *sdBuffer;
+union floatArrToBytes farrbconvert;
+
 /**
  *
  */
-bool write_to_SD(std::string message, char * file_name) {
+bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
     if(sdBuffer->length >= 40) {
       if(file.open(file_name, O_RDWR | O_APPEND)) {
@@ -67,6 +72,7 @@ String make_packet(int id, bool error) {
  * Decodes a packet sent from ground station in the following format:
  * {<valve_ID>,<open(1) or close(0)|checksum}
  * Populated the fields of the valve and returns the action to be taken
+ * This is a pretty beefy function; can we split this up
  */
 int decode_received_packet(String packet, valveInfo *valve, valveInfo *valves[], int numValves) {
   Serial.println(packet);
@@ -82,7 +88,7 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo *valves[],
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
 
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
-  char *checksum_char = checksumstr.c_str();
+  const char *checksum_char = checksumstr.c_str();
   int checksum = strtol(checksum_char, NULL, 16);
   Serial.println(checksum);
 
@@ -144,4 +150,11 @@ uint16_t Fletcher16(uint8_t *data, int count) {
     }
   }
   return (sum2 << 8) | sum1;
+}
+
+void debug(String str, int flag){
+  if (flag == 0){
+    Serial.println(str);
+    Serial.flush();
+  }
 }

@@ -5,6 +5,8 @@
 #ifndef __SOLENOIDS__
 #define __SOLENOIDS__
 
+#include <Arduino.h>
+
 using namespace std;
 
 namespace Solenoids {

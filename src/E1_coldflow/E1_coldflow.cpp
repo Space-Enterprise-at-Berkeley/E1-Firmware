@@ -5,12 +5,9 @@
    ground station.
    Created by Vainavi Viswanath, Aug 21, 2020.
 */
-#include <Arduino.h>
-#include <Wire.h>
 
 #include "config.h"
 
-#include <common_fw.h>
 #include <ducer.h>
 #include <tempController.h>
 #include <batteryMonitor.h>
@@ -18,8 +15,7 @@
 #define RFSerial Serial6
 
 // within loop state variables
-uint8_t board_address = 0;
-uint8_t sensor_id = 0;
+
 uint8_t val_index = 0;
 char command[50]; //input command from GS
 
@@ -29,7 +25,7 @@ char command[50]; //input command from GS
 int sensor_checks[numSensors][2];
 
 valveInfo valve;
-sensorInfo sensor = {"temp", 23, 23, 23};
+sensorInfo *sensor;
 
 long startTime;
 String packet;
@@ -42,10 +38,9 @@ void setup() {
   RFSerial.begin(57600);
 
   delay(3000);
-  Serial.println("Initializing Libraries");
 
   for (int i = 0; i < numSensors; i++) {
-    sensor_checks[i][0] = sensors[i].clock_freq;
+    sensor_checks[i][0] = sensors[i]->clock_freq;
     sensor_checks[i][1] = 1;
   }
 
@@ -54,13 +49,12 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
-  Serial.println("Opening File");
-  Serial.flush();
+
+  debug("Opening File", DEBUG);
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
 
-  Serial.println("Writing Dummy Data");
-  Serial.flush();
+  debug("Writing Dummy Data", DEBUG);
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
@@ -70,22 +64,9 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  Serial.println("Initializing ADCs");
-  Serial.flush();
-  // initialize all ADCs
-  ads = new ADS1219*[numADCSensors];
-  for (int i = 0; i < numADCSensors; i++) {
-    ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
-    ads[i]->setConversionMode(SINGLE_SHOT);
-    ads[i]->setVoltageReference(REF_EXTERNAL);
-    ads[i]->setGain(GAIN_ONE);
-    ads[i]->setDataRate(90);
-    pinMode(adcDataReadyPins[i], INPUT_PULLUP);
-    ads[i]->calibrate();
-  }
+  config::setup();
 
-  Serial.println("Initializing Libraries");
-  Serial.flush();
+  debug("Initializing Libraries", DEBUG);
 
   Solenoids::init();
   batteryMonitor::init();
@@ -98,6 +79,7 @@ void setup() {
 }
 
 void loop() {
+  // process command
   if (RFSerial.available() > 0) {
     int i = 0;
     while (RFSerial.available()) {
@@ -105,9 +87,9 @@ void loop() {
       Serial.print(command[i]);
       i++;
     }
-    Serial.println();
-    Serial.println(String(command));
-    int action = decode_received_packet(String(command), &valve, &valves, numValves);
+
+    debug(String(command), DEBUG);
+    int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
@@ -128,10 +110,8 @@ void loop() {
       continue;
     }
     sensor = sensors[j];
-    board_address = sensor.board_address;
-    sensor_id = sensor.id;
-    sensorReadFunc(sensor.id);
-    packet = make_packet(sensor.id, false);
+    sensorReadFunc(sensor->id);
+    packet = make_packet(sensor->id, false);
     Serial.println(packet);
     RFSerial.println(packet);
     write_to_SD(packet.c_str(), file_name);
