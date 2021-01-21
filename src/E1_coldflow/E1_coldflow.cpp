@@ -76,7 +76,7 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
 
-  tempController::init(10, 2, 7); // setPoint = 10 C, alg = PID, heaterPin = 7
+  tempController::init(10, 2, LOX_ADAPTER_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
 }
 
 void loop() {
