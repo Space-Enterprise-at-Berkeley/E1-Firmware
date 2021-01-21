@@ -16,10 +16,10 @@ namespace batteryMonitor {
   float energyConsumed = 0;
   long last_checked;
 
-  void init() {
-    ina.begin();
+  void init(TwoWire *localWire, float rShunt, float maxExpectedCurrent) {
+    ina.begin(localWire);
     ina.configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
-    ina.calibrate(0.002, 10);
+    ina.calibrate(rShunt, maxExpectedCurrent);
   }
 
   void readVoltage(float *data) {

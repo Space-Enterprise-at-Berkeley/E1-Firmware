@@ -43,6 +43,9 @@ struct valveInfo **valves;
 
 #define HIGH_SOL_PIN 6
 
+const float batteryMonitorShuntR = 0.002; // ohms
+const float batteryMonitorMaxExpectedCurrent = 10; // amps
+
 namespace config {
   void setup() {
     debug("Initializing ADCs", DEBUG);
