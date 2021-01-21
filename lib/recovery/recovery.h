@@ -9,9 +9,7 @@ using namespace std;
 
 namespace Recovery {
 
-  // take this pin values on init, and put them in a config file with brain.
-  #define DROGUE_PIN 9
-  #define MAIN_CHUTE_PIN 10
+  int drogue_pin, main_pin;
 
   int drogue_chute_state = 0;
   int main_chute_state = 0;
@@ -21,11 +19,8 @@ namespace Recovery {
     drogue_chute_state = 0;
     main_chute_state = 0;
 
-    pinMode(DROGUE_PIN, OUTPUT);
-    pinMode(MAIN_CHUTE_PIN, OUTPUT);
-
-    digitalWrite(DROGUE_PIN, drogue_chute_state);
-    digitalWrite(MAIN_CHUTE_PIN, main_chute_state);
+    digitalWrite(drogue_pin, drogue_chute_state);
+    digitalWrite(main_pin, main_chute_state);
   }
 
   void getAllStates(float *data){
@@ -48,7 +43,7 @@ namespace Recovery {
     } else {
       drogue_chute_state = 0;
     }
-    digitalWrite(DROGUE_PIN, drogue_chute_state);
+    digitalWrite(drogue_pin, drogue_chute_state);
     return drogue_chute_state;
   }
 
@@ -58,7 +53,7 @@ namespace Recovery {
     } else {
       main_chute_state = 0;
     }
-    digitalWrite(MAIN_CHUTE_PIN, main_chute_state);
+    digitalWrite(main_pin, main_chute_state);
     return main_chute_state;
   }
 
