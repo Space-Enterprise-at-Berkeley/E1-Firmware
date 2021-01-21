@@ -11,16 +11,10 @@ using namespace std;
 
 namespace Solenoids {
 
-  // take this pin values on init, and put them in a config file with brain.
-  #define LOX_2_PIN 0
-  #define LOX_5_PIN 2
-  #define LOX_GEMS_PIN 4
 
-  #define PROP_2_PIN 1
-  #define PROP_5_PIN 3
-  #define PROP_GEMS_PIN 5
-
-  #define HIGH_SOL_PIN 6
+  int lox_2_pin, lox_5_pin, lox_gems_pin;
+  int prop_2_pin, prop_5_pin, prop_gems_pin;
+  int high_sol_pin;
 
   int high_sol_state = 0;
 
@@ -33,7 +27,7 @@ namespace Solenoids {
   int prop_gems_state = 0;
 
 
-  void init() {
+  void init(int lox2, int lox5, int loxg, int prop2, int prop5, int propg, int high) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -44,25 +38,25 @@ namespace Solenoids {
 
     high_sol_state = 0;
 
-    pinMode(LOX_2_PIN, OUTPUT);
-    pinMode(LOX_5_PIN, OUTPUT);
-    pinMode(LOX_GEMS_PIN, OUTPUT);
+    lox_2_pin = lox2;
+    lox_5_pin = lox5;
+    lox_gems_pin = loxg;
 
-    pinMode(PROP_2_PIN, OUTPUT);
-    pinMode(PROP_5_PIN, OUTPUT);
-    pinMode(PROP_GEMS_PIN, OUTPUT);
+    prop_2_pin = prop2;
+    prop_5_pin = prop5;
+    prop_gems_pin = propg;
 
-    pinMode(HIGH_SOL_PIN, OUTPUT);
+    high_sol_pin = high;
 
-    digitalWrite(LOX_2_PIN, lox2_state);
-    digitalWrite(LOX_5_PIN, lox5_state);
-    digitalWrite(LOX_GEMS_PIN, lox_gems_state);
+    digitalWrite(lox_2_pin, lox2_state);
+    digitalWrite(lox_5_pin, lox5_state);
+    digitalWrite(lox_gems_pin, lox_gems_state);
 
-    digitalWrite(PROP_2_PIN, prop2_state);
-    digitalWrite(PROP_5_PIN, prop5_state);
-    digitalWrite(PROP_GEMS_PIN, prop_gems_state);
+    digitalWrite(prop_2_pin, prop2_state);
+    digitalWrite(prop_5_pin, prop5_state);
+    digitalWrite(prop_gems_pin, prop_gems_state);
 
-    digitalWrite(HIGH_SOL_PIN, high_sol_state);
+    digitalWrite(high_sol_pin, high_sol_state);
   }
 
   void getAllStates(float *data){
@@ -89,7 +83,7 @@ namespace Solenoids {
     } else {
       high_sol_state = 0;
     }
-    digitalWrite(HIGH_SOL_PIN, high_sol_state);
+    digitalWrite(high_sol_pin, high_sol_state);
     return high_sol_state;
   }
 
@@ -99,7 +93,7 @@ namespace Solenoids {
     } else {
       lox2_state = 0;
     }
-    digitalWrite(LOX_2_PIN, lox2_state);
+    digitalWrite(lox_2_pin, lox2_state);
     return lox2_state;
   }
 
@@ -109,7 +103,7 @@ namespace Solenoids {
     } else {
       lox5_state = 0;
     }
-    digitalWrite(LOX_5_PIN, lox5_state);
+    digitalWrite(lox_5_pin, lox5_state);
     return lox5_state;
   }
 
@@ -119,7 +113,7 @@ namespace Solenoids {
     } else {
       lox_gems_state = 0;
     }
-    digitalWrite(LOX_GEMS_PIN, lox_gems_state);
+    digitalWrite(lox_gems_pin, lox_gems_state);
     return lox_gems_state;
   }
 
@@ -129,7 +123,7 @@ namespace Solenoids {
     } else {
       prop2_state = 0;
     }
-    digitalWrite(PROP_2_PIN, prop2_state);
+    digitalWrite(prop_2_pin, prop2_state);
     return prop2_state;
   }
 
@@ -139,7 +133,7 @@ namespace Solenoids {
     } else {
       prop5_state = 0;
     }
-    digitalWrite(PROP_5_PIN, prop5_state);
+    digitalWrite(prop_5_pin, prop5_state);
     return prop5_state;
   }
 
@@ -149,7 +143,7 @@ namespace Solenoids {
     } else {
       prop_gems_state = 0;
     }
-    digitalWrite(PROP_GEMS_PIN, prop_gems_state);
+    digitalWrite(prop_gems_pin, prop_gems_state);
     return prop_gems_state;
   }
 

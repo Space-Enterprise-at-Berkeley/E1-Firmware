@@ -68,7 +68,7 @@ void setup() {
 
   debug("Initializing Libraries", DEBUG);
 
-  Solenoids::init();
+  Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
   batteryMonitor::init();
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ads);

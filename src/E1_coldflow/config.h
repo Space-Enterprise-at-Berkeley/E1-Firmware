@@ -33,6 +33,16 @@ struct sensorInfo **sensors;
 const int numValves = 9;
 struct valveInfo **valves;
 
+#define LOX_2_PIN 0
+#define LOX_5_PIN 2
+#define LOX_GEMS_PIN 4
+
+#define PROP_2_PIN 1
+#define PROP_5_PIN 3
+#define PROP_GEMS_PIN 5
+
+#define HIGH_SOL_PIN 6
+
 namespace config {
   void setup() {
     debug("Initializing ADCs", DEBUG);
@@ -66,6 +76,16 @@ namespace config {
     *sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     *sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     *sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+
+    pinMode(LOX_2_PIN, OUTPUT);
+    pinMode(LOX_5_PIN, OUTPUT);
+    pinMode(LOX_GEMS_PIN, OUTPUT);
+
+    pinMode(PROP_2_PIN, OUTPUT);
+    pinMode(PROP_5_PIN, OUTPUT);
+    pinMode(PROP_GEMS_PIN, OUTPUT);
+
+    pinMode(HIGH_SOL_PIN, OUTPUT);
 
   }
 }
