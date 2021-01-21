@@ -1,5 +1,5 @@
 /*
-  solenoids.h - A c++ library to interface with all of the solenoids on our rocket.
+  batteryMonitor.h - A c++ library to interface w/ the ina226 chip and read battery stats.
   Created by Vamshi Balanaga, Sept 15, 2020.
 */
 #ifndef __BATT_MON__
