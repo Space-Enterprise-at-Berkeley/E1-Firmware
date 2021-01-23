@@ -74,7 +74,7 @@ String make_packet(int id, bool error) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int decode_received_packet(String packet, valveInfo *valve, valveInfo *valves[], int numValves) {
+int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
@@ -111,10 +111,10 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo *valves[],
 /**
  *
  */
-void chooseValveById(int id, valveInfo *valve, valveInfo *valves[], int numValves) {
+void chooseValveById(int id, valveInfo *valve, valveInfo valves[], int numValves) {
   for (int i = 0; i < numValves; i++) {
-    if (valves[i]->id == id) {
-      valve = valves[i];
+    if (valves[i].id == id) {
+      *valve = valves[i];
       break;
     }
   }

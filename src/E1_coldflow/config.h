@@ -29,10 +29,10 @@ int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
 int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
 
 const uint8_t numSensors = 4;
-struct sensorInfo **sensors;
+sensorInfo *sensors;
 
 const int numValves = 9;
-struct valveInfo **valves;
+struct valveInfo *valves;
 
 #define LOX_2_PIN 0
 #define LOX_5_PIN 2
@@ -61,27 +61,28 @@ namespace config {
       ads[i]->setGain(ONE);
       ads[i]->setDataRate(1000);
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
-      ads[i]->calibrate();
+      // ads[i]->calibrate();
     }
 
-    debug("Initializing valves", DEBUG);
-    valves = new valveInfo*[numValves];
-    *valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
-    *valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
-    *valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
-    *valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
-    *valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
-    *valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
-    *valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    *valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    *valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-
     debug("Initializing sensors", DEBUG);
-    sensors = new sensorInfo*[numSensors];
-    *sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    *sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    *sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    *sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+    sensors = new sensorInfo[numSensors];
+    // sensorInfo s = ;
+    sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+    sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
+    sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+
+    debug("Initializing valves", DEBUG);
+    valves = new valveInfo[numValves];
+    valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
+    valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
+    valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
+    valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
+    valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
+    valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
+    valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
+    valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
+    valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
 
     pinMode(LOX_2_PIN, OUTPUT);
     pinMode(LOX_5_PIN, OUTPUT);

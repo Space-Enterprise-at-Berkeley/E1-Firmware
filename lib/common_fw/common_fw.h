@@ -110,9 +110,9 @@ struct valveInfo {
 
 String make_packet (int id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
-void chooseValveById (int id, struct valveInfo *valve, valveInfo *valves[], int numValves);
+void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
-int decode_received_packet(String packet, valveInfo *valve, valveInfo *valves[], int numValves);
+int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves);
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
 void debug(String str, int debug);
@@ -123,7 +123,7 @@ extern File file;
 extern struct Queue *sdBuffer;
 
 extern union floatArrToBytes farrbconvert;
-extern struct sensorInfo **sensors;
-extern struct valveInfo **valves;
+extern struct sensorInfo *sensors;
+extern struct valveInfo *valves;
 
 #endif // _COMMON_H_

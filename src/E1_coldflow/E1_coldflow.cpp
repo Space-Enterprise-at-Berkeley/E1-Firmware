@@ -12,7 +12,13 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define RFSerial Serial6
+#define SERIAL_INPUT 1
+
+#if SERIAL_INPUT
+  #define RFSerial Serial
+#else
+  #define RFSerial Serial6
+#endif
 
 // within loop state variables
 
@@ -37,12 +43,25 @@ void setup() {
   Serial.begin(57600);
   RFSerial.begin(57600);
 
-  delay(3000);
+  delay(5000);
+
+  debug("Setting up Config", DEBUG);
+  config::setup();
+
+  debug("Initializing Sensor Frequencies", DEBUG);
 
   for (int i = 0; i < numSensors; i++) {
-    sensor_checks[i][0] = sensors[i]->clock_freq;
+    debug(String(i), DEBUG);
+    debug("starting 1st line", DEBUG);
+    sensor_checks[i][0] = sensors[i].clock_freq;
+    debug("starting 2nd line", DEBUG);
     sensor_checks[i][1] = 1;
   }
+
+  debug("Sensor IDs:", DEBUG);
+  debug(String(sensors[0].name), DEBUG);
+
+  debug("Starting SD", DEBUG);
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -64,7 +83,7 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  config::setup();
+  // config::setup();
 
   debug("Initializing Libraries", DEBUG);
 
@@ -95,7 +114,9 @@ void loop() {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
       Serial.println(packet);
-      RFSerial.println(packet);
+      #if SERIAL_INPUT != 1
+        RFSerial.println(packet);
+      #endif
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -110,13 +131,16 @@ void loop() {
       sensor_checks[j][1] += 1;
       continue;
     }
-    sensor = sensors[j];
+    sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
-    RFSerial.println(packet);
+    #if SERIAL_INPUT != 1
+        RFSerial.println(packet);
+      #endif
     write_to_SD(packet.c_str(), file_name);
   }
+  // delay(100); 
 }
 
 
