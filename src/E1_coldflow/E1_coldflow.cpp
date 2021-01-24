@@ -43,7 +43,8 @@ void setup() {
   Serial.begin(57600);
   RFSerial.begin(57600);
 
-  delay(5000);
+  while(!Serial);
+  while(!RFSerial);
 
   debug("Setting up Config", DEBUG);
   config::setup();
@@ -140,7 +141,7 @@ void loop() {
       #endif
     write_to_SD(packet.c_str(), file_name);
   }
-  // delay(100); 
+  // delay(100);
 }
 
 
