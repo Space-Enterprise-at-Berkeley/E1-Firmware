@@ -61,23 +61,40 @@ FsFile file;
 bool startup = false;
 int startupPhase = 0;
 
+bool shutdown = false;
+int shutdownPhase = 0;
+
+/* Delays during shutdown sequence:
+  1 - Between arm 2-way, close high pressure and close LOX
+  2 - Between close Prop and close LOX
+  3 - Between close LOX and Gems vent
+*/
+int shutdownDelays[3] = {0, 1000, 0};
+
 /* Delays during startup sequence:
   1 - Between open pressure and open LOX Main
   2 - Between open LOX Main and open Prop Main
   3 - Between open Prop Main and close Main Valve Arm
 */
 int startupDelays[3] = {1000, 0 ,1000};
+
 uint32_t startupTimer;
+uint32_t shutdownTimer;
 
 bool shutdown = false;
 
-int beginBFlow();
+
+int beginFlow();
 void startupConfirmation(float *data);
+void shutdownConfirmation(float *data);
+int endFlow();
 
 bool checkStartupProgress(int startupPhase, int startupTimer);
 bool advanceStartup(int startupPhase);
 
-int endBFlow();
+bool checkShutdownProgress(int shutdownPhase, int shutdownTimer);
+bool advanceShutdown(int shutdownPhase);
+
 
 
 //---------SD Queue-------------
@@ -178,7 +195,7 @@ struct valveInfo {
   void (*ackFunc)(float *data);
 };
 
-const int numValves = 10;
+const int numValves = 11;
 
 valveInfo valves[numValves] = {
   {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)},
@@ -191,7 +208,7 @@ valveInfo valves[numValves] = {
   {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)},
   {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)},
   {"Perform Flow", 29, &(beginFlow), &(endFlow), &(startupConfirmation)},
-  {"Perform BFLow", 30, &(beginBFlow), &(endBFlow), &(startupConfirmation)}
+  {"Stop Flow", 30, &(beginFlow), &(endFlow), &(shutdownConfirmation)}
 };
 
 void sensorReadFunc(int id) {
@@ -350,46 +367,19 @@ int beginFlow() {
   return -1;
 }
 
-int beginBFlow() {
-  /* Check if rocket is in required state for a flow:
-    Pressure - Closed
-    LOX GEMS & Prop GEMS - Closed
-    Arming Valve - Closed
-    LOX Main Valve & Prop Main Valve - Closed
-  */
-  startup = !Solenoids::getHPS() &&
-      !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5() &&
-      !Solenoids::getLoxGems() && !Solenoids::getPropGems();
-      return -1;
-}
-
 void startupConfirmation(float *data) {
   data[0] = startup ? 1 : 0;
   data[1] = -1;
 }
 
-// Pretending is a valve action, do -1 to indicate that
-int endFlow() {
-  shutdown = true;
-  return 1;
+void shutdownConfirmation(float *data) {
+  data[0] = shutdown ? 1 : 0;
+  data[1] = -1;
 }
 
-int endBFlow() {
-  /* Simultaneously:
-      2 Way - Open
-      Pressurant - Closed
-      Propane - Closed
-      Lox - Closed
-      GEMS - Open
-  */
-  Solenoids::armAll();
-  Solenoids::deactivateHighPressureSolenoid();
-  Solenoids::closePropane();
-  Solenoids::closeLOX();
-  Solenoids::ventLOXGems();
-  Solenoids::ventPropaneGems();
-  Solenoids::getAllStates(farrbconvert.sensorReadings);
-  shutdown = true;
+// Pretending is a valve action, do -1 to indicate that
+int endFlow() {
+  shutdown = !startup;
   return 1;
 }
 
@@ -403,6 +393,49 @@ bool checkStartupProgress(int startupPhase, int startupTimer) {
   } else {
     return true;
   }
+}
+
+bool checkShutdownProgress(int shutdownPhase, int shutdownTimer) {
+  if (shutdownPhase > 0) {
+    if (shutdownTimer > shutdownDelays[shutdownPhase - 1]) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
+
+bool advanceShutdown() {
+  if (shutdownPhase == 0) {
+    Solenoids::armLOX();
+    Solenoids::deactivateHighPressureSolenoid();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+    shutdownPhase++;
+
+  } else if (shutdownPhase == 1) {
+    Solenoids::closePropane();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+    shutdownPhase++;
+
+  } else if (shutdownPhase == 2) {
+    Solenoids::closeLOX();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+    shutdownPhase++;
+
+  } else if (shutdownPhase == 3) {
+    Solenoids::ventLOXGems();
+    Solenoids::ventPropaneGems();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+
+    shutdownPhase = 0;
+    shutdown = false;
+
+  } else {
+    return false;
+  }
+  return true;
 }
 
 /*

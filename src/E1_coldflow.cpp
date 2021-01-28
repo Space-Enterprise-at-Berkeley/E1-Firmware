@@ -13,12 +13,16 @@
 #include <Barometer.h>
 #include <ducer.h>
 
-#define RFSerial Serial6
+#define SERIAL_INPUT 0
+
+#if SERIAL_INPUT
+  #define RFSerial Serial
+#else
+  #define RFSerial Serial6
+#endif
 #define GPSSerial Serial8
 
 #define FLIGHT_BRAIN_ADDR 0x00
-
-#define DEBUG 0
 
 // within loop state variables
 uint8_t board_address = 0;
@@ -121,18 +125,45 @@ void loop() {
     int i = 0;
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
-      Serial.print(command[i]);
       i++;
     }
-    Serial.println();
-    Serial.println(String(command));
+    // Serial.println(String(command));
     int action = decode_received_packet(String(command), &valve);
+
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
       Serial.println(packet);
-      RFSerial.println(packet);
+      #if SERIAL_INPUT != 1
+        RFSerial.println(packet);
+      #endif
       write_to_SD(packet.c_str());
+    }
+  }
+
+  if (startup) {
+    Serial.println("Eureka-1 is in Startup");
+    if (checkStartupProgress(startupPhase, millis() - startupTimer)) {
+      Serial.print("startupPhase: ");
+      Serial.println(startupPhase);
+      advanceStartup(); //change to pass pointer
+      packet = make_packet(29, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+      startupTimer = millis();
+    }
+  }
+
+  if (shutdown) {
+    Serial.println("Eureka-1 is in Shutdown");
+    if (checkStartupProgress(shutdownPhase, millis() - startupTimer)) {
+      Serial.print("shutdownPhase: ");
+      Serial.println(shutdownPhase);
+      advanceShutdown(); //change to pass pointer
+      packet = make_packet(30, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+      shutdownTimer = millis();
     }
   }
 
@@ -151,8 +182,10 @@ void loop() {
     sensor_id = sensor.id;
     sensorReadFunc(sensor.id);
     packet = make_packet(sensor.id, false);
-    Serial.println(packet);
-    RFSerial.println(packet);
+    // Serial.println(packet);
+    #if SERIAL_INPUT != 1
+        RFSerial.println(packet);
+    #endif
     write_to_SD(packet.c_str());
   }
 }
