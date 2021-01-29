@@ -292,6 +292,35 @@ namespace Solenoids {
     closePropane();
     return 1;
   }
+
+   int getHPS() {
+    return high_sol_state;
+  }
+
+  int getLox2() {
+    return lox2_state;
+  }
+
+  int getLox5() {
+    return lox5_state;
+  }
+
+  int getLoxGems() {
+    return lox_gems_state;
+  }
+
+  int getProp2() {
+    return prop2_state;
+  }
+
+  int getProp5() {
+    return prop5_state;
+  }
+
+  int getPropGems() {
+    return prop_gems_state;
+  }
+
 }
 
 

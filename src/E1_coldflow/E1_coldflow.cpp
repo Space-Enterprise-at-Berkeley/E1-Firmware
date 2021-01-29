@@ -12,7 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 1
+#define SERIAL_INPUT 0
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -121,6 +121,20 @@ void loop() {
     }
   }
 
+
+   if (startup) {
+    Serial.println("Eureka-1 is in Startup");
+    if (checkStartupProgress(startupPhase, millis() - startupTimer)) {
+      Serial.print("startupPhase: ");
+      Serial.println(startupPhase);
+      advanceStartup(); //change to pass pointer
+      packet = make_packet(29, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+      startupTimer = millis();
+    }
+  }
+
   /*
      Code for requesting data and relaying back to ground station
   */
@@ -140,7 +154,10 @@ void loop() {
       #endif
     write_to_SD(packet.c_str(), file_name);
   }
-  // delay(100); 
+
+  // For dashboard display
+  delay(50); 
+
 }
 
 
