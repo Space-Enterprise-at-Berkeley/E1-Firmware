@@ -65,11 +65,10 @@ bool shutdown = false;
 int shutdownPhase = 0;
 
 /* Delays during shutdown sequence:
-  1 - Between arm 2-way, close high pressure and close LOX
-  2 - Between close Prop and close LOX
-  3 - Between close LOX and Gems vent
+  1 - Between arm 2-way, close high pressure, close Prop and close LOX
+  2 - Between close LOX and Gems vent
 */
-int shutdownDelays[3] = {0, 1000, 0};
+int shutdownDelays[2] = {0, 0};
 
 /* Delays during startup sequence:
   1 - Between open pressure and open LOX Main
@@ -80,9 +79,6 @@ int startupDelays[3] = {1000, 0 ,1000};
 
 uint32_t startupTimer;
 uint32_t shutdownTimer;
-
-bool shutdown = false;
-
 
 int beginFlow();
 void startupConfirmation(float *data);
@@ -361,9 +357,9 @@ int beginFlow() {
     Arming Valve - Closed
     LOX Main Valve & Prop Main Valve - Closed
   */
-  //&& Solenoids::getLoxGems() && Solenoids::getPropGems()
   startup = !Solenoids::getHPS() &&
-      !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
+      !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5() && 
+      Solenoids::getLoxGems() && Solenoids::getPropGems();
   return -1;
 }
 
@@ -411,20 +407,16 @@ bool advanceShutdown() {
   if (shutdownPhase == 0) {
     Solenoids::armLOX();
     Solenoids::deactivateHighPressureSolenoid();
-    Solenoids::getAllStates(farrbconvert.sensorReadings);
-    shutdownPhase++;
-
-  } else if (shutdownPhase == 1) {
     Solenoids::closePropane();
     Solenoids::getAllStates(farrbconvert.sensorReadings);
     shutdownPhase++;
 
-  } else if (shutdownPhase == 2) {
+  } else if (shutdownPhase == 1) {
     Solenoids::closeLOX();
     Solenoids::getAllStates(farrbconvert.sensorReadings);
     shutdownPhase++;
 
-  } else if (shutdownPhase == 3) {
+  } else if (shutdownPhase == 2) {
     Solenoids::ventLOXGems();
     Solenoids::ventPropaneGems();
     Solenoids::getAllStates(farrbconvert.sensorReadings);

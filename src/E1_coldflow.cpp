@@ -156,7 +156,7 @@ void loop() {
 
   if (shutdown) {
     Serial.println("Eureka-1 is in Shutdown");
-    if (checkStartupProgress(shutdownPhase, millis() - startupTimer)) {
+    if (checkStartupProgress(shutdownPhase, millis() - shutdownTimer)) {
       Serial.print("shutdownPhase: ");
       Serial.println(shutdownPhase);
       advanceShutdown(); //change to pass pointer
