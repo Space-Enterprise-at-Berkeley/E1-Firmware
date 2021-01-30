@@ -83,7 +83,7 @@ struct Queue {
  */
 union floatArrToBytes {
   char buffer[28];
-  float sensorReadings[7];
+  float sensorReadings[9];
 };
 
 /*
