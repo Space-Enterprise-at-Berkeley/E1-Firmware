@@ -96,9 +96,12 @@ typedef enum
 
 class INA226
 {
+    protected:
+  TwoWire *_wire;
+
     public:
 
-	bool begin(uint8_t address = INA226_ADDRESS);
+	bool begin(TwoWire *localWire, uint8_t address = INA226_ADDRESS);
 	bool configure(ina226_averages_t avg = INA226_AVERAGES_1, ina226_busConvTime_t busConvTime = INA226_BUS_CONV_TIME_1100US, ina226_shuntConvTime_t shuntConvTime = INA226_SHUNT_CONV_TIME_1100US, ina226_mode_t mode = INA226_MODE_SHUNT_BUS_CONT);
 	bool calibrate(float rShuntValue = 0.1, float iMaxExcepted = 2);
 
@@ -135,7 +138,6 @@ class INA226
 	float getMaxPower(void);
 
     private:
-
 	int8_t inaAddress;
 	float currentLSB, powerLSB;
 	float vShuntMax, vBusMax, rShunt;

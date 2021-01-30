@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "INA226.h"
 
-bool INA226::begin(uint8_t address)
+bool INA226::begin(TwoWire *localWire, uint8_t address)
 {
-    Wire.begin();
+    _wire = localWire; // guaranteed that this is already "begun"
     inaAddress = address;
     return true;
 }
@@ -285,27 +285,27 @@ int16_t INA226::readRegister16(uint8_t reg)
 {
     int16_t value;
 
-    Wire.beginTransmission(inaAddress);
+    _wire->beginTransmission(inaAddress);
     #if ARDUINO >= 100
-        Wire.write(reg);
+        _wire->write(reg);
     #else
-        Wire.send(reg);
+        _wire->send(reg);
     #endif
-    Wire.endTransmission();
+    _wire->endTransmission();
 
     delay(1);
 
-    Wire.beginTransmission(inaAddress);
-    Wire.requestFrom(inaAddress, 2);
-    while(!Wire.available()) {};
+    _wire->beginTransmission(inaAddress);
+    _wire->requestFrom(inaAddress, 2);
+    while(!_wire->available()) {};
     #if ARDUINO >= 100
-        uint8_t vha = Wire.read();
-        uint8_t vla = Wire.read();
+        uint8_t vha = _wire->read();
+        uint8_t vla = _wire->read();
     #else
-        uint8_t vha = Wire.receive();
-        uint8_t vla = Wire.receive();
+        uint8_t vha = _wire->receive();
+        uint8_t vla = _wire->receive();
     #endif
-    Wire.endTransmission();
+    _wire->endTransmission();
 
     value = vha << 8 | vla;
 
@@ -318,15 +318,15 @@ void INA226::writeRegister16(uint8_t reg, uint16_t val)
     vla = (uint8_t)val;
     val >>= 8;
 
-    Wire.beginTransmission(inaAddress);
+    _wire->beginTransmission(inaAddress);
     #if ARDUINO >= 100
-        Wire.write(reg);
-        Wire.write((uint8_t)val);
-        Wire.write(vla);
+        _wire->write(reg);
+        _wire->write((uint8_t)val);
+        _wire->write(vla);
     #else
-        Wire.send(reg);
-        Wire.send((uint8_t)val);
-        Wire.send(vla);
+        _wire->send(reg);
+        _wire->send((uint8_t)val);
+        _wire->send(vla);
     #endif
-    Wire.endTransmission();
+    _wire->endTransmission();
 }
