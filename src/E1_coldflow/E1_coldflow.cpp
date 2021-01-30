@@ -45,7 +45,8 @@ void setup() {
   Serial.begin(57600);
   RFSerial.begin(57600);
 
-  delay(5000);
+  while(!Serial);
+  while(!RFSerial);
 
   debug("Setting up Config", DEBUG);
   config::setup();

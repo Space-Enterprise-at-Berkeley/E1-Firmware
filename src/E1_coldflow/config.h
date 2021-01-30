@@ -24,9 +24,9 @@ const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
 int thermAdcChannels[numAnalogThermocouples] = {2};
 
-const int numPressureTransducers = 5;
-int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
-int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
+const int numPressureTransducers = 7;
+int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1};
+int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0, 1, 3};
 
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
