@@ -12,7 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 1
+#define SERIAL_INPUT 0
 
 #if SERIAL_INPUT
   #define RFSerial Serial
