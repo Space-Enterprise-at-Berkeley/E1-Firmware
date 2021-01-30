@@ -64,9 +64,17 @@ int startupDelays[3] = {1000, 0 ,1000};
 uint32_t startupTimer;
 
 bool shutdown = false;
+int shutdownPhase = 0;
+
+/* Delays during shutdown sequence:
+  1 - Between arm 2-way, close high pressure, close Prop and close LOX
+  2 - Between close LOX and closing Arming valve & opening Gems vent
+*/
+int shutdownDelays[2] = {0, 750};
+uint32_t shutdownTimer;
 
 int beginFlow();
-void startupConfirmation(float *data);
+void flowConfirmation(float *data);
 int endFlow();
 bool checkStartupProgress(int startupPhase, int startupTimer);
 bool advanceStartup(int startupPhase);
@@ -108,7 +116,7 @@ namespace config {
     valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
     valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-    valves[9] = {"Perform Flow", 29, &(beginFlow), &(endFlow), &(startupConfirmation)};
+    valves[9] = {"Perform Flow", 29, &(beginFlow), &(endFlow), &(flowConfirmation)};
 
     pinMode(LOX_2_PIN, OUTPUT);
     pinMode(LOX_5_PIN, OUTPUT);
@@ -137,17 +145,22 @@ int beginFlow() {
   //&& Solenoids::getLoxGems() && Solenoids::getPropGems()
   startup = !Solenoids::getHPS() &&
       !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
+  if (startup) {
+     Serial.println("Eureka-1 is in Startup");
+  }
   return -1;
 }
 
-void startupConfirmation(float *data) {
+void flowConfirmation(float *data) {
   data[0] = startup ? 1 : 0;
-  data[1] = -1;
+  data[1] = shutdown ? 1 : 0;
+  data[2] = -1;
 }
 
 // Pretending is a valve action, do -1 to indicate that 
 int endFlow() {
   shutdown = true;
+  Serial.println("Eureka-1 is in Shutdown");
   return 1;
 }
 
@@ -182,13 +195,14 @@ bool advanceStartup() {
     
       // after a delay open LOX main valve
       Solenoids::openLOX();
+      Solenoids::openPropane();
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       startupPhase++;
 
   } else if (startupPhase == 2) {
     
       // after a delay open Prop main valve
-      Solenoids::openPropane();
+      // Solenoids::openPropane();
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       startupPhase++;
 
@@ -204,6 +218,52 @@ bool advanceStartup() {
 
   }
   else {
+    return false;
+  }
+  return true;
+}
+
+
+void shutdownConfirmation(float *data) {
+  data[0] = shutdown ? 1 : 0;
+  data[1] = -1;
+}
+
+bool checkShutdownProgress(int shutdownPhase, int shutdownTimer) {
+  if (shutdownPhase > 0) {
+    if (shutdownTimer > shutdownDelays[shutdownPhase - 1]) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
+
+bool advanceShutdown() {
+  if (shutdownPhase == 0) {
+    Solenoids::deactivateHighPressureSolenoid();
+    Solenoids::armLOX();
+    Solenoids::closePropane();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+    shutdownPhase++;
+
+  } else if (shutdownPhase == 1) {
+    Solenoids::closeLOX();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+    shutdownPhase++;
+
+  } else if (shutdownPhase == 2) {
+    Solenoids::disarmLOX();
+    Solenoids::ventLOXGems();
+    Solenoids::ventPropaneGems();
+    Solenoids::getAllStates(farrbconvert.sensorReadings);
+
+    shutdownPhase = 0;
+    shutdown = false;
+
+  } else {
     return false;
   }
   return true;

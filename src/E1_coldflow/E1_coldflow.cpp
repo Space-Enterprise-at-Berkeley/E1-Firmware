@@ -14,6 +14,8 @@
 
 #define SERIAL_INPUT 0
 
+#define NO_ADC 0
+
 #if SERIAL_INPUT
   #define RFSerial Serial
 #else
@@ -61,7 +63,7 @@ void setup() {
   debug("Sensor IDs:", DEBUG);
   debug(String(sensors[0].name), DEBUG);
 
-  debug("Starting SD", DEBUG);
+  // debug("Starting SD", DEBUG);
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -123,7 +125,6 @@ void loop() {
 
 
    if (startup) {
-    Serial.println("Eureka-1 is in Startup");
     if (checkStartupProgress(startupPhase, millis() - startupTimer)) {
       Serial.print("startupPhase: ");
       Serial.println(startupPhase);
@@ -132,6 +133,18 @@ void loop() {
       Serial.println(packet);
       RFSerial.println(packet);
       startupTimer = millis();
+    }
+  }
+
+  if (shutdown) {
+    if (checkShutdownProgress(shutdownPhase, millis() - shutdownTimer)) {
+      Serial.print("shutdownPhase: ");
+      Serial.println(shutdownPhase);
+      advanceShutdown(); //change to pass pointer
+      packet = make_packet(29, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+      shutdownTimer = millis();
     }
   }
 
@@ -167,13 +180,23 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
-      break;
+      #if NO_ADC == 1
+        break;
+      #else
+        Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+        farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+        farrbconvert.sensorReadings[2] = -1;
+        break;
+      #endif
+
     case 1:
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
-      break;
+      #if NO_ADC == 1
+        break;
+      #else
+        Ducers::readAllPressures(farrbconvert.sensorReadings);
+        break;
+      #endif
+
     case 2:
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
