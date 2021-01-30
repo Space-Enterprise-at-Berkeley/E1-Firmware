@@ -1,5 +1,3 @@
 .DS_Store
 .vscode/
 .pio/
-.clang_complete
-.gcc-flags.json
