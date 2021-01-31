@@ -108,17 +108,20 @@ struct valveInfo {
 };
 
 
-String make_packet (int id, bool error);
+uint8_t make_packet (uint8_t id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
-int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves);
+int8_t decode_received_packet(uint8_t *packet, valveInfo *valve, valveInfo valves[], int numValves, int DEBUG);
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
 void debug(String str, int debug);
 
 extern SdFat sd;
 extern File file;
+
+extern char packet[64];
+extern char command[64]; //input command from GS
 
 extern struct Queue *sdBuffer;
 

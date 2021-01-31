@@ -5,10 +5,15 @@
  */
 #include "common_fw.h"
 
+#define PACKET_START 0x2A
+#define PACKET_END 0xC5
+
 SdFat sd;
 File file;
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
+char packet[64];
+char command[64];
 
 /**
  *
@@ -36,36 +41,34 @@ bool write_to_SD(std::string message, const char * file_name) {
  * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
-String make_packet(int id, bool error) {
-  String packet_content = (String)id;
-  packet_content += ",";
+uint8_t make_packet(uint8_t id, bool error) {
+  int i = 0;
+  packet[i++] = (PACKET_START >> 8) & 0xFF;
+  packet[i++] = PACKET_START & 0xFF;
+
+  packet[i++] = id;
   if (!error) {
-    for (int i=0; i<7; i++) {
-      float reading = farrbconvert.sensorReadings[i];
-      if (reading != -1) {
-        packet_content += (String)reading;
-        packet_content += ",";
+    for (int j=0; j<7; j++) {
+      if (farrbconvert.sensorReadings[j] != -1) {
+        std::copy(farrbconvert.buffer + j * 4,
+                  farrbconvert.buffer + (j+1) * 4,
+                  packet + i);
+        i += 4;
       } else {
         break;
       }
     }
   } else {
-    packet_content += "0,";
+    packet[i++] = 0;
   }
 
-  packet_content.remove(packet_content.length()-1);
-  int count = packet_content.length();
-  char const *data = packet_content.c_str();
-  uint16_t checksum = Fletcher16((uint8_t *) data, count);
-  packet_content += "|";
-  String check_ = String(checksum, HEX);
-  while(check_.length() < 4) {
-    check_ = "0" + check_;
-  }
-  packet_content += check_;
-  String packet = "{" + packet_content + "}";
+  uint16_t checksum = Fletcher16(packet+1, i-1);
+  packet[i++] = (checksum >> 8) & 0xFF;
+  packet[i++] = checksum & 0xFF;
 
-  return packet;
+  packet[i++] = (PACKET_END >> 8) & 0xFF;
+  packet[i++] = PACKET_END & 0xFF;
+  return i;
 }
 
 /*
@@ -74,38 +77,32 @@ String make_packet(int id, bool error) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves) {
-  Serial.println(packet);
-  int data_start_index = packet.indexOf(',');
-  if(data_start_index == -1) {
+int8_t decode_received_packet(uint8_t *packet, valveInfo *valve, valveInfo valves[], int numValves, int DEBUG) {
+  uint8_t i = 0;
+  uint16_t command_open = (packet[i++] << 8) & packet[i++];
+  if (command_open != PACKET_START) {
     return -1;
   }
-  int valve_id = packet.substring(1,data_start_index).toInt();
-  const int data_end_index = packet.indexOf('|');
-  if(data_end_index == -1) {
+  int valve_id = packet[i++];
+
+  int action = packet[i++]; // currently, action is assumed to be a single int.
+  uint16_t checksum = (packet[i++] << 8) & packet[i++];
+  uint16_t _check = Fletcher16(packet+2, 2); // just id and action both of which are ints.
+
+  debug(checksum, DEBUG);
+  debug(_check, DEBUG);
+
+  if (_check != checksum) {
     return -1;
   }
-  int action = packet.substring(data_start_index + 1,data_end_index).toInt();
 
-  String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
-  const char *checksum_char = checksumstr.c_str();
-  int checksum = strtol(checksum_char, NULL, 16);
-  Serial.println(checksum);
-
-  const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
-  String str_data= packet.substring(1,data_end_index);
-  char const *data = str_data.c_str();
-  Serial.println(data);
-
-  int _check = (int)Fletcher16((uint8_t *) data, count);
-  Serial.println(_check);
-  if (_check == checksum) {
-    Serial.println("Checksum correct, taking action");
-    chooseValveById(valve_id, valve, valves, numValves);
-    return action;
-  } else {
+  if((uint16_t)((packet[i++] << 8) & packet[i++]) != PACKET_END){
     return -1;
   }
+
+  debug("Checksum correct, taking action", DEBUG);
+  chooseValveById(valve_id, valve, valves, numValves);
+  return action;
 }
 
 /**

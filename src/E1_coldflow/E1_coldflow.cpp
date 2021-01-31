@@ -20,10 +20,9 @@
   #define RFSerial Serial6
 #endif
 
-// within loop state variables
 
 uint8_t val_index = 0;
-char command[50]; //input command from GS
+uint8_t packet_size;
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -34,7 +33,6 @@ valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
-String packet;
 
 void sensorReadFunc(int id);
 
@@ -66,8 +64,8 @@ void setup() {
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
+    packet_size = make_packet(101, true);
+    RFSerial.write(packet, packet_size);
   }
 
   debug("Opening File", DEBUG);
@@ -75,16 +73,13 @@ void setup() {
   file.close();
 
   debug("Writing Dummy Data", DEBUG);
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
+    packet_size = make_packet(101, true);
+    RFSerial.write(packet, packet_size);
   }
-
-  // config::setup();
 
   debug("Initializing Libraries", DEBUG);
 
@@ -105,26 +100,25 @@ void loop() {
     int i = 0;
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
-      Serial.print(command[i]);
       i++;
     }
+    Serial.write(command, i);
 
     debug(String(command), DEBUG);
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
+    int action = decode_received_packet(command, &valve, valves, numValves, DEBUG);
     if (action != -1) {
       take_action(&valve, action);
-      packet = make_packet(valve.id, false);
-      Serial.println(packet);
+      packet_size = make_packet(valve.id, false);
+      Serial.write(packet, packet_size);
       #if SERIAL_INPUT != 1
-        RFSerial.println(packet);
+        RFSerial.write(packet, packet_size);
       #endif
-      write_to_SD(packet.c_str(), file_name);
+      packet[packet_size] = '\0';
+      write_to_SD(packet, file_name);
     }
   }
 
-  /*
-     Code for requesting data and relaying back to ground station
-  */
+  //Code for requesting data and relaying back to ground station
   for (int j = 0; j < numSensors; j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
@@ -134,12 +128,13 @@ void loop() {
     }
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
-    packet = make_packet(sensor->id, false);
-    Serial.println(packet);
+    packet_size = make_packet(sensor->id, false);
+    Serial.write(packet, packet_size);
     #if SERIAL_INPUT != 1
-        RFSerial.println(packet);
-      #endif
-    write_to_SD(packet.c_str(), file_name);
+        RFSerial.write(packet, packet_size);
+    #endif
+    packet[packet_size] = '\0';
+    write_to_SD(packet, file_name);
   }
   // delay(100);
 }
