@@ -24,6 +24,7 @@
 uint8_t val_index = 0;
 uint8_t packet_size;
 
+using namespace std;
 /*
     Stores how often we should be requesting data from each sensor.
 */
@@ -44,23 +45,24 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
-    debug(String(i), DEBUG);
-    debug("starting 1st line", DEBUG);
+    int size = sprintf(packet, "%d", i);
+    debug(packet, size);
+    debug("starting 1st line");
     sensor_checks[i][0] = sensors[i].clock_freq;
-    debug("starting 2nd line", DEBUG);
+    debug("starting 2nd line");
     sensor_checks[i][1] = 1;
   }
 
-  debug("Sensor IDs:", DEBUG);
-  debug(String(sensors[0].name), DEBUG);
+  debug("Sensor IDs:");
+  debug(sensors[0].name);
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -68,11 +70,11 @@ void setup() {
     RFSerial.write(packet, packet_size);
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
 
-  debug("Writing Dummy Data", DEBUG);
+  debug("Writing Dummy Data");
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -81,7 +83,7 @@ void setup() {
     RFSerial.write(packet, packet_size);
   }
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
   Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
@@ -102,10 +104,9 @@ void loop() {
       command[i] = RFSerial.read();
       i++;
     }
-    Serial.write(command, i);
+    debug(command, i);
 
-    debug(String(command), DEBUG);
-    int action = decode_received_packet(command, &valve, valves, numValves, DEBUG);
+    int action = decode_received_packet(command, &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
       packet_size = make_packet(valve.id, false);

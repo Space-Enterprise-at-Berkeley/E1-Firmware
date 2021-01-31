@@ -8,11 +8,13 @@
 #define COMMON_H_
 
 #include <SPI.h>
+#include <iostream>
 #include <string>
 #include <SdFat.h>
 #include <TimeLib.h>
 #include <Arduino.h>
 #include <Wire.h>
+
 
 
 struct Queue {
@@ -90,7 +92,7 @@ union floatArrToBytes {
  * Data structure to store all information relevant to a specific sensor type.
  */
 struct sensorInfo {
-  String name;
+  std::string name;
   int board_address;
   int id;
   int clock_freq;
@@ -112,10 +114,11 @@ uint8_t make_packet (uint8_t id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
-int8_t decode_received_packet(uint8_t *packet, valveInfo *valve, valveInfo valves[], int numValves, int DEBUG);
+int8_t decode_received_packet(uint8_t *packet, valveInfo *valve, valveInfo valves[], int numValves);
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
-void debug(String str, int debug);
+void debug(std::string str);
+void debug(uint8_t *bytes, int num);
 
 extern SdFat sd;
 extern File file;

@@ -5,8 +5,8 @@
  */
 #include "common_fw.h"
 
-#define PACKET_START 0x2A
-#define PACKET_END 0xC5
+#define PACKET_START 0x2A56
+#define PACKET_END 0xC51F
 
 SdFat sd;
 File file;
@@ -77,30 +77,32 @@ uint8_t make_packet(uint8_t id, bool error) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int8_t decode_received_packet(uint8_t *packet, valveInfo *valve, valveInfo valves[], int numValves, int DEBUG) {
+int8_t decode_received_packet(uint8_t *_command, valveInfo *valve, valveInfo valves[], int numValves) {
   uint8_t i = 0;
-  uint16_t command_open = (packet[i++] << 8) & packet[i++];
+  uint16_t command_open = (_command[i++] << 8) & _command[i++];
   if (command_open != PACKET_START) {
     return -1;
   }
-  int valve_id = packet[i++];
+  int valve_id = _command[i++];
 
-  int action = packet[i++]; // currently, action is assumed to be a single int.
-  uint16_t checksum = (packet[i++] << 8) & packet[i++];
-  uint16_t _check = Fletcher16(packet+2, 2); // just id and action both of which are ints.
+  int action = _command[i++]; // currently, action is assumed to be a single int.
+  uint16_t checksum = (_command[i++] << 8) & _command[i++];
+  uint16_t _check = Fletcher16(_command+2, 2); // just id and action both of which are ints.
 
-  debug(checksum, DEBUG);
-  debug(_check, DEBUG);
+  int size = sprintf(packet,"%x",checksum);
+  debug(packet, size);
+  size = sprintf(packet,"%x", _check);
+  debug(packet, size);
 
   if (_check != checksum) {
     return -1;
   }
 
-  if((uint16_t)((packet[i++] << 8) & packet[i++]) != PACKET_END){
+  if((uint16_t)((_command[i++] << 8) & _command[i++]) != PACKET_END){
     return -1;
   }
 
-  debug("Checksum correct, taking action", DEBUG);
+  debug("Checksum correct, taking action");
   chooseValveById(valve_id, valve, valves, numValves);
   return action;
 }
@@ -149,9 +151,16 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-void debug(String str, int flag){
-  if (flag == 0){
-    Serial.println(str);
+void debug(std::string str){
+  #ifdef DEBUG
+    Serial.write(str.c_str());
     Serial.flush();
-  }
+  #endif
+}
+
+void debug(uint8_t *bytes, int count){
+  #ifdef DEBUG
+    Serial.write(bytes, count);
+    Serial.flush();
+  #endif
 }
