@@ -15,14 +15,15 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-
+#define PACKET_START 0x2A56
+#define PACKET_END 0xC51F
 
 struct Queue {
 
   struct Node {
     struct Node *next;
     char *message;
-    int length; //length doesn't include the null terminator
+    uint8_t length; //length doesn't include the null terminator
   };
 
   uint16_t length = 0;
@@ -42,11 +43,13 @@ struct Queue {
     temp = (struct Node *)malloc(sizeof(struct Node));
 
     temp->length = message.length();
-    temp->message = (char *)malloc(temp->length + 2);
+    temp->message = (char *)malloc(temp->length + 3);
 
-    strncpy(temp->message, message.c_str(), temp->length + 1);
-    temp->message[temp->length] = '\n'; // add \n to string when enqueue
-    temp->message[temp->length + 1] = '\0';
+    strncpy(temp->message+1, message.c_str(), temp->length + 1);
+    temp->message[temp->length + 1] = '\n'; // add \n to string when enqueue
+    temp->message[temp->length + 2] = '\0';
+
+    temp->message[0] = temp->length; // first element of this char array has its length.
 
     temp->next = nullptr;
     if (!front) {
@@ -57,7 +60,11 @@ struct Queue {
     end = temp;
   }
 
-  char * dequeue() { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
+  /**
+   * string still needs to be cleared after dequeue;
+   * be very careful about this; wherever this is called.
+   */
+  char * dequeue() {
     if(length > 0) {
       length--;
       struct Node *tmp = front;
@@ -114,7 +121,7 @@ uint8_t make_packet (uint8_t id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
-int8_t decode_received_packet(uint8_t *packet, valveInfo *valve, valveInfo valves[], int numValves);
+int8_t decode_received_packet(uint8_t *_command, valveInfo *valve, valveInfo valves[], int numValves);
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
 void debug(std::string str);

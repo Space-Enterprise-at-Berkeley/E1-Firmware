@@ -5,9 +5,6 @@
  */
 #include "common_fw.h"
 
-#define PACKET_START 0x2A56
-#define PACKET_END 0xC51F
-
 SdFat sd;
 File file;
 struct Queue *sdBuffer;
@@ -25,7 +22,7 @@ bool write_to_SD(std::string message, const char * file_name) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           char *msg = sdBuffer->dequeue();
-          file.write(msg);
+          file.write(msg+1, *msg); //*msg = msg[0] = len of message
           free(msg);
         }
         file.close();
@@ -151,6 +148,9 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
+/**
+ * Prints str to the serial monitor if compiled w/ the DEBUG flag.
+ */
 void debug(std::string str){
   #ifdef DEBUG
     Serial.write(str.c_str());
@@ -158,9 +158,16 @@ void debug(std::string str){
   #endif
 }
 
-void debug(uint8_t *bytes, int count){
+/**
+ * Prints the hex representation of the byte array to the serial monitor if
+ * compiled with the DEBUG flag.
+ */
+void debug(uint8_t *bytes, int count) {
   #ifdef DEBUG
-    Serial.write(bytes, count);
+    for (int i = 0; i < count; i++){
+      Serial.print(bytes[i], HEX);
+    }
+    Serial.print("\n");
     Serial.flush();
   #endif
 }
