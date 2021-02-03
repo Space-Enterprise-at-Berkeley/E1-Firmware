@@ -32,6 +32,7 @@ namespace Thermocouple {
           Serial.println("Error initializing cryo board at Addr 0x" + String(addrs[i], HEX));
           Serial.println("Continuing anyway. Will get garbage data.");
           _initStatus[i] = -1;
+          free(_cryo_amp_boards[i]);
         } else {
           _initStatus[i] = 0;
           _cryo_amp_boards[i]->setADCresolution(MCP9600_ADCRESOLUTION_18);
@@ -40,7 +41,6 @@ namespace Thermocouple {
           _cryo_amp_boards[i]->enable(true);
         }
       }
-
       return 0;
     }
 
@@ -48,8 +48,8 @@ namespace Thermocouple {
       for (int i = 0; i < _numSensors; i++) {
         if(_initStatus[i] == 0) {
           data[i] = _cryo_amp_boards[i]->readThermocouple();
-        } else if (_initStatus == -1) {
-          data[i] = 99999; // random data to signify no data.
+        } else if (_initStatus[i] == -1) {
+          data[i] = 99; // random data to signify no data.
         }
       }
       data[_numSensors] = -1;
@@ -58,6 +58,7 @@ namespace Thermocouple {
     int freeAllResources() {
         free(_cryo_amp_boards);
         free(_addrs);
+        free(_initStatus);
         return 0;
     }
 

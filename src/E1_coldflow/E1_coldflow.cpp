@@ -163,10 +163,6 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      //farrbconvert.sensorReadings[1]=0;
-      farrbconvert.sensorReadings[2]=0;
-      farrbconvert.sensorReadings[3]=0;
-      farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");
