@@ -14,3 +14,5 @@ For example, build the E1 code by running `pio run -e E1`. To upload
 the code for a specific environment, run `pio run -e <name> -t upload`.
 If the specified environment is for Teensy, it should open the teensy loader
 GUI.
+
+See `platformio.ini` for a list of current environments.

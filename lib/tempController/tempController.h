@@ -13,10 +13,10 @@
 using namespace std;
 
 namespace tempController {
-  int algorithmChoice; // 1 - naive, 2 - actual control theory
-  int setPointTemp;
-  int heaterPin = 0;
-  int heaterOutput = 0;
+  int _algorithmChoice; // 1 - naive, 2 - actual control theory
+  int _setPointTemp;
+  int _heaterPin = 0;
+  int _heaterOutput = 0;
 
   float k_p = 100;
   float k_i = 0.0000001; // low because t is in millis
@@ -24,38 +24,37 @@ namespace tempController {
 
   PID *controller = new PID(255, 0, k_p, k_i, k_d);
 
-  int init(int tempSetPoint, int _algorithmChoice, int _heaterPin) {
-    if (_algorithmChoice > 2 || _algorithmChoice < 0) {
+  int init(int tempSetPoint, int algorithmChoice, int heaterPin) {
+    if (algorithmChoice > 2 || algorithmChoice < 0) {
       return -1;
     }
-    heaterPin = _heaterPin;
-    pinMode(heaterPin, OUTPUT);
-    algorithmChoice = _algorithmChoice;
-    setPointTemp = tempSetPoint;
+    _heaterPin = heaterPin;
+    _algorithmChoice = algorithmChoice;
+    _setPointTemp = tempSetPoint;
     return 0;
   }
 
   int calculateOutput(float currTemp) {
     int voltageOut = 0;
-    if (algorithmChoice == 1) { // naive
-      voltageOut = (int)(k_p * (setPointTemp - currTemp));
+    if (_algorithmChoice == 1) { // naive
+      voltageOut = (int)(k_p * (_setPointTemp - currTemp));
       return max(0, min(255, voltageOut));
       // if(voltageOut > 0){
       //   return 1; // this threshold is dependent on the values of k_p, k_i, k_d;
       // } else {
       //   return 0;
       // }
-    } else if (algorithmChoice == 2) { // linear control theory solution
-      return controller->calculate(setPointTemp, currTemp);
+    } else if (_algorithmChoice == 2) { // linear control theory solution
+      return controller->calculate(_setPointTemp, currTemp);
     } else {
       return -1;
     }
   }
 
-  float controlTemp(float currTemp){
-    heaterOutput = calculateOutput(currTemp);
-    analogWrite(heaterPin, heaterOutput);
-    return ((float)(heaterOutput) / 255) * 24; // heater runs at 24 V
+  float controlTemp(float currTemp) {
+    _heaterOutput = calculateOutput(currTemp);
+    analogWrite(_heaterPin, _heaterOutput);
+    return ((float)(_heaterOutput) / 255) * 24; // heater runs at 24 V
   }
 };
 #endif
