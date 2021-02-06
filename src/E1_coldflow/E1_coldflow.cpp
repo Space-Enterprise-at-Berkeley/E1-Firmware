@@ -12,7 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 1
 
 #define NO_ADC 0
 
@@ -120,32 +120,27 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      write_to_SD(packet.c_str(), file_name);
+      // write_to_SD(packet.c_str(), file_name);
     }
   }
 
 
-   if (startup) {
-    if (checkStartupProgress(startupPhase, millis() - startupTimer)) {
-      Serial.print("startupPhase: ");
-      Serial.println(startupPhase);
-      advanceStartup(); //change to pass pointer
+   if (Automation::inStartup()) {
+     debug("E-1 is in startup", DEBUG);
+    if (Automation::checkStartupProgress()) {
+      Automation::advanceStartup(farrbconvert.sensorReadings);
       packet = make_packet(29, false);
       Serial.println(packet);
       RFSerial.println(packet);
-      startupTimer = millis();
     }
   }
 
-  if (shutdown) {
-    if (checkShutdownProgress(shutdownPhase, millis() - shutdownTimer)) {
-      Serial.print("shutdownPhase: ");
-      Serial.println(shutdownPhase);
-      advanceShutdown(); //change to pass pointer
+  if (Automation::inShutdown()) {
+    if (Automation::checkShutdownProgress()) {
+      Automation::advanceShutdown(farrbconvert.sensorReadings);
       packet = make_packet(29, false);
       Serial.println(packet);
       RFSerial.println(packet);
-      shutdownTimer = millis();
     }
   }
 
@@ -166,7 +161,7 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-    write_to_SD(packet.c_str(), file_name);
+    // write_to_SD(packet.c_str(), file_name);
   }
 
   // For dashboard display
