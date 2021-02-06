@@ -68,6 +68,50 @@ uint8_t make_packet(uint8_t id, bool error) {
   return i;
 }
 
+void read_and_process_input(valveInfo *valve, valveInfo valves[], int numValves) {
+  uint8_t i = 0;
+  uint8_t packet_size;
+  while (RFSerial.available()) {
+    command[i] = RFSerial.read();
+    if (i == 0) {
+      if (command[i] != (PACKET_START >> 8) & 0xFF) {
+        continue;
+      } //if first two bytes are not start packet, scrap packet.
+    } else if (i == 1) {
+      if (command[i] != PACKET_START & 0xFF){
+        i = 0;
+        continue;
+      }
+    } else if (i == 2) {
+      chooseValveById((int)command[2], valve, valves, numValves);
+      // 4 bytes per data, 2 byte checksum, 2 byte start and end, 1 byte id
+      packet_size = valve->num_data * 4 + 2 + 2 * 2 + 1;
+    } else { // stop recording once we see end packet
+      if (command[i] == PACKET_END & 0xFF &&
+          command[i-1] == (PACKET_END >> 8) & 0xFF &&
+          i == packet_size) {
+            ++i;
+            break;
+          }
+    }
+    i++;
+  }
+  debug(command, i);
+  if (i == packet_size) { // startpacket + end packet is 4 bytes.
+    int action = decode_received_packet(command, valve, valves, numValves);
+    if (action != -1) {
+      take_action(valve, action);
+      packet_size = make_packet(valve->id, false);
+      Serial.write(packet, packet_size);
+      #if SERIAL_INPUT != 1
+        RFSerial.write(packet, packet_size);
+      #endif
+      packet[packet_size] = '\0';
+      write_to_SD(packet, file_name);
+    }
+  }
+}
+
 /*
  * Decodes a packet sent from ground station in the following format:
  * {<valve_ID>,<open(1) or close(0)|checksum}
@@ -107,7 +151,7 @@ int8_t decode_received_packet(uint8_t *_command, valveInfo *valve, valveInfo val
 /**
  *
  */
-void chooseValveById(int id, valveInfo *valve, valveInfo valves[], int numValves) {
+void chooseValveById(uint8_t id, valveInfo *valve, valveInfo valves[], int numValves) {
   for (int i = 0; i < numValves; i++) {
     if (valves[i].id == id) {
       *valve = valves[i];

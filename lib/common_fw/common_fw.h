@@ -110,7 +110,8 @@ struct sensorInfo {
  */
 struct valveInfo {
   String name;
-  int id;
+  uint8_t id;
+  uint8_t num_data;
   int (*openValve)();
   int (*closeValve)();
   void (*ackFunc)(float *data);
@@ -119,7 +120,7 @@ struct valveInfo {
 
 uint8_t make_packet (uint8_t id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
-void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
+void chooseValveById (uint8_t id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
 int8_t decode_received_packet(uint8_t *_command, valveInfo *valve, valveInfo valves[], int numValves);
 void take_action(valveInfo *valve, int action);

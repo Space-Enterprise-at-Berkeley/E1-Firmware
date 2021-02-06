@@ -99,41 +99,7 @@ void setup() {
 void loop() {
   // process command
   if (RFSerial.available() > 0) {
-    int i = 0;
-    while (RFSerial.available()) {
-      command[i] = RFSerial.read();
-      if (i == 0) {
-        if (command[i] != (PACKET_START >> 8) & 0xFF) {
-          continue;
-        } //if first two bytes are not start packet, scrap packet.
-      } else if (i == 1) {
-        if (command[i] != PACKET_START & 0xFF){
-          i = 0;
-          continue;
-        }
-      } else { // stop recording once we see end packet
-        if (command[i] == PACKET_END & 0xFF &&
-            command[i-1] == (PACKET_END >> 8) & 0xFF){
-              ++i;
-              break;
-            }
-      }
-      i++;
-    }
-    debug(command, i);
-    if (i > 4) { // startpacket + end packet is 4 bytes.
-      int action = decode_received_packet(command, &valve, valves, numValves);
-      if (action != -1) {
-        take_action(&valve, action);
-        packet_size = make_packet(valve.id, false);
-        Serial.write(packet, packet_size);
-        #if SERIAL_INPUT != 1
-          RFSerial.write(packet, packet_size);
-        #endif
-        packet[packet_size] = '\0';
-        write_to_SD(packet, file_name);
-      }
-    }
+    read_and_process_input(&valve, valves, numValves);
   }
 
   //Code for requesting data and relaying back to ground station
