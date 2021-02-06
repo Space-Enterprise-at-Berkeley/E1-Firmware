@@ -150,7 +150,7 @@ void loop() {
     debug(String(packet_count),DEBUG);
     write_to_SD(packet.c_str(), file_name);
   }
-  // delay(100);
+  delay(50);
 }
 
 
