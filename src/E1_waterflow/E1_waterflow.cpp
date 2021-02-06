@@ -36,7 +36,7 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
-uint64_t packet_count = 0;
+int packet_count = 0;
 
 void sensorReadFunc(int id);
 
@@ -160,21 +160,21 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("Heater");
+      debug("Heater", DEBUG);
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      debug("Ducers");
+      debug("Ducers", DEBUG);
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
-      debug("Batt");
+      debug("Batt", DEBUG);
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      debug("Cryo Therms");
+      debug("Cryo Therms", DEBUG);
       // Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
       // //farrbconvert.sensorReadings[1]=0;
       // farrbconvert.sensorReadings[2]=0;
