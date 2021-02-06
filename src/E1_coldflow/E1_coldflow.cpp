@@ -38,6 +38,8 @@ String packet;
 
 void sensorReadFunc(int id);
 
+Thermocouple::Cryo _cryoTherms;
+
 void setup() {
   Wire.begin();
   Serial.begin(57600);
@@ -94,7 +96,9 @@ void setup() {
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ads);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
-  Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
+
+  _cryoTherms = Thermocouple::Cryo();
+  _cryoTherms.init(numCryoTherms, cryoThermAddrs, cryoTypes);
 
   tempController::init(10, 2, LOX_ADAPTER_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
 }
@@ -162,7 +166,7 @@ void sensorReadFunc(int id) {
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
+      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       //farrbconvert.sensorReadings[1]=0;
       farrbconvert.sensorReadings[2]=0;
       farrbconvert.sensorReadings[3]=0;
