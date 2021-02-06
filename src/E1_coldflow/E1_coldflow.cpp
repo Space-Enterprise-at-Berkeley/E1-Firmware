@@ -145,7 +145,7 @@ void loop() {
       #endif
     write_to_SD(packet.c_str(), file_name);
   }
-  delay(50);
+  delay(100);
 }
 
 
