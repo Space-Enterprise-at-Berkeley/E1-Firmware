@@ -36,6 +36,8 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
+uint64_t packet_count = 0;
+
 void sensorReadFunc(int id);
 
 void setup() {
@@ -68,6 +70,8 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    packet_count++;
+    debug(String(packet_count),DEBUG);
   }
 
   debug("Opening File", DEBUG);
@@ -82,6 +86,8 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    packet_count++;
+    debug(String(packet_count),DEBUG);
   }
 
   // config::setup();
@@ -117,6 +123,8 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
+      packet_count++;
+      debug(String(packet_count),DEBUG);
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -137,7 +145,9 @@ void loop() {
     Serial.println(packet);
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
-      #endif
+    #endif
+    packet_count++;
+    debug(String(packet_count),DEBUG);
     write_to_SD(packet.c_str(), file_name);
   }
   // delay(100);
