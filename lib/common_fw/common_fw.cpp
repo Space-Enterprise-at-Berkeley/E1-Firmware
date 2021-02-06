@@ -15,7 +15,6 @@ union floatArrToBytes farrbconvert;
  */
 bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
-    sdBuffer->dequeue();
     if(sdBuffer->length >= 40) {
       if(file.open(file_name, O_RDWR | O_APPEND)) {
         int initialLength = sdBuffer->length;
