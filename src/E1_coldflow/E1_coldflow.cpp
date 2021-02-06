@@ -11,6 +11,7 @@
 #include <ducer.h>
 #include <tempController.h>
 #include <batteryMonitor.h>
+#include <autoShutdown.h>
 
 #define SERIAL_INPUT 0
 
@@ -92,7 +93,7 @@ void setup() {
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
-
+  
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
 
@@ -140,6 +141,14 @@ void loop() {
         RFSerial.println(packet);
       #endif
     write_to_SD(packet.c_str(), file_name);
+    // if sensor is pt (id=1), check injector pressures to detect end of flow:
+    if (sensor->id == 1){
+      float loxInjector = farrbconvert.sensorReadings[2];
+      float propInjector = farrbconvert.sensorReadings[3];
+      detectEndFlow::detectPeak(loxInjector, 0);
+      detectEndFlow::detectPeak(propInjector, 1);
+    }
+
   }
   // delay(100);
 }
