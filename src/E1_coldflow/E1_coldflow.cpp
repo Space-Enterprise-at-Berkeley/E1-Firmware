@@ -99,7 +99,8 @@ void setup() {
 void loop() {
   // process command
   if (RFSerial.available() > 0) {
-    read_and_process_input(&valve, valves, numValves);
+    uint8_t size = read_and_process_input(&valve, valves, numValves, &RFSerial);
+    write_to_SD(packet, size, file_name);
   }
 
   //Code for requesting data and relaying back to ground station
@@ -117,8 +118,7 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.write(packet, packet_size);
     #endif
-    packet[packet_size] = '\0';
-    write_to_SD(packet, file_name);
+    write_to_SD(packet, packet_size, file_name);
   }
   // delay(100);
 }
@@ -142,10 +142,6 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      //farrbconvert.sensorReadings[1]=0;
-      farrbconvert.sensorReadings[2]=0;
-      farrbconvert.sensorReadings[3]=0;
-      farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");

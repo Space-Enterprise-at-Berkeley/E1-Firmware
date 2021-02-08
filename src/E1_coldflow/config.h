@@ -74,15 +74,15 @@ namespace config {
 
     debug("Initializing valves");
     valves = new valveInfo[numValves];
-    valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
-    valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
-    valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
-    valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
-    valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
-    valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
-    valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
+    valves[0] = {"LOX 2 Way", 20, 1, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
+    valves[1] = {"LOX 5 Way", 21, 1, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
+    valves[2] = {"LOX GEMS", 22, 1, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
+    valves[3] = {"Propane 2 Way", 23, 1, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
+    valves[4] = {"Propane 5 Way", 24, 1, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
+    valves[5] = {"Propane GEMS", 25, 1, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
+    valves[6] = {"High Pressure Solenoid", 26, 1, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
+    valves[7] = {"Arm Rocket", 27, 1, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
+    valves[8] = {"Launch Rocket", 28, 1, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
 
     pinMode(LOX_2_PIN, OUTPUT);
     pinMode(LOX_5_PIN, OUTPUT);

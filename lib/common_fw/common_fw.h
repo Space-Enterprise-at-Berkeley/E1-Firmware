@@ -22,7 +22,7 @@ struct Queue {
 
   struct Node {
     struct Node *next;
-    char *message;
+    uint8_t *message;
     uint8_t length; //length doesn't include the null terminator
   };
 
@@ -37,17 +37,16 @@ struct Queue {
     front = nullptr;
   }
 
-  void enqueue(std::string message) {
+  void enqueue(uint8_t *message, uint8_t size) {
     struct Node *temp;
     length++;
     temp = (struct Node *)malloc(sizeof(struct Node));
 
-    temp->length = message.length();
-    temp->message = (char *)malloc(temp->length + 3);
+    temp->length = size;
+    temp->message = (uint8_t *)malloc(temp->length + 2);
 
-    strncpy(temp->message+1, message.c_str(), temp->length + 1);
+    strncpy(temp->message+1, message, temp->length + 1);
     temp->message[temp->length + 1] = '\n'; // add \n to string when enqueue
-    temp->message[temp->length + 2] = '\0';
 
     temp->message[0] = temp->length; // first element of this char array has its length.
 
@@ -121,8 +120,10 @@ struct valveInfo {
 uint8_t make_packet (uint8_t id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 void chooseValveById (uint8_t id, struct valveInfo *valve, valveInfo valves[], int numValves);
+bool write_to_SD(uint8_t *message, uint8_t size, const char * file_name);
 bool write_to_SD(std::string message, const char * file_name);
 int8_t decode_received_packet(uint8_t *_command, valveInfo *valve, valveInfo valves[], int numValves);
+uint8_t read_and_process_input(valveInfo *valve, valveInfo valves[], int numValves, HardwareSerial *ser);
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
 void debug(std::string str);

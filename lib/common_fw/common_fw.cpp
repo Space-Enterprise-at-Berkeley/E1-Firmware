@@ -15,13 +15,13 @@ char command[64];
 /**
  *
  */
-bool write_to_SD(std::string message, const char * file_name) {
-    sdBuffer->enqueue(message);
+bool write_to_SD(uint8_t *message, uint8_t size, const char * file_name) {
+    sdBuffer->enqueue(message, size);
     if(sdBuffer->length >= 40) {
       if(file.open(file_name, O_RDWR | O_APPEND)) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
-          char *msg = sdBuffer->dequeue();
+          uint8_t *msg = sdBuffer->dequeue();
           file.write(msg+1, *msg); //*msg = msg[0] = len of message
           free(msg);
         }
@@ -32,6 +32,14 @@ bool write_to_SD(std::string message, const char * file_name) {
       }
     }
     return true;
+}
+
+
+/**
+ *
+ */
+bool write_to_SD(std::string message, const char * file_name) {
+    return write_to_SD((uint8_t *)message.c_str(), message.length(), file_name);
 }
 
 /*
@@ -68,11 +76,14 @@ uint8_t make_packet(uint8_t id, bool error) {
   return i;
 }
 
-void read_and_process_input(valveInfo *valve, valveInfo valves[], int numValves) {
+/**
+ * return packet_size if valid packet, else return -1
+ */
+uint8_t read_and_process_input(valveInfo *valve, valveInfo valves[], int numValves, HardwareSerial *ser) {
   uint8_t i = 0;
   uint8_t packet_size;
-  while (RFSerial.available()) {
-    command[i] = RFSerial.read();
+  while (ser->available()) {
+    command[i] = ser->read();
     if (i == 0) {
       if (command[i] != (PACKET_START >> 8) & 0xFF) {
         continue;
@@ -104,12 +115,12 @@ void read_and_process_input(valveInfo *valve, valveInfo valves[], int numValves)
       packet_size = make_packet(valve->id, false);
       Serial.write(packet, packet_size);
       #if SERIAL_INPUT != 1
-        RFSerial.write(packet, packet_size);
+        ser->write(packet, packet_size);
       #endif
-      packet[packet_size] = '\0';
-      write_to_SD(packet, file_name);
+      return packet_size;
     }
   }
+  return -1;
 }
 
 /*
