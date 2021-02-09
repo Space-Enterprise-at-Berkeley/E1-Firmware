@@ -9,7 +9,7 @@
 #define __Automation__
 
 #include <Arduino.h>
-#include <Solenoids.h>
+#include <solenoids.h>
 
 using namespace std;
 
