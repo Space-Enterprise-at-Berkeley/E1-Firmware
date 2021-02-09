@@ -9,6 +9,7 @@ SdFat sd;
 File file;
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
+int packetCounter = 0;
 
 /**
  *
@@ -106,6 +107,15 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], 
   } else {
     return -1;
   }
+}
+
+void readPacketCounter(float *data) {
+    data[0] = packetCounter;
+    data[1] = -1;
+  }
+
+void incrementPacketCounter() {
+    packetCounter+=1;
 }
 
 /**

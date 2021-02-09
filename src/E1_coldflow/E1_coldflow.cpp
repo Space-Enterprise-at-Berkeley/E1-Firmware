@@ -68,6 +68,7 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    incrementPacketCounter();
   }
 
   debug("Opening File", DEBUG);
@@ -82,6 +83,7 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    incrementPacketCounter();
   }
 
   // config::setup();
@@ -103,6 +105,7 @@ void loop() {
   // process command
   if (RFSerial.available() > 0) {
     int i = 0;
+    
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
@@ -117,6 +120,7 @@ void loop() {
       Serial.println(packet);
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
+        incrementPacketCounter();
       #endif
       write_to_SD(packet.c_str(), file_name);
     }
@@ -136,8 +140,10 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
+
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
+        incrementPacketCounter();
       #endif
     write_to_SD(packet.c_str(), file_name);
   }
@@ -168,6 +174,9 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[3]=0;
       farrbconvert.sensorReadings[4]=-1;
       break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
+
     default:
       Serial.println("some other sensor");
       break;
