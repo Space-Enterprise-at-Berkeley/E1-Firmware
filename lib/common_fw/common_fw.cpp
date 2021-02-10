@@ -15,19 +15,22 @@ int packetCounter = 0;
  *
  */
 bool write_to_SD(std::string message, const char * file_name) {
+    using namespace std;
     sdBuffer->enqueue(message);
     if(sdBuffer->length >= 40) {
-      if(file.open(file_name, O_RDWR | O_APPEND)) {
+      fstream currfile;
+      currfile.open(file_name, fstream::out | fstream::app);
+      if(currfile.is_open()) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           char *msg = sdBuffer->dequeue();
-          file.write(msg);
+          currfile.write(msg, sizeof(msg)); 
           free(msg);
         }
-        file.close();
+        currfile.close();
         return true;
       } else {        //If the file didn't open
-        return false;
+          return false;
       }
     }
     return true;
@@ -160,6 +163,18 @@ uint16_t Fletcher16(uint8_t *data, int count) {
     }
   }
   return (sum2 << 8) | sum1;
+}
+
+/*
+ * empty implementation of _open, this stub function is required by stdlib
+ * to allow linking
+ */
+extern "C" int _open(const char *name, int flags, int mode)
+{
+    static_cast<void>(name);
+    static_cast<void>(flags);
+    static_cast<void>(mode);
+    return -1;   
 }
 
 void debug(String str, int flag){

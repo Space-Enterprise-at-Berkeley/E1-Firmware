@@ -13,6 +13,8 @@
 #include <TimeLib.h>
 #include <Arduino.h>
 #include <Wire.h>
+#include <iostream>
+#include <fstream>
 
 
 struct Queue {
@@ -108,6 +110,7 @@ struct valveInfo {
 };
 
 
+
 String make_packet (int id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
@@ -117,6 +120,7 @@ void readPacketCounter(float *data);
 void incrementPacketCounter();
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
+extern "C" int _open(const char *name, int flags, int mode);
 void debug(String str, int debug);
 
 extern SdFat sd;
@@ -128,6 +132,8 @@ extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo *sensors;
 extern struct valveInfo *valves;
 
-int packetCounter;
 
 #endif // _COMMON_H_
+
+
+
