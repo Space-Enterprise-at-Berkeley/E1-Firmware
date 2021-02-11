@@ -10,10 +10,10 @@
 #include <Arduino.h>
 #include <solenoids.h>
 
+
 using namespace std;
 
 namespace Automation {
-
 
 //-----------------------Variables-----------------------
 
