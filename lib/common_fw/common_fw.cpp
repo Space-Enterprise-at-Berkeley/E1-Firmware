@@ -18,16 +18,14 @@ bool write_to_SD(std::string message, const char * file_name) {
     using namespace std;
     sdBuffer->enqueue(message);
     if(sdBuffer->length >= 40) {
-      fstream currfile;
-      currfile.open(file_name, fstream::out | fstream::app);
-      if(currfile.is_open()) {
+      if(file.open(file_name, O_RDWR | O_APPEND)) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           char *msg = sdBuffer->dequeue();
-          currfile.write(msg, sizeof(msg)); 
+          file.write(msg, sizeof(msg)); 
           free(msg);
         }
-        currfile.close();
+        file.close();
         return true;
       } else {        //If the file didn't open
           return false;
@@ -163,18 +161,6 @@ uint16_t Fletcher16(uint8_t *data, int count) {
     }
   }
   return (sum2 << 8) | sum1;
-}
-
-/*
- * empty implementation of _open, this stub function is required by stdlib
- * to allow linking
- */
-extern "C" int _open(const char *name, int flags, int mode)
-{
-    static_cast<void>(name);
-    static_cast<void>(flags);
-    static_cast<void>(mode);
-    return -1;   
 }
 
 void debug(String str, int flag){

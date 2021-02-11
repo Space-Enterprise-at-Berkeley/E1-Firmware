@@ -13,8 +13,6 @@
 #include <TimeLib.h>
 #include <Arduino.h>
 #include <Wire.h>
-#include <iostream>
-#include <fstream>
 
 
 struct Queue {
@@ -120,7 +118,6 @@ void readPacketCounter(float *data);
 void incrementPacketCounter();
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
-extern "C" int _open(const char *name, int flags, int mode);
 void debug(String str, int debug);
 
 extern SdFat sd;
