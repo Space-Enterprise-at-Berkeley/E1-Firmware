@@ -3,7 +3,7 @@
 #include <Cryo_Thermocouple.h>
 #include "common_fw.h"
 #include <ADS1219.h>
-#include <Automation.h>
+#include "Automation.h"
 
 
 #define FLIGHT_BRAIN_ADDR 0x00

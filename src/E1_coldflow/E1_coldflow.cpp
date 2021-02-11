@@ -14,7 +14,7 @@
 
 #define SERIAL_INPUT 1
 
-#define NO_ADC 0
+#define NO_ADC 0 // temporary fix. TODO (@fazerlicourice7 ): do it properly
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -54,17 +54,11 @@ void setup() {
   debug("Initializing Sensor Frequencies", DEBUG);
 
   for (int i = 0; i < numSensors; i++) {
-    debug(String(i), DEBUG);
-    debug("starting 1st line", DEBUG);
     sensor_checks[i][0] = sensors[i].clock_freq;
-    debug("starting 2nd line", DEBUG);
     sensor_checks[i][1] = 1;
   }
 
-  debug("Sensor IDs:", DEBUG);
-  debug(String(sensors[0].name), DEBUG);
-
-  // debug("Starting SD", DEBUG);
+  debug("Starting SD", DEBUG);
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -85,8 +79,6 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
-
-  // config::setup();
 
   debug("Initializing Libraries", DEBUG);
 
@@ -120,7 +112,7 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      // write_to_SD(packet.c_str(), file_name);
+      write_to_SD(packet.c_str(), file_name);
     }
   }
 
@@ -161,7 +153,7 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-    // write_to_SD(packet.c_str(), file_name);
+    write_to_SD(packet.c_str(), file_name);
   }
 
   // For dashboard display
@@ -176,7 +168,7 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      #if NO_ADC == 1
+      #if NO_ADC == 1 // temporary fix. TODO (@fazerlicourice7 ): do it properly
         break;
       #else
         Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
@@ -186,7 +178,7 @@ void sensorReadFunc(int id) {
       #endif
 
     case 1:
-      #if NO_ADC == 1
+      #if NO_ADC == 1 // temporary fix. TODO (@fazerlicourice7 ): do it properly
         break;
       #else
         Ducers::readAllPressures(farrbconvert.sensorReadings);
