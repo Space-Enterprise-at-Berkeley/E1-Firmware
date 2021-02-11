@@ -72,7 +72,7 @@ namespace config {
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
-    sensors[5] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 1};
+    sensors[5] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
 
 

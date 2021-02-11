@@ -7,9 +7,9 @@
 
 SdFat sd;
 File file;
+int packetCounter = 0;
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
-int packetCounter = 0;
 
 /**
  *
@@ -68,7 +68,7 @@ String make_packet(int id, bool error) {
   }
   packet_content += check_;
   String packet = "{" + packet_content + "}";
-
+  incrementPacketCounter();
   return packet;
 }
 
