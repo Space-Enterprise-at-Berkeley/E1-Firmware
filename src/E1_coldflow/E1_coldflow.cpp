@@ -178,5 +178,3 @@ void sensorReadFunc(int id) {
       break;
   }
 }
-
-

@@ -74,8 +74,6 @@ namespace config {
     sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
     sensors[5] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
-
-
     debug("Initializing valves", DEBUG);
     valves = new valveInfo[numValves];
     valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
