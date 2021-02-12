@@ -12,7 +12,7 @@ TempController::TempController(int tempSetPoint, int algorithmChoice, int heater
   _setPointTemp(tempSetPoint)
  {
   if (algorithmChoice > 2 || algorithmChoice < 0) {
-    exit(0);
+    exit(1);
   }
 }
 
