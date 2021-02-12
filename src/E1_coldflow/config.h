@@ -29,8 +29,9 @@ int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
 int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
 int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 
-const uint8_t numSensors = 4;
+const uint8_t numSensors = 5;
 sensorInfo *sensors;
+
 
 const int numValves = 9;
 struct valveInfo *valves;
@@ -72,6 +73,7 @@ namespace config {
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+    sensors[5] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
     debug("Initializing valves", DEBUG);
     valves = new valveInfo[numValves];

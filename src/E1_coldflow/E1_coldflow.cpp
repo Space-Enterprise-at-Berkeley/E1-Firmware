@@ -103,6 +103,7 @@ void loop() {
   // process command
   if (RFSerial.available() > 0) {
     int i = 0;
+    
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
@@ -136,6 +137,7 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
+
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
@@ -168,6 +170,9 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[3]=0;
       farrbconvert.sensorReadings[4]=-1;
       break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
+
     default:
       Serial.println("some other sensor");
       break;
