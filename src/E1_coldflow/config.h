@@ -69,13 +69,13 @@ namespace config {
 
     debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];
-    // sensorInfo s = ;
-    sensors[0] = {"Lox PT Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+    // the ordering in this array defines order of operation, not id
+    sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
+    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[3] = {"Lox PT Temperature",   FLIGHT_BRAIN_ADDR, 0, 4}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 3};
+    sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
     debug("Initializing valves", DEBUG);
     valves = new valveInfo[numValves];
