@@ -11,9 +11,10 @@
 std::string str_file_name = "E1_speed_test_results.txt";
 const char * file_name = str_file_name.c_str();
 
-const int numCryoTherms = 2;
-int cryoThermAddrs[numCryoTherms] = {0x60, 0x67};
-_themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T};
+const int numCryoTherms = 4;
+// therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
+int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
+_themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 
 const int numADCSensors = 2;
 int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
@@ -29,9 +30,8 @@ int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
 int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
 int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 
-const uint8_t numSensors = 5;
+const uint8_t numSensors = 6;
 sensorInfo *sensors;
-
 
 const int numValves = 9;
 struct valveInfo *valves;
@@ -46,7 +46,8 @@ struct valveInfo *valves;
 
 #define HIGH_SOL_PIN 6
 
-#define LOX_ADAPTER_HEATER_PIN 7
+#define LOX_ADAPTER_PT_HEATER_PIN 7
+#define LOX_GEMS_HEATER_PIN 8
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -69,11 +70,12 @@ namespace config {
     debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];
     // sensorInfo s = ;
-    sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+    sensors[0] = {"Lox PT Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
-    sensors[5] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 3};
 
     debug("Initializing valves", DEBUG);
     valves = new valveInfo[numValves];
@@ -97,7 +99,7 @@ namespace config {
 
     pinMode(HIGH_SOL_PIN, OUTPUT);
 
-    pinMode(LOX_ADAPTER_HEATER_PIN, OUTPUT);
+    pinMode(LOX_ADAPTER_PT_HEATER_PIN, OUTPUT);
 
   }
 }

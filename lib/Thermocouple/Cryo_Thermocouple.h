@@ -47,6 +47,11 @@ namespace Thermocouple {
       data[_numSensors] = -1;
     }
 
+    void readSpecificCryoTemp(int index, float *data){
+      data[0] = _cryo_amp_boards[index]->readThermocouple();
+      data[1] = -1;
+    }
+
     int freeAllResources() {
         free(_cryo_amp_boards);
         free(_addrs);

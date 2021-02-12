@@ -36,6 +36,9 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
+TempController loxPTHeater(10, 2, LOX_ADAPTER_PT_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
+TempController loxGemsHeater(2, 2, LOX_GEMS_HEATER_PIN); // setPoint = 2C, alg = PID
+
 void sensorReadFunc(int id);
 
 void setup() {
@@ -95,15 +98,13 @@ void setup() {
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
-
-  tempController::init(10, 2, LOX_ADAPTER_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
 }
 
 void loop() {
   // process command
   if (RFSerial.available() > 0) {
     int i = 0;
-    
+
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
@@ -140,7 +141,7 @@ void loop() {
 
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
-      #endif
+    #endif
     write_to_SD(packet.c_str(), file_name);
   }
   // delay(100);
@@ -153,8 +154,8 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+      Thermocouple::Cryo::readSpecificCryoTemp(2, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
@@ -165,14 +166,16 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      //farrbconvert.sensorReadings[1]=0;
-      farrbconvert.sensorReadings[2]=0;
-      farrbconvert.sensorReadings[3]=0;
-      farrbconvert.sensorReadings[4]=-1;
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
-
+      break;
+    case 6:
+      // this hardcoded 3 is kinda sus.
+      Thermocouple::Cryo::readSpecificCryoTemp(3, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
     default:
       Serial.println("some other sensor");
       break;
