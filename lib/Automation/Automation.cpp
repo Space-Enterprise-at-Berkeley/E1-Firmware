@@ -45,7 +45,7 @@ namespace Automation {
 
   bool init() {
     _eventList = new autoEventList;
-    _eventList->maxEvents = 10; //arbitrary max of 10 events right now.
+    _eventList->maxEvents = 15; //arbitrary max of 10 events right now.
     _eventList->events = new autoEvent[_eventList->maxEvents]; 
 
     _eventList->length = 0;
@@ -254,7 +254,6 @@ namespace Automation {
         events[0] = {0, &(act_armCloseLox), false};  //TODO @Ben: act_armCloseLox is crashing
         events[1] = {750, &(Solenoids::disarmLOX), false};
         for (int i = 0; i < 2; i++) addEvent(&events[i]);
-        _flowing = false;
 
       } else { // Prop is already closed, shutdown
         _flowing = false;

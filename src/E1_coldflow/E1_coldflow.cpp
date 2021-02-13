@@ -12,7 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 1
+#define SERIAL_INPUT 0
 
 #define NO_ADC 0 // temporary fix. TODO (@fazerlicourice7 ): do it properly
 
@@ -171,10 +171,10 @@ void loop() {
       Serial.print("0: "); Serial.println(loxInjector);
       Automation::detectPeak(loxInjector, 0);
     }
-    // if (Solenoids::getProp5()) { //if Prop Main valve open
-    //   Serial.print("1: "); Serial.println(propInjector);
-    //   // Automation::detectPeak(propInjector, 1);
-    // }
+    if (Solenoids::getProp5()) { //if Prop Main valve open
+      Serial.print("1: "); Serial.println(propInjector);
+      Automation::detectPeak(propInjector, 1);
+    }
   }
 
   }
