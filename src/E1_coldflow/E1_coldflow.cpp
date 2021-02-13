@@ -118,7 +118,6 @@ void loop() {
 
 
    if (Automation::inStartup()) {
-     debug("E-1 is in startup", DEBUG);
     if (Automation::checkStartupProgress()) {
       Automation::advanceStartup(farrbconvert.sensorReadings);
       packet = make_packet(29, false);

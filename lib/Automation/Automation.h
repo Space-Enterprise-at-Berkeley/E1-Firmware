@@ -40,17 +40,53 @@ namespace Automation {
     2 - Between close LOX and closing Arming valve & opening Gems vent
   */
   extern int _shutdownDelays[2];
-  
+
+
+//------------------------Structs------------------------
+
+/*
+ * Stores details about an event used to determine what to do & when
+ */
+struct autoEvent {
+  int duration;
+  int (*action)();
+  bool report;
+};
+
+
+struct autoEventList {
+  autoEvent* events;
+  int length;
+};
+
+extern struct autoEventList* _eventList;
+
 
 //------------------Function Definitions-----------------
 
+  bool init();
 
+  // Relating to State of the Rocket
   bool inStartup();
   bool inFlow();
   bool inShutdown();
 
-  int beginFlow();
-  int endFlow();
+  bool addEvent(autoEvent* e);
+
+  // Actions that can be taken/combined as desired
+  int beginBothFlow();
+  int endBothFlow();
+
+  int openLox();
+  // int closeLox();
+  // int beginLoxFlow();
+  // int endLoxFlow();
+
+  // int beginPropFlow();
+  // int endPropFlow();
+  // int openProp();
+  // int closeProp();
+  
   void flowConfirmation(float *data);
   
   bool checkStartupProgress();

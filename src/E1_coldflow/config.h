@@ -33,7 +33,7 @@ int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
 
-const int numValves = 10;
+const int numValves = 11;
 struct valveInfo *valves;
 
 #define LOX_2_PIN 0
@@ -55,6 +55,7 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 namespace config {
   void setup() {
+
     debug("Initializing ADCs", DEBUG);
     // initialize all ADCs
     ads = new ADS1219*[numADCSensors];
@@ -67,6 +68,10 @@ namespace config {
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       // ads[i]->calibrate();
     }
+
+    debug("Initializing automation", DEBUG);
+    Automation::init();
+
 
     debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];
@@ -86,7 +91,9 @@ namespace config {
     valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
     valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-    valves[9] = {"Perform Flow", 29, &(Automation::beginFlow), &(Automation::endFlow), &(Automation::flowConfirmation)};
+    valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
+    valves[10] = {"Perform LOX Flow", 30, &(Automation::openLox), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
+
 
     pinMode(LOX_2_PIN, OUTPUT);
     pinMode(LOX_5_PIN, OUTPUT);

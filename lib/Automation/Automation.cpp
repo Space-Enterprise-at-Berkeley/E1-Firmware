@@ -21,6 +21,7 @@ namespace Automation {
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
 
+ struct autoEventList* _eventList;
 
   /* Delays during startup sequence:
     1 - Between open pressure and open LOX Main
@@ -34,11 +35,18 @@ namespace Automation {
     2 - Between close LOX and closing Arming valve & opening Gems vent
   */
   int _shutdownDelays[2] = {0, 750};
-  
+
 
 //-----------------------Functions-----------------------
 
-  
+  bool init() {
+    _eventList = new autoEventList;
+    _eventList->events = new autoEvent[10]; //arbitrary max of 10 events right now.
+    _eventList->length = 0;
+    return true;
+  }
+
+
   bool inStartup() {
     return _startup;
   }
@@ -52,8 +60,24 @@ namespace Automation {
   }
 
 
+  int openLox() {
+    autoEvent e1 = {1000, &(Solenoids::openLOX), false};
+    addEvent(&e1);
+    return 1;
+  }
+
+
+  bool addEvent(autoEvent* e) {
+    (_eventList->events)[0] = *e;
+    _eventList->length++;
+    Serial.println("eventList len!");
+    Serial.println(_eventList->length);
+    return true;
+  }
+
+
   // Pretending is a valve action, do -1 to indicate that 
-  int beginFlow() {
+  int beginBothFlow() {
     /* Check if rocket is in required state for a flow:
       Pressure - Closed
       LOX GEMS & Prop GEMS - Open
@@ -69,6 +93,7 @@ namespace Automation {
     return -1;
   }
 
+  // Responds to initial command to begin/end flow
   void flowConfirmation(float *data) {
     data[0] = _startup ? 1 : 0;
     data[1] = _shutdown ? 1 : 0;
@@ -76,7 +101,7 @@ namespace Automation {
   }
 
   // Pretending is a valve action, do -1 to indicate that 
-  int endFlow() {
+  int endBothFlow() {
     _shutdown = true;
     Serial.println("Eureka-1 is in Shutdown");
     return 1;
