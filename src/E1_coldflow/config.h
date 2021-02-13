@@ -89,7 +89,7 @@ namespace config {
     valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
     valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
-    valves[10] = {"Perform LOX Flow", 30, &(Automation::openLox), &(Automation::closeLox), &(Automation::flowConfirmation)};
+    valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
 
 
     pinMode(LOX_2_PIN, OUTPUT);

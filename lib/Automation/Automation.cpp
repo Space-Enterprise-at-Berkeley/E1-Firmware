@@ -92,16 +92,71 @@ namespace Automation {
   }
 
 
+  int act_pressurizeTanks() {
+    Solenoids::closeLOXGems();
+    Solenoids::closePropaneGems();
+    Solenoids::activateHighPressureSolenoid();
+  }
+
+  int act_openGems() {
+    Solenoids::ventLOXGems();
+    Solenoids::ventPropaneGems();
+  }
+
+  int act_armOpenLox() {
+    Solenoids::armLOX();
+    Solenoids::openLOX();
+  }
+
+  int act_armOpenProp() {
+    Solenoids::armLOX();
+    Solenoids::openPropane();
+  }
+
+  int act_armOpenBoth() {
+    Solenoids::armLOX();
+    Solenoids::openLOX();
+    Solenoids::openPropane();
+  }
+
+  int act_armCloseLox() {
+    Solenoids::armLOX();
+    Solenoids::closeLOX();
+  }
+
+  int act_armCloseProp() {
+    Solenoids::armLOX();
+    Solenoids::closePropane();
+  }
+
+  int act_armCloseBoth() {
+    Solenoids::armLOX();
+    Solenoids::closeLOX();
+    Solenoids::closePropane();
+  }
+
+  int beginLoxFlow() {
+    autoEvent events[3];
+    events[0] = {0, &(act_pressurizeTanks), false};
+    events[1] = {1000, &(act_armOpenLox), false};
+    events[2] = {750, &(Solenoids::disarmLOX), false};
+    for (int i = 0; i < 3; i++) addEvent(&events[i]);
+  }
+
+  int endLoxFlow() {
+    autoEvent events[4];
+    events[0] = {0, &(act_armCloseLox), false};
+    events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+    events[2] = {750, &(Solenoids::disarmLOX), false};
+    events[3] = {0, &(act_openGems), false};
+    for (int i = 0; i < 4; i++) addEvent(&events[i]);
+  }
+
   int openLox() {
-    autoEvent e1 = autoEvent{3000, &(Solenoids::openLOX), false};
-    addEvent(&e1);
-    autoEvent e2 = autoEvent{3000, &(Solenoids::closeLOX), false};
-    addEvent(&e2);
-    autoEvent e3 = autoEvent{1000, &(Solenoids::openLOX), false};
-    addEvent(&e3);
-    autoEvent e4 = autoEvent{1000, &(Solenoids::closeLOX), false};
-    addEvent(&e4);
-    return 1;
+    autoEvent events[2];
+    events[0] = {0, &(act_armOpenLox), false};
+    events[1] = {750, &(Solenoids::disarmLOX), false};
+    for (int i = 0; i < 2; i++) addEvent(&events[i]);
   }
 
   int closeLox() {
@@ -109,6 +164,8 @@ namespace Automation {
     addEvent(&e1);
     return 1;
   }
+
+
 
 
 
@@ -166,8 +223,8 @@ namespace Automation {
           //close both GEMS, open Arming valve, open Pressurant
           Solenoids::closeLOXGems();
           Solenoids::closePropaneGems();
-          Solenoids::armLOX();
           Solenoids::activateHighPressureSolenoid();
+          Solenoids::armLOX();
 
           Solenoids::getAllStates(data);
           _startupPhase++;

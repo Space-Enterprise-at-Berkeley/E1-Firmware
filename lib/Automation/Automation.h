@@ -80,10 +80,21 @@ extern struct autoEventList* _eventList;
   int beginBothFlow();
   int endBothFlow();
 
+  //event scheduling functions
   int openLox();
   int closeLox();
-  // int beginLoxFlow();
-  // int endLoxFlow();
+  int beginLoxFlow();
+  int endLoxFlow();
+
+  // action functions that combine multiple valve openings/closing simultaneously
+  int act_pressurizeTanks();
+  int act_openGems();
+  int act_armOpenLox();
+  int act_armOpenProp();
+  int act_armOpenBoth();
+  int act_armCloseLox();
+  int act_armCloseProp();
+  int act_armCloseBoth();
 
   // int beginPropFlow();
   // int endPropFlow();
