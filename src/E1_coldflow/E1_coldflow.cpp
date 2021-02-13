@@ -91,6 +91,9 @@ void setup() {
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
 
   tempController::init(10, 2, LOX_ADAPTER_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
+
+  Automation::init();
+
 }
 
 void loop() {
@@ -132,6 +135,17 @@ void loop() {
       packet = make_packet(29, false);
       Serial.println(packet);
       RFSerial.println(packet);
+    }
+  }
+
+  if (Automation::_eventList->length > 0) {
+    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
+    if (millis() - Automation::_eventList->timer > e->duration) {
+      Serial.print("duration: ");
+      Serial.print(e->duration);
+      Serial.println("ms");
+      e->action();
+      Automation::_eventList->length--;
     }
   }
 

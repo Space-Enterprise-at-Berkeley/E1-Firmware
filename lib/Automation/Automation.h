@@ -57,6 +57,7 @@ struct autoEvent {
 struct autoEventList {
   autoEvent* events;
   int length;
+  int timer;
 };
 
 extern struct autoEventList* _eventList;

@@ -61,18 +61,27 @@ namespace Automation {
 
 
   int openLox() {
-    autoEvent e1 = {1000, &(Solenoids::openLOX), false};
+    autoEvent e1 = autoEvent{1000, &(Solenoids::openLOX), false};
     addEvent(&e1);
     return 1;
   }
 
 
+  /* 
+   * For now copies the passed into autoEvent into the eventList. Copying requires slightly more
+   * overhead, but avoids dealing with allocating & deallocation memory for each event 
+   */
   bool addEvent(autoEvent* e) {
-    (_eventList->events)[0] = *e;
-    _eventList->length++;
-    Serial.println("eventList len!");
-    Serial.println(_eventList->length);
-    return true;
+    if (_eventList->length < 10) {
+      (_eventList->events)[_eventList->length] = *e;
+      _eventList->length++;
+      Serial.println("eventList len!");
+      Serial.println(_eventList->length);
+      _eventList->timer = millis();
+      return true;
+    } else {
+      return false;
+    }
   }
 
 
