@@ -120,29 +120,18 @@ void loop() {
   }
 
 
-   if (Automation::inStartup()) {
-    if (Automation::checkStartupProgress()) {
-      Automation::advanceStartup(farrbconvert.sensorReadings);
-      packet = make_packet(29, false);
-      Serial.println(packet);
-      RFSerial.println(packet);
-    }
-  }
-
-  if (Automation::inShutdown()) {
-    if (Automation::checkShutdownProgress()) {
-      Automation::advanceShutdown(farrbconvert.sensorReadings);
-      packet = make_packet(29, false);
-      Serial.println(packet);
-      RFSerial.println(packet);
-    }
-  }
-
   if (Automation::_eventList->length > 0) {
     Automation::autoEvent* e = &(Automation::_eventList->events[0]);
     if (millis() - Automation::_eventList->timer > e->duration) {
+
       e->action();
-      //Automation::removeEvent()
+
+      //Update valve states after each action
+      Solenoids::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(29, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+
       Automation::removeEvent();
       //reset timer
       Automation::_eventList->timer = millis();

@@ -165,11 +165,6 @@ namespace Automation {
     return 1;
   }
 
-
-
-
-
-  // Pretending is a valve action, do -1 to indicate that 
   int beginBothFlow() {
     /* Check if rocket is in required state for a flow:
       Pressure - Closed
@@ -182,7 +177,28 @@ namespace Automation {
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
       Serial.println("Eureka-1 is in Startup");
+
+      autoEvent events[3];
+      events[0] = {0, &(act_pressurizeTanks), false};
+      events[1] = {1000, &(act_armOpenBoth), false};
+      events[2] = {750, &(Solenoids::disarmLOX), false};
+      //TODO @Ben: after ~1sec delay change state to flowing so shutdownDetection can start
+      for (int i = 0; i < 3; i++) addEvent(&events[i]);
     }
+    return -1;
+  }
+
+  int endBothFlow() {
+    _shutdown = true;
+    Serial.println("Eureka-1 is in Shutdown");
+
+    autoEvent events[4];
+    events[0] = {0, &(act_armCloseBoth), false};
+    events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+    events[2] = {750, &(Solenoids::disarmLOX), false};
+    events[3] = {0, &(act_openGems), false};
+    for (int i = 0; i < 4; i++) addEvent(&events[i]);
+
     return -1;
   }
 
@@ -193,123 +209,5 @@ namespace Automation {
     data[2] = -1;
   }
 
-  // Pretending is a valve action, do -1 to indicate that 
-  int endBothFlow() {
-    _shutdown = true;
-    Serial.println("Eureka-1 is in Shutdown");
-    return 1;
-  }
-
-  bool checkStartupProgress() {
-    if (_startupPhase == 0) {
-      _startupTimer = millis();
-      return true;
-    } else {
-      uint32_t timeDiff = millis() - _startupTimer;
-      if (timeDiff > _startupDelays[_startupPhase - 1]) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  /* 
-    Progress startup given the current startup phase
-  */
-  bool advanceStartup(float *data) {
-    if (_startupPhase == 0) {
-
-          //close both GEMS, open Arming valve, open Pressurant
-          Solenoids::closeLOXGems();
-          Solenoids::closePropaneGems();
-          Solenoids::activateHighPressureSolenoid();
-          Solenoids::armLOX();
-
-          Solenoids::getAllStates(data);
-          _startupPhase++;
-
-    } else if (_startupPhase == 1) {
-      
-        // after a delay open LOX main valve
-        Solenoids::openLOX();
-        Solenoids::openPropane();
-        Solenoids::getAllStates(data);
-        _startupPhase++;
-
-    } else if (_startupPhase == 2) {
-      
-        // after a delay open Prop main valve
-        // Solenoids::openPropane();
-        Solenoids::getAllStates(data);
-        _startupPhase++;
-
-    } else if (_startupPhase == 3) {
-      
-        // after a delay close Arming valve
-        Solenoids::disarmLOX();
-        Solenoids::getAllStates(data);
-
-
-        _startupPhase = 0;
-        _startup = false;
-
-    }
-    else {
-      return false;
-    }
-    _startupTimer = millis();
-    return true;
-  }
-
-
-  void shutdownConfirmation(float *data) {
-    data[0] = _shutdown ? 1 : 0;
-    data[1] = -1;
-  }
-
-  bool checkShutdownProgress() {
-    if (_shutdownPhase == 0) {
-      _shutdownTimer = millis();
-      return true;
-    } else {
-      uint32_t timeDiff = millis() - _shutdownTimer;
-      if (timeDiff > _shutdownDelays[_shutdownPhase - 1]) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  bool advanceShutdown(float *data) {
-    if (_shutdownPhase == 0) {
-      Solenoids::deactivateHighPressureSolenoid();
-      Solenoids::armLOX();
-      Solenoids::closePropane();
-      Solenoids::getAllStates(data);
-      _shutdownPhase++;
-
-    } else if (_shutdownPhase == 1) {
-      Solenoids::closeLOX();
-      Solenoids::getAllStates(data);
-      _shutdownPhase++;
-
-    } else if (_shutdownPhase == 2) {
-      Solenoids::disarmLOX();
-      Solenoids::ventLOXGems();
-      Solenoids::ventPropaneGems();
-      Solenoids::getAllStates(data);
-
-      _shutdownPhase = 0;
-      _shutdown = false;
-      return true;
-
-    } else {
-      return false;
-    }
-    _shutdownTimer = millis();
-    return true;
-  }
   
 } //Automation
