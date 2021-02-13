@@ -41,7 +41,9 @@ namespace Automation {
 
   bool init() {
     _eventList = new autoEventList;
-    _eventList->events = new autoEvent[10]; //arbitrary max of 10 events right now.
+    _eventList->maxEvents = 10; //arbitrary max of 10 events right now.
+    _eventList->events = new autoEvent[_eventList->maxEvents]; 
+
     _eventList->length = 0;
     return true;
   }
@@ -60,13 +62,6 @@ namespace Automation {
   }
 
 
-  int openLox() {
-    autoEvent e1 = autoEvent{1000, &(Solenoids::openLOX), false};
-    addEvent(&e1);
-    return 1;
-  }
-
-
   /* 
    * For now copies the passed into autoEvent into the eventList. Copying requires slightly more
    * overhead, but avoids dealing with allocating & deallocation memory for each event 
@@ -77,12 +72,44 @@ namespace Automation {
       _eventList->length++;
       Serial.println("eventList len!");
       Serial.println(_eventList->length);
-      _eventList->timer = millis();
+      // if first event is being added then need to restart timer.
+      if (_eventList->length == 1) {
+        _eventList->timer = millis();
+      }
       return true;
     } else {
       return false;
     }
   }
+
+  bool removeEvent() {
+    if (_eventList->length > 0) {
+      //move events 1 - 9 & move to slots 0 - 8, effectively "popping" first event
+      memmove(_eventList->events, _eventList->events + 1, sizeof(autoEvent)*(_eventList->maxEvents - 1));
+
+      Automation::_eventList->length--;
+    }
+  }
+
+
+  int openLox() {
+    autoEvent e1 = autoEvent{3000, &(Solenoids::openLOX), false};
+    addEvent(&e1);
+    autoEvent e2 = autoEvent{3000, &(Solenoids::closeLOX), false};
+    addEvent(&e2);
+    autoEvent e3 = autoEvent{1000, &(Solenoids::openLOX), false};
+    addEvent(&e3);
+    autoEvent e4 = autoEvent{1000, &(Solenoids::closeLOX), false};
+    addEvent(&e4);
+    return 1;
+  }
+
+  int closeLox() {
+    autoEvent e1 = autoEvent{2000, &(Solenoids::closeLOX), false};
+    addEvent(&e1);
+    return 1;
+  }
+
 
 
   // Pretending is a valve action, do -1 to indicate that 

@@ -57,6 +57,7 @@ struct autoEvent {
 struct autoEventList {
   autoEvent* events;
   int length;
+  int maxEvents;
   int timer;
 };
 
@@ -73,13 +74,14 @@ extern struct autoEventList* _eventList;
   bool inShutdown();
 
   bool addEvent(autoEvent* e);
+  bool removeEvent();
 
   // Actions that can be taken/combined as desired
   int beginBothFlow();
   int endBothFlow();
 
   int openLox();
-  // int closeLox();
+  int closeLox();
   // int beginLoxFlow();
   // int endLoxFlow();
 

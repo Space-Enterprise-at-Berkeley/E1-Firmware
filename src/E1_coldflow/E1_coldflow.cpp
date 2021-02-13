@@ -141,11 +141,11 @@ void loop() {
   if (Automation::_eventList->length > 0) {
     Automation::autoEvent* e = &(Automation::_eventList->events[0]);
     if (millis() - Automation::_eventList->timer > e->duration) {
-      Serial.print("duration: ");
-      Serial.print(e->duration);
-      Serial.println("ms");
       e->action();
-      Automation::_eventList->length--;
+      //Automation::removeEvent()
+      Automation::removeEvent();
+      //reset timer
+      Automation::_eventList->timer = millis();
     }
   }
 
