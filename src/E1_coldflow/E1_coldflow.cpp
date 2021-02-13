@@ -11,7 +11,6 @@
 #include <ducer.h>
 #include <tempController.h>
 #include <batteryMonitor.h>
-#include <autoShutdown.h>
 
 #define SERIAL_INPUT 1
 
@@ -122,6 +121,8 @@ void loop() {
 
 
   if (Automation::_eventList->length > 0) {
+    Serial.print(Automation::_eventList->length);
+    Serial.println(" events remain");
     Automation::autoEvent* e = &(Automation::_eventList->events[0]);
     if (millis() - Automation::_eventList->timer > e->duration) {
 
@@ -157,13 +158,24 @@ void loop() {
         RFSerial.println(packet);
       #endif
     write_to_SD(packet.c_str(), file_name);
-    // if sensor is pt (id=1), check injector pressures to detect end of flow:
-    if (sensor->id == 1){
-      float loxInjector = farrbconvert.sensorReadings[2];
-      float propInjector = farrbconvert.sensorReadings[3];
-      detectEndFlow::detectPeak(loxInjector, 0);
-      detectEndFlow::detectPeak(propInjector, 1);
+
+      // After getting new pressure data, check injector pressures to detect end of flow:
+  if (sensor->id==1 && Automation::inFlow()){
+    // Serial.println("flowing!");
+    float loxInjector = farrbconvert.sensorReadings[2];
+    float propInjector = farrbconvert.sensorReadings[3];
+    
+    
+
+    if (Solenoids::getLox5()) { //if LOX Main valve open
+      Serial.print("0: "); Serial.println(loxInjector);
+      Automation::detectPeak(loxInjector, 0);
     }
+    // if (Solenoids::getProp5()) { //if Prop Main valve open
+    //   Serial.print("1: "); Serial.println(propInjector);
+    //   // Automation::detectPeak(propInjector, 1);
+    // }
+  }
 
   }
 

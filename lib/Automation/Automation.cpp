@@ -37,6 +37,10 @@ namespace Automation {
   int _shutdownDelays[2] = {0, 750};
 
 
+  float prevPressures[2][5]; //array containing 2 arrays, which contain the previous 5 pressure values of lox, prop, respectively.
+  int sizes[2]= {0,0};
+
+
 //-----------------------Functions-----------------------
 
   bool init() {
@@ -91,6 +95,16 @@ namespace Automation {
     }
   }
 
+  int state_setFlowing() {
+    _startup = false;
+    _flowing = true;
+    Serial.println("Flow has begun");
+  }
+
+  int state_setShutdown() {
+    _flowing = false;
+    _shutdown = true;
+  }
 
   int act_pressurizeTanks() {
     Solenoids::closeLOXGems();
@@ -119,14 +133,14 @@ namespace Automation {
     Solenoids::openPropane();
   }
 
-  int act_armCloseLox() {
-    Solenoids::armLOX();
-    Solenoids::closeLOX();
-  }
-
   int act_armCloseProp() {
     Solenoids::armLOX();
     Solenoids::closePropane();
+  }
+
+  int act_armCloseLox() {
+    Solenoids::armLOX();
+    Solenoids::closeLOX();
   }
 
   int act_armCloseBoth() {
@@ -136,11 +150,12 @@ namespace Automation {
   }
 
   int beginLoxFlow() {
-    autoEvent events[3];
+    autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
     events[1] = {1000, &(act_armOpenLox), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
-    for (int i = 0; i < 3; i++) addEvent(&events[i]);
+    events[3] = {1000, &(state_setFlowing), false};
+    for (int i = 0; i < 4; i++) addEvent(&events[i]);
   }
 
   int endLoxFlow() {
@@ -153,9 +168,10 @@ namespace Automation {
   }
 
   int openLox() {
-    autoEvent events[2];
+    autoEvent events[3];
     events[0] = {0, &(act_armOpenLox), false};
     events[1] = {750, &(Solenoids::disarmLOX), false};
+    events[2] = {1000, &(state_setFlowing), false};
     for (int i = 0; i < 2; i++) addEvent(&events[i]);
   }
 
@@ -178,17 +194,19 @@ namespace Automation {
     if (_startup) {
       Serial.println("Eureka-1 is in Startup");
 
-      autoEvent events[3];
+      autoEvent events[4];
       events[0] = {0, &(act_pressurizeTanks), false};
       events[1] = {1000, &(act_armOpenBoth), false};
       events[2] = {750, &(Solenoids::disarmLOX), false};
-      //TODO @Ben: after ~1sec delay change state to flowing so shutdownDetection can start
-      for (int i = 0; i < 3; i++) addEvent(&events[i]);
+      events[3] = {1000, &(state_setFlowing), false};
+      //TODO @Ben: after ~1sec delay change startup to false & shutdown to true so shutdownDetection can start
+      for (int i = 0; i < 4; i++) addEvent(&events[i]);
     }
     return -1;
   }
 
   int endBothFlow() {
+    _flowing = false;
     _shutdown = true;
     Serial.println("Eureka-1 is in Shutdown");
 
@@ -197,6 +215,7 @@ namespace Automation {
     events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
     events[3] = {0, &(act_openGems), false};
+    //TODO: set shutdown to be false
     for (int i = 0; i < 4; i++) addEvent(&events[i]);
 
     return -1;
@@ -207,6 +226,108 @@ namespace Automation {
     data[0] = _startup ? 1 : 0;
     data[1] = _shutdown ? 1 : 0;
     data[2] = -1;
+  }
+
+  //void init?
+
+  float findAverage(int index) {
+    float sum = 0;
+    float avg;
+    for (int i=0; i<5; i++) {
+      sum += prevPressures[index][i];
+    }
+    avg = sum / 5;
+    return avg;
+  }
+
+  /*
+   * recordingIndex:
+   *   0 - LOX
+   *   1 - Propane
+   */ 
+  void autoShutdown(int index) {
+    Serial.print("Shutting down valve ");
+    Serial.println(index);
+    if (index == 0) { // Lox is out
+      if (Solenoids::getProp5()) { // Prop is still open
+        autoEvent events[2];
+        events[0] = {0, &(act_armCloseLox), false};  //TODO @Ben: act_armCloseLox is crashing
+        events[1] = {750, &(Solenoids::disarmLOX), false};
+        for (int i = 0; i < 2; i++) addEvent(&events[i]);
+        _flowing = false;
+
+      } else { // Prop is already closed, shutdown
+        _flowing = false;
+        autoEvent events[4];
+        events[0] = {0, &(act_armCloseLox), false};
+        events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+        events[2] = {750, &(Solenoids::disarmLOX), false};
+        events[3] = {0, &(act_openGems), false};
+        for (int i = 0; i < 4; i++) addEvent(&events[i]);
+      }
+    } else { // Prop is out
+      if (Solenoids::getProp5()) { // Lox is still open
+        autoEvent events[2];
+        events[0] = {0, &(act_armCloseProp), false};
+        events[1] = {750, &(Solenoids::disarmLOX)};
+        for (int i = 0; i < 2; i++) addEvent(&events[i]);
+
+      } else { // Lox is already closed, shutdown
+        _flowing = false;
+        autoEvent events[4];
+        events[0] = {0, &(act_armCloseProp), false};
+        events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+        events[2] = {750, &(Solenoids::disarmLOX), false};
+        events[3] = {0, &(act_openGems), false};
+        for (int i = 0; i < 4; i++) addEvent(&events[i]);
+      }
+    }
+      
+  }
+
+  /*
+   * recordingIndex:
+   *   0 - LOX
+   *   1 - Propane
+   *   Assumes this is only called if the main given valve is actually open
+   */ 
+  void detectPeak(float currentPressure, int recordingIndex) {
+
+    Serial.print(recordingIndex);
+    Serial.print(": [");
+    for (int i = 0; i < 5; i++) {
+        Serial.print(Automation::prevPressures[recordingIndex][i]);
+        Serial.print(",");
+    }
+    Serial.println("]");
+
+    if (sizes[recordingIndex]==5) {
+
+      float average = findAverage(recordingIndex);
+      if (currentPressure > 1.25 * average) {
+
+        Serial.print("Spike detected - "); Serial.print(currentPressure); Serial.print(" vs. avg. "); Serial.println(average);
+        Serial.print("[");
+        for (int i = 0; i < 5; i++) {
+          Serial.print(Automation::prevPressures[recordingIndex][i]);
+          Serial.print(",");
+        }
+        Serial.println("]");
+
+        //initiate shutdown
+        autoShutdown(recordingIndex);
+      }
+      //removing first element of previous Pressures array, adding new Pressure to the end
+      // copy(prevPressures[recordingIndex] + 1, prevPressures[recordingIndex] + 4, prevPressures[recordingIndex]);
+      memmove(prevPressures[recordingIndex], prevPressures[recordingIndex] + 1, sizeof(float)*(4));
+      prevPressures[recordingIndex][4] = currentPressure;
+      // sizes[recordingIndex]++;
+
+      
+    } else {
+      prevPressures[recordingIndex][sizes[recordingIndex]] = currentPressure;
+      sizes[recordingIndex]++;
+    }
   }
 
   

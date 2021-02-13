@@ -42,6 +42,11 @@ namespace Automation {
   extern int _shutdownDelays[2];
 
 
+  // Endflow Detection
+  extern float prevPressures[2][5]; //array containing 2 arrays, which contain the previous 5 pressure values of lox, prop, respectively.
+  extern int sizes[2];
+
+
 //------------------------Structs------------------------
 
 /*
@@ -86,6 +91,9 @@ extern struct autoEventList* _eventList;
   int beginLoxFlow();
   int endLoxFlow();
 
+  // state functions to set appropriate state variables
+  int state_setFlowing();
+
   // action functions that combine multiple valve openings/closing simultaneously
   int act_pressurizeTanks();
   int act_openGems();
@@ -103,11 +111,11 @@ extern struct autoEventList* _eventList;
   
   void flowConfirmation(float *data);
   
-  bool checkStartupProgress();
-  bool advanceStartup(float *data);
+  // Automatic Detection
+  float findAverage(int index);
+  void autoShutdown(int index);
+  void detectPeak(float currentPressure, int recordingIndex);
 
-  bool checkShutdownProgress();
-  bool advanceShutdown(float *data);
 
 }
 
