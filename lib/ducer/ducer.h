@@ -9,6 +9,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <ADS1219.h>
+#include <autoShutdown.h>
 
 using namespace std;
 
