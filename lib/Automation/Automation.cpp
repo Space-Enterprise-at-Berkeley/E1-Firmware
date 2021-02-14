@@ -303,7 +303,7 @@ namespace Automation {
     if (sizes[recordingIndex]==5) {
 
       float average = findAverage(recordingIndex);
-      if (currentPressure > 1.25 * average) {
+      if (currentPressure > 1.20 * average) {
 
         Serial.print("Spike detected - "); Serial.print(currentPressure); Serial.print(" vs. avg. "); Serial.println(average);
         Serial.print("[");
