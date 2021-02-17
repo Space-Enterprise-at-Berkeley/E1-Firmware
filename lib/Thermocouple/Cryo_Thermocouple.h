@@ -15,9 +15,11 @@ namespace Thermocouple {
     Adafruit_MCP9600 ** _cryo_amp_boards;
     int * _addrs;
     int _numSensors;
+    float * _latestReads;
 
     int init(int numSensors, int * addrs, _themotype * types) { // assume that numSensors is < max Size of packet. Add some error checking here
       _addrs = (int *)malloc(numSensors);
+      _latestReads = (float *)malloc(numSensors);
       _cryo_amp_boards = (Adafruit_MCP9600 **)malloc(numSensors * sizeof(Adafruit_MCP9600));
 
       _numSensors = numSensors;
@@ -43,13 +45,20 @@ namespace Thermocouple {
     void readCryoTemps(float *data) {
       for (int i = 0; i < _numSensors; i++) {
         data[i] = _cryo_amp_boards[i]->readThermocouple();
+        _latestReads[i] = data[i];
       }
       data[_numSensors] = -1;
+    }
+
+    void readSpecificCryoTemp(int index, float *data) {
+      data[0] = _latestReads[index];
+      data[1] = -1;
     }
 
     int freeAllResources() {
         free(_cryo_amp_boards);
         free(_addrs);
+        free(_latestReads);
         return 0;
     }
 
