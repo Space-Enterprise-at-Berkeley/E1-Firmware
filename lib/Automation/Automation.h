@@ -115,6 +115,7 @@ extern struct autoEventList* _eventList;
   float findAverage(int index);
   void autoShutdown(int index);
   void detectPeak(float currentPressure, int recordingIndex);
+  void detectPeaks(float loxInjector, float propInjector);
 
 
 }

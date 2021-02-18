@@ -164,20 +164,11 @@ void loop() {
 
       // After getting new pressure data, check injector pressures to detect end of flow:
   if (sensor->id==1 && Automation::inFlow()){
-    // Serial.println("flowing!");
+
     float loxInjector = farrbconvert.sensorReadings[2];
     float propInjector = farrbconvert.sensorReadings[3];
-    
-    
 
-    if (Solenoids::getLox5()) { //if LOX Main valve open
-      Serial.print("0: "); Serial.println(loxInjector);
-      Automation::detectPeak(loxInjector, 0);
-    }
-    if (Solenoids::getProp5()) { //if Prop Main valve open
-      Serial.print("1: "); Serial.println(propInjector);
-      Automation::detectPeak(propInjector, 1);
-    }
+    Automation::detectPeaks(loxInjector, propInjector);
   }
 
   }

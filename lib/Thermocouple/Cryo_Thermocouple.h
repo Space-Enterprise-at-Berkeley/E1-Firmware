@@ -33,7 +33,7 @@ namespace Thermocouple {
           return -1;
         }
 
-        _cryo_amp_boards[i]->setADCresolution(MCP9600_ADCRESOLUTION_18);
+        _cryo_amp_boards[i]->setADCresolution(MCP9600_ADCRESOLUTION_12);
         _cryo_amp_boards[i]->setThermocoupleType(types[i]);
         _cryo_amp_boards[i]->setFilterCoefficient(3);
         _cryo_amp_boards[i]->enable(true);

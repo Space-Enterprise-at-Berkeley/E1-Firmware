@@ -188,7 +188,6 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
-    //&& Solenoids::getLoxGems() && Solenoids::getPropGems()
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
@@ -228,7 +227,6 @@ namespace Automation {
     data[2] = -1;
   }
 
-  //void init?
 
   float findAverage(int index) {
     float sum = 0;
@@ -284,6 +282,17 @@ namespace Automation {
       
   }
 
+  void detectPeaks(float loxInjector, float propInjector) {    
+
+    if (Solenoids::getLox5()) { //if LOX Main valve open
+      detectPeak(loxInjector, 0);
+    }
+    if (Solenoids::getProp5()) { //if Prop Main valve open
+      detectPeak(propInjector, 1);
+    }
+  }
+
+
   /*
    * recordingIndex:
    *   0 - LOX
@@ -292,13 +301,6 @@ namespace Automation {
    */ 
   void detectPeak(float currentPressure, int recordingIndex) {
 
-    Serial.print(recordingIndex);
-    Serial.print(": [");
-    for (int i = 0; i < 5; i++) {
-        Serial.print(Automation::prevPressures[recordingIndex][i]);
-        Serial.print(",");
-    }
-    Serial.println("]");
 
     if (sizes[recordingIndex]==5) {
 
@@ -317,10 +319,8 @@ namespace Automation {
         autoShutdown(recordingIndex);
       }
       //removing first element of previous Pressures array, adding new Pressure to the end
-      // copy(prevPressures[recordingIndex] + 1, prevPressures[recordingIndex] + 4, prevPressures[recordingIndex]);
       memmove(prevPressures[recordingIndex], prevPressures[recordingIndex] + 1, sizeof(float)*(4));
       prevPressures[recordingIndex][4] = currentPressure;
-      // sizes[recordingIndex]++;
 
       
     } else {
