@@ -82,8 +82,8 @@ struct Queue {
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[28];
-  float sensorReadings[7];
+  char buffer[36];
+  float sensorReadings[9];
 };
 
 /*

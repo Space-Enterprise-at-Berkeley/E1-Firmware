@@ -107,7 +107,8 @@ namespace Ducers {
         data[i] = interpolateLow(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
         i++;
       } else {
-        data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
+        // data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
+        data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
         i++;
       }
     }
