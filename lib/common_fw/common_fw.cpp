@@ -21,7 +21,7 @@ bool write_to_SD(std::string message, const char * file_name) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           char *msg = sdBuffer->dequeue();
-          file.write(msg, sizeof(msg)); 
+          file.write(msg, sizeof(msg));
           free(msg);
         }
         file.close();
@@ -162,8 +162,8 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-void debug(String str, int flag){
-  if (flag == 0){
+void debug(String str, int flag) {
+  if (flag == 1) {
     Serial.println(str);
     Serial.flush();
   }

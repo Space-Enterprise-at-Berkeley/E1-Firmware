@@ -71,7 +71,7 @@ namespace config {
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       // ads[i]->calibrate();
     }
-  
+
 
     debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];

@@ -14,8 +14,6 @@
 
 #define SERIAL_INPUT 0
 
-#define NO_ADC 0 // temporary fix. TODO (@fazerlicourice7 ): do it properly
-
 #if SERIAL_INPUT
   #define RFSerial Serial
 #else
@@ -194,13 +192,8 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      #if NO_ADC == 1 // temporary fix. TODO (@fazerlicourice7 ): do it properly
-        break;
-      #else
-        Ducers::readAllPressures(farrbconvert.sensorReadings);
-        break;
-      #endif
-
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
+      break;
     case 2:
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
