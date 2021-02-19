@@ -9,7 +9,6 @@
 #include "config.h"
 
 #include <ducer.h>
-#include <tempController.h>
 #include <batteryMonitor.h>
 
 #define SERIAL_INPUT 0
@@ -100,8 +99,6 @@ void setup() {
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
-
-  tempController::init(10, 2, LOX_ADAPTER_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
 }
 
 void loop() {
@@ -162,7 +159,7 @@ void sensorReadFunc(int id) {
     case 0:
       debug("Heater", DEBUG);
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = tempController::controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:

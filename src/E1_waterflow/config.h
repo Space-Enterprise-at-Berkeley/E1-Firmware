@@ -40,8 +40,6 @@ struct valveInfo *valves;
 
 #define HIGH_SOL_PIN 6
 
-#define LOX_ADAPTER_HEATER_PIN 7
-
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
@@ -87,8 +85,5 @@ namespace config {
     pinMode(PROP_GEMS_PIN, OUTPUT);
 
     pinMode(HIGH_SOL_PIN, OUTPUT);
-
-    pinMode(LOX_ADAPTER_HEATER_PIN, OUTPUT);
-
   }
 }

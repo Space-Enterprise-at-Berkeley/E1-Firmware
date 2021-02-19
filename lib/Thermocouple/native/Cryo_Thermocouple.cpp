@@ -22,6 +22,11 @@ namespace Thermocouple {
       data[_numSensors] = -1;
     }
 
+    void Cryo::readSpecificCryoTemp(int index, float *data) {
+      data[0] = 99;
+      data[1] = -1;
+    }
+
     int Cryo::freeAllResources() {
         return 0;
     }
