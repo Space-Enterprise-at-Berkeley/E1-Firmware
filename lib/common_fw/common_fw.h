@@ -99,13 +99,13 @@ struct sensorInfo {
 /*
  * Data structure to store all information relevant to a specific valve.
  */
-struct valveInfo {
-  String name;
-  int id;
-  int (*openValve)();
-  int (*closeValve)();
-  void (*ackFunc)(float *data);
-};
+// struct valveInfo {
+//   String name;
+//   int id;
+//   int (*openValve)();
+//   int (*closeValve)();
+//   void (*ackFunc)(float *data);
+// };
 
 
 
@@ -127,9 +127,7 @@ extern struct Queue *sdBuffer;
 
 extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo *sensors;
-extern struct valveInfo *valves;
+extern const uint8_t numActuators;
+extern Actuator *actuators[];
 extern int packetCounter;
 #endif // _COMMON_H_
-
-
-

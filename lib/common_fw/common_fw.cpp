@@ -21,7 +21,7 @@ bool write_to_SD(std::string message, const char * file_name) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           char *msg = sdBuffer->dequeue();
-          file.write(msg, sizeof(msg)); 
+          file.write(msg, sizeof(msg));
           free(msg);
         }
         file.close();
@@ -69,13 +69,17 @@ String make_packet(int id, bool error) {
   return packet;
 }
 
+bool parseCommand(String packet) {
+
+}
+
 /*
  * Decodes a packet sent from ground station in the following format:
  * {<valve_ID>,<open(1) or close(0)|checksum}
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves) {
+int decode_received_packet(String packet) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
@@ -86,7 +90,16 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], 
   if(data_end_index == -1) {
     return -1;
   }
-  int action = packet.substring(data_start_index + 1,data_end_index).toInt();
+
+  std::string data_string = packet.substring(data_start_index + 1,data_end_index).c_str();
+  char *tmp;
+  uint8_t i = 0;
+  float data[7];
+  tmp = std::strtok(data_string, ",");
+  while(tmp != NULL){
+    data[i++] = atof(tmp);
+    tmp = std::strtok(NULL, ",");
+  }
 
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   const char *checksum_char = checksumstr.c_str();
@@ -103,20 +116,12 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], 
   if (_check == checksum) {
     Serial.println("Checksum correct, taking action");
     chooseValveById(valve_id, valve, valves, numValves);
-    return action;
+    return 0;
   } else {
     return -1;
   }
 }
 
-void readPacketCounter(float *data) {
-    data[0] = packetCounter;
-    data[1] = -1;
-  }
-
-void incrementPacketCounter() {
-    packetCounter+=1;
-}
 
 /**
  *
@@ -130,18 +135,28 @@ void chooseValveById(int id, valveInfo *valve, valveInfo valves[], int numValves
   }
 }
 
-/*
- * Calls the corresponding method for this valve with the appropriate
- * action in solenoids.h
- */
-void take_action(valveInfo *valve, int action) {
-  if (action == 1) {
-    valve->openValve();
-  } else if (action == 0) {
-    valve->closeValve();
+// /*
+//  * Calls the corresponding method for this valve with the appropriate
+//  * action in solenoids.h
+//  */
+// void take_action(valveInfo *valve, int action) {
+//   if (action == 1) {
+//     valve->openValve();
+//   } else if (action == 0) {
+//     valve->closeValve();
+//   }
+//   if(action != -1)
+//     valve->ackFunc(farrbconvert.sensorReadings);
+// }
+
+
+void readPacketCounter(float *data) {
+    data[0] = packetCounter;
+    data[1] = -1;
   }
-  if(action != -1)
-    valve->ackFunc(farrbconvert.sensorReadings);
+
+void incrementPacketCounter() {
+    packetCounter+=1;
 }
 
 /*

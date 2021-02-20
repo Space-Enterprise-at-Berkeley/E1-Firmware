@@ -46,7 +46,7 @@ namespace Automation {
   bool init() {
     _eventList = new autoEventList;
     _eventList->maxEvents = 15; //arbitrary max of 10 events right now.
-    _eventList->events = new autoEvent[_eventList->maxEvents]; 
+    _eventList->events = new autoEvent[_eventList->maxEvents];
 
     _eventList->length = 0;
     return true;
@@ -56,19 +56,19 @@ namespace Automation {
   bool inStartup() {
     return _startup;
   }
-  
+
   bool inFlow() {
     return _flowing;
   }
-  
+
   bool inShutdown() {
     return _shutdown;
   }
 
 
-  /* 
+  /*
    * For now copies the passed into autoEvent into the eventList. Copying requires slightly more
-   * overhead, but avoids dealing with allocating & deallocation memory for each event 
+   * overhead, but avoids dealing with allocating & deallocation memory for each event
    */
   bool addEvent(autoEvent* e) {
     if (_eventList->length < 10) {
@@ -242,7 +242,7 @@ namespace Automation {
    * recordingIndex:
    *   0 - LOX
    *   1 - Propane
-   */ 
+   */
   void autoShutdown(int index) {
     Serial.print("Shutting down valve ");
     Serial.println(index);
@@ -279,10 +279,10 @@ namespace Automation {
         for (int i = 0; i < 4; i++) addEvent(&events[i]);
       }
     }
-      
+
   }
 
-  void detectPeaks(float loxInjector, float propInjector) {    
+  void detectPeaks(float loxInjector, float propInjector) {
 
     if (Solenoids::getLox5()) { //if LOX Main valve open
       detectPeak(loxInjector, 0);
@@ -298,7 +298,7 @@ namespace Automation {
    *   0 - LOX
    *   1 - Propane
    *   Assumes this is only called if the main given valve is actually open
-   */ 
+   */
   void detectPeak(float currentPressure, int recordingIndex) {
 
 
@@ -322,12 +322,15 @@ namespace Automation {
       memmove(prevPressures[recordingIndex], prevPressures[recordingIndex] + 1, sizeof(float)*(4));
       prevPressures[recordingIndex][4] = currentPressure;
 
-      
+
     } else {
       prevPressures[recordingIndex][sizes[recordingIndex]] = currentPressure;
       sizes[recordingIndex]++;
     }
   }
 
-  
+
+  AutomationSequenceActuator fullFlow("Perform Flow", &beginBothFlow, &endBothFlow);
+  AutomationSequenceActuator loxFlow("Perform LOX Flow", &beginLoxFlow, &endLoxFlow);
+
 } //Automation

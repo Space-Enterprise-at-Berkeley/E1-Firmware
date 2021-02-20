@@ -65,6 +65,7 @@ namespace Solenoids {
     data[4] = lox_gems_state;
     data[5] = prop_gems_state;
     data[6] = high_sol_state;
+    data[7] = -1;
   }
 
   bool loxArmed() {
@@ -319,4 +320,15 @@ namespace Solenoids {
     return prop_gems_state;
   }
 
+  SolenoidActuator lox_2("LOX 2 Way", &armLOX, &disarmLOX);
+  SolenoidActuator lox_5("LOX 5 Way", &openLOX, &closeLOX);
+  SolenoidActuator lox_G("LOX Gems", &ventLOXGems, &closeLOXGems);
+  SolenoidActuator prop_2("Propane 2 Way", &armPropane, &disarmPropane);
+  SolenoidActuator prop_5("Propane 5 Way", &openPropane, &closePropane);
+  SolenoidActuator prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
+
+  SolenoidActuator high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
+
+  SolenoidActuator arm_rocket("Arm Rocket", &armAll, &disarmAll);
+  SolenoidActuator launch("Launch Rocket", &LAUNCH, &endBurn);
 }

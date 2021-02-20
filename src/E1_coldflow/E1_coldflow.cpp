@@ -32,7 +32,7 @@ char command[50]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;
+//valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
@@ -89,7 +89,7 @@ void setup() {
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
-  
+
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
   Thermocouple::Cryo::init(numCryoTherms, cryoThermAddrs, cryoTypes);
 
@@ -109,7 +109,7 @@ void loop() {
     }
 
     debug(String(command), DEBUG);
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
+    int action = decode_received_packet(String(command), &valve, actuators, numActuators);
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
@@ -174,7 +174,7 @@ void loop() {
   }
 
   // For dashboard display
-  delay(50); 
+  delay(50);
 
 }
 

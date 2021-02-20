@@ -108,9 +108,9 @@ extern struct autoEventList* _eventList;
   // int endPropFlow();
   // int openProp();
   // int closeProp();
-  
+
   void flowConfirmation(float *data);
-  
+
   // Automatic Detection
   float findAverage(int index);
   void autoShutdown(int index);
@@ -119,5 +119,40 @@ extern struct autoEventList* _eventList;
 
 
 }
+
+
+class AutomationSequenceActuator : public Actuator {
+
+  typedef int (*func_t)();
+
+  public:
+    AutomationSequenceActuator(std::string name, uint8_t id, func_t startFunc, func_t endFunc):
+      Actuator(name, id),
+      startSequence(startFunc),
+      endSequence(endFunc)
+    {}
+
+    AutomationSequenceActuator(std::string name, func_t startFunc, func_t endFunc):
+      Actuator(name),
+      startSequence(startFunc),
+      endSequence(endFunc)
+    {}
+
+    void parseCommand(float *data) {
+      if (data[0] == 1)
+        startSequence();
+      else
+        endSequence();
+    }
+
+    void confirmation(float *data) {
+      Automation::flowConfirmation(data);
+    }
+
+  private:
+    func_t startSequence;
+    func_t endSequence;
+
+};
 
 #endif
