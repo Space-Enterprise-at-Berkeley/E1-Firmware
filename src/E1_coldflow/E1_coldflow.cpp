@@ -9,7 +9,6 @@
 #include "config.h"
 
 #include <ducer.h>
-#include <tempController.h>
 #include <batteryMonitor.h>
 
 #define SERIAL_INPUT 0
@@ -37,9 +36,6 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
-
-TempController loxPTHeater(10, 2, LOX_ADAPTER_PT_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
-TempController loxGemsHeater(2, 2, LOX_GEMS_HEATER_PIN); // setPoint = 2C, alg = PID
 
 void sensorReadFunc(int id);
 

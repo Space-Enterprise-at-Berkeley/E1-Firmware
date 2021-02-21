@@ -2,10 +2,10 @@
 #include <actuator.h>
 #include <Analog_Thermocouple.h>
 #include <Cryo_Thermocouple.h>
+#include <tempController.h>
 #include "common_fw.h"
 #include <ADS1219.h>
 #include "Automation.h"
-
 
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
@@ -55,6 +55,8 @@ ActuatorArray actuators(numActuators);
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
+HeaterActuator loxPTHeater("LOX PT Heater", 40, 10, 2, LOX_ADAPTER_PT_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
+HeaterActuator loxGemsHeater("LOX Gems Heater", 41, 10, 2, LOX_GEMS_HEATER_PIN); // setPoint = 2C, alg = PID
 
 
 namespace config {
