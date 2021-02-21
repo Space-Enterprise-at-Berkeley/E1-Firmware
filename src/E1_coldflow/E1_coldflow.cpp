@@ -109,10 +109,10 @@ void loop() {
     }
 
     debug(String(command), DEBUG);
-    int action = decode_received_packet(String(command), &valve, actuators, numActuators);
-    if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+    uint8_t id = parseCommand(String(command));
+    if (id != -1) {
+      //take_action(&valve, action);
+      packet = make_packet(id, false);
       Serial.println(packet);
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);

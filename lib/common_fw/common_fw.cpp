@@ -68,10 +68,13 @@ String make_packet(int id, bool error) {
   incrementPacketCounter();
   return packet;
 }
-
-bool parseCommand(String packet) {
-
-}
+//
+// bool parseCommand(String packet) {
+//   Actuator *tmp = decode_received_packet(packet);
+//   if(tmp != nullptr){
+//
+//   }
+// }
 
 /*
  * Decodes a packet sent from ground station in the following format:
@@ -79,25 +82,25 @@ bool parseCommand(String packet) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int decode_received_packet(String packet) {
+uint8_t parseCommand(String packet) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
     return -1;
   }
-  int valve_id = packet.substring(1,data_start_index).toInt();
+  int actuator_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
   if(data_end_index == -1) {
     return -1;
   }
 
-  std::string data_string = packet.substring(data_start_index + 1,data_end_index).c_str();
+  char* data_string = packet.substring(data_start_index + 1,data_end_index).c_str();
   char *tmp;
   uint8_t i = 0;
-  float data[7];
+  float command_data[7];
   tmp = std::strtok(data_string, ",");
   while(tmp != NULL){
-    data[i++] = atof(tmp);
+    command_data[i++] = atof(tmp);
     tmp = std::strtok(NULL, ",");
   }
 
@@ -106,7 +109,7 @@ int decode_received_packet(String packet) {
   int checksum = strtol(checksum_char, NULL, 16);
   Serial.println(checksum);
 
-  const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
+  const int count = packet.substring(1, data_end_index).length();
   String str_data= packet.substring(1,data_end_index);
   char const *data = str_data.c_str();
   Serial.println(data);
@@ -114,9 +117,11 @@ int decode_received_packet(String packet) {
   int _check = (int)Fletcher16((uint8_t *) data, count);
   Serial.println(_check);
   if (_check == checksum) {
-    Serial.println("Checksum correct, taking action");
-    chooseValveById(valve_id, valve, valves, numValves);
-    return 0;
+    debug("Checksum correct, taking action", 0);
+    Actuator *tmp = actuators.get(actuator_id); //chooseValveById(valve_id, valve, valves, numValves);
+    tmp->parseCommand(command_data);
+    tmp->confirmation(farrbconvert.sensorReadings);
+    return tmp->ID();
   } else {
     return -1;
   }
@@ -125,15 +130,15 @@ int decode_received_packet(String packet) {
 
 /**
  *
- */
-void chooseValveById(int id, valveInfo *valve, valveInfo valves[], int numValves) {
-  for (int i = 0; i < numValves; i++) {
-    if (valves[i].id == id) {
-      *valve = valves[i];
-      break;
-    }
-  }
-}
+//  */
+// void chooseValveById(int id, valveInfo *valve, valveInfo valves[], int numValves) {
+//   for (int i = 0; i < numValves; i++) {
+//     if (valves[i].id == id) {
+//       *valve = valves[i];
+//       break;
+//     }
+//   }
+// }
 
 // /*
 //  * Calls the corresponding method for this valve with the appropriate

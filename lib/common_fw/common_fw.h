@@ -9,10 +9,13 @@
 
 #include <SPI.h>
 #include <string>
+#include <cstring>
 #include <SdFat.h>
 #include <TimeLib.h>
 #include <Arduino.h>
 #include <Wire.h>
+
+#include <actuator.h>
 
 
 struct Queue {
@@ -111,12 +114,12 @@ struct sensorInfo {
 
 String make_packet (int id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
-void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
+// void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
-int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves);
+uint8_t parseCommand(String packet);
 void readPacketCounter(float *data);
 void incrementPacketCounter();
-void take_action(valveInfo *valve, int action);
+// void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
 void debug(String str, int debug);
 
@@ -128,6 +131,6 @@ extern struct Queue *sdBuffer;
 extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo *sensors;
 extern const uint8_t numActuators;
-extern Actuator *actuators[];
+extern ActuatorArray actuators;
 extern int packetCounter;
 #endif // _COMMON_H_

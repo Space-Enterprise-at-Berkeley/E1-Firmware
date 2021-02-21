@@ -8,7 +8,7 @@
 
 
 #define FLIGHT_BRAIN_ADDR 0x00
-#define DEBUG 0
+#define DEBUG 1
 
 std::string str_file_name = "E1_speed_test_results.txt";
 const char * file_name = str_file_name.c_str();
@@ -37,7 +37,7 @@ const uint8_t numSensors = 6;
 sensorInfo *sensors;
 
 const uint8_t numActuators = 11;
-Actuator *actuators[numActuators];
+ActuatorArray actuators(numActuators);
 
 #define LOX_2_PIN 0
 #define LOX_5_PIN 2
@@ -85,7 +85,7 @@ namespace config {
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
     debug("Initializing actuators", DEBUG);
-    actuators[0] = &Solenoids::lox_2;
+    actuators.insert(&Solenoids::lox_2);
     //{"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
     // valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
     // valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
