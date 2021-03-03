@@ -116,7 +116,7 @@ String make_packet (int id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 // void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
-uint8_t parseCommand(String packet);
+int8_t parseCommand(String packet);
 void readPacketCounter(float *data);
 void incrementPacketCounter();
 // void take_action(valveInfo *valve, int action);

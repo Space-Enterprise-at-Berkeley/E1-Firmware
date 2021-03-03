@@ -7,7 +7,7 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 0
 
-std::string str_file_name = "E1_speed_test_results.txt";
+std::string str_file_name = "E1_waterflow.txt";
 const char * file_name = str_file_name.c_str();
 
 const int numADCSensors = 2;
@@ -27,8 +27,8 @@ int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
 
-const int numValves = 9;
-struct valveInfo *valves;
+const uint8_t numActuators = 9;
+ActuatorArray actuators(numActuators);
 
 #define LOX_2_PIN 0
 #define LOX_5_PIN 2
@@ -64,17 +64,25 @@ namespace config {
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
 
-    debug("Initializing valves", DEBUG);
-    valves = new valveInfo[numValves];
-    valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
-    valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
-    valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
-    valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
-    valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
-    valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
-    valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
+    debug("Initializing actuators", DEBUG);
+    actuators.insert(&Solenoids::lox_2);
+    // valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::lox_5);
+    // valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::lox_G);
+    // valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::prop_2);
+    // valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::prop_5);
+    // valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::prop_G);
+    // valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::high_p);
+    // valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::arm_rocket);
+    // valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
+    actuators.insert(&Solenoids::launch);
+    // valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
 
     pinMode(LOX_2_PIN, OUTPUT);
     pinMode(LOX_5_PIN, OUTPUT);

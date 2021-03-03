@@ -82,7 +82,7 @@ String make_packet(int id, bool error) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-uint8_t parseCommand(String packet) {
+int8_t parseCommand(String packet) {
   Serial.println(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {

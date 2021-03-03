@@ -107,7 +107,7 @@ void loop() {
     }
 
     debug(String(command), DEBUG);
-    uint8_t id = parseCommand(String(command));
+    int8_t id = parseCommand(String(command));
     if (id != -1) {
       //take_action(&valve, action);
       packet = make_packet(id, false);
@@ -161,19 +161,15 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-  if (sensor->id==1 && Automation::inFlow()){
+    if (sensor->id==1 && Automation::inFlow()){
 
-    float loxInjector = farrbconvert.sensorReadings[2];
-    float propInjector = farrbconvert.sensorReadings[3];
+      float loxInjector = farrbconvert.sensorReadings[2];
+      float propInjector = farrbconvert.sensorReadings[3];
 
-    Automation::detectPeaks(loxInjector, propInjector);
+      Automation::detectPeaks(loxInjector, propInjector);
+    }
   }
-
-  }
-
-  // For dashboard display
   delay(50);
-
 }
 
 

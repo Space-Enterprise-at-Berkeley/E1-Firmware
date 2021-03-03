@@ -29,7 +29,7 @@ char command[50]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;
+// valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
@@ -53,15 +53,9 @@ void setup() {
   debug("Initializing Sensor Frequencies", DEBUG);
 
   for (int i = 0; i < numSensors; i++) {
-    debug(String(i), DEBUG);
-    debug("starting 1st line", DEBUG);
     sensor_checks[i][0] = sensors[i].clock_freq;
-    debug("starting 2nd line", DEBUG);
     sensor_checks[i][1] = 1;
   }
-
-  debug("Sensor IDs:", DEBUG);
-  debug(String(sensors[0].name), DEBUG);
 
   debug("Starting SD", DEBUG);
 
@@ -105,6 +99,7 @@ void loop() {
   // process command
   if (RFSerial.available() > 0) {
     int i = 0;
+
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
@@ -112,16 +107,15 @@ void loop() {
     }
 
     debug(String(command), DEBUG);
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
-    if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+    int8_t id = parseCommand(String(command));
+    if (id != -1) {
+      //take_action(&valve, action);
+      packet = make_packet(id, false);
       Serial.println(packet);
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      packet_count++;
-      debug(String(packet_count),DEBUG);
+
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -140,11 +134,10 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
+
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
-    packet_count++;
-    debug(String(packet_count),DEBUG);
     write_to_SD(packet.c_str(), file_name);
   }
   delay(50);
@@ -169,14 +162,6 @@ void sensorReadFunc(int id) {
     case 2:
       debug("Batt", DEBUG);
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      debug("Cryo Therms", DEBUG);
-      // Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      // //farrbconvert.sensorReadings[1]=0;
-      // farrbconvert.sensorReadings[2]=0;
-      // farrbconvert.sensorReadings[3]=0;
-      // farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");

@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 
-uint8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val);
+int8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val);
 
 
 ActuatorArray::ActuatorArray(const uint8_t size) {
@@ -36,7 +36,7 @@ void ActuatorArray::insert(Actuator * toInsert) {
   currIdx++;
 }
 
-uint8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val){
+int8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val){
   if (array[start] == val){
     return start;
   } else if (start == end){

@@ -29,7 +29,7 @@ class TempController {
 
   protected:
     bool humanOverride = false;
-    uint16_t humanSpecifiedValue = 0;
+    uint16_t humanSpecifiedValue = 300;
 
   public:
 
