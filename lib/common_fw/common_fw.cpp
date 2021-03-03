@@ -182,8 +182,8 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-void debug(String str, int flag){
-  if (flag == 0){
+void debug(String str, int flag) {
+  if (flag == 1) {
     Serial.println(str);
     Serial.flush();
   }

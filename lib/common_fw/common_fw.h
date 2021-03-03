@@ -7,9 +7,9 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-#include <SPI.h>
 #include <string>
 #include <cstring>
+#include <SPI.h>
 #include <SdFat.h>
 #include <TimeLib.h>
 #include <Arduino.h>
