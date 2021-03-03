@@ -1,5 +1,5 @@
 /*
-   E1_coldflow.cpp - A c++ program that uses I2C to establish communication between
+   E1_waterflow.cpp - A c++ program that uses I2C to establish communication between
    the sensors and valves inside the rocket & the ground station. Able to send
    data to the ground station via RF. Can receive and process commands sent from
    ground station.
@@ -9,7 +9,6 @@
 #include "config.h"
 
 #include <ducer.h>
-#include <tempController.h>
 #include <batteryMonitor.h>
 
 #define SERIAL_INPUT 0
@@ -36,12 +35,9 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
-TempController loxPTHeater(10, 2, LOX_ADAPTER_PT_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
-TempController loxGemsHeater(2, 2, LOX_GEMS_HEATER_PIN); // setPoint = 2C, alg = PID
+int packet_count = 0;
 
 void sensorReadFunc(int id);
-
-Thermocouple::Cryo _cryoTherms;
 
 void setup() {
   Wire.begin();
@@ -57,9 +53,15 @@ void setup() {
   debug("Initializing Sensor Frequencies", DEBUG);
 
   for (int i = 0; i < numSensors; i++) {
+    debug(String(i), DEBUG);
+    debug("starting 1st line", DEBUG);
     sensor_checks[i][0] = sensors[i].clock_freq;
+    debug("starting 2nd line", DEBUG);
     sensor_checks[i][1] = 1;
   }
+
+  debug("Sensor IDs:", DEBUG);
+  debug(String(sensors[0].name), DEBUG);
 
   debug("Starting SD", DEBUG);
 
@@ -67,6 +69,8 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    packet_count++;
+    debug(String(packet_count),DEBUG);
   }
 
   debug("Opening File", DEBUG);
@@ -81,7 +85,11 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    packet_count++;
+    debug(String(packet_count),DEBUG);
   }
+
+  // config::setup();
 
   debug("Initializing Libraries", DEBUG);
 
@@ -91,19 +99,12 @@ void setup() {
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
-
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, cryoThermAddrs, cryoTypes);
-
-  Automation::init();
-
 }
 
 void loop() {
   // process command
   if (RFSerial.available() > 0) {
     int i = 0;
-
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
@@ -119,28 +120,9 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
+      packet_count++;
+      debug(String(packet_count),DEBUG);
       write_to_SD(packet.c_str(), file_name);
-    }
-  }
-
-
-  if (Automation::_eventList->length > 0) {
-    Serial.print(Automation::_eventList->length);
-    Serial.println(" events remain");
-    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
-    if (millis() - Automation::_eventList->timer > e->duration) {
-
-      e->action();
-
-      //Update valve states after each action
-      Solenoids::getAllStates(farrbconvert.sensorReadings);
-      packet = make_packet(29, false);
-      Serial.println(packet);
-      RFSerial.println(packet);
-
-      Automation::removeEvent();
-      //reset timer
-      Automation::_eventList->timer = millis();
     }
   }
 
@@ -158,26 +140,14 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
-
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
+    packet_count++;
+    debug(String(packet_count),DEBUG);
     write_to_SD(packet.c_str(), file_name);
-
-      // After getting new pressure data, check injector pressures to detect end of flow:
-  if (sensor->id==1 && Automation::inFlow()){
-
-    float loxInjector = farrbconvert.sensorReadings[2];
-    float propInjector = farrbconvert.sensorReadings[3];
-
-    Automation::detectPeaks(loxInjector, propInjector);
   }
-
-  }
-
-  // For dashboard display
   delay(50);
-
 }
 
 
@@ -187,27 +157,26 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      debug("Heater", DEBUG);
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
+      debug("Ducers", DEBUG);
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
+      debug("Batt", DEBUG);
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
-      break;
-    case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
-      break;
-    case 6:
-      // this hardcoded 3 is kinda sus.
-      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      debug("Cryo Therms", DEBUG);
+      // Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
+      // //farrbconvert.sensorReadings[1]=0;
+      // farrbconvert.sensorReadings[2]=0;
+      // farrbconvert.sensorReadings[3]=0;
+      // farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");
