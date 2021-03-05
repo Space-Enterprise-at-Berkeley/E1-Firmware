@@ -63,7 +63,7 @@ HeaterActuator loxGemsHeater("LOX Gems Heater", 41, 10, 2, LOX_GEMS_HEATER_PIN);
 namespace config {
   void setup() {
 
-    debug("Initializing ADCs", DEBUG);
+    debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {
       ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
       ads[i]->setConversionMode(SINGLE_SHOT);
@@ -75,7 +75,7 @@ namespace config {
     }
 
 
-    debug("Initializing sensors", DEBUG);
+    debug("Initializing sensors");
     sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
@@ -85,7 +85,7 @@ namespace config {
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
-    debug("Initializing actuators", DEBUG);
+    debug("Initializing actuators");
     actuators.insert(&Solenoids::lox_2);
     //{"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
     // valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};

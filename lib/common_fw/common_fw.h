@@ -121,7 +121,7 @@ void readPacketCounter(float *data);
 void incrementPacketCounter();
 // void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
-void debug(String str, int debug);
+void debug(String str);
 
 extern SdFat sd;
 extern File file;

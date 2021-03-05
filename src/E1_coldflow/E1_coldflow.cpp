@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 1 // 1 is flight config, 0 is for debug
+#define SERIAL_INPUT 0 // 1 is flight config, 0 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -47,17 +47,17 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -65,11 +65,11 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
 
-  debug("Writing Dummy Data", DEBUG);
+  debug("Writing Dummy Data");
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
@@ -79,7 +79,7 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
   Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
@@ -106,7 +106,7 @@ void loop() {
       i++;
     }
 
-    debug(String(command), DEBUG);
+    debug(String(command));
     int8_t id = parseCommand(String(command));
     if (id != -1) {
       //take_action(&valve, action);

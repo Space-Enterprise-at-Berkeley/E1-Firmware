@@ -16,6 +16,7 @@ union floatArrToBytes farrbconvert;
  */
 bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
+    sdBuffer->dequeue();
     if(sdBuffer->length >= 40) {
       if(file.open(file_name, O_RDWR | O_APPEND)) {
         int initialLength = sdBuffer->length;
@@ -117,7 +118,7 @@ int8_t parseCommand(String packet) {
   int _check = (int)Fletcher16((uint8_t *) data, count);
   Serial.println(_check);
   if (_check == checksum) {
-    debug("Checksum correct, taking action", 0);
+    debug("Checksum correct, taking action");
     Actuator *tmp = actuators.get(actuator_id); //chooseValveById(valve_id, valve, valves, numValves);
     tmp->parseCommand(command_data);
     tmp->confirmation(farrbconvert.sensorReadings);
@@ -182,9 +183,9 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-void debug(String str, int flag) {
-  if (flag == 1) {
+void debug(String str) {
+  #ifdef DEBUG
     Serial.println(str);
     Serial.flush();
-  }
+  #endif
 }
