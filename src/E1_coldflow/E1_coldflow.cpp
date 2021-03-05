@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 1 // 1 is flight config, 0 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -89,7 +89,7 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
 
   _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, cryoThermAddrs, cryoTypes);
+  _cryoTherms.init(numCryoTherms, cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
 

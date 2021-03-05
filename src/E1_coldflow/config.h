@@ -18,11 +18,12 @@ const int numCryoTherms = 4;
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
 int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
+Adafruit_MCP9600 * cryo_boards[numCryoTherms];
 
 const int numADCSensors = 2;
 int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 int adcDataReadyPins[numADCSensors] = {29, 28};
-ADS1219 ** ads;
+ADS1219 * ads[numADCSensors];
 
 const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
@@ -63,8 +64,6 @@ namespace config {
   void setup() {
 
     debug("Initializing ADCs", DEBUG);
-    // initialize all ADCs
-    ads = new ADS1219*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
       ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
       ads[i]->setConversionMode(SINGLE_SHOT);

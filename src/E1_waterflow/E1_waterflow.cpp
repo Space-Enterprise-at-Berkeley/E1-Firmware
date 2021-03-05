@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 0 // 1 is flight config, 0 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -162,6 +162,9 @@ void sensorReadFunc(int id) {
     case 2:
       debug("Batt", DEBUG);
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

@@ -13,7 +13,7 @@ const char * file_name = str_file_name.c_str();
 const int numADCSensors = 2;
 int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 int adcDataReadyPins[numADCSensors] = {29, 28};
-ADS1219 ** ads;
+ADS1219 * ads[numADCSensors];
 
 const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
@@ -47,7 +47,6 @@ namespace config {
   void setup() {
     debug("Initializing ADCs", DEBUG);
     // initialize all ADCs
-    ads = new ADS1219*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
       ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
       ads[i]->setConversionMode(SINGLE_SHOT);
@@ -63,6 +62,7 @@ namespace config {
     sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
     debug("Initializing actuators", DEBUG);
     actuators.insert(&Solenoids::lox_2);

@@ -12,7 +12,7 @@
 namespace Thermocouple {
   class Cryo {
     public:
-      int init(int numSensors, int * addrs, _themotype * types); // assume that numSensors is < max Size of packet. Add some error checking here
+      int init(int numSensors, Adafruit_MCP9600 **cryo_boards, int * addrs, _themotype * types); // assume that numSensors is < max Size of packet. Add some error checking here
       void readCryoTemps(float *data);
       void readSpecificCryoTemp(int index, float *data);
       int freeAllResources();
