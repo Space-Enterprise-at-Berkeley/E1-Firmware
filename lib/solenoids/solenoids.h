@@ -86,10 +86,15 @@ namespace Solenoids {
       {}
 
       void parseCommand(float *data) {
-        if (data[0] == 1)
+        Serial.println("Solenoid, parse command");
+        Serial.flush();
+        if (data[0] == 1) {
+          Serial.println("open");
           openSolenoid();
-        else
+        } else {
+          Serial.println("close");
           closeSolenoid();
+        }
       }
 
       void confirmation(float *data) {
@@ -101,7 +106,7 @@ namespace Solenoids {
       func_t closeSolenoid;
 
   };
-  
+
   extern SolenoidActuator lox_2;
   extern SolenoidActuator lox_5;
   extern SolenoidActuator lox_G;

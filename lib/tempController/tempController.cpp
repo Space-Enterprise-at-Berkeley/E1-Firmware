@@ -31,5 +31,5 @@ int TempController::calculateOutput(float currTemp) {
 float TempController::controlTemp(float currTemp) {
   _heaterOutput = (humanOverride) ? humanSpecifiedValue : calculateOutput(currTemp);
   analogWrite(_heaterPin, _heaterOutput);
-  return ((float)(_heaterOutput) / 255) * 24; // heater runs at 24 V
+  return _heaterOutput;
 }

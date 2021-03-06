@@ -8,7 +8,7 @@
 #include "Automation.h"
 
 #define FLIGHT_BRAIN_ADDR 0x00
-#define DEBUG 1
+//#define DEBUG 1
 
 std::string str_file_name = "E1_coldflow.txt";
 const char * file_name = str_file_name.c_str();
@@ -37,7 +37,7 @@ int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
 const uint8_t numSensors = 6;
 sensorInfo *sensors;
 
-const uint8_t numActuators = 11;
+const uint8_t numActuators = 13;
 ActuatorArray actuators(numActuators);
 
 #define LOX_2_PIN 0
@@ -86,19 +86,41 @@ namespace config {
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
     debug("Initializing actuators");
+    Solenoids::lox_2.setId(20);
     actuators.insert(&Solenoids::lox_2);
-    //{"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
+    // valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
+    Solenoids::lox_5.setId(21);
+    actuators.insert(&Solenoids::lox_5);
     // valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
+    Solenoids::lox_G.setId(22);
+    actuators.insert(&Solenoids::lox_G);
     // valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
+    Solenoids::prop_5.setId(23);
+    actuators.insert(&Solenoids::prop_2);
     // valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
+    Solenoids::prop_5.setId(24);
+    actuators.insert(&Solenoids::prop_5);
     // valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
+    Solenoids::prop_G.setId(25);
+    actuators.insert(&Solenoids::prop_G);
     // valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
+    Solenoids::high_p.setId(26);
+    actuators.insert(&Solenoids::high_p);
     // valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
+    Solenoids::arm_rocket.setId(27);
+    actuators.insert(&Solenoids::arm_rocket);
     // valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
+    Solenoids::launch.setId(28);
+    actuators.insert(&Solenoids::launch);
     // valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
+    Automation::fullFlow.setId(29);
+    actuators.insert(&Automation::fullFlow);
     // valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
+    Automation::loxFlow.setId(30);
+    actuators.insert(&Automation::loxFlow);
     // valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
-
+    actuators.insert(&loxPTHeater);
+    actuators.insert(&loxGemsHeater);
 
     pinMode(LOX_2_PIN, OUTPUT);
     pinMode(LOX_5_PIN, OUTPUT);

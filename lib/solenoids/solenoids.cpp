@@ -57,7 +57,8 @@ namespace Solenoids {
     digitalWrite(high_sol_pin, high_sol_state);
   }
 
-  void getAllStates(float *data){
+  void getAllStates(float *data) {
+    Serial.println("Solenoids, get all states");
     data[0] = lox2_state;
     data[1] = prop2_state;
     data[2] = lox5_state;
@@ -245,6 +246,7 @@ namespace Solenoids {
   }
 
   int openLOX() {
+    Serial.println("open lox");
     if (lox5_state == 0) {
       toggleLOX5Way();
     } else {

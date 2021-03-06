@@ -45,8 +45,7 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 namespace config {
   void setup() {
-    debug("Initializing ADCs", DEBUG);
-    // initialize all ADCs
+    debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {
       ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
       ads[i]->setConversionMode(SINGLE_SHOT);
@@ -57,14 +56,14 @@ namespace config {
       // ads[i]->calibrate();
     }
 
-    debug("Initializing sensors", DEBUG);
+    debug("Initializing sensors");
     sensors = new sensorInfo[numSensors];
     sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
-    debug("Initializing actuators", DEBUG);
+    debug("Initializing actuators");
     actuators.insert(&Solenoids::lox_2);
     // valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
     actuators.insert(&Solenoids::lox_5);

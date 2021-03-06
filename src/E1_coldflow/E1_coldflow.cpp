@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0 // 1 is flight config, 0 is for debug
+#define SERIAL_INPUT 1 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -102,7 +102,6 @@ void loop() {
 
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
-      Serial.print(command[i]);
       i++;
     }
 

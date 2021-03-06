@@ -118,7 +118,7 @@ extern struct autoEventList* _eventList;
   void detectPeaks(float loxInjector, float propInjector);
 
 
-}
+
 
 
 class AutomationSequenceActuator : public Actuator {
@@ -155,4 +155,8 @@ class AutomationSequenceActuator : public Actuator {
 
 };
 
+extern AutomationSequenceActuator fullFlow;
+extern AutomationSequenceActuator loxFlow;
+
+}
 #endif

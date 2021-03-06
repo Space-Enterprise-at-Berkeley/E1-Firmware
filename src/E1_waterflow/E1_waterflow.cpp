@@ -47,31 +47,31 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
   file.close();
 
-  debug("Writing Dummy Data", DEBUG);
+  debug("Writing Dummy Data");
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
@@ -80,12 +80,12 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
   }
 
   // config::setup();
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
   Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
@@ -106,7 +106,7 @@ void loop() {
       i++;
     }
 
-    debug(String(command), DEBUG);
+    debug(String(command));
     int8_t id = parseCommand(String(command));
     if (id != -1) {
       //take_action(&valve, action);
@@ -150,17 +150,17 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("Heater", DEBUG);
+      debug("Heater");
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      debug("Ducers", DEBUG);
+      debug("Ducers");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
-      debug("Batt", DEBUG);
+      debug("Batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 5:

@@ -84,36 +84,43 @@ String make_packet(int id, bool error) {
  * This is a pretty beefy function; can we split this up
  */
 int8_t parseCommand(String packet) {
-  Serial.println(packet);
+  debug("Parse Command");
+  debug(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
     return -1;
   }
+  debug(String(data_start_index));
   int actuator_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
   if(data_end_index == -1) {
     return -1;
   }
-
-  char* data_string = packet.substring(data_start_index + 1,data_end_index).c_str();
+  debug(String(data_end_index));
+  debug(packet.substring(data_start_index + 1,data_end_index).c_str());
+  char data_string[data_end_index - data_start_index + 1];
+  packet.substring(data_start_index + 1,data_end_index).toCharArray(data_string, data_end_index - data_start_index + 1);
   char *tmp;
   uint8_t i = 0;
   float command_data[7];
+  debug(data_string);
   tmp = std::strtok(data_string, ",");
   while(tmp != NULL){
     command_data[i++] = atof(tmp);
+    debug(String(command_data[i-1]));
     tmp = std::strtok(NULL, ",");
   }
 
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   const char *checksum_char = checksumstr.c_str();
   int checksum = strtol(checksum_char, NULL, 16);
-  Serial.println(checksum);
+  debug("checksum: ");
+  debug(String(checksum));
 
   const int count = packet.substring(1, data_end_index).length();
   String str_data= packet.substring(1,data_end_index);
   char const *data = str_data.c_str();
-  Serial.println(data);
+  debug(String(data));
 
   int _check = (int)Fletcher16((uint8_t *) data, count);
   Serial.println(_check);
@@ -184,7 +191,7 @@ uint16_t Fletcher16(uint8_t *data, int count) {
 }
 
 void debug(String str) {
-  #ifdef DEBUG
+  #if DEBUG
     Serial.println(str);
     Serial.flush();
   #endif

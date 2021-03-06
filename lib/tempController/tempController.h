@@ -57,7 +57,7 @@ class HeaterActuator : public Actuator, public TempController {
         humanOverride = false;
       else {
         humanOverride = true;
-        humanSpecifiedValue = data[0];
+        humanSpecifiedValue = max(0, min(255, data[0]));
       }
     }
 
