@@ -8,7 +8,7 @@ int8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val);
 int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val);
 
 ActuatorArray::ActuatorArray(const uint8_t size) {
-  _backingStore = (Actuator **)std::malloc(size * sizeof(Actuator *));
+  _backingStore = (Actuator **) std::malloc(size * sizeof(Actuator *));
   _ids = (uint8_t *) std::malloc(size * sizeof(uint8_t));
   _size = size;
 }
@@ -39,9 +39,7 @@ void ActuatorArray::insert(Actuator * toInsert) {
   currIdx++;
 }
 
-int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val){
-  Serial.println("sequential_search");
-  Serial.flush();
+int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val) {
   for (int i = 0; i < size; i++){
     if(array[i] == val){
       return i;
