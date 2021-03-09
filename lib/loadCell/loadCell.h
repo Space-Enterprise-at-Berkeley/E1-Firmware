@@ -12,19 +12,25 @@
 namespace LoadCell {
 
 		HX711 ** _lc_amp_boards;
-		int * _addrs;
 		int _numSensors;
 
-		int init(int numSensors, int * addrs, byte * dout_pins,
+		byte * _dout_pins;
+		byte * _sck_pins;
+		float * _calibration_vals;
+
+		int init(int numSensors, byte * dout_pins,
 									byte * sck_pins, float * calibration_vals) {
 
-			_addrs = (int *) malloc(numSensors * sizeof(int));
 			_lc_amp_boards = (HX711 **) malloc(numSensors * sizeof(HX711));
+
+			_dout_pins = (byte *) malloc(numSensors * sizeof(byte));
+			_sck_pins = (byte *) malloc(numSensors * sizeof(byte));
+			_calibration_vals = (float *) malloc(numSensors * sizeof(float));
 
 			_numSensors = numSensors;
 
 			for (int i = 0; i < numSensors; i++) {
-				_addrs[i] = addrs[i];
+				
 				_lc_amp_boards[i] = new HX711();
 
 				if(!_lc_amp_boards[i]->wait_ready_retry()) {
@@ -48,8 +54,10 @@ namespace LoadCell {
 		}
 
 		int freeAllResources() {
-        free(_cryo_amp_boards);
-        free(_addrs);
+        free(_lc_amp_boards);
+        free(_dout_pins);
+		free(_sck_pins);
+		free(_calibration_vals);
         return 0;
     }
 
