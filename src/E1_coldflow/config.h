@@ -132,6 +132,5 @@ namespace config {
     pinMode(HIGH_SOL_PIN, OUTPUT);
 
     pinMode(LOX_ADAPTER_PT_HEATER_PIN, OUTPUT);
-
   }
 }

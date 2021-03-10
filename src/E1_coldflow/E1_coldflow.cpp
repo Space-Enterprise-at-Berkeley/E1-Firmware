@@ -168,7 +168,7 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
-  delay(50);
+  //delay(50);
 }
 
 

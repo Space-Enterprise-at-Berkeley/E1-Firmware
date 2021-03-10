@@ -11,6 +11,8 @@ int packetCounter = 0;
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
+Actuator *tmpActuator;
+
 /**
  *
  */
@@ -123,13 +125,12 @@ int8_t parseCommand(String packet) {
   debug(String(data));
 
   int _check = (int)Fletcher16((uint8_t *) data, count);
-  Serial.println(_check);
   if (_check == checksum) {
     debug("Checksum correct, taking action");
-    Actuator *tmp = actuators.get(actuator_id); //chooseValveById(valve_id, valve, valves, numValves);
-    tmp->parseCommand(command_data);
-    tmp->confirmation(farrbconvert.sensorReadings);
-    return tmp->ID();
+    tmpActuator = actuators.get(actuator_id); //chooseValveById(valve_id, valve, valves, numValves);
+    tmpActuator->parseCommand(command_data);
+    tmpActuator->confirmation(farrbconvert.sensorReadings);
+    return tmpActuator->ID();
   } else {
     return -1;
   }

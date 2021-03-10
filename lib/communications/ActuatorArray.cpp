@@ -9,13 +9,21 @@ int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val);
 
 ActuatorArray::ActuatorArray(const uint8_t size) {
   _backingStore = (Actuator **) std::malloc(size * sizeof(Actuator *));
+
+  #if DEBUG
+    Serial.println("Size of Actuator **: " + String(sizeof(_backingStore)));
+    Serial.flush();
+  #endif
+
   _ids = (uint8_t *) std::malloc(size * sizeof(uint8_t));
   _size = size;
 }
 
 Actuator * ActuatorArray::get(uint8_t id) {
-  Serial.println("Get Actuator, looking for id: " + String(id));
-  Serial.flush();
+  #if DEBUG
+    Serial.println("Get Actuator, looking for id: " + String(id));
+    Serial.flush();
+  #endif
   int8_t index = sequential_search(_ids, _size, id); //binary_search(_ids, 0, _size, id);
   if (index != -1){
     return _backingStore[index];
@@ -49,8 +57,10 @@ int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val) {
 }
 
 int8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val) {
-  Serial.println("binary search, start: " + String(start) + ", end: " + String(end));
-  Serial.flush();
+  #if DEBUG
+    Serial.println("binary search, start: " + String(start) + ", end: " + String(end));
+    Serial.flush();
+  #endif
   if (array[start] == val){
     return start;
   } else if (start == end){

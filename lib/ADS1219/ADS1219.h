@@ -1,7 +1,6 @@
 #ifndef ADS1219_H
 #define ADS1219_H
 
-#include <Arduino.h>
 #include <Wire.h>
 
 #define CONFIG_REGISTER_ADDRESS 0x40
@@ -58,7 +57,7 @@ class ADS1219 {
     // Constructor
     ADS1219(int drdy, uint8_t addr, TwoWire *wire);
     ADS1219();
-    
+
     // Methods
     void init(int drdy, uint8_t addr, TwoWire *wire);
     void begin();

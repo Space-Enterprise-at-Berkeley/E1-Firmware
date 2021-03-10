@@ -19,7 +19,6 @@ namespace Thermocouple {
 
       for (int i = 0; i < numSensors; i++) {
         _addrs[i] = addrs[i];
-        //_cryo_amp_boards[i] = new Adafruit_MCP9600();
 
         if (!_cryo_amp_boards[i].begin(addrs[i])) {
           Serial.println("Error initializing cryo board at Addr 0x" + String(addrs[i], HEX));
@@ -50,8 +49,8 @@ namespace Thermocouple {
     }
 
     int Cryo::freeAllResources() {
-        free(_cryo_amp_boards);
-        free(_addrs);
+        // free(_cryo_amp_boards);
+        // free(_addrs);
         free(_latestReads);
         return 0;
     }

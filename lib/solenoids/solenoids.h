@@ -119,9 +119,4 @@ namespace Solenoids {
   extern SolenoidActuator launch;
 
 }
-
-
-
-
-
 #endif /* end of include guard: SOLENOIDS */
