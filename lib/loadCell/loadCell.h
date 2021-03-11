@@ -11,56 +11,46 @@
 
 namespace LoadCell {
 
-		HX711 ** _lc_amp_boards;
+		HX711 *_loadcells;
 		int _numSensors;
 
-		byte * _dout_pins;
-		byte * _sck_pins;
-		float * _calibration_vals;
+		byte  *_dout_pins;
+		byte  *_sck_pins;
+		float *_calibration_vals;
 
-		int init(int numSensors, byte * dout_pins,
-									byte * sck_pins, float * calibration_vals) {
+		int init(HX711 *loadcells, int numSensors, byte  *dout_pins,
+									byte * sck_pins, float  *calibration_vals) {
 
-			_lc_amp_boards = (HX711 **) malloc(numSensors * sizeof(HX711));
-
-			_dout_pins = (byte *) malloc(numSensors * sizeof(byte));
-			_sck_pins = (byte *) malloc(numSensors * sizeof(byte));
-			_calibration_vals = (float *) malloc(numSensors * sizeof(float));
+      _loadcells = loadcells;
 
 			_numSensors = numSensors;
+			_dout_pins = dout_pins;
+			_sck_pins = sck_pins;
+			_calibration_vals = calibration_vals;
 
-			for (int i = 0; i < numSensors; i++) {
-				
-				_lc_amp_boards[i] = new HX711();
+//~~~~~~Needs to happen wherever loadcell.h is used~~~~~~~~~
+//     for (int i = 0; i < numSensors; i++) {
+//     loadcells[i].begin(doutPins[i], sckPins[i]);
+//     loadcells[i].set_scale(calVals[i]);
+//     loadcells[i].tare();
+//
+//     long zero_factor = loadcells[i].read_average(); //Get a baseline reading
+//     Serial.print("Zero factor: "); //This can be used to remove the need to tare the scale. Useful in permanent scale projects.
+//     Serial.println(zero_factor);
+//     }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-				if(!_lc_amp_boards[i]->wait_ready_retry()) {
-					Serial.println("timed out, loadCell: " + i);
-					return -1;
-				}
-
-				_lc_amp_boards[i]->begin(dout_pins[i], sck_pins[i]);
-				_lc_amp_boards[i]->set_scale(calibration_vals[i]);
-				_lc_amp_boards[i]->tare();
-
-			}
-			return 0;
+      
+		 return 0;
 		}
 
 		void readLoadCells(float *data) {
+    
 			for (int i = 0; i < _numSensors; i++) {
-				data[i] = _lc_amp_boards[i]->get_units();
+				data[i] = _loadcells[i].get_units();
 			}
 			data[_numSensors] = -1;
 		}
-
-		int freeAllResources() {
-        free(_lc_amp_boards);
-        free(_dout_pins);
-		free(_sck_pins);
-		free(_calibration_vals);
-        return 0;
-    }
-
 
 }
 
@@ -75,7 +65,7 @@ namespace LoadCell {
 		// int calibrationValue2;
 		//
 		// #define DOUT1 2
-		// #define SCL1 3
+		// #define SC
 		//
 		// #define DOUT2 4
 		// #define SCL2 5
