@@ -7,14 +7,15 @@
 #define __DUCERS__
 
 #include <Arduino.h>
-#include <Wire.h>
 #include <ADS1219.h>
+#include <ADS8167.h>
+
 
 using namespace std;
 
 namespace Ducers {
 
-  ADS1219 ** _adcs;
+  ADC ** _adcs;
 
   int * _adcIndices; // array of size _numSensors
   int * _adcChannels;
@@ -24,13 +25,22 @@ namespace Ducers {
 
   uint8_t buffer[4];
 
-  void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADS1219 ** adcs) {
+  void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADC ** adcs) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
     _ptTypes = ptTypes;
     _adcs = adcs;
   }
+
+  // void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADS8167 ** adcs) {
+  //   _numSensors = numSensors;
+  //   _adcIndices = adcIndices;
+  //   _adcChannels = adcChannels;
+  //   _ptTypes = ptTypes;
+  //   _adcs = adcs;
+  // }
+
   float interpolateHigh(int rawValue) {
       double values[32][2] =  {
                 { 1634771.9270400004, 0 },
@@ -84,6 +94,7 @@ namespace Ducers {
 
       return convertedValue;
   }
+
   float interpolateLow(int rawValue) {
     double values[2][2] = { // [x, y] pairs
                 {0, -123.89876445934394},

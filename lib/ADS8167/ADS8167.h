@@ -7,10 +7,10 @@
 #define __ADS8167_H
 
 #include <Arduino.h>
+#include <ADC.h>
 #include <SPI.h>
 
-class ADS8167
-{
+class ADS8167 : public ADC {
     public:
         ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt);
 
@@ -28,7 +28,7 @@ class ADS8167
         void setManualMode();
         void        setChannel(const uint8_t channelno);
         uint16_t    readChannel(uint8_t* channel_out = NULL);
-
+        long    readData(uint8_t channelno);
         //Auto Sequence mode
         void setAutoSequenceMode();
 
@@ -53,7 +53,6 @@ class ADS8167
         void write_cmd(const adc_cmd_t cmd, const uint16_t address, const uint8_t data);
 
         uint8_t _cs_pin;
-        uint8_t _rdy_pin;
         uint8_t _alrt_pin;
         SPIClass *_theSPI;
 

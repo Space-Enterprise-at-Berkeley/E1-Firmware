@@ -20,9 +20,10 @@ int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 
 const int numADCSensors = 2;
-int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
+int adcCSPins[numADCSensors] = {0, 1};
 int adcDataReadyPins[numADCSensors] = {29, 28};
-ADS1219 ** ads;
+int adcAlertPins[numADCSensors] = {30, 31};
+ADS8167 ** ads;
 
 const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
@@ -62,15 +63,13 @@ namespace config {
 
     debug("Initializing ADCs", DEBUG);
     // initialize all ADCs
-    ads = new ADS1219*[numADCSensors];
+    ads = new ADS8167*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
-      ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
-      ads[i]->setConversionMode(SINGLE_SHOT);
-      ads[i]->setVoltageReference(REF_EXTERNAL);
-      ads[i]->setGain(ONE);
-      ads[i]->setDataRate(1000);
+      ads[i] = new ADS8167(&SPI1, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
+      ads[i]->init();
+      ads[i]->setManualMode();
+      ads[i]->setAllInputsSeparate();
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
-      // ads[i]->calibrate();
     }
 
 

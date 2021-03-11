@@ -2,6 +2,7 @@
 #define ADS1219_H
 
 #include <Arduino.h>
+#include <ADC.h>
 #include <Wire.h>
 
 #define CONFIG_REGISTER_ADDRESS 0x40
@@ -50,19 +51,19 @@ typedef enum{
   REF_EXTERNAL	= VREF_EXTERNAL
 }adsRef_t;
 
-class ADS1219 {
+class ADS1219 : public ADC {
   protected:
 	uint8_t address;
   TwoWire *_wire;
   public:
     // Constructor
-    ADS1219(int drdy, uint8_t addr, TwoWire *wire);
+    ADS1219(uint8_t drdy, uint8_t addr, TwoWire *wire);
 
     // Methods
     void begin();
   	void resetConfig();
     void calibrate();
-  	long readData(int channel);
+  	long readData(uint8_t channel);
     long getData(uint8_t config);
   	long readDifferential_0_1();
   	long readDifferential_2_3();
@@ -80,7 +81,6 @@ class ADS1219 {
   	long readConversionResult();
   	uint8_t config;
   	boolean singleShot;
-  	int data_ready;
     uint32_t calibration = 0;
 };
 #endif

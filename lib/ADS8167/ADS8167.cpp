@@ -16,7 +16,9 @@
 
 #define N_CHANNELS          8
 
-ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
+ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
+  ADC(rdy) 
+ {
     _cs_pin = cs;
     _rdy_pin = rdy;
     _alrt_pin = alrt;
@@ -26,6 +28,7 @@ ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
 bool ADS8167::init() {
     _theSPI->begin();
 
+    // not sure if any of these need to be pullup, or that's handled in hardware
     pinMode(_cs_pin, OUTPUT);
     pinMode(_rdy_pin, INPUT);
     pinMode(_alrt_pin, INPUT);
@@ -134,6 +137,11 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
     *channel_out = buffer[2] >> 4;
 
   return buffer[0] << 8 | buffer[1];
+}
+
+long ADS8167::readData(uint8_t channel_no) {
+  setChannel(channel_no);
+  return readChannel();
 }
 
 void ADS8167::enableOTFMode() {

@@ -74,7 +74,6 @@ void setup() {
   file.close();
 
   debug("Writing Dummy Data", DEBUG);
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";

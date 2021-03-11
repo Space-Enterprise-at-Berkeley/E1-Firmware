@@ -8,12 +8,13 @@
 #define __ANALOG_THERMS__
 
 #include <ADS1219.h>
+#include <ADS8167.h>
 #include <Wire.h>
 
 namespace Thermocouple {
   namespace Analog {
 
-    ADS1219 ** _adcs;
+    ADC ** _adcs;
 
     int * _adcIndices; // array of size _numSensors
     int * _adcChannels;
@@ -27,7 +28,7 @@ namespace Thermocouple {
     float voltageRead;
 
 
-    void init (int numSensors, int * adcIndices, int * adcChannels, ADS1219 ** adcs) {
+    void init (int numSensors, int * adcIndices, int * adcChannels, ADC ** adcs) {
       _numSensors = numSensors;
       _adcIndices = adcIndices;
       _adcChannels = adcChannels;
