@@ -40,14 +40,14 @@ namespace LoadCell {
 //     }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      
+
 		 return 0;
 		}
 
 		void readLoadCells(float *data) {
-    
+
 			for (int i = 0; i < _numSensors; i++) {
-				data[i] = _loadcells[i].get_units();
+				data[i] = _loadcells[i].get_units() * 0.453592;
 			}
 			data[_numSensors] = -1;
 		}
