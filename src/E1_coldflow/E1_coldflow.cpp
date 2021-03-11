@@ -164,15 +164,6 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
 
-      // After getting new pressure data, check injector pressures to detect end of flow:
-  if (sensor->id==1 && Automation::inFlow()){
-
-    float loxInjector = farrbconvert.sensorReadings[2];
-    float propInjector = farrbconvert.sensorReadings[3];
-
-    Automation::detectPeaks(loxInjector, propInjector);
-  }
-
   }
 
   // For dashboard display
@@ -198,16 +189,13 @@ void sensorReadFunc(int id) {
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      GPS.readPositionData(farrbconvert.sensorReadings);
       break;
     case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
+      GPS.readAuxilliaryData(farrbconvert.sensorReadings);
       break;
     case 6:
-      // this hardcoded 3 is kinda sus.
-      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
