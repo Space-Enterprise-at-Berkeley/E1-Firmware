@@ -5,6 +5,7 @@
 #include <ADS1219.h>
 #include <ADS8167.h>
 #include "Automation.h"
+#include <INA219.h>
 
 
 #define FLIGHT_BRAIN_ADDR 0x00
