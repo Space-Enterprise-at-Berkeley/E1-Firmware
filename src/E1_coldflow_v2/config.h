@@ -7,33 +7,36 @@
 #include "Automation.h"
 #include <INA219.h>
 
-
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
 
 std::string str_file_name = "E1_speed_test_results.txt";
 const char * file_name = str_file_name.c_str();
 
-const int numCryoTherms = 4;
+const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
 int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 
-const int numADCSensors = 2;
+const uint8_t numADCSensors = 2;
 int adcCSPins[numADCSensors] = {0, 1};
 int adcDataReadyPins[numADCSensors] = {29, 28};
 int adcAlertPins[numADCSensors] = {30, 31};
 ADS8167 ** ads;
 
-const int numAnalogThermocouples = 1;
+const uint8_t numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
 int thermAdcChannels[numAnalogThermocouples] = {2};
 
-const int numPressureTransducers = 7;
+const uint8_t numPressureTransducers = 7;
 int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
 int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
 int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
+
+const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
+uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
+INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 
 const uint8_t numSensors = 6;
 sensorInfo *sensors;
@@ -57,6 +60,8 @@ struct valveInfo *valves;
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
+const float powerSupplyMonitorShuntR = 0.010; // ohms
+const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
 
 namespace config {
@@ -73,6 +78,12 @@ namespace config {
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
     }
 
+    debug("Initializing Power Supply monitors", DEBUG);
+    for (int i = 0; i < numPowerSupplyMonitors; i++) {
+        powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
+        powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+    }
 
     debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];

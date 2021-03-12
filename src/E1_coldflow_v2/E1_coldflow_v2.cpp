@@ -11,6 +11,7 @@
 #include <ducer.h>
 #include <tempController.h>
 #include <batteryMonitor.h>
+#include <powerSupplyMonitor.h>
 
 #define SERIAL_INPUT 0
 
@@ -86,6 +87,7 @@ void setup() {
 
   Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
+  powerSupplyMonitor::init(numPowerSupplyMonitors, powerSupplyMonitors, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 

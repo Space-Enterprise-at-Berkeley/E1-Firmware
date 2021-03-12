@@ -38,6 +38,12 @@ bool INA219::configure(ina219_range_t range, ina219_gain_t gain, ina219_busRes_t
     return true;
 }
 
+bool INA219::configure(ina226_averages_t avg = INA226_AVERAGES_1, ina226_busConvTime_t busConvTime = INA226_BUS_CONV_TIME_1100US, ina226_shuntConvTime_t shuntConvTime = INA226_SHUNT_CONV_TIME_1100US, ina226_mode_t mode = INA226_MODE_SHUNT_BUS_CONT) {
+  exit(1);
+  return false;
+  // do not use.
+}
+
 bool INA219::calibrate(float rShuntValue, float iMaxExpected)
 {
     return true;
