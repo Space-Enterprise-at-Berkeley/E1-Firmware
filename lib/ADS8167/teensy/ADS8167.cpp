@@ -17,7 +17,7 @@
 #define N_CHANNELS          8
 
 ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
-  ADC(rdy) 
+  ADC(rdy)
  {
     _cs_pin = cs;
     _rdy_pin = rdy;
@@ -122,7 +122,7 @@ void ADS8167::setSequence(const uint8_t length, const uint8_t* channels, const u
   // Sequence length, start-stop
   write_cmd(ADCCMD_WR_REG, REG_CCS_START_INDEX, 0);
   write_cmd(ADCCMD_WR_REG, REG_CCS_END_INDEX, length-1);
-};
+}
 
 void ADS8167::sequenceStart() {
   write_cmd(ADCCMD_WR_REG, REG_SEQ_START, SEQ_START_START);
