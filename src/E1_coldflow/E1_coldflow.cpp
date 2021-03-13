@@ -22,7 +22,7 @@
 // within loop state variables
 
 uint8_t val_index = 0;
-char command[50]; //input command from GS
+char command[75]; //input command from GS
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -92,7 +92,6 @@ void setup() {
   _cryoTherms.init(numCryoTherms, cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
-
 }
 
 void loop() {
@@ -168,7 +167,7 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
-  //delay(50);
+  delay(10);
 }
 
 

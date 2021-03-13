@@ -8,6 +8,8 @@
 SdFat sd;
 File file;
 int packetCounter = 0;
+
+char buffer[75];
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
@@ -18,7 +20,7 @@ Actuator *tmpActuator;
  */
 bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
-    sdBuffer->dequeue();
+    sdBuffer->dequeue(buffer);
     // if(sdBuffer->length >= 40) {
     //   if(file.open(file_name, O_RDWR | O_APPEND)) {
     //     int initialLength = sdBuffer->length;

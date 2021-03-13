@@ -91,9 +91,8 @@ const int qMaxSize = 40;
 struct Queue {
 
   struct Node {
-    struct Node *next;
-    char *message;
-    int length; //length doesn't include the null terminator
+    char message[75];
+    int length; //length does include the null terminator
   };
 
 
@@ -107,10 +106,10 @@ struct Queue {
   }
 
   void enqueue(std::string message) {
-    q[end].length = message.length();
-    q[end].message = (char *)malloc(q[end].length + 2);
+    q[end].length = message.length() + 2;
+    // q[end].message = (char *)malloc(q[end].length + 2);
 
-    strncpy(q[end].message, message.c_str(), q[end].length + 1);
+    strncpy(q[end].message, message.c_str(), q[end].length);
     q[end].message[q[end].length] = '\n'; // add \n to string when enqueue
     q[end].message[q[end].length + 1] = '\0';
 
@@ -121,23 +120,22 @@ struct Queue {
     }
   }
 
-  char * dequeue() { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
+  void dequeue(char * buffer) { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
     if(length > 0) {
       length--;
-      char *msg = q[front].message;
+
+      strncpy(buffer, q[front].message, q[front].length + 1);
 
       front++;
       if (front == qMaxSize) {
         front = 0;
       }
-
-      return msg;
+      return;
     }
     #if DEBUG
       Serial.println("queue is empty. returning null pointer");
       Serial.flush();
     #endif
-    return nullptr;
   }
 };
 

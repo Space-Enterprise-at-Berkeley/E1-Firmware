@@ -74,7 +74,6 @@ namespace config {
       // ads[i]->calibrate();
     }
 
-
     debug("Initializing sensors");
     sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
