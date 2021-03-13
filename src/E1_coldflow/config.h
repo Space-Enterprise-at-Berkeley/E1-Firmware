@@ -50,8 +50,8 @@ ActuatorArray actuators(numActuators);
 
 #define HIGH_SOL_PIN 6
 
-#define LOX_ADAPTER_PT_HEATER_PIN 7
-#define LOX_GEMS_HEATER_PIN 8
+#define LOX_ADAPTER_PT_HEATER_PIN 9
+#define LOX_GEMS_HEATER_PIN 7
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
