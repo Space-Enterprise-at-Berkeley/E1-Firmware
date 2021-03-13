@@ -20,19 +20,19 @@ int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 Adafruit_MCP9600 cryo_boards[numCryoTherms];
 
-const int numADCSensors = 0;
-int ADSAddrs[numADCSensors];// = {0b1001010, 0b1001000};
-int adcDataReadyPins[numADCSensors];// = {29, 28};
+const int numADCSensors = 2;
+int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
+int adcDataReadyPins[numADCSensors] = {29, 28};
 ADS1219 ads[numADCSensors];
 
-const int numAnalogThermocouples = 0;
-int thermAdcIndices[numAnalogThermocouples];// = {1};
-int thermAdcChannels[numAnalogThermocouples];// = {2};
+const int numAnalogThermocouples = 1;
+int thermAdcIndices[numAnalogThermocouples] = {1};
+int thermAdcChannels[numAnalogThermocouples] = {2};
 
-const int numPressureTransducers = 0;
-int ptAdcIndices[numPressureTransducers];// = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
-int ptAdcChannels[numPressureTransducers];// = {0, 1, 2, 3, 2, 1, 3};
-int ptTypes[numPressureTransducers];// = {1, 1, 1, 1, 2, 1, 1};
+const int numPressureTransducers = 7;
+int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
+int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
+int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
 
 const uint8_t numSensors = 6;
 sensorInfo *sensors;
