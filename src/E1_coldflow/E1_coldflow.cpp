@@ -29,7 +29,6 @@ char command[75]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-//valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
@@ -70,7 +69,6 @@ void setup() {
   file.close();
 
   debug("Writing Dummy Data");
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -158,7 +156,7 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
 
-      // After getting new pressure data, check injector pressures to detect end of flow:
+    // After getting new pressure data, check injector pressures to detect end of flow:
     if (sensor->id==1 && Automation::inFlow()){
 
       float loxInjector = farrbconvert.sensorReadings[2];

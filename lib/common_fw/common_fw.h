@@ -106,12 +106,12 @@ struct Queue {
   }
 
   void enqueue(std::string message) {
-    q[end].length = message.length() + 2;
+    q[end].length = message.length();// + 1;
     // q[end].message = (char *)malloc(q[end].length + 2);
 
-    strncpy(q[end].message, message.c_str(), q[end].length);
+    strncpy(q[end].message, message.c_str(), message.length());
     q[end].message[q[end].length] = '\n'; // add \n to string when enqueue
-    q[end].message[q[end].length + 1] = '\0';
+    //q[end].message[q[end].length + 1] = '\0';
 
     length++;
     end++;
@@ -120,22 +120,23 @@ struct Queue {
     }
   }
 
-  void dequeue(char * buffer) { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
+  uint8_t dequeue(char * buffer) { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
     if(length > 0) {
       length--;
 
       strncpy(buffer, q[front].message, q[front].length + 1);
-
+      uint8_t strLength = q[front].length + 1;
       front++;
       if (front == qMaxSize) {
         front = 0;
       }
-      return;
+      return strLength;
     }
     #if DEBUG
       Serial.println("queue is empty. returning null pointer");
       Serial.flush();
     #endif
+    return -1;
   }
 };
 
