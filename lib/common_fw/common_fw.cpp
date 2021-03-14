@@ -16,22 +16,21 @@ union floatArrToBytes farrbconvert;
 Actuator *tmpActuator;
 
 /**
- *
+ * Add messages to a queue, and every n messages,
+ * dequeue everything and dump it onto the sd.
  */
 bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
-    // sdBuffer->dequeue(buffer);
     if(sdBuffer->length >= 40) {
       if(file.open(file_name, O_RDWR | O_APPEND)) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           uint8_t strLength = sdBuffer->dequeue(buffer);
           file.write(buffer, strLength);
-          // free(msg);
         }
         file.close();
         return true;
-      } else {        //If the file didn't open
+      } else { // If the file didn't open
           return false;
       }
     }
@@ -73,13 +72,6 @@ String make_packet(int id, bool error) {
   incrementPacketCounter();
   return packet;
 }
-//
-// bool parseCommand(String packet) {
-//   Actuator *tmp = decode_received_packet(packet);
-//   if(tmp != nullptr){
-//
-//   }
-// }
 
 /*
  * Decodes a packet sent from ground station in the following format:

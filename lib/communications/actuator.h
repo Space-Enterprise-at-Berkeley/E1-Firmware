@@ -32,7 +32,7 @@ class Actuator {
 
 class ActuatorArray {
   public:
-    ActuatorArray(const uint8_t size);
+    ActuatorArray(const uint8_t size, Actuator ** backingStore);
     Actuator * get(uint8_t id);
     void insert(Actuator *toInsert);
   private:

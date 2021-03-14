@@ -1,4 +1,3 @@
-
 #include "actuator.h"
 #include <cstdlib>
 #include <Arduino.h>
@@ -7,8 +6,8 @@
 int8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val);
 int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val);
 
-ActuatorArray::ActuatorArray(const uint8_t size) {
-  _backingStore = (Actuator **) std::malloc(size * sizeof(Actuator *));
+ActuatorArray::ActuatorArray(const uint8_t size, Actuator ** backingStore) {
+  _backingStore = backingStore;
 
   #if DEBUG
     Serial.println("Size of Actuator **: " + String(sizeof(_backingStore)));

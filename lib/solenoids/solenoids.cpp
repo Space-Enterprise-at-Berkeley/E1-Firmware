@@ -9,23 +9,25 @@ using namespace std;
 
 namespace Solenoids {
 
+  uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
+  uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
+  uint8_t high_sol_pin;
 
-  int lox_2_pin, lox_5_pin, lox_gems_pin;
-  int prop_2_pin, prop_5_pin, prop_gems_pin;
-  int high_sol_pin;
+  uint8_t *_actuatorIds;
+  uint8_t _numActuators;
 
-  int high_sol_state = 0;
+  uint8_t high_sol_state = 0;
 
-  int lox2_state = 0;
-  int lox5_state = 0;
-  int lox_gems_state = 0;
+  uint8_t lox2_state = 0;
+  uint8_t lox5_state = 0;
+  uint8_t lox_gems_state = 0;
 
-  int prop2_state = 0;
-  int prop5_state = 0;
-  int prop_gems_state = 0;
+  uint8_t prop2_state = 0;
+  uint8_t prop5_state = 0;
+  uint8_t prop_gems_state = 0;
 
 
-  void init(int lox2, int lox5, int loxg, int prop2, int prop5, int propg, int high) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numActuators, uint8_t * actuatorIds) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -36,15 +38,28 @@ namespace Solenoids {
 
     high_sol_state = 0;
 
-    lox_2_pin = lox2;
-    lox_5_pin = lox5;
-    lox_gems_pin = loxg;
+    lox_2_pin = solenoidPins[0];
+    lox_5_pin = solenoidPins[1];
+    lox_gems_pin = solenoidPins[2];
 
-    prop_2_pin = prop2;
-    prop_5_pin = prop5;
-    prop_gems_pin = propg;
+    prop_2_pin = solenoidPins[3];
+    prop_5_pin = solenoidPins[4];
+    prop_gems_pin = solenoidPins[5];
 
-    high_sol_pin = high;
+    high_sol_pin = solenoidPins[6];
+
+    _numActuators = numActuators;
+    _actuatorIds = actuatorIds;
+
+    pinMode(lox_2_pin, OUTPUT);
+    pinMode(lox_5_pin, OUTPUT);
+    pinMode(lox_gems_pin, OUTPUT);
+
+    pinMode(prop_2_pin, OUTPUT);
+    pinMode(prop_5_pin, OUTPUT);
+    pinMode(prop_gems_pin, OUTPUT);
+
+    pinMode(high_sol_pin, OUTPUT);
 
     digitalWrite(lox_2_pin, lox2_state);
     digitalWrite(lox_5_pin, lox5_state);
@@ -322,15 +337,15 @@ namespace Solenoids {
     return prop_gems_state;
   }
 
-  SolenoidActuator lox_2("LOX 2 Way", &armLOX, &disarmLOX);
-  SolenoidActuator lox_5("LOX 5 Way", &openLOX, &closeLOX);
-  SolenoidActuator lox_G("LOX Gems", &ventLOXGems, &closeLOXGems);
-  SolenoidActuator prop_2("Propane 2 Way", &armPropane, &disarmPropane);
-  SolenoidActuator prop_5("Propane 5 Way", &openPropane, &closePropane);
-  SolenoidActuator prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
+  SolenoidActuator lox_2("LOX 2 Way", _actuatorIds[0], &armLOX, &disarmLOX);
+  SolenoidActuator lox_5("LOX 5 Way", _actuatorIds[1], &openLOX, &closeLOX);
+  SolenoidActuator lox_G("LOX Gems", _actuatorIds[2], &ventLOXGems, &closeLOXGems);
+  SolenoidActuator prop_2("Propane 2 Way", _actuatorIds[3], &armPropane, &disarmPropane);
+  SolenoidActuator prop_5("Propane 5 Way", _actuatorIds[4], &openPropane, &closePropane);
+  SolenoidActuator prop_G("Propane Gems", _actuatorIds[5], &ventPropaneGems, &closePropaneGems);
 
-  SolenoidActuator high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
+  SolenoidActuator high_p("High Pressure Solenoid", _actuatorIds[6], &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
 
-  SolenoidActuator arm_rocket("Arm Rocket", &armAll, &disarmAll);
-  SolenoidActuator launch("Launch Rocket", &LAUNCH, &endBurn);
+  SolenoidActuator arm_rocket("Arm Rocket", _actuatorIds[7], &armAll, &disarmAll);
+  SolenoidActuator launch("Launch Rocket", _actuatorIds[8], &LAUNCH, &endBurn);
 }
