@@ -116,8 +116,9 @@ extern struct autoEventList* _eventList;
   void autoShutdown(int index);
   void detectPeak(float currentPressure, int recordingIndex);
   void detectPeaks(float loxInjector, float propInjector);
+}
 
-  class AutomationSequenceActuator : public Actuator {
+class AutomationSequenceActuator : public Actuator {
 
   typedef int (*func_t)();
 
@@ -150,5 +151,5 @@ extern struct autoEventList* _eventList;
     func_t endSequence;
 
 };
-}
+
 #endif
