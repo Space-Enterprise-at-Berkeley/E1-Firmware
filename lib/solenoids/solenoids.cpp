@@ -261,7 +261,6 @@ namespace Solenoids {
   }
 
   int openLOX() {
-    Serial.println("open lox");
     if (lox5_state == 0) {
       toggleLOX5Way();
     } else {
