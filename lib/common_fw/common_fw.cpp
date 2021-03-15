@@ -98,7 +98,7 @@ int8_t parseCommand(String packet) {
   packet.substring(data_start_index + 1,data_end_index).toCharArray(data_string, data_end_index - data_start_index + 1);
   char *tmp;
   uint8_t i = 0;
-  float command_data[7];
+  float command_data[maxReadings];
   debug(data_string);
   tmp = std::strtok(data_string, ",");
   while(tmp != NULL){
@@ -129,7 +129,6 @@ int8_t parseCommand(String packet) {
     return -1;
   }
 }
-
 
 /**
  *

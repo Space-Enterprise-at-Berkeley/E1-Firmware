@@ -55,6 +55,9 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 HeaterActuator loxPTHeater("LOX PT Heater", 40, 10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID
 HeaterActuator loxGemsHeater("LOX Gems Heater", 41, 10, 2, loxGemsHeaterPin); // setPoint = 10C, alg = PID
 
+AutomationSequenceActuator fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
+AutomationSequenceActuator loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
+
 namespace config {
   void setup() {
 
@@ -89,16 +92,10 @@ namespace config {
     actuators.insert(&Solenoids::high_p);
     actuators.insert(&Solenoids::arm_rocket);
     actuators.insert(&Solenoids::launch);
-    Automation::fullFlow.setId(29);
-    actuators.insert(&Automation::fullFlow);
-    // valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
-    Automation::loxFlow.setId(30);
-    actuators.insert(&Automation::loxFlow);
-    // valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
+    actuators.insert(&fullFlow);
+    actuators.insert(&loxFlow);
     actuators.insert(&loxPTHeater);
     actuators.insert(&loxGemsHeater);
-
-
 
     pinMode(loxAdapterPTHeaterPin, OUTPUT);
     pinMode(loxGemsHeaterPin, OUTPUT);

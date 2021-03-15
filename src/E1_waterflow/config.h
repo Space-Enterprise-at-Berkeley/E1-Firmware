@@ -40,6 +40,9 @@ uint8_t solenoidActuatorIds[numSolenoidActuators] = {20, 21, 22, 23, 24, 25, 26,
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
+AutomationSequenceActuator fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
+AutomationSequenceActuator loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
+
 namespace config {
   void setup() {
     debug("Initializing ADCs");
@@ -70,11 +73,8 @@ namespace config {
     actuators.insert(&Solenoids::high_p);
     actuators.insert(&Solenoids::arm_rocket);
     actuators.insert(&Solenoids::launch);
-    Automation::fullFlow.setId(29);
-    actuators.insert(&Automation::fullFlow);
-    // valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
-    Automation::loxFlow.setId(30);
-    actuators.insert(&Automation::loxFlow);
+    actuators.insert(&fullFlow);
+    actuators.insert(&loxFlow);
     // valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
   }
 }

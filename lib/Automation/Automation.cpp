@@ -36,7 +36,6 @@ namespace Automation {
   */
   int _shutdownDelays[2] = {0, 750};
 
-
   float prevPressures[2][5]; //array containing 2 arrays, which contain the previous 5 pressure values of lox, prop, respectively.
   int sizes[2]= {0,0};
 
@@ -52,7 +51,6 @@ namespace Automation {
     return true;
   }
 
-
   bool inStartup() {
     return _startup;
   }
@@ -64,7 +62,6 @@ namespace Automation {
   bool inShutdown() {
     return _shutdown;
   }
-
 
   /*
    * For now copies the passed into autoEvent into the eventList. Copying requires slightly more
@@ -227,7 +224,6 @@ namespace Automation {
     data[2] = -1;
   }
 
-
   float findAverage(int index) {
     float sum = 0;
     float avg;
@@ -292,7 +288,6 @@ namespace Automation {
     }
   }
 
-
   /*
    * recordingIndex:
    *   0 - LOX
@@ -300,7 +295,6 @@ namespace Automation {
    *   Assumes this is only called if the main given valve is actually open
    */
   void detectPeak(float currentPressure, int recordingIndex) {
-
 
     if (sizes[recordingIndex]==5) {
 
@@ -328,9 +322,4 @@ namespace Automation {
       sizes[recordingIndex]++;
     }
   }
-
-
-  AutomationSequenceActuator fullFlow("Perform Flow", &beginBothFlow, &endBothFlow);
-  AutomationSequenceActuator loxFlow("Perform LOX Flow", &beginLoxFlow, &endLoxFlow);
-
 } //Automation
