@@ -79,7 +79,7 @@ const uint8_t maxReadings = 9;
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[36];
+  char buffer[4*maxReadings];
   float sensorReadings[maxReadings];
 };
 
