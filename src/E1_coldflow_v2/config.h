@@ -1,11 +1,12 @@
 #include <solenoids.h>
 #include <Analog_Thermocouple.h>
 #include <Cryo_Thermocouple.h>
-#include "common_fw.h"
+#include <common_fw.h>
 #include <ADS1219.h>
 #include <ADS8167.h>
-#include "Automation.h"
+#include <Automation.h>
 #include <INA219.h>
+#include <GpioExpander.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
@@ -37,6 +38,11 @@ int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
+
+const uint8_t numGPIOExpanders = 1;
+uint8_t gpioExpAddr[numGPIOExpanders] = {0x20};
+int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
+GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
 const uint8_t numSensors = 6;
 sensorInfo *sensors;
