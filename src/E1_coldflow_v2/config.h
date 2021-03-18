@@ -7,6 +7,7 @@
 #include <Automation.h>
 #include <INA219.h>
 #include <GpioExpander.h>
+#include <LTC4151.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
@@ -40,7 +41,7 @@ uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 
 const uint8_t numGPIOExpanders = 1;
-uint8_t gpioExpAddr[numGPIOExpanders] = {0x20};
+uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 

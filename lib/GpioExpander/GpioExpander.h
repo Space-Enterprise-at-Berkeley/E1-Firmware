@@ -3,6 +3,8 @@
  */
 #include <Wire.h>
 
+const uint8_t TCA6408A_ADDR1 = 0x20;
+const uint8_t TCA6408A_ADDR2 = 0x21;
 
 const uint8_t REG_INPUT_PORT = 0x00;
 const uint8_t REG_OUTPUT_PORT = 0x01;
