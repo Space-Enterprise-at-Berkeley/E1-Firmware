@@ -22,9 +22,9 @@ int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 
 const uint8_t numADCSensors = 2;
-int adcCSPins[numADCSensors] = {0, 1};
-int adcDataReadyPins[numADCSensors] = {29, 28};
-int adcAlertPins[numADCSensors] = {30, 31};
+int adcCSPins[numADCSensors] = {37, 36};
+int adcDataReadyPins[numADCSensors] = {26, 27};
+int adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ** ads;
 
 const uint8_t numAnalogThermocouples = 1;
