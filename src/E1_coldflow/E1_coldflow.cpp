@@ -176,7 +176,7 @@ void loop() {
   }
 
   // For dashboard display
-  delay(50);
+  delay(10);
 
 }
 
