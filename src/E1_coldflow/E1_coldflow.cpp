@@ -71,7 +71,6 @@ void setup() {
 
   debug("Opening File", DEBUG);
   file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
 
   debug("Writing Dummy Data", DEBUG);
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
@@ -176,7 +175,7 @@ void loop() {
   }
 
   // For dashboard display
-  delay(50);
+  //delay(10);
 
 }
 
