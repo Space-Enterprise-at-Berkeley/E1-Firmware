@@ -69,7 +69,6 @@ void setup() {
 
   debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
 
   debug("Writing Dummy Data");
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD

@@ -15,24 +15,27 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+<<<<<<< HEAD
 #include <actuator.h>
 
 const int qMaxSize = 40;
 
 
+=======
+const uint8_t qMaxSize = 40;
+>>>>>>> master
 struct Queue {
 
   struct Node {
     char message[75];
-    int length; //length does include the null terminator
+    int length;
   };
 
 
   Node q[qMaxSize];
 
   uint16_t length = 0;
-
-  int front = 0, end = 0;
+  uint8_t front = 0, end = 0;
 
   Queue() {}
 
@@ -49,7 +52,7 @@ struct Queue {
     }
   }
 
-  uint8_t dequeue(char * buffer) { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
+  uint8_t dequeue(char * buffer) {
     if(length > 0) {
       #ifdef DEBUG
           Serial.println("dequeuing, curr size " + String(length));

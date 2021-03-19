@@ -21,18 +21,18 @@ Actuator *tmpActuator;
  */
 bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
-    if(sdBuffer->length >= 40) {
-      if(file.open(file_name, O_RDWR | O_APPEND)) {
+    if(sdBuffer->length >= qMaxSize) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           uint8_t strLength = sdBuffer->dequeue(buffer);
           file.write(buffer, strLength);
         }
-        file.close();
+        #ifdef DEBUG
+          Serial.println("flushing file");
+          Serial.flush();
+        #endif
+        file.flush();
         return true;
-      } else { // If the file didn't open
-          return false;
-      }
     }
     return true;
 }

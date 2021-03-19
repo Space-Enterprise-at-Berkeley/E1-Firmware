@@ -66,7 +66,6 @@ void setup() {
 
   debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
 
   debug("Writing Dummy Data");
   sdBuffer = new Queue();
