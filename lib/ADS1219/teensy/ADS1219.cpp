@@ -3,7 +3,20 @@
 #include <Wire.h>
 #include "ADS1219.h"
 
+ADS1219::ADS1219(){
+
+}
+
 ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
+  data_ready = drdy;
+  address = addr;
+  config = 0x00;
+  singleShot = true;
+  _wire = wire;
+  _wire->begin();
+}
+
+void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) {
   data_ready = drdy;
   address = addr;
   config = 0x00;

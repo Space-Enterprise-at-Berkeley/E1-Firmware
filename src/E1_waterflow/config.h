@@ -13,7 +13,7 @@ const char * file_name = str_file_name.c_str();
 const int numADCSensors = 2;
 int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 int adcDataReadyPins[numADCSensors] = {29, 28};
-ADS1219 ** ads;
+ADS1219 ads[numADCSensors];
 
 const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
@@ -47,13 +47,12 @@ namespace config {
   void setup() {
     debug("Initializing ADCs", DEBUG);
     // initialize all ADCs
-    ads = new ADS1219*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
-      ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
-      ads[i]->setConversionMode(SINGLE_SHOT);
-      ads[i]->setVoltageReference(REF_EXTERNAL);
-      ads[i]->setGain(ONE);
-      ads[i]->setDataRate(1000);
+      ads[i].init(adcDataReadyPins[i], ADSAddrs[i], &Wire);
+      ads[i].setConversionMode(SINGLE_SHOT);
+      ads[i].setVoltageReference(REF_EXTERNAL);
+      ads[i].setGain(ONE);
+      ads[i].setDataRate(1000);
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       // ads[i]->calibrate();
     }
