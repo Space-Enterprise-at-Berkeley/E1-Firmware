@@ -10,22 +10,22 @@ using namespace std;
 namespace Solenoids {
 
 
-  int lox_2_pin, lox_5_pin, lox_gems_pin;
-  int prop_2_pin, prop_5_pin, prop_gems_pin;
-  int high_sol_pin;
+  uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
+  uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
+  uint8_t high_sol_pin;
 
-  int high_sol_state = 0;
+  uint8_t high_sol_state = 0;
 
-  int lox2_state = 0;
-  int lox5_state = 0;
-  int lox_gems_state = 0;
+  uint8_t lox2_state = 0;
+  uint8_t lox5_state = 0;
+  uint8_t lox_gems_state = 0;
 
-  int prop2_state = 0;
-  int prop5_state = 0;
-  int prop_gems_state = 0;
+  uint8_t prop2_state = 0;
+  uint8_t prop5_state = 0;
+  uint8_t prop_gems_state = 0;
 
 
-  void init(int lox2, int lox5, int loxg, int prop2, int prop5, int propg, int high) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -36,15 +36,15 @@ namespace Solenoids {
 
     high_sol_state = 0;
 
-    lox_2_pin = lox2;
-    lox_5_pin = lox5;
-    lox_gems_pin = loxg;
+    lox_2_pin = solenoidPins[0];
+    lox_5_pin = solenoidPins[1];
+    lox_gems_pin = solenoidPins[2];
 
-    prop_2_pin = prop2;
-    prop_5_pin = prop5;
-    prop_gems_pin = propg;
+    prop_2_pin = solenoidPins[3];
+    prop_5_pin = solenoidPins[4];
+    prop_gems_pin = solenoidPins[5];
 
-    high_sol_pin = high;
+    high_sol_pin = solenoidPins[6];
 
     digitalWrite(lox_2_pin, lox2_state);
     digitalWrite(lox_5_pin, lox5_state);
@@ -65,6 +65,7 @@ namespace Solenoids {
     data[4] = lox_gems_state;
     data[5] = prop_gems_state;
     data[6] = high_sol_state;
+    data[7] = -1;
   }
 
   bool loxArmed() {
