@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "WProgram.h"
 #endif
 
-#include <Wire.h>
-
 #include "INA219.h"
 
 bool INA219::begin(TwoWire *localWire, uint8_t address)

@@ -3,6 +3,7 @@
 #ifndef __INA_H
 #define __INA_H
 
+#include <Wire.h>
 
 typedef enum
 {

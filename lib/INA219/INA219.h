@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include <INA.h>
+#include <Wire.h>
 
 #define INA219_ADDRESS              (0x40)
 

@@ -5,6 +5,8 @@
  * 4/2014
  */
 
+ // USED AS HIGH PRESSURE SOLENOID OUTPUT MONITOR
+
 #include "LTC4151.h"
 
 void LTC4151::init(byte A0, byte A1, TwoWire *wire)
@@ -100,7 +102,6 @@ double LTC4151::getSnapshotLoadCurrent(double r)
 {
 	byte ctrlReg = getControlRegister();
 	disableSnapshotMode(ctrlReg);
-
 
 	ctrlReg |= SNAPSHOT_CHANNEL_SENSE << CTRL_BIT_ADC_CHN_SNAPSHOT_MODE;
 	setControlRegister(ctrlReg);

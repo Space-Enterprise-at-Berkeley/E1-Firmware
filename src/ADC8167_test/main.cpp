@@ -33,4 +33,5 @@ void loop() {
     Serial.print(": ");
     Serial.println(adc.readData(i));
   }
+  delay(10);
 }

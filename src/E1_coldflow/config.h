@@ -9,11 +9,6 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
 
-// current size: 5.2 MB (5,241,212 bytes); 126,240 lines
-// failed at: 6.0 MB (6,026,496 bytes)
-// failed after 47598 packets written. file at 8.0 MB
-// failed after ~53422 packets written. file at 10.2 MB
-// failed after 27424 packets written. file at 11.4 mb
 std::string str_file_name = "E1_coldflow.txt";
 const char * file_name = str_file_name.c_str();
 
