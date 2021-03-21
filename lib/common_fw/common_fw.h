@@ -15,15 +15,10 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-<<<<<<< HEAD
 #include <actuator.h>
 
 const int qMaxSize = 40;
 
-
-=======
-const uint8_t qMaxSize = 40;
->>>>>>> master
 struct Queue {
 
   struct Node {
