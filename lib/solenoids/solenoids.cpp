@@ -46,6 +46,16 @@ namespace Solenoids {
 
     high_sol_pin = solenoidPins[6];
 
+    pinMode(lox_2_pin, OUTPUT);
+    pinMode(lox_5_pin, OUTPUT);
+    pinMode(lox_gems_pin, OUTPUT);
+
+    pinMode(prop_2_pin, OUTPUT);
+    pinMode(prop_5_pin, OUTPUT);
+    pinMode(prop_gems_pin, OUTPUT);
+
+    pinMode(high_sol_pin, OUTPUT);
+
     digitalWrite(lox_2_pin, lox2_state);
     digitalWrite(lox_5_pin, lox5_state);
     digitalWrite(lox_gems_pin, lox_gems_state);

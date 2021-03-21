@@ -30,15 +30,8 @@ sensorInfo *sensors;
 const int numValves = 9;
 struct valveInfo *valves;
 
-#define LOX_2_PIN 0
-#define LOX_5_PIN 2
-#define LOX_GEMS_PIN 4
-
-#define PROP_2_PIN 1
-#define PROP_5_PIN 3
-#define PROP_GEMS_PIN 5
-
-#define HIGH_SOL_PIN 6
+const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
+uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -74,15 +67,5 @@ namespace config {
     valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
     valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-
-    pinMode(LOX_2_PIN, OUTPUT);
-    pinMode(LOX_5_PIN, OUTPUT);
-    pinMode(LOX_GEMS_PIN, OUTPUT);
-
-    pinMode(PROP_2_PIN, OUTPUT);
-    pinMode(PROP_5_PIN, OUTPUT);
-    pinMode(PROP_GEMS_PIN, OUTPUT);
-
-    pinMode(HIGH_SOL_PIN, OUTPUT);
   }
 }
