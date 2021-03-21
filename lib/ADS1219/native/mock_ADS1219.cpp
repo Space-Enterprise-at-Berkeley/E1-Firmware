@@ -6,7 +6,7 @@ ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
 }
 
 ADS1219::ADS1219() {
-
+  // do nothing.
 }
 
 void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) {

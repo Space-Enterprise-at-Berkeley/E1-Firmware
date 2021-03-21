@@ -86,7 +86,7 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
 
   _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, cryo_boards, cryoThermAddrs, cryoTypes);
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
 }

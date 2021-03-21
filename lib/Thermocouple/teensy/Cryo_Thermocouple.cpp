@@ -18,7 +18,6 @@ namespace Thermocouple {
       _numSensors = numSensors;
 
       for (int i = 0; i < numSensors; i++) {
-        _addrs[i] = addrs[i];
 
         if (!_cryo_amp_boards[i].begin(addrs[i])) {
           Serial.println("Error initializing cryo board at Addr 0x" + String(addrs[i], HEX));
@@ -49,8 +48,11 @@ namespace Thermocouple {
     }
 
     int Cryo::freeAllResources() {
+<<<<<<< HEAD
         // free(_cryo_amp_boards);
         // free(_addrs);
+=======
+>>>>>>> master
         free(_latestReads);
         return 0;
     }
