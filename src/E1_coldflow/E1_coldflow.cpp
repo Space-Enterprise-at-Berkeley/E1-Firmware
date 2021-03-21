@@ -189,13 +189,16 @@ void sensorReadFunc(int id) {
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      GPS.readPositionData(farrbconvert.sensorReadings);
+      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
-      GPS.readAuxilliaryData(farrbconvert.sensorReadings);
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     case 6:
-      readPacketCounter(farrbconvert.sensorReadings);
+      // this hardcoded 3 is kinda sus.
+      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
       break;
     default:
       Serial.println("some other sensor");
