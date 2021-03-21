@@ -27,13 +27,13 @@ namespace config {
     debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
-    sensors[0] = {"IMU Acceleration",   FLIGHT_BRAIN_ADDR, 0, 1};
-    sensors[1] = {"IMU Orientation", FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[2] = {"Barometer", FLIGHT_BRAIN_ADDR, 2, 1};
-    sensors[3] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 3, 3};
-    sensors[4] = {"GPS Lat Long",  FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 5, 3};
-    sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 6, 10};
+    sensors[0] = {"IMU Acceleration",   FLIGHT_BRAIN_ADDR, 14, 1};
+    sensors[1] = {"IMU Orientation", FLIGHT_BRAIN_ADDR, 15, 1};
+    sensors[2] = {"Barometer", FLIGHT_BRAIN_ADDR, 13, 1};
+    sensors[3] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[4] = {"GPS Lat Long",  FLIGHT_BRAIN_ADDR, 11, 3};
+    sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 12, 3};
+    sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
   }
 }
