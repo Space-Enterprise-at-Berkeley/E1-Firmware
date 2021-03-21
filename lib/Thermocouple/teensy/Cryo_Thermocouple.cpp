@@ -48,11 +48,6 @@ namespace Thermocouple {
     }
 
     int Cryo::freeAllResources() {
-<<<<<<< HEAD
-        // free(_cryo_amp_boards);
-        // free(_addrs);
-=======
->>>>>>> master
         free(_latestReads);
         return 0;
     }
