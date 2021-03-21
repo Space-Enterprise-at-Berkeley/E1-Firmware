@@ -45,15 +45,8 @@ sensorInfo *sensors;
 const int numValves = 11;
 struct valveInfo *valves;
 
-#define LOX_2_PIN 0
-#define LOX_5_PIN 2
-#define LOX_GEMS_PIN 4
-
-#define PROP_2_PIN 1
-#define PROP_5_PIN 3
-#define PROP_GEMS_PIN 5
-
-#define HIGH_SOL_PIN 6
+const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
+uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
 
 #define LOX_ADAPTER_PT_HEATER_PIN 7
 #define LOX_GEMS_HEATER_PIN 8
@@ -99,19 +92,5 @@ namespace config {
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
     valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
     valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
-
-
-    pinMode(LOX_2_PIN, OUTPUT);
-    pinMode(LOX_5_PIN, OUTPUT);
-    pinMode(LOX_GEMS_PIN, OUTPUT);
-
-    pinMode(PROP_2_PIN, OUTPUT);
-    pinMode(PROP_5_PIN, OUTPUT);
-    pinMode(PROP_GEMS_PIN, OUTPUT);
-
-    pinMode(HIGH_SOL_PIN, OUTPUT);
-
-    pinMode(LOX_ADAPTER_PT_HEATER_PIN, OUTPUT);
-
   }
 }
