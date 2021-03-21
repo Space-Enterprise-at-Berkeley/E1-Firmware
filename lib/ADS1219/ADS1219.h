@@ -57,8 +57,10 @@ class ADS1219 {
   public:
     // Constructor
     ADS1219(int drdy, uint8_t addr, TwoWire *wire);
+    ADS1219();
 
     // Methods
+    void init(int drdy, uint8_t addr, TwoWire *wire);
     void begin();
   	void resetConfig();
     void calibrate();

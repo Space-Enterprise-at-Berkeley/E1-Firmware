@@ -7,6 +7,14 @@ ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
   // do nothing.
 }
 
+ADS1219::ADS1219() {
+  // do nothing.
+}
+
+void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) {
+  // do nothing.
+}
+
 long ADS1219::getData(uint8_t conf) {
   // do nothing.
   return 0;
