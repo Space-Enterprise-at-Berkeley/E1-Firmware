@@ -17,7 +17,7 @@
 
 #include <actuator.h>
 
-const int qMaxSize = 40;
+const uint8_t qMaxSize = 40;
 
 struct Queue {
 
@@ -26,11 +26,10 @@ struct Queue {
     int length;
   };
 
-
-  Node q[qMaxSize];
-
   uint16_t length = 0;
   uint8_t front = 0, end = 0;
+
+  struct Node q[qMaxSize];
 
   Queue() {}
 
