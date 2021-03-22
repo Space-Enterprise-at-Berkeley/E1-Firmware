@@ -4,6 +4,7 @@
 #include <batteryMonitor.h>
 #include "IMU.h"
 #include "Barometer.h"
+#include "GPS.h"
 
 
 #define SERIAL_INPUT 0
@@ -29,7 +30,9 @@ String packet;
 
 void sensorReadFunc(int id);
 
-IMU imu;
+IMU _imu;
+Barometer bmp;
+GPS gps = GPS(GPS_Serial);
 
 void setup() {
   //Setting up Serial Connection
@@ -75,10 +78,16 @@ void setup() {
   debug("Initializing Libraries", DEBUG);
 
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
-  imu = IMU(&Wire);
-  Barometer::init(&Wire);
-  //Need to integrate new GPS format
-  GPS gps(GPS_Serial);
+
+  _imu = IMU();
+  _imu.init(&Wire);
+
+  bmp = Barometer();
+  bmp.init(&Wire);
+
+  gps.init();
+
+  //Initialize apogee detection here
 
 }
 
@@ -95,6 +104,9 @@ void loop() {
 
   }
 
+  //check for apogee somewhere in this loop, probably by storing altitude and acceleration data when
+  //id is 0 (imu acceleration data) and 2 (barometer altitude), and passing those values into the detection function
+  //that is initialized above
   for (int j = 0; j < numSensors; j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
@@ -118,29 +130,25 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      imu.readAccelerationData(farrbconvert.sensorReadings);
+      _imu.readAccelerationData(farrbconvert.sensorReadings);
       break;
     case 1:
-      imu.readOrientationData(farrbconvert.sensorReadings);
+      _imu.readOrientationData(farrbconvert.sensorReadings);
       break;
     case 2:
-    //Need to write this function
-      Barometer::readAllData(farrbconvert.sensorReadings);
+      bmp.readAllData(farrbconvert.sensorReadings);
       break;
     case 3:
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      gps.readPositionData(farrbconvert.sensorReadings);
       break;
     case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
+      gps.readAuxilliaryData(farrbconvert.sensorReadings);
       break;
     case 6:
-      // this hardcoded 3 is kinda sus.
-      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
