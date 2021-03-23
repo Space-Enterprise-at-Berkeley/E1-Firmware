@@ -10,30 +10,37 @@
 
 using namespace std;
 
-ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar) {
+ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc) {
 		DeltaT = deltaT;
+		int n = 3;
+		int m = 2;
 
-		_F = new MatrixXd(3, 3);
+		_F = new MatrixXd(n, n);
 		*_F << 1, DeltaT, pow(DeltaT, 2) / 2,
 					0, 1     , DeltaT,
 					0, 0     , 1;
 
-		_H = new MatrixXd(2, 3);
+		_H = new MatrixXd(m, n);
 		*_H << 1, 0, 0,
 						0, 0, 1;
 
-		_Q = new MatrixXd(3, 3);
+		_Q = new MatrixXd(n, n);
 		*_Q << 0, 0, 0,
 					0, 0, 0,
 					0, 0, 1;
 
-		_R = new MatrixXd(2, 2);
+		_R = new MatrixXd(m, m);
 		*_R << altitudeVar , 0,
 		 			0,     accelVar;
 
-		_z = new VectorXd(2);
+		_z = new VectorXd(m);
 
-		kalmanfilter = new Kalman(3, *_F, 2, 1, *_H, MatrixXd::Zero(3,1), *_Q, *_R);
+		_X = new MatrixXd(n);
+		*_X <<  initAlt,
+				initAcc,
+				0;
+
+		kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_X);
 }
 
 void ApogeeDetection::filter(double altitude, double accel_z){

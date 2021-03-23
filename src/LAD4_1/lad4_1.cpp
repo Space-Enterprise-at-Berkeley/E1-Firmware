@@ -87,7 +87,15 @@ void setup() {
 
   gps.init();
 
-  //Initialize apogee detection here
+  // Initializes initial state _x in Kalman filter to the alt and acc of the rocket at setup
+  sensorReadFunc(0);
+  double acc_z = farrbconvert.sensorReadings[2];
+  sensorReadFunc(4)
+  double altitude = farrbconvert.sensorReadings[0];
+
+  double altVar = 0.5;
+  double accVar = 0.5;
+  ApogeeDetection(20e-3, altVar, accVar, altitude, acc_z);
 
 }
 
@@ -116,6 +124,15 @@ void loop() {
     }
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
+    if(sensor->id == 0) {
+      acc_z = data[0]
+    }
+    else if(sensor->id == 2) {
+      altitude = data[2];
+      if(atApogee(altitude, acc_z)) {
+        //deloy chute 
+      }
+    }
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
 

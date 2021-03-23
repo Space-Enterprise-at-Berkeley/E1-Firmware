@@ -1,11 +1,8 @@
 
 #include "common_fw.h"
 
-
-
 // ============ THIS IS NOT UP TO DATE ==============
 // ============ THIS NEEDS TO BE SPECIFIED ==========
-
 
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 0
@@ -18,8 +15,6 @@ sensorInfo *sensors;
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
-
-
 
 namespace config {
   void setup() {

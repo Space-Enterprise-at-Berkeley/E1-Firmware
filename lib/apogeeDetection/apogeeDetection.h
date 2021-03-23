@@ -18,7 +18,7 @@ using namespace Eigen;
 class ApogeeDetection
 {
     public:
-      ApogeeDetection(double dt, double altitudeVar, double accelVar);
+      ApogeeDetection(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc);
       ~ApogeeDetection();
       void filter(double altitude, double accel_z);
 
@@ -37,7 +37,7 @@ class ApogeeDetection
 
       double previousAltitude;
       double DeltaT;
-      int outlook = 100; // how many data points should we be descending for before deciding
+      int outlook = 10; // how many data points should we be descending for before deciding
       int currConsecutiveDecreases = 0;
 };
 
