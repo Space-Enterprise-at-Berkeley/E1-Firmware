@@ -8,6 +8,7 @@
 #define COMMON_H_
 
 #include <string>
+#include <cstring>
 
 // Arduino Libraries
 #include <SPI.h>
@@ -17,6 +18,7 @@
 #include <Wire.h>
 
 const uint8_t qMaxSize = 40;
+
 struct Queue {
 
   struct Node {
@@ -68,12 +70,14 @@ struct Queue {
   }
 };
 
+const uint8_t maxReadings = 9;
+
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[36];
-  float sensorReadings[9];
+  char buffer[4 * maxReadings];
+  float sensorReadings[maxReadings];
 };
 
 /*
@@ -108,7 +112,7 @@ void readPacketCounter(float *data);
 void incrementPacketCounter();
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
-void debug(String str, int debug);
+void debug(String str);
 
 extern SdFat sd;
 extern File file;

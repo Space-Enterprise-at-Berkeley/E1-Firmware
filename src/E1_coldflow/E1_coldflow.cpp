@@ -51,17 +51,17 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -69,10 +69,10 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
 
-  debug("Writing Dummy Data", DEBUG);
+  debug("Writing Dummy Data");
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
@@ -82,7 +82,7 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
@@ -109,7 +109,7 @@ void loop() {
       i++;
     }
 
-    debug(String(command), DEBUG);
+    debug(String(command));
     int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);

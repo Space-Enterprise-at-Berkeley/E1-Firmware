@@ -57,7 +57,7 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 namespace config {
   void setup() {
 
-    debug("Initializing ADCs", DEBUG);
+    debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {
       ads[i].init(adcDataReadyPins[i], ADSAddrs[i], &Wire);
       ads[i].setConversionMode(SINGLE_SHOT);
@@ -69,7 +69,7 @@ namespace config {
     }
 
 
-    debug("Initializing sensors", DEBUG);
+    debug("Initializing sensors");
     sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
@@ -79,7 +79,7 @@ namespace config {
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
-    debug("Initializing valves", DEBUG);
+    debug("Initializing valves");
     valves = new valveInfo[numValves];
     valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
     valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};

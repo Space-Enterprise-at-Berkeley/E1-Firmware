@@ -1,7 +1,6 @@
 #ifndef ADS1219_H
 #define ADS1219_H
 
-#include <Arduino.h>
 #include <Wire.h>
 
 #define CONFIG_REGISTER_ADDRESS 0x40
