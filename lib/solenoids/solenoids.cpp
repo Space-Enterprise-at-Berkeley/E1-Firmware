@@ -73,7 +73,10 @@ namespace Solenoids {
   }
 
   void getAllStates(float *data) {
-    Serial.println("Solenoids, get all states");
+    #ifdef DEBUG
+      Serial.println("Solenoids, get all states");
+      Serial.flush();
+    #endif
     data[0] = lox2_state;
     data[1] = prop2_state;
     data[2] = lox5_state;

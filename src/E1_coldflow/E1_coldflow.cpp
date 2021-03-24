@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 1 // 0 is flight config, 1 is for debug
+#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -155,9 +155,8 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
 
-    // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
-
+      // After getting new pressure data, check injector pressures to detect end of flow:
+    if (sensor->id == 1 && Automation::inFlow()){
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
 

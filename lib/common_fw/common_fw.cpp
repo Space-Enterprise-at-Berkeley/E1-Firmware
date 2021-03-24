@@ -27,10 +27,7 @@ bool write_to_SD(std::string message, const char * file_name) {
           uint8_t strLength = sdBuffer->dequeue(buffer);
           file.write(buffer, strLength);
         }
-        #ifdef DEBUG
-          Serial.println("flushing file");
-          Serial.flush();
-        #endif
+        debug("flushing file");
         file.flush();
         return true;
     }
@@ -111,7 +108,7 @@ int8_t parseCommand(String packet) {
   const char *checksum_char = checksumstr.c_str();
   int checksum = strtol(checksum_char, NULL, 16);
   debug("checksum: ");
-  debug(String(checksum));
+  debug(checksum);
 
   const int count = packet.substring(1, data_end_index).length();
   String str_data= packet.substring(1,data_end_index);
@@ -185,7 +182,7 @@ uint16_t Fletcher16(uint8_t *data, int count) {
 }
 
 void debug(String str) {
-  #if DEBUG
+  #ifdef DEBUG
     Serial.println(str);
     Serial.flush();
   #endif

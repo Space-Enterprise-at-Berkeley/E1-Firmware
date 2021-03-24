@@ -16,7 +16,6 @@ namespace Automation {
   uint32_t _startupTimer;
 
   bool _flowing = false;
-
   bool _shutdown = false;
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
@@ -296,7 +295,7 @@ namespace Automation {
    */
   void detectPeak(float currentPressure, int recordingIndex) {
 
-    if (sizes[recordingIndex]==5) {
+    if (sizes[recordingIndex] == 5) {
 
       float average = findAverage(recordingIndex);
       if (currentPressure > 1.20 * average) {
@@ -315,7 +314,6 @@ namespace Automation {
       //removing first element of previous Pressures array, adding new Pressure to the end
       memmove(prevPressures[recordingIndex], prevPressures[recordingIndex] + 1, sizeof(float)*(4));
       prevPressures[recordingIndex][4] = currentPressure;
-
 
     } else {
       prevPressures[recordingIndex][sizes[recordingIndex]] = currentPressure;

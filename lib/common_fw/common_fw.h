@@ -9,6 +9,8 @@
 
 #include <string>
 #include <cstring>
+
+// Arduino Libraries
 #include <SPI.h>
 #include <SdFat.h>
 #include <TimeLib.h>
@@ -76,7 +78,7 @@ const uint8_t maxReadings = 9;
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[4*maxReadings];
+  char buffer[4 * maxReadings];
   float sensorReadings[maxReadings];
 };
 
