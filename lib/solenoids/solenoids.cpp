@@ -13,14 +13,8 @@ namespace Solenoids {
   uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
   uint8_t high_sol_pin;
 
-<<<<<<< HEAD
   uint8_t *_actuatorIds;
   uint8_t _numActuators;
-=======
-  uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
-  uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
-  uint8_t high_sol_pin;
->>>>>>> master
 
   uint8_t high_sol_state = 0;
 
