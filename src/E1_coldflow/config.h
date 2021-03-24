@@ -10,11 +10,6 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
 
-// current size: 5.2 MB (5,241,212 bytes); 126,240 lines
-// failed at: 6.0 MB (6,026,496 bytes)
-// failed after 47598 packets written. file at 8.0 MB
-// failed after ~53422 packets written. file at 10.2 MB
-// failed after 27424 packets written. file at 11.4 mb
 std::string str_file_name = "E1_coldflow.txt";
 const char * file_name = str_file_name.c_str();
 
@@ -48,8 +43,8 @@ struct valveInfo *valves;
 const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
 uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
 
-#define LOX_ADAPTER_PT_HEATER_PIN 7
-#define LOX_GEMS_HEATER_PIN 8
+const uint8_t loxAdapterPTHeaterPin = 9;
+const uint8_t loxGemsHeaterPin = 7;
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -67,7 +62,6 @@ namespace config {
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       // ads[i].calibrate();
     }
-
 
     debug("Initializing sensors");
     sensors = new sensorInfo[numSensors];
@@ -92,5 +86,8 @@ namespace config {
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
     valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
     valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
+
+    pinMode(loxAdapterPTHeaterPin, OUTPUT);
+    pinMode(loxGemsHeaterPin, OUTPUT);
   }
 }

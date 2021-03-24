@@ -9,7 +9,6 @@ using namespace std;
 
 namespace Solenoids {
 
-
   uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
   uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
   uint8_t high_sol_pin;
@@ -67,7 +66,11 @@ namespace Solenoids {
     digitalWrite(high_sol_pin, high_sol_state);
   }
 
-  void getAllStates(float *data){
+  void getAllStates(float *data) {
+    #ifdef DEBUG
+      Serial.println("Solenoids, get all states");
+      Serial.flush();
+    #endif
     data[0] = lox2_state;
     data[1] = prop2_state;
     data[2] = lox5_state;

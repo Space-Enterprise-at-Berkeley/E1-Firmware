@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -22,7 +22,7 @@
 // within loop state variables
 
 uint8_t val_index = 0;
-char command[50]; //input command from GS
+char command[75]; //input command from GS
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -53,10 +53,7 @@ void setup() {
   debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
-    debug(String(i));
-    debug("starting 1st line");
     sensor_checks[i][0] = sensors[i].clock_freq;
-    debug("starting 2nd line");
     sensor_checks[i][1] = 1;
   }
 
@@ -77,7 +74,6 @@ void setup() {
   file.open(file_name, O_RDWR | O_CREAT);
 
   debug("Writing Dummy Data");
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -168,14 +164,6 @@ void sensorReadFunc(int id) {
     case 2:
       debug("Batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      debug("Cryo Therms");
-      // Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      // //farrbconvert.sensorReadings[1]=0;
-      // farrbconvert.sensorReadings[2]=0;
-      // farrbconvert.sensorReadings[3]=0;
-      // farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");
