@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -22,7 +22,7 @@
 // within loop state variables
 
 uint8_t val_index = 0;
-char command[50]; //input command from GS
+char command[75]; //input command from GS
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -47,37 +47,33 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
-    debug(String(i), DEBUG);
-    debug("starting 1st line", DEBUG);
     sensor_checks[i][0] = sensors[i].clock_freq;
-    debug("starting 2nd line", DEBUG);
     sensor_checks[i][1] = 1;
   }
 
-  debug("Sensor IDs:", DEBUG);
-  debug(String(sensors[0].name), DEBUG);
+  debug("Sensor IDs:");
+  debug(String(sensors[0].name));
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
 
-  debug("Writing Dummy Data", DEBUG);
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
+  debug("Writing Dummy Data");
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -85,12 +81,12 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
   }
 
   // config::setup();
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
@@ -110,7 +106,7 @@ void loop() {
       i++;
     }
 
-    debug(String(command), DEBUG);
+    debug(String(command));
     int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
@@ -120,7 +116,7 @@ void loop() {
         RFSerial.println(packet);
       #endif
       packet_count++;
-      debug(String(packet_count),DEBUG);
+      debug(String(packet_count));
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -143,7 +139,7 @@ void loop() {
         RFSerial.println(packet);
     #endif
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
     write_to_SD(packet.c_str(), file_name);
   }
   delay(50);
@@ -156,26 +152,18 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("Heater", DEBUG);
+      debug("Heater");
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      debug("Ducers", DEBUG);
+      debug("Ducers");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
-      debug("Batt", DEBUG);
+      debug("Batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      debug("Cryo Therms", DEBUG);
-      // Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      // //farrbconvert.sensorReadings[1]=0;
-      // farrbconvert.sensorReadings[2]=0;
-      // farrbconvert.sensorReadings[3]=0;
-      // farrbconvert.sensorReadings[4]=-1;
       break;
     default:
       Serial.println("some other sensor");
