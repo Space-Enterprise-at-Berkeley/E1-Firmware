@@ -36,7 +36,6 @@ namespace Solenoids {
   int toggleProp2Way();
   int toggleProp5Way();
   int togglePropGems();
-
   int activateHighPressureSolenoid();
   int deactivateHighPressureSolenoid();
   int ventLOXGems();
@@ -55,7 +54,6 @@ namespace Solenoids {
   int closePropane();
   int LAUNCH();
   int endBurn();
-
   int getHPS();
   int getLox2();
   int getLox5();
