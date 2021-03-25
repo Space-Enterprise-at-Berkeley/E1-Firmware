@@ -128,8 +128,13 @@ void ADS8167::sequenceStart() {
   write_cmd(ADCCMD_WR_REG, REG_SEQ_START, SEQ_START_START);
 }
 
+/**
+ * commandto switch to AINy is sent in the Nth cycle and the data corresponding to channel AINy is available in the (N + 2)th cycle.
+ * See section 7.4.1.1 (pg 31) : Manual mode of the data sheet. 
+ */
 uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   waitForDataReady();
+
 
   //write_cmd(0x00, 0x00, 0x00);
   _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));

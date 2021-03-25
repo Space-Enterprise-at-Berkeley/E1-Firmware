@@ -29,7 +29,7 @@ void setup() {
 
 void loop() {
   Serial.println("\n");
-  for (int i = 0; i < 8; i ++){
+  for (int i = 0; i < 8; i ++) {
     // Serial.print("A");
     // Serial.print(i);
     Serial.print(adc.readData(i));
