@@ -29,7 +29,6 @@ void setup(){
 
   digitalWrite(_cs_pin, HIGH);
   SPI.endTransaction();
-
 }
 
 void loop(){
@@ -50,6 +49,8 @@ void loop(){
   Serial.println(buffer[1], BIN);
   Serial.println(buffer[2], BIN);
   Serial.println(buffer[3], BIN);
+  uint16_t read = ((buffer[1] << 12) & 0xF000) | buffer[2] | ((buffer[3] >> 4) & 0x0F);
+  Serial.println(read);
   Serial.flush();
   delay(1000);
 }
