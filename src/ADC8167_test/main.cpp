@@ -17,7 +17,7 @@ uint8_t alrt_pin = 10;
 ADS8167 adc(&SPI, cs_pin, rdy_pin, alrt_pin);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   delay(1000);
 
   adc.init();
@@ -27,7 +27,7 @@ void setup() {
 }
 
 void loop() {
-  for (int i = 0; i < 8; i ++){
+  for (int i = 0; i < 1; i ++){
     Serial.print("A");
     Serial.print(i);
     Serial.print(": ");
