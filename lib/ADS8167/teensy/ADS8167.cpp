@@ -45,7 +45,7 @@ bool ADS8167::init() {
     write_cmd(ADCCMD_WR_REG, REG_DATA_CNTL, DATA_CNTL_FORMAT_CHID);
 
     // Vref = 5V0
-    write_cmd(ADCCMD_WR_REG, REG_OFST_CAL, OFST_CAL_5V0A);
+    write_cmd(ADCCMD_WR_REG, REG_OFST_CAL, OFST_CAL_5V0B);
 
     setSDOMode();
 
