@@ -218,6 +218,7 @@ void ADS8167::write_cmd(const adc_cmd_t cmd, const uint16_t address, const uint8
     buffer[2] = (writeData) & 0xFF;
     _theSPI->transfer(buffer, 3);
 
-    digitalWrite(_cs_pin, HIGH);
     _theSPI->endTransaction();
+
+    digitalWrite(_cs_pin, HIGH);
 }
