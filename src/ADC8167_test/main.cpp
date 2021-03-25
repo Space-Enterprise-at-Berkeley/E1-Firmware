@@ -5,16 +5,16 @@
 #include <Wire.h>
 
 //ADC 1
-uint8_t cs_pin = 37;
-uint8_t rdy_pin = 26;
-uint8_t alrt_pin = 9;
+// uint8_t cs_pin = 37;
+// uint8_t rdy_pin = 26;
+// uint8_t alrt_pin = 9;
 
 //ADC 2
-// uint8_t cs_pin = 36;
-// uint8_t rdy_pin = 27;
-// uint8_t alrt_pin = 10;
+uint8_t cs_pin = 36;
+uint8_t rdy_pin = 27;
+uint8_t alrt_pin = 10;
 
-ADS8167 adc(&SPI1, cs_pin, rdy_pin, alrt_pin);
+ADS8167 adc(&SPI, cs_pin, rdy_pin, alrt_pin);
 
 void setup() {
   Serial.begin(9600);
@@ -33,5 +33,5 @@ void loop() {
     Serial.print(": ");
     Serial.println(adc.readData(i));
   }
-  delay(10);
+  delay(1000);
 }
