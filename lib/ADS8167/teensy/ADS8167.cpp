@@ -138,7 +138,7 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   Serial.println("raw reads (3 bytes)");
   Serial.println(buffer[0]);
   Serial.println(buffer[1]);
-  Serial.println(buffer[2] >> 4);
+  Serial.println((buffer[2] >> 4) & 0x0F);
 
   return buffer[0] << 8 | buffer[1];
 }
