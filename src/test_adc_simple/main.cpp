@@ -9,6 +9,7 @@ uint8_t buffer[6];
 
 
 void setup(){
+  SPI.begin();
   Serial.begin(9600);
   delay(1000);
   Serial.println("begin");
