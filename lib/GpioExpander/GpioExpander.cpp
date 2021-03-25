@@ -17,10 +17,12 @@ void GpioExpander::init() {
 
 void GpioExpander::turnOn(uint8_t channel) {
   currOutputStatus |= (1 << channel);
+  writeOutput();
 }
 
 void GpioExpander::turnOff(uint8_t channel) {
-  currOutputStatus &= !(1 << channel);
+  currOutputStatus &= ~(1 << channel);
+  writeOutput();
 }
 
 void GpioExpander::writeOutput() {

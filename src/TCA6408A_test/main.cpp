@@ -17,11 +17,13 @@ bool states[8] = {0,0,0,0,0,0,0,0};
 void setup() {
   Serial.begin(9600);
   delay(1000);
+  Wire.begin();
+  tca.init();
 }
 
 void loop() {
   for (int i = 0; i < 8; i ++) {
-    states[i] != states[i];
+    states[i] = states[i] == 0 ? 1 : 0;
     if (states[i]) {
       tca.turnOn(i);
     } else {
@@ -31,6 +33,6 @@ void loop() {
     Serial.print(i);
     Serial.print(": ");
     Serial.println(states[i]);
+    delay(500);
   }
-  delay(10);
 }
