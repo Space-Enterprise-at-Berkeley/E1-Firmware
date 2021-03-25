@@ -27,11 +27,12 @@ void setup() {
 }
 
 void loop() {
-  for (int i = 0; i < 1; i ++){
-    Serial.print("A");
-    Serial.print(i);
-    Serial.print(": ");
-    Serial.println(adc.readData(i));
+  for (int i = 0; i < 8; i ++){
+    // Serial.print("A");
+    // Serial.print(i);
+    Serial.print(adc.readData(i));
+    Serial.print(", ");
   }
+  Serial.println();
   delay(1000);
 }
