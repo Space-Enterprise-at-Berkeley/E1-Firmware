@@ -19,6 +19,7 @@ ADS8167 adc(&SPI, cs_pin, rdy_pin, alrt_pin);
 void setup() {
   Serial.begin(115200);
   delay(1000);
+  Serial.println("\n\n");
 
   adc.init();
   adc.setManualMode();
@@ -27,6 +28,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("\n");
   for (int i = 0; i < 8; i ++){
     // Serial.print("A");
     // Serial.print(i);
