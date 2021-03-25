@@ -11,9 +11,11 @@ uint8_t buffer[6];
 void setup(){
   Serial.begin(9600);
   delay(1000);
+  Serial.println("begin");
 
   pinMode(_cs_pin, OUTPUT);
   pinMode(_rdy_pin, INPUT);
+  digitalWrite(_cs_pin, HIGH);
 
   SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
   digitalWrite(_cs_pin, LOW);
@@ -47,4 +49,6 @@ void loop(){
   Serial.println(buffer[1], BIN);
   Serial.println(buffer[2], BIN);
   Serial.println(buffer[3], BIN);
+  Serial.flush();
+  delay(1000);
 }
