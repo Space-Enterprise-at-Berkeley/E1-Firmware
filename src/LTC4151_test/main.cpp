@@ -19,16 +19,16 @@ void loop() {
   Serial.print(": ");
   Serial.print(sensor.getLoadCurrent(0.02));
   Serial.print("A ");
-  Serial.print(sensor.getSnapshotLoadCurrent(0.02));
-  Serial.print("A ");
+  // Serial.print(sensor.getSnapshotLoadCurrent(0.02));
+  // Serial.print("A ");
   Serial.print(sensor.getInputVoltage());
-  Serial.print("V ");
-  Serial.print(sensor.getSnapshotInputVoltage());
+  // Serial.print("V ");
+  // Serial.print(sensor.getSnapshotInputVoltage());
   Serial.print("V ");
   Serial.print(sensor.getADCInVoltage());
   Serial.print("V ");
-  Serial.print(sensor.getSnapshotADCInVoltage());
-  Serial.print("V ");
+  // Serial.print(sensor.getSnapshotADCInVoltage());
+  // Serial.print("V ");
   Serial.println();
   delay(10);
 }
