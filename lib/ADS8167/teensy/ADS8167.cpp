@@ -98,7 +98,7 @@ void ADS8167::setAutoSequenceMode() {
 }
 
 void ADS8167::setSequence(const uint8_t length, const uint8_t* channels, const uint8_t repeat, const bool loop) {
-  if(length<1 || length > 16) {
+  if(length < 1 || length > 16) {
     #ifdef DEBUG
       Serial.println("Sequence max length = 16");
       Serial.flush();
@@ -135,6 +135,10 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
 
   if(channel_out != NULL)
     *channel_out = buffer[2] >> 4;
+  Serial.println("raw reads (3 bytes)");
+  Serial.println(buffer[0]);
+  Serial.println(buffer[1]);
+  Serial.println(buffer[2]);
 
   return buffer[0] << 8 | buffer[1];
 }
