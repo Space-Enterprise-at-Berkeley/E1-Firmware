@@ -144,8 +144,9 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   digitalWrite(_cs_pin, HIGH);
   _theSPI->endTransaction();
 
-  if(channel_out != NULL)
-    *channel_out = buffer[2] >> 4;
+  // if(channel_out != NULL)
+  //   *channel_out = buffer[2] >> 4;
+
   #ifdef DEBUG
     Serial.println("raw reads (3 bytes)");
     Serial.println(buffer[0], BIN);
@@ -153,8 +154,8 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
     Serial.println(buffer[2], BIN);
     Serial.println(buffer[3], BIN);
   #endif
-
-  return buffer[1] << 8 | buffer[2];
+  return (buffer[1] << 12) & 0xF000) | buffer[2] | ((buffer[3] >> 4) & 0x0F);
+  // return buffer[1] << 8 | buffer[2];
 }
 
 long ADS8167::readData(uint8_t channel_no) {
