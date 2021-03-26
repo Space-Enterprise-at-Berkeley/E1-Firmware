@@ -30,7 +30,6 @@ namespace powerSupplyMonitor {
     energyConsumed = (float *)malloc(_numSupplies * sizeof(float));
 
     for (int i = 0; i < _numSupplies; i++) {
-      debug("starting INA219");
       _supplyMonitors[i].begin(localWire, addrs[i]);
       _supplyMonitors[i].configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
       _supplyMonitors[i].calibrate(rShunt, maxExpectedCurrent);

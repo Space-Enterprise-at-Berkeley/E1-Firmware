@@ -25,15 +25,39 @@ ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
 ADS8167::ADS8167():
   ADC()
 {
+  #ifdef DEBUG
+    Serial.println("empty constructor ADS8167");
+    Serial.flush();
+  #endif
   // do nothing;
 }
 
 bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt)
 {
+  #ifdef DEBUG
+    Serial.print("Starting Init ADS8167 w/ cs pin: ");
+    Serial.println(cs);
+    Serial.flush();
+  #endif
+  _cs_pin = cs;
+  _rdy_pin = rdy;
+  _alrt_pin = alrt;
+  _theSPI = theSPI;
+  init();
   // do nothing;
 }
 
 bool ADS8167::init() {
+  #ifdef DEBUG
+    Serial.println("top of init ADC");
+    Serial.flush();
+  #endif
+  #ifdef DEBUG
+  Serial.println("bottom of init ADC");
+
+    Serial.println("Initialized ADS8167 w/ cs pin: " + String(_cs_pin));
+    Serial.flush();
+  #endif
   // do nothing;
     return true;
 }
@@ -64,6 +88,10 @@ void ADS8167::setAllInputsSeparate(){
  * for manual mode.
  */
 void ADS8167::setChannel(const uint8_t channelno) {
+  #ifdef DEBUG
+    Serial.println("set channel " + String(channelno));
+    Serial.flush();
+  #endif
 // do nothing;
 }
 
@@ -89,6 +117,7 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
 }
 
 long ADS8167::readData(uint8_t channel_no) {
+  setChannel(channel_no);
   return readChannel();
 }
 

@@ -123,7 +123,7 @@ namespace Ducers {
         i++;
       } else {
         #ifdef DEBUG
-          Serial.println("reading high pressure data from ADC Ain" + String(i));
+          Serial.println("reading high pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
         // data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));

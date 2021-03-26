@@ -27,11 +27,18 @@ ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
 
 ADS8167::ADS8167():
   ADC()
- {}
+ {
+   #ifdef DEBUG
+     Serial.println("empty constructor ADS8167");
+     Serial.flush();
+   #endif
+
+ }
 
 bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
     #ifdef DEBUG
-      Serial.println("Starting Initialized ADS8167 w/ cs pin: " + String(cs));
+      Serial.print("Starting Init ADS8167 w/ cs pin: ");
+      Serial.println(cs);
       Serial.flush();
     #endif
     _cs_pin = cs;
@@ -42,6 +49,10 @@ bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
 }
 
 bool ADS8167::init() {
+    #ifdef DEBUG
+      Serial.println("top of init ADC");
+      Serial.flush();
+    #endif
     _theSPI->begin();
 
     // not sure if any of these need to be pullup, or that's handled in hardware
@@ -70,6 +81,7 @@ bool ADS8167::init() {
     // Manual channel seq moe
     write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_MANUAL);
     #ifdef DEBUG
+    Serial.println("bottom of init ADC");
       Serial.println("Initialized ADS8167 w/ cs pin: " + String(_cs_pin));
       Serial.flush();
     #endif
@@ -157,7 +169,6 @@ void ADS8167::sequenceStart() {
  */
 uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   waitForDataReady();
-
 
   //write_cmd(0x00, 0x00, 0x00);
   _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));

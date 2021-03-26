@@ -41,7 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define INA219_REG_CURRENT          (0x04)
 #define INA219_REG_CALIBRATION      (0x05)
 
-
 class INA219 : public INA
 {
 
