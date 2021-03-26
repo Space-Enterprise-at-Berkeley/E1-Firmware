@@ -12,26 +12,26 @@
 std::string str_file_name = "E1_coldflow.txt";
 const char * file_name = str_file_name.c_str();
 
-const int numCryoTherms = 4;
+const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
-int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
+uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
 
-const int numADCSensors = 2;
-int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
-int adcDataReadyPins[numADCSensors] = {29, 28};
+const uint8_t numADCSensors = 2;
+uint8_t ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
+uint8_t adcDataReadyPins[numADCSensors] = {29, 28};
 ADS1219 ads[numADCSensors];
 
-const int numAnalogThermocouples = 1;
-int thermAdcIndices[numAnalogThermocouples] = {1};
-int thermAdcChannels[numAnalogThermocouples] = {2};
+const uint8_t numAnalogThermocouples = 1;
+uint8_t thermAdcIndices[numAnalogThermocouples] = {1};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {2};
 
-const int numPressureTransducers = 7;
-int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
-int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
-int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
+const uint8_t numPressureTransducers = 7;
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
+uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
 
 const uint8_t numSensors = 6;
 sensorInfo *sensors;

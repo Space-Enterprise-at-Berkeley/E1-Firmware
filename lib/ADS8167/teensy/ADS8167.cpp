@@ -65,7 +65,10 @@ bool ADS8167::init() {
     // write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_CUSTOM);
     // Manual channel seq moe
     write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_MANUAL);
-
+    #ifdef DEBUG
+      Serial.println("Initialized ADS8167 w/ cs pin: " + String(_cs_pin));
+      Serial.flush();
+    #endif
     return true;
 }
 
@@ -98,6 +101,10 @@ void ADS8167::setAllInputsSeparate(){
  * for manual mode.
  */
 void ADS8167::setChannel(const uint8_t channelno) {
+    #ifdef DEBUG
+      Serial.println("set channel " + String(channelno));
+      Serial.flush();
+    #endif
     write_cmd(ADCCMD_WR_REG, REG_CHANNEL_ID, channelno & 0x07); // 3 lsb 1, rest 0
 }
 

@@ -17,15 +17,15 @@ namespace Ducers {
 
   ADC * _adcs;
 
-  int * _adcIndices; // array of size _numSensors
-  int * _adcChannels;
-  int * _ptTypes;
+  uint8_t * _adcIndices; // array of size _numSensors
+  uint8_t * _adcChannels;
+  uint8_t * _ptTypes;
 
-  int _numSensors; // number of analog thermocouples, not number of adcs
+  uint8_t _numSensors; // number of analog thermocouples, not number of adcs
 
   uint8_t buffer[4];
 
-  void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADC * adcs) {
+  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint8_t * ptTypes, ADC * adcs) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
@@ -116,7 +116,7 @@ namespace Ducers {
       int type = _ptTypes[i];
       if (type == 1) {
         #ifdef DEBUG
-          Serial.println("reading low pressure data from ADC Ain" + String(i));
+          Serial.println("reading low pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
         data[i] = interpolateLow(_adcs[_adcIndices[i]].readData(_adcChannels[i]));
