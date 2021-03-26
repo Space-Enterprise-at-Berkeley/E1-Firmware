@@ -30,6 +30,10 @@ ADS8167::ADS8167():
  {}
 
 bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
+    #ifdef DEBUG
+      Serial.println("Starting Initialized ADS8167 w/ cs pin: " + String(cs));
+      Serial.flush();
+    #endif
     _cs_pin = cs;
     _rdy_pin = rdy;
     _alrt_pin = alrt;
