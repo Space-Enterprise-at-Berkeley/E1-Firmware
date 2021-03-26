@@ -15,6 +15,7 @@ uint8_t adcCSPins[numADCSensors] = {37, 36};
 uint8_t adcDataReadyPins[numADCSensors] = {26, 27};
 uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
+ADC * adsPointers[numADCSensors];
 
 const int numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
@@ -28,6 +29,9 @@ uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1};
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
+INA * powSupMonPointers[numPowerSupplyMonitors];
+
+uint8_t battMonINAAddr = 0x43;
 
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
@@ -52,6 +56,7 @@ namespace config {
       ads[i].setManualMode();
       ads[i].setAllInputsSeparate();
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
+      adsPointers[i] = &ads[i];
       // ads[i]->calibrate();
     }
 
@@ -60,6 +65,7 @@ namespace config {
         powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
         powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+        powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
 
     debug("Initializing sensors");

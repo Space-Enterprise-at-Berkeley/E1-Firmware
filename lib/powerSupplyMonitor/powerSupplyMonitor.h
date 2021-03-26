@@ -13,7 +13,7 @@ namespace powerSupplyMonitor {
 
   uint8_t _numSupplies;
 
-  INA219 * _supplyMonitors;
+  INA ** _supplyMonitors;
   uint8_t * _addrs;
 
   TwoWire * _localWire;
@@ -21,7 +21,7 @@ namespace powerSupplyMonitor {
   float * energyConsumed;
   long last_checked;
 
-  void init(uint8_t numSupplies, INA219 * supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
+  void init(uint8_t numSupplies, INA ** supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
     _numSupplies = numSupplies;
     _localWire = localWire;
     _addrs = addrs;
@@ -30,9 +30,9 @@ namespace powerSupplyMonitor {
     energyConsumed = (float *)malloc(_numSupplies * sizeof(float));
 
     for (int i = 0; i < _numSupplies; i++) {
-      _supplyMonitors[i].begin(localWire, addrs[i]);
-      _supplyMonitors[i].configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
-      _supplyMonitors[i].calibrate(rShunt, maxExpectedCurrent);
+      // _supplyMonitors[i]->begin(localWire, addrs[i]);
+      // _supplyMonitors[i]->configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+      // _supplyMonitors[i]->calibrate(rShunt, maxExpectedCurrent);
       debug("started INA219");
       energyConsumed[i] = 0;
     }
@@ -40,21 +40,21 @@ namespace powerSupplyMonitor {
 
   void readVoltage(float *data) {
     for (int i = 0; i < _numSupplies; i++){
-      data[i] = _supplyMonitors[i].readBusVoltage();
+      data[i] = _supplyMonitors[i]->readBusVoltage();
     }
     data[_numSupplies] = -1;
   }
 
   void readCurrent(float *data) {
     for (int i = 0; i < _numSupplies; i++){
-      data[i] = _supplyMonitors[i].readShuntCurrent();
+      data[i] = _supplyMonitors[i]->readShuntCurrent();
     }
     data[_numSupplies] = -1;
   }
 
   void readPowerConsumption(float *data) {
     for (int i = 0; i < _numSupplies; i++) {
-      data[i] = _supplyMonitors[i].readBusPower();
+      data[i] = _supplyMonitors[i]->readBusPower();
       energyConsumed[i] += data[i] * (millis() - last_checked) / 1000;
     }
     last_checked = millis();

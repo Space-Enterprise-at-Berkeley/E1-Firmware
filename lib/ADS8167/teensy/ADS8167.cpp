@@ -170,7 +170,7 @@ void ADS8167::sequenceStart() {
 uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   waitForDataReady();
 
-  //write_cmd(0x00, 0x00, 0x00);
+  write_cmd(0x00, 0x00, 0x00);
   _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
   digitalWrite(_cs_pin, LOW);
 

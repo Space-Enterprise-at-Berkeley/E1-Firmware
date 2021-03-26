@@ -85,9 +85,9 @@ void setup() {
   Solenoids::init(numSolenoids, solenoidPins);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
-  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
+  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
+  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 }
 
 void loop() {

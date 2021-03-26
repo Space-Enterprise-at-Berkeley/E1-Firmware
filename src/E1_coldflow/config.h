@@ -22,6 +22,7 @@ const uint8_t numADCSensors = 2;
 uint8_t ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 uint8_t adcDataReadyPins[numADCSensors] = {29, 28};
 ADS1219 ads[numADCSensors];
+ADC *adsPointers[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {1};
@@ -58,6 +59,7 @@ namespace config {
       ads[i].setGain(ONE);
       ads[i].setDataRate(1000);
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
+      adsPointers[i] = &ads[i];
       // ads[i].calibrate();
     }
 

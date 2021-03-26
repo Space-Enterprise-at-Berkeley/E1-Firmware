@@ -14,7 +14,7 @@
 namespace Thermocouple {
   namespace Analog {
 
-    ADC * _adcs;
+    ADC ** _adcs;
 
     uint8_t * _adcIndices; // array of size _numSensors
     uint8_t * _adcChannels;
@@ -27,8 +27,7 @@ namespace Thermocouple {
     long rawRead;
     float voltageRead;
 
-
-    void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, ADC * adcs) {
+    void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, ADC ** adcs) {
       _numSensors = numSensors;
       _adcIndices = adcIndices;
       _adcChannels = adcChannels;
@@ -39,7 +38,7 @@ namespace Thermocouple {
     void readTemperatureData(float *data) {
       int i = 0;
       while (i < _numSensors) {
-        rawRead = _adcs[_adcIndices[i]].readData(_adcChannels[i]);
+        rawRead = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
         voltageRead = (float) rawRead * (5.0 / pow(2,23));
         data[i] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
         i++;

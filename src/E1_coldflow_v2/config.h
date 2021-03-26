@@ -40,6 +40,7 @@ uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1};
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
+INA * powSupMonPointers[numPowerSupplyMonitors];
 
 uint8_t battMonINAAddr = 0x43;
 
@@ -82,8 +83,6 @@ namespace config {
       debug("finish init ADC" + String(i));
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       adsPointers[i] = &ads[i];
-      Serial.println(adsPointers[i]->readData(0));
-      Serial.println(ads[i].readData(0));
     }
 
     debug("Initializing Power Supply monitors");
@@ -91,6 +90,7 @@ namespace config {
         powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
         powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+        powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
 
     debug("Initializing sensors");
