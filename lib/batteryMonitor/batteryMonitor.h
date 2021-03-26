@@ -41,6 +41,10 @@ namespace batteryMonitor {
   }
 
   void readAllBatteryStats(float *data) {
+    #ifdef DEBUG
+      Serial.println("read battery stats");
+      Serial.flush();
+    #endif
     readPowerConsumption(data);
     data[1] = data[0];
     data[0] = ina.readBusVoltage();
