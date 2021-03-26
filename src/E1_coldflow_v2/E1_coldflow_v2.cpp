@@ -93,7 +93,7 @@ void setup() {
   powerSupplyMonitor::init(numPowerSupplyMonitors, powerSupplyMonitors, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
   debug("Initializing ducers");
-  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
+  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
   debug("Initializing Thermocouples");
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);

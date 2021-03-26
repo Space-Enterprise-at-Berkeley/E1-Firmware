@@ -26,6 +26,7 @@ uint8_t adcCSPins[numADCSensors] = {37, 36};
 uint8_t adcDataReadyPins[numADCSensors] = {26, 27};
 uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
+ADC * adsPointers[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
@@ -78,6 +79,9 @@ namespace config {
       ads[i].setAllInputsSeparate();
       debug("finish init ADC" + String(i));
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
+      adsPointers[i] = &ads[i];
+      Serial.println(adsPointers[i]->readData(0));
+      Serial.println(ads[i].readData(0));
     }
 
     debug("Initializing Power Supply monitors");

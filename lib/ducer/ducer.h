@@ -15,17 +15,19 @@ using namespace std;
 
 namespace Ducers {
 
-  ADC * _adcs;
+  ADC ** _adcs;
 
   uint8_t * _adcIndices; // array of size _numSensors
   uint8_t * _adcChannels;
   uint8_t * _ptTypes;
 
+  const uint8_t strideLength = sizeof(ADS8167);
+
   uint8_t _numSensors; // number of analog thermocouples, not number of adcs
 
   uint8_t buffer[4];
 
-  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint8_t * ptTypes, ADC * adcs) {
+  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint8_t * ptTypes, ADC ** adcs) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
@@ -41,7 +43,7 @@ namespace Ducers {
   //   _adcs = adcs;
   // }
 
-  float interpolateHigh(int rawValue) {
+  float interpolateHigh(long rawValue) {
       double values[32][2] =  {
                 { 1634771.9270400004, 0 },
                 { 1771674.0096000005, 150 },
@@ -95,7 +97,7 @@ namespace Ducers {
       return convertedValue;
   }
 
-  float interpolateLow(int rawValue) {
+  float interpolateLow(long rawValue) {
     double values[2][2] = { // [x, y] pairs
                 {0, -123.89876445934394},
                 {8388607, 1131.40825} // 2^23 - 1
@@ -119,7 +121,7 @@ namespace Ducers {
           Serial.println("reading low pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
-        data[i] = interpolateLow(_adcs[_adcIndices[i]].readData(_adcChannels[i]));
+        data[i] = interpolateLow(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
         i++;
       } else {
         #ifdef DEBUG
@@ -127,7 +129,7 @@ namespace Ducers {
           Serial.flush();
         #endif
         // data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
-        data[i] = _adcs[_adcIndices[i]].readData(_adcChannels[i]);
+        data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
         i++;
       }
     }
