@@ -12,7 +12,7 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
 
-std::string str_file_name = "E1_speed_test_results.txt";
+std::string str_file_name = "E1_coldflow_v2.txt";
 const char * file_name = str_file_name.c_str();
 
 const uint8_t numCryoTherms = 4;

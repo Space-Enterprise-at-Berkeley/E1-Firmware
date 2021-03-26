@@ -7,13 +7,13 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 0
 
-std::string str_file_name = "E1_speed_test_results.txt";
+std::string str_file_name = "E1_waterflow_v2.txt";
 const char * file_name = str_file_name.c_str();
 
 const int numADCSensors = 2;
 int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
 int adcDataReadyPins[numADCSensors] = {29, 28};
-ADS1219 ** ads;
+ADS8167 ads[numADCSensors];
 
 const int numAnalogThermocouples = 1;
 int thermAdcIndices[numAnalogThermocouples] = {1};
@@ -24,38 +24,41 @@ int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
 int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
 int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 
+const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
+uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
+INA219 powerSupplyMonitors[numPowerSupplyMonitors];
+
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
 
 const int numValves = 9;
 struct valveInfo *valves;
 
-#define LOX_2_PIN 0
-#define LOX_5_PIN 2
-#define LOX_GEMS_PIN 4
-
-#define PROP_2_PIN 1
-#define PROP_5_PIN 3
-#define PROP_GEMS_PIN 5
-
-#define HIGH_SOL_PIN 6
+const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
+uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
+const float powerSupplyMonitorShuntR = 0.010; // ohms
+const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
 namespace config {
   void setup() {
     debug("Initializing ADCs", DEBUG);
-    // initialize all ADCs
-    ads = new ADS1219*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
-      ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
-      ads[i]->setConversionMode(SINGLE_SHOT);
-      ads[i]->setVoltageReference(REF_EXTERNAL);
-      ads[i]->setGain(ONE);
-      ads[i]->setDataRate(1000);
+      ads[i].init(&SPI, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
+      ads[i].setManualMode();
+      ads[i].setAllInputsSeparate();
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       // ads[i]->calibrate();
+    }
+
+    debug("Initializing Power Supply monitors");
+    for (int i = 0; i < numPowerSupplyMonitors; i++) {
+        powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
+        powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
     }
 
     debug("Initializing sensors", DEBUG);
@@ -63,6 +66,7 @@ namespace config {
     sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
     debug("Initializing valves", DEBUG);
     valves = new valveInfo[numValves];
@@ -75,15 +79,5 @@ namespace config {
     valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
     valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
     valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-
-    pinMode(LOX_2_PIN, OUTPUT);
-    pinMode(LOX_5_PIN, OUTPUT);
-    pinMode(LOX_GEMS_PIN, OUTPUT);
-
-    pinMode(PROP_2_PIN, OUTPUT);
-    pinMode(PROP_5_PIN, OUTPUT);
-    pinMode(PROP_GEMS_PIN, OUTPUT);
-
-    pinMode(HIGH_SOL_PIN, OUTPUT);
   }
 }

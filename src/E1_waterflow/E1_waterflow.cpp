@@ -84,8 +84,6 @@ void setup() {
     debug(String(packet_count));
   }
 
-  // config::setup();
-
   debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins);
