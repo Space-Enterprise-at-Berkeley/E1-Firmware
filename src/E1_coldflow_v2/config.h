@@ -41,6 +41,8 @@ const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 
+uint8_t battMonINAAddr = 0x43;
+
 const uint8_t numGPIOExpanders = 1;
 uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
