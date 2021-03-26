@@ -11,8 +11,9 @@ namespace Solenoids {
 
   uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
   uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
-  uint8_t high_sol_pin;
+  uint8_t high_sol_pin, high_sol_enable_pin;
 
+  uint8_t high_sol_enable_state = 0;
   uint8_t high_sol_state = 0;
 
   uint8_t lox2_state = 0;
@@ -34,6 +35,7 @@ namespace Solenoids {
     prop_gems_state = 0;
 
     high_sol_state = 0;
+    high_sol_enable_state = 0;
 
     lox_2_pin = solenoidPins[0];
     lox_5_pin = solenoidPins[1];
@@ -44,6 +46,9 @@ namespace Solenoids {
     prop_gems_pin = solenoidPins[5];
 
     high_sol_pin = solenoidPins[6];
+    if(numSolenoids > 7) {
+      high_sol_enable_pin = solenoidPins[7];
+    }
 
     pinMode(lox_2_pin, OUTPUT);
     pinMode(lox_5_pin, OUTPUT);
@@ -54,6 +59,7 @@ namespace Solenoids {
     pinMode(prop_gems_pin, OUTPUT);
 
     pinMode(high_sol_pin, OUTPUT);
+    pinMode(high_sol_enable_pin, OUTPUT);
 
     digitalWrite(lox_2_pin, lox2_state);
     digitalWrite(lox_5_pin, lox5_state);
@@ -64,6 +70,7 @@ namespace Solenoids {
     digitalWrite(prop_gems_pin, prop_gems_state);
 
     digitalWrite(high_sol_pin, high_sol_state);
+    digitalWrite(high_sol_enable_pin, high_sol_enable_state);
   }
 
   void getAllStates(float *data) {
@@ -78,7 +85,8 @@ namespace Solenoids {
     data[4] = lox_gems_state;
     data[5] = prop_gems_state;
     data[6] = high_sol_state;
-    data[7] = -1;
+    data[7] = high_sol_enable_state;
+    data[8] = -1;
   }
 
   bool loxArmed() {
@@ -174,6 +182,18 @@ namespace Solenoids {
     } else {
       // already closed, do nothing.
     }
+    return high_sol_state;
+  }
+
+  int enableHighPressureSolenoid() {
+    high_sol_enable_state = 1;
+    digitalWrite(high_sol_enable_pin, high_sol_enable_state);
+    return high_sol_state;
+  }
+
+  int disableHighPressureSolenoid() {
+    high_sol_enable_state = 0;
+    digitalWrite(high_sol_enable_pin, high_sol_enable_state);
     return high_sol_state;
   }
 

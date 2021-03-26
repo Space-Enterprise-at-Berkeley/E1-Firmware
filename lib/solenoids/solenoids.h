@@ -14,8 +14,9 @@ namespace Solenoids {
 
   extern uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
   extern uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
-  extern uint8_t high_sol_pin;
+  extern uint8_t high_sol_pin, high_sol_enable_pin;
 
+  extern uint8_t high_sol_enable_state;
   extern uint8_t high_sol_state;
 
   extern uint8_t lox2_state;
@@ -40,6 +41,8 @@ namespace Solenoids {
   int togglePropGems();
   int activateHighPressureSolenoid();
   int deactivateHighPressureSolenoid();
+  int enableHighPressureSolenoid();
+  int disableHighPressureSolenoid();
   int ventLOXGems();
   int closeLOXGems();
   int ventPropaneGems();

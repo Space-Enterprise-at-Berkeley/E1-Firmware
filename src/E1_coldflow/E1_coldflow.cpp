@@ -12,9 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
-
-#if SERIAL_INPUT
+#ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
   #define RFSerial Serial6
@@ -113,7 +111,7 @@ void loop() {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
       Serial.println(packet);
-      #if SERIAL_INPUT != 1
+      #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
       write_to_SD(packet.c_str(), file_name);
@@ -156,7 +154,7 @@ void loop() {
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
 
-    #if SERIAL_INPUT != 1
+    #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);

@@ -22,7 +22,7 @@ uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
 uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
 
 const uint8_t numPressureTransducers = 8;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1}; //not using 1-0 or 1-3
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
 uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1};
 
@@ -33,14 +33,16 @@ INA * powSupMonPointers[numPowerSupplyMonitors];
 
 uint8_t battMonINAAddr = 0x43;
 
+uint8_t boostPowerSupplyEnable = 39;
+
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
 
 const int numValves = 9;
 struct valveInfo *valves;
 
-const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
-uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6};
+const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
+uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -84,7 +86,8 @@ namespace config {
     valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
     valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
     valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
+    valves[7] = {"High Pressure Solenoid", 31, &(Solenoids::enableHighPressureSolenoid), &(Solenoids::disableHighPressureSolenoid), &(Solenoids::getAllStates)};
+    valves[8] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
+    valves[9] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
   }
 }
