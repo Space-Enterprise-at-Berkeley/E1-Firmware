@@ -11,18 +11,18 @@ std::string str_file_name = "E1_waterflow.txt";
 const char * file_name = str_file_name.c_str();
 
 const int numADCSensors = 2;
-int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
-int adcDataReadyPins[numADCSensors] = {29, 28};
+uint8_t ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
+uint8_t adcDataReadyPins[numADCSensors] = {29, 28};
 ADS1219 ads[numADCSensors];
 
 const int numAnalogThermocouples = 1;
-int thermAdcIndices[numAnalogThermocouples] = {1};
-int thermAdcChannels[numAnalogThermocouples] = {2};
+uint8_t thermAdcIndices[numAnalogThermocouples] = {1};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {2};
 
 const int numPressureTransducers = 5;
-int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
-int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
-int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1};
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
+uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 
 const uint8_t numSensors = 4;
 sensorInfo *sensors;

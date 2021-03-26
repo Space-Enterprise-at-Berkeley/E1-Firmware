@@ -16,10 +16,10 @@ namespace Thermocouple {
 
     ADC * _adcs;
 
-    int * _adcIndices; // array of size _numSensors
-    int * _adcChannels;
+    uint8_t * _adcIndices; // array of size _numSensors
+    uint8_t * _adcChannels;
 
-    int _numSensors; // number of analog thermocouples, not number of adcs
+    uint8_t _numSensors; // number of analog thermocouples, not number of adcs
 
     float tempOverVoltageScale = 1 / 0.01;
     float voltageOffset = 0.75, tempOffset = 25; // 25 C = 0.450 V
@@ -28,7 +28,7 @@ namespace Thermocouple {
     float voltageRead;
 
 
-    void init (int numSensors, int * adcIndices, int * adcChannels, ADC * adcs) {
+    void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, ADC * adcs) {
       _numSensors = numSensors;
       _adcIndices = adcIndices;
       _adcChannels = adcChannels;
