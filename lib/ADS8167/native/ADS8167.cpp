@@ -28,7 +28,7 @@ ADS8167::ADS8167():
   // do nothing;
 }
 
-bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
+bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt)
 {
   // do nothing;
 }

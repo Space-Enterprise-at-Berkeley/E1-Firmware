@@ -10,6 +10,7 @@
 
 #include <ducer.h>
 #include <batteryMonitor.h>
+#include <powerSupplyMonitor.h>
 
 #define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
@@ -66,11 +67,9 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
 
   debug("Writing Dummy Data");
@@ -80,14 +79,13 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
 
   debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
+  powerSupplyMonitor::init(numPowerSupplyMonitors, powerSupplyMonitors, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
@@ -104,7 +102,7 @@ void loop() {
       i++;
     }
 
-    debug(String(command), DEBUG);
+    debug(String(command));
     int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
@@ -113,8 +111,6 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      packet_count++;
-      debug(String(packet_count),DEBUG);
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -136,8 +132,6 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
-    packet_count++;
-    debug(String(packet_count),DEBUG);
     write_to_SD(packet.c_str(), file_name);
   }
   delay(50);
@@ -150,26 +144,21 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("Heater", DEBUG);
+      debug("Heater");
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      debug("Ducers", DEBUG);
+      debug("Ducers");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
-      debug("Batt", DEBUG);
+      debug("Batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
-    case 4:
-      debug("Cryo Therms", DEBUG);
-      // Thermocouple::Cryo::readCryoTemps(farrbconvert.sensorReadings);
-      // //farrbconvert.sensorReadings[1]=0;
-      // farrbconvert.sensorReadings[2]=0;
-      // farrbconvert.sensorReadings[3]=0;
-      // farrbconvert.sensorReadings[4]=-1;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
