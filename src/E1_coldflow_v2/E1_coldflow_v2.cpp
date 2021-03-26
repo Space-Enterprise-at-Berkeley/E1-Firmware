@@ -51,6 +51,7 @@ void setup() {
 
   while(!Serial);
   while(!RFSerial);
+  delay(3000);
 
   debug("Setting up Config");
   config::setup();
