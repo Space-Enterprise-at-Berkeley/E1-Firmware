@@ -6,7 +6,6 @@
 
 
 #define FLIGHT_BRAIN_ADDR 0x00
-#define DEBUG 0
 
 std::string str_file_name = "E1_waterflow_v2.txt";
 const char * file_name = str_file_name.c_str();

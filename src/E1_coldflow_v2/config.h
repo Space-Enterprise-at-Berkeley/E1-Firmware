@@ -17,7 +17,7 @@ const char * file_name = str_file_name.c_str();
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
-int cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
+uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
 

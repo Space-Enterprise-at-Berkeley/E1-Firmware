@@ -10,7 +10,7 @@
 
 namespace Thermocouple {
 
-    int Cryo::init(int numSensors, Adafruit_MCP9600 *cryo_boards, int * addrs, _themotype * types, TwoWire *theWire) { // assume that numSensors is < max Size of packet. Add some error checking here
+    int Cryo::init(uint8_t numSensors, Adafruit_MCP9600 *cryo_boards, uint8_t * addrs, _themotype * types, TwoWire *theWire) { // assume that numSensors is < max Size of packet. Add some error checking here
       _addrs = addrs;
       _latestReads = (float *)malloc(numSensors);
       _cryo_amp_boards = cryo_boards;
@@ -42,7 +42,7 @@ namespace Thermocouple {
     }
 
 
-    void Cryo::readSpecificCryoTemp(int index, float *data) {
+    void Cryo::readSpecificCryoTemp(uint8_t index, float *data) {
       data[0] = _latestReads[index];
       data[1] = -1;
     }
