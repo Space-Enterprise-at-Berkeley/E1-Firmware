@@ -13,7 +13,7 @@
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 1
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -84,12 +84,17 @@ void setup() {
 
   debug("Initializing Libraries");
 
+  debug("Initializing Solenoids");
   Solenoids::init(numSolenoids, solenoidPins);
+  debug("Initializing battery monitor");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
+  debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powerSupplyMonitors, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
+  debug("Initializing ducers");
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
+  debug("Initializing Thermocouples");
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
 
   _cryoTherms = Thermocouple::Cryo();
