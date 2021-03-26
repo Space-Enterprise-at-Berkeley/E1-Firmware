@@ -52,7 +52,7 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 const uint8_t numSensors = 6;
 sensorInfo *sensors;
 
-const int numValves = 11;
+const int numValves = 12;
 struct valveInfo *valves;
 
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
@@ -112,10 +112,11 @@ namespace config {
     valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
     valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
     valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-    valves[9] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
-    valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
+    valves[7] = {"High Pressure Solenoid Enable", 31, &(Solenoids::enableHighPressureSolenoid), &(Solenoids::disableHighPressureSolenoid), &(Solenoids::getAllStates)};
+    valves[8] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
+    valves[9] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
+    valves[10] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
+    valves[11] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
 
     pinMode(loxAdapterPTHeaterPin, OUTPUT);
     pinMode(loxGemsHeaterPin, OUTPUT);

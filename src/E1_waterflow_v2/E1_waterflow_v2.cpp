@@ -46,6 +46,7 @@ void setup() {
 
   while(!Serial);
   while(!RFSerial);
+  delay(3000);
 
   debug("Setting up Config");
   config::setup();
@@ -89,6 +90,8 @@ void setup() {
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
+
+  Automation::init();
 }
 
 void loop() {
@@ -111,6 +114,26 @@ void loop() {
         RFSerial.println(packet);
       #endif
       write_to_SD(packet.c_str(), file_name);
+    }
+  }
+
+  if (Automation::_eventList->length > 0) {
+    Serial.print(Automation::_eventList->length);
+    Serial.println(" events remain");
+    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
+    if (millis() - Automation::_eventList->timer > e->duration) {
+
+      e->action();
+
+      //Update valve states after each action
+      Solenoids::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(29, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+
+      Automation::removeEvent();
+      //reset timer
+      Automation::_eventList->timer = millis();
     }
   }
 

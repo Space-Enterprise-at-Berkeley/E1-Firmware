@@ -170,7 +170,18 @@ void ADS8167::sequenceStart() {
 uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   waitForDataReady();
 
-  write_cmd(0x00, 0x00, 0x00);
+  _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
+  digitalWrite(_cs_pin, LOW);
+
+  buffer[0] = 0x00;
+  buffer[1] = 0x00;
+  buffer[2] = 0x00;
+  buffer[3] = 0x00;
+  _theSPI->transfer(buffer, 4);
+
+  digitalWrite(_cs_pin, HIGH);
+  _theSPI->endTransaction();
+
   _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
   digitalWrite(_cs_pin, LOW);
 
@@ -187,7 +198,7 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   //   *channel_out = buffer[2] >> 4;
 
   #ifdef DEBUG
-    Serial.println("raw reads (3 bytes)");
+    Serial.println("raw reads (4 bytes)");
     Serial.println(buffer[0], BIN);
     Serial.println(buffer[1], BIN);
     Serial.println(buffer[2], BIN);
