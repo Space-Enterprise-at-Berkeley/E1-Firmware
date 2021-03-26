@@ -13,7 +13,9 @@
 class ADS8167 : public ADC {
     public:
         ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt);
+        ADS8167();
 
+        bool   init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt);
         bool   init();
 
         void setSDOMode();

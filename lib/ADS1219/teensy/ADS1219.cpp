@@ -17,7 +17,7 @@ ADS1219::ADS1219(){
 
 }
 
-void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) : ADC(drdy) {
+void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) {
   _rdy_pin = drdy;
   address = addr;
   config = 0x00;
