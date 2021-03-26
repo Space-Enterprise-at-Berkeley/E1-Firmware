@@ -40,7 +40,7 @@ const int numValves = 9;
 struct valveInfo *valves;
 
 const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
-uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
+uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
