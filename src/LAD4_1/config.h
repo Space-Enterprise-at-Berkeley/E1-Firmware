@@ -34,7 +34,7 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 namespace config {
   void setup() {
-    debug("Initializing ADCs", DEBUG);
+    debug("Initializing ADCs");
     // initialize all ADCs
     ads = new ADS1219*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
@@ -47,7 +47,7 @@ namespace config {
       ads[i]->calibrate();
     }
 
-    debug("Initializing valves", DEBUG);
+    debug("Initializing valves");
     valves = new valveInfo*[numValves];
     *valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
     *valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
@@ -59,7 +59,7 @@ namespace config {
     *valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
     *valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
 
-    debug("Initializing sensors", DEBUG);
+    debug("Initializing sensors");
     sensors = new sensorInfo*[numSensors];
     *sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     *sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};

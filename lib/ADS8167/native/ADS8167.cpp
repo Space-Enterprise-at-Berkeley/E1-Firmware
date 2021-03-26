@@ -18,7 +18,18 @@
 
 ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
   ADC(rdy)
- {
+{
+  // do nothing;
+}
+
+ADS8167::ADS8167():
+  ADC()
+{
+  // do nothing;
+}
+
+bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
+{
   // do nothing;
 }
 

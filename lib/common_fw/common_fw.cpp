@@ -14,7 +14,8 @@ struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
 /**
- *
+ * Add messages to a queue, and every n messages,
+ * dequeue everything and dump it onto the sd.
  */
 bool write_to_SD(std::string message, const char * file_name) {
     sdBuffer->enqueue(message);
@@ -24,10 +25,7 @@ bool write_to_SD(std::string message, const char * file_name) {
           uint8_t strLength = sdBuffer->dequeue(buffer);
           file.write(buffer, strLength);
         }
-        #ifdef DEBUG
-          Serial.println("closing file");
-          Serial.flush();
-        #endif
+        debug("flushing file");
         file.flush();
         return true;
     }
@@ -77,7 +75,7 @@ String make_packet(int id, bool error) {
  * This is a pretty beefy function; can we split this up
  */
 int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves) {
-  Serial.println(packet);
+  debug(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
     return -1;
@@ -92,17 +90,17 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], 
   String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   const char *checksum_char = checksumstr.c_str();
   int checksum = strtol(checksum_char, NULL, 16);
-  Serial.println(checksum);
+  debug(checksum);
 
-  const int count = packet.substring(1, data_end_index).length(); // sanity check; is this right? off by 1 error?
+  const int count = packet.substring(1, data_end_index).length();
   String str_data= packet.substring(1,data_end_index);
   char const *data = str_data.c_str();
-  Serial.println(data);
+  debug(data);
 
   int _check = (int)Fletcher16((uint8_t *) data, count);
-  Serial.println(_check);
+  debug(_check);
   if (_check == checksum) {
-    Serial.println("Checksum correct, taking action");
+    debug("Checksum correct, taking action");
     chooseValveById(valve_id, valve, valves, numValves);
     return action;
   } else {
@@ -163,9 +161,9 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-void debug(String str, int flag) {
-  if (flag == 1) {
+void debug(String str) {
+  #ifdef DEBUG
     Serial.println(str);
     Serial.flush();
-  }
+  #endif
 }

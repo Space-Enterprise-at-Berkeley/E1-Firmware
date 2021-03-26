@@ -9,6 +9,8 @@ class ADC {
       _rdy_pin(data_rdy_pin)
       {}
 
+      ADC(){}
+
       virtual long readData(uint8_t channel) = 0;
       uint8_t _rdy_pin;
 };

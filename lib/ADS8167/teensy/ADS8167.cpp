@@ -25,6 +25,18 @@ ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
     _theSPI = theSPI;
 }
 
+ADS8167::ADS8167():
+  ADC()
+ {}
+
+bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
+    _cs_pin = cs;
+    _rdy_pin = rdy;
+    _alrt_pin = alrt;
+    _theSPI = theSPI;
+    init();
+}
+
 bool ADS8167::init() {
     _theSPI->begin();
 
@@ -130,7 +142,7 @@ void ADS8167::sequenceStart() {
 
 /**
  * commandto switch to AINy is sent in the Nth cycle and the data corresponding to channel AINy is available in the (N + 2)th cycle.
- * See section 7.4.1.1 (pg 31) : Manual mode of the data sheet. 
+ * See section 7.4.1.1 (pg 31) : Manual mode of the data sheet.
  */
 uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   waitForDataReady();

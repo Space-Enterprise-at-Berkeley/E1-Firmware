@@ -15,7 +15,7 @@ using namespace std;
 
 namespace Ducers {
 
-  ADC ** _adcs;
+  ADC * _adcs;
 
   int * _adcIndices; // array of size _numSensors
   int * _adcChannels;
@@ -25,7 +25,7 @@ namespace Ducers {
 
   uint8_t buffer[4];
 
-  void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADC ** adcs) {
+  void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADC * adcs) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
@@ -115,11 +115,11 @@ namespace Ducers {
     while (i < _numSensors) {
       int type = _ptTypes[i];
       if (type==1){
-        data[i] = interpolateLow(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
+        data[i] = interpolateLow(_adcs[_adcIndices[i]].readData(_adcChannels[i]));
         i++;
       } else {
         // data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
-        data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
+        data[i] = _adcs[_adcIndices[i]].readData(_adcChannels[i]);
         i++;
       }
     }
