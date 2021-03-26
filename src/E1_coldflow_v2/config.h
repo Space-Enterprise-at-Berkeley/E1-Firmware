@@ -29,13 +29,13 @@ int adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
-int thermAdcIndices[numAnalogThermocouples] = {1};
-int thermAdcChannels[numAnalogThermocouples] = {2};
+int thermAdcIndices[numAnalogThermocouples] = {0};
+int thermAdcChannels[numAnalogThermocouples] = {4};
 
-const uint8_t numPressureTransducers = 7;
-int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
-int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
-int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
+const uint8_t numPressureTransducers = 8;
+int ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1}; //not using 1-0 or 1-3
+int ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
+int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1};
 
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};

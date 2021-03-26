@@ -114,10 +114,18 @@ namespace Ducers {
     int i = 0;
     while (i < _numSensors) {
       int type = _ptTypes[i];
-      if (type==1){
+      if (type == 1) {
+        #ifdef DEBUG
+          Serial.println("reading low pressure data from ADC Ain" + String(i));
+          Serial.flush();
+        #endif
         data[i] = interpolateLow(_adcs[_adcIndices[i]].readData(_adcChannels[i]));
         i++;
       } else {
+        #ifdef DEBUG
+          Serial.println("reading high pressure data from ADC Ain" + String(i));
+          Serial.flush();
+        #endif
         // data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
         data[i] = _adcs[_adcIndices[i]].readData(_adcChannels[i]);
         i++;
