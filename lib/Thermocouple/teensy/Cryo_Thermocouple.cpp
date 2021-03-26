@@ -10,7 +10,7 @@
 
 namespace Thermocouple {
 
-    int Cryo::init(int numSensors, Adafruit_MCP9600 *cryo_boards, int * addrs, _themotype * types) { // assume that numSensors is < max Size of packet. Add some error checking here
+    int Cryo::init(int numSensors, Adafruit_MCP9600 *cryo_boards, int * addrs, _themotype * types, TwoWire *theWire) { // assume that numSensors is < max Size of packet. Add some error checking here
       _addrs = addrs;
       _latestReads = (float *)malloc(numSensors);
       _cryo_amp_boards = cryo_boards;
@@ -19,7 +19,7 @@ namespace Thermocouple {
 
       for (int i = 0; i < numSensors; i++) {
 
-        if (!_cryo_amp_boards[i].begin(addrs[i])) {
+        if (!_cryo_amp_boards[i].begin(addrs[i], theWire)) {
           Serial.println("Error initializing cryo board at Addr 0x" + String(addrs[i], HEX));
           return -1;
         }

@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -22,7 +22,7 @@
 // within loop state variables
 
 uint8_t val_index = 0;
-char command[50]; //input command from GS
+char command[75]; //input command from GS
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -47,38 +47,33 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
-    debug(String(i), DEBUG);
-    debug("starting 1st line", DEBUG);
     sensor_checks[i][0] = sensors[i].clock_freq;
-    debug("starting 2nd line", DEBUG);
     sensor_checks[i][1] = 1;
   }
 
-  debug("Sensor IDs:", DEBUG);
-  debug(String(sensors[0].name), DEBUG);
+  debug("Sensor IDs:");
+  debug(String(sensors[0].name));
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
   }
 
   debug("Opening File", DEBUG);
   file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
 
-  debug("Writing Dummy Data", DEBUG);
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
+  debug("Writing Dummy Data");
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -86,14 +81,12 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
     packet_count++;
-    debug(String(packet_count),DEBUG);
+    debug(String(packet_count));
   }
 
-  // config::setup();
+  debug("Initializing Libraries");
 
-  debug("Initializing Libraries", DEBUG);
-
-  Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
+  Solenoids::init(numSolenoids, solenoidPins);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
