@@ -84,17 +84,17 @@ void setup() {
 
   debug("Initializing Libraries");
 
-  debug("Initializing Solenoids", DEBUG);
+  debug("Initializing Solenoids");
   Solenoids::init(numSolenoids, solenoidPins);
-  debug("Initializing battery monitor", DEBUG);
+  debug("Initializing battery monitor");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
-  debug("Initializing power supply monitors", DEBUG);
+  debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powerSupplyMonitors, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
-  debug("Initializing ducers", DEBUG);
+  debug("Initializing ducers");
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
-  debug("Initializing Thermocouples", DEBUG);
+  debug("Initializing Thermocouples");
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
 
   _cryoTherms = Thermocouple::Cryo();
