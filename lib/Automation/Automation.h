@@ -10,11 +10,9 @@
 #include <Arduino.h>
 #include <solenoids.h>
 
-
 using namespace std;
 
 namespace Automation {
-
 //-----------------------Variables-----------------------
 
   extern bool _startup;
@@ -57,7 +55,6 @@ struct autoEvent {
   int (*action)();
   bool report;
 };
-
 
 struct autoEventList {
   autoEvent* events;
@@ -108,16 +105,15 @@ extern struct autoEventList* _eventList;
   // int endPropFlow();
   // int openProp();
   // int closeProp();
-  
+
   void flowConfirmation(float *data);
-  
+
   // Automatic Detection
   float findAverage(int index);
   void autoShutdown(int index);
   void detectPeak(float currentPressure, int recordingIndex);
   void detectPeaks(float loxInjector, float propInjector);
 
-
-}
+};
 
 #endif

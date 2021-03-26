@@ -1,10 +1,16 @@
-#include "Arduino.h"
-
 #include <Wire.h>
 #include "ADS1219.h"
 
 ADS1219::ADS1219(uint8_t drdy, uint8_t addr, TwoWire *wire):
 ADC(drdy) {
+  // do nothing.
+}
+
+ADS1219::ADS1219() {
+  // do nothing.
+}
+
+void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) {
   // do nothing.
 }
 

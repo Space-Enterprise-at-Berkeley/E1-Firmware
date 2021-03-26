@@ -12,7 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -23,7 +23,7 @@
 // within loop state variables
 
 uint8_t val_index = 0;
-char command[50]; //input command from GS
+char command[75]; //input command from GS
 
 /*
     Stores how often we should be requesting data from each sensor.
@@ -36,8 +36,8 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
-TempController loxPTHeater(10, 2, LOX_ADAPTER_PT_HEATER_PIN); // setPoint = 10 C, alg = PID, heaterPin = 7
-TempController loxGemsHeater(2, 2, LOX_GEMS_HEATER_PIN); // setPoint = 2C, alg = PID
+TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
+TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
@@ -51,17 +51,17 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -69,11 +69,10 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
 
-  debug("Writing Dummy Data", DEBUG);
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
+  debug("Writing Dummy Data");
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -82,9 +81,9 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
-  Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
+  Solenoids::init(numSolenoids, solenoidPins);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
@@ -92,10 +91,9 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
 
   _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, cryoThermAddrs, cryoTypes);
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
-
 }
 
 void loop() {
@@ -109,7 +107,7 @@ void loop() {
       i++;
     }
 
-    debug(String(command), DEBUG);
+    debug(String(command));
     int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
@@ -164,19 +162,14 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-  if (sensor->id==1 && Automation::inFlow()){
+    if (sensor->id==1 && Automation::inFlow()){
+      float loxInjector = farrbconvert.sensorReadings[2];
+      float propInjector = farrbconvert.sensorReadings[3];
 
-    float loxInjector = farrbconvert.sensorReadings[2];
-    float propInjector = farrbconvert.sensorReadings[3];
-
-    Automation::detectPeaks(loxInjector, propInjector);
+      Automation::detectPeaks(loxInjector, propInjector);
+    }
   }
-
-  }
-
-  // For dashboard display
-  //delay(10);
-
+  delay(10);
 }
 
 

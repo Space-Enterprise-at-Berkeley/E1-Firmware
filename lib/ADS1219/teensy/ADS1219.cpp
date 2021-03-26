@@ -13,6 +13,19 @@ ADS1219::ADS1219(uint8_t drdy, uint8_t addr, TwoWire *wire):
   _wire->begin();
 }
 
+ADS1219::ADS1219(){
+
+}
+
+void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) : ADC(drdy) {
+  _rdy_pin = drdy;
+  address = addr;
+  config = 0x00;
+  singleShot = true;
+  _wire = wire;
+  _wire->begin();
+}
+
 long ADS1219::getData(uint8_t conf) {
   _wire->beginTransmission(address);
   _wire->write(CONFIG_REGISTER_ADDRESS);
