@@ -187,17 +187,21 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
+      debug("cryo specific read");
       _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
+      debug("pressures all");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
+      debug("battery stats");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
+      debug("Cryo all");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
@@ -205,6 +209,7 @@ void sensorReadFunc(int id) {
       break;
     case 6:
       // this hardcoded 3 is kinda sus.
+      debug("cryo specific read");
       _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
