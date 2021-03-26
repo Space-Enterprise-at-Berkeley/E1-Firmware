@@ -18,7 +18,7 @@ const char * file_name = str_file_name.c_str();
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
-int cryoThermAddrs[numCryoTherms] = {0x60, 0x67, 0x62, 0x64};
+int cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 
 const uint8_t numADCSensors = 2;
@@ -78,7 +78,7 @@ namespace config {
     // initialize all ADCs
     ads = new ADS8167*[numADCSensors];
     for (int i = 0; i < numADCSensors; i++) {
-      ads[i] = new ADS8167(&SPI1, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
+      ads[i] = new ADS8167(&SPI, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
       ads[i]->init();
       ads[i]->setManualMode();
       ads[i]->setAllInputsSeparate();
