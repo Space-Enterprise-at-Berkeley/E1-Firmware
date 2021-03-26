@@ -67,6 +67,11 @@ const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 namespace config {
   void setup() {
 
+    #ifdef DEBUG
+      Serial.println("Initializing ADCs");
+      Serial.flush();
+    #endif
+
     debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {
       ads[i].init(&SPI, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);

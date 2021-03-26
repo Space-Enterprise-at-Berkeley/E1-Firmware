@@ -21,7 +21,7 @@ namespace powerSupplyMonitor {
   float * energyConsumed;
   long last_checked;
 
-  void init(uint8_t numSupplies, INA * supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
+  void init(uint8_t numSupplies, INA219 * supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
     _numSupplies = numSupplies;
     _localWire = localWire;
     _addrs = addrs;
