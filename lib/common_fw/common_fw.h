@@ -50,10 +50,6 @@ struct Queue {
 
   uint8_t dequeue(char * buffer) {
     if(length > 0) {
-      #ifdef DEBUG
-          Serial.println("dequeuing, curr size " + String(length));
-          Serial.flush();
-      #endif
       length--;
 
       strncpy(buffer, q[front].message, q[front].length + 1);
