@@ -70,6 +70,21 @@ namespace Solenoids {
     digitalWrite(prop_gems_pin, prop_gems_state);
 
     digitalWrite(high_sol_pin, high_sol_state);
+
+    lox_2.setId(_actuatorIds[0]);
+    lox_5.setId(_actuatorIds[1]);
+    lox_G.setId(_actuatorIds[2]);
+
+    prop_2.setId(_actuatorIds[3]);
+    prop_5.setId(_actuatorIds[4]);
+    prop_G.setId(_actuatorIds[5]);
+
+    high_p.setId(_actuatorIds[6]);
+
+    arm_rocket.setId(_actuatorIds[7]);
+    launch.setId(_actuatorIds[8]);
+
+
   }
 
   void getAllStates(float *data) {
@@ -339,15 +354,15 @@ namespace Solenoids {
     return prop_gems_state;
   }
 
-  SolenoidActuator lox_2("LOX 2 Way", _actuatorIds[0], &armLOX, &disarmLOX);
-  SolenoidActuator lox_5("LOX 5 Way", _actuatorIds[1], &openLOX, &closeLOX);
-  SolenoidActuator lox_G("LOX Gems", _actuatorIds[2], &ventLOXGems, &closeLOXGems);
-  SolenoidActuator prop_2("Propane 2 Way", _actuatorIds[3], &armPropane, &disarmPropane);
-  SolenoidActuator prop_5("Propane 5 Way", _actuatorIds[4], &openPropane, &closePropane);
-  SolenoidActuator prop_G("Propane Gems", _actuatorIds[5], &ventPropaneGems, &closePropaneGems);
+  SolenoidActuator lox_2("LOX 2 Way", &armLOX, &disarmLOX);
+  SolenoidActuator lox_5("LOX 5 Way", &openLOX, &closeLOX);
+  SolenoidActuator lox_G("LOX Gems", &ventLOXGems, &closeLOXGems);
+  SolenoidActuator prop_2("Propane 2 Way", &armPropane, &disarmPropane);
+  SolenoidActuator prop_5("Propane 5 Way", &openPropane, &closePropane);
+  SolenoidActuator prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
 
-  SolenoidActuator high_p("High Pressure Solenoid", _actuatorIds[6], &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
+  SolenoidActuator high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
 
-  SolenoidActuator arm_rocket("Arm Rocket", _actuatorIds[7], &armAll, &disarmAll);
-  SolenoidActuator launch("Launch Rocket", _actuatorIds[8], &LAUNCH, &endBurn);
+  SolenoidActuator arm_rocket("Arm Rocket", &armAll, &disarmAll);
+  SolenoidActuator launch("Launch Rocket", &LAUNCH, &endBurn);
 }

@@ -18,16 +18,16 @@ class Actuator {
       _name(name)
       {}
 
-      void setId(uint8_t id){
+      void setId(uint8_t id) {
         _id = id;
       }
 
-      uint8_t ID(){
+      uint8_t ID() {
         return _id;
       }
    protected:
       std::string _name;
-      uint8_t _id;
+      int8_t _id = -1;
 };
 
 class ActuatorArray {
@@ -35,9 +35,10 @@ class ActuatorArray {
     ActuatorArray(const uint8_t size, Actuator ** backingStore);
     Actuator * get(uint8_t id);
     void insert(Actuator *toInsert);
+    void updateIds();
   private:
     Actuator** _backingStore;
-    uint8_t * _ids;
+    int8_t * _ids;
     uint8_t _size;
     uint8_t currIdx = 0;
 };

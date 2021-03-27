@@ -4,7 +4,7 @@
 
 
 int8_t binary_search(uint8_t *array, uint8_t start, uint8_t end, uint8_t val);
-int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val);
+int8_t linear_search(uint8_t *array, uint8_t size, uint8_t val);
 
 ActuatorArray::ActuatorArray(const uint8_t size, Actuator ** backingStore) {
   _backingStore = backingStore;
@@ -23,7 +23,7 @@ Actuator * ActuatorArray::get(uint8_t id) {
     Serial.println("Get Actuator, looking for id: " + String(id));
     Serial.flush();
   #endif
-  int8_t index = sequential_search(_ids, _size, id); //binary_search(_ids, 0, _size, id);
+  int8_t index = linear_search(_ids, _size, id); //binary_search(_ids, 0, _size, id);
   if (index != -1){
     return _backingStore[index];
   } else {
@@ -46,7 +46,13 @@ void ActuatorArray::insert(Actuator * toInsert) {
   currIdx++;
 }
 
-int8_t sequential_search(uint8_t *array, uint8_t size, uint8_t val) {
+void ActuatorArray::updateIds() {
+  for(int i = 0; i < _size; i++){
+    _ids[i] = _backingStore[i]->ID();
+  }
+}
+
+int8_t linear_search(uint8_t *array, uint8_t size, uint8_t val) {
   for (int i = 0; i < size; i++){
     if(array[i] == val){
       return i;
