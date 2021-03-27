@@ -16,6 +16,8 @@
 
 #define N_CHANNELS          8
 
+#define _SPI_SPEED          1000000
+
 ADS8167::ADS8167(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt):
   ADC(rdy)
  {
@@ -65,21 +67,21 @@ bool ADS8167::init() {
     // enable writing
     write_cmd(ADCCMD_WR_REG, REG_ACCESS, REG_ACCESS_BITS);
 
-    // Powerup all except the ref/2 buffer
-    write_cmd(ADCCMD_WR_REG, REG_PD_CNTL, PD_CNTL_PD_REFby2);
+    // Powerup all except the internal ref buffer
+    write_cmd(ADCCMD_WR_REG, REG_PD_CNTL, PD_CNTL_PD_REF);
 
     // Data type: ADC value + 4-bit channel id
-    write_cmd(ADCCMD_WR_REG, REG_DATA_CNTL, DATA_CNTL_FORMAT_CHID);
+    // write_cmd(ADCCMD_WR_REG, REG_DATA_CNTL, DATA_CNTL_FORMAT_SAMPLE);
 
     // Vref = 5V0
-    write_cmd(ADCCMD_WR_REG, REG_OFST_CAL, OFST_CAL_5V0B);
+    // write_cmd(ADCCMD_WR_REG, REG_OFST_CAL, OFST_CAL_5V0);
 
-    setSDOMode();
+    // setSDOMode();
 
     // Custom channel seq mode
     // write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_CUSTOM);
     // Manual channel seq moe
-    write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_MANUAL);
+    // write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_MANUAL);
     #ifdef DEBUG
     Serial.println("bottom of init ADC");
       Serial.println("Initialized ADS8167 w/ cs pin: " + String(_cs_pin));
@@ -170,30 +172,26 @@ void ADS8167::sequenceStart() {
 uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   waitForDataReady();
 
-  _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
-  digitalWrite(_cs_pin, LOW);
+  _theSPI->beginTransaction(SPISettings(_SPI_SPEED, MSBFIRST, SPI_MODE0));
+  digitalWriteFast(_cs_pin, LOW);
 
   buffer[0] = 0x00;
   buffer[1] = 0x00;
-  buffer[2] = 0x00;
-  buffer[3] = 0x00;
-  _theSPI->transfer(buffer, 4);
+  _theSPI->transfer(buffer, 2);
 
-  digitalWrite(_cs_pin, HIGH);
+  digitalWriteFast(_cs_pin, HIGH);
   _theSPI->endTransaction();
 
   waitForDataReady();
 
-  _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
-  digitalWrite(_cs_pin, LOW);
+  _theSPI->beginTransaction(SPISettings(_SPI_SPEED, MSBFIRST, SPI_MODE0));
+  digitalWriteFast(_cs_pin, LOW);
 
   buffer[0] = 0x00;
   buffer[1] = 0x00;
-  buffer[2] = 0x00;
-  buffer[3] = 0x00;
-  _theSPI->transfer(buffer, 4);
+  _theSPI->transfer(buffer, 2);
 
-  digitalWrite(_cs_pin, HIGH);
+  digitalWriteFast(_cs_pin, HIGH);
   _theSPI->endTransaction();
 
   // if(channel_out != NULL)
@@ -206,7 +204,9 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
     Serial.println(buffer[2], BIN);
     Serial.println(buffer[3], BIN);
   #endif
-  return ((buffer[1] << 12) & 0xF000) | buffer[2] | ((buffer[3] >> 4) & 0x0F);
+  uint16_t result = buffer[0] << 8;
+  result |= buffer[1];
+  return result;
   // return buffer[1] << 8 | buffer[2];
 }
 
@@ -241,7 +241,7 @@ uint16_t ADS8167::readChannelOTF(const uint8_t otf_next_channel, uint8_t* channe
 
     waitForDataReady();
 
-    _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
+    _theSPI->beginTransaction(SPISettings(_SPI_SPEED, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
     digitalWrite(_cs_pin, LOW);
 
     buffer[0] = cmd << 3;
@@ -260,7 +260,7 @@ uint16_t ADS8167::readChannelOTF(const uint8_t otf_next_channel, uint8_t* channe
 }
 
 void ADS8167::write_cmd(const adc_cmd_t cmd, const uint16_t address, const uint8_t data) {
-    _theSPI->beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
+    _theSPI->beginTransaction(SPISettings(_SPI_SPEED, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
     digitalWrite(_cs_pin, LOW);
     uint32_t writeData = (cmd << 3) << 16; // Top 3 address bits are discarded, cmd is 5 bits
     writeData  |= address << 8; // Top 5 address bits are discarded, address is 11 bits

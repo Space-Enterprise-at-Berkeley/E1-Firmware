@@ -23,13 +23,9 @@ void setup() {
   Serial.println("\n\n");
 
   adc1.init();
-  adc1.setManualMode();
-  adc1.setAllInputsSeparate();
   pinMode(rdy_pin1, INPUT_PULLUP);
 
   adc2.init();
-  adc2.setManualMode();
-  adc2.setAllInputsSeparate();
   pinMode(rdy_pin2, INPUT_PULLUP);
 }
 

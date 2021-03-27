@@ -40,7 +40,7 @@ String make_packet(int id, bool error) {
   String packet_content = (String)id;
   packet_content += ",";
   if (!error) {
-    for (int i=0; i<7; i++) {
+    for (int i=0; i<8; i++) {
       float reading = farrbconvert.sensorReadings[i];
       if (reading != -1) {
         packet_content += (String)reading;

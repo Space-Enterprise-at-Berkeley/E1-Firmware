@@ -16,7 +16,7 @@
 #ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
-  #define RFSerial Serial6
+  #define RFSerial Serial7
 #endif
 
 // within loop state variables
@@ -44,8 +44,8 @@ void setup() {
   Serial.begin(57600);
   RFSerial.begin(57600);
 
-  while(!Serial);
-  while(!RFSerial);
+  // while(!Serial);
+  // while(!RFSerial);
   delay(3000);
 
   debug("Setting up Config");
@@ -100,7 +100,7 @@ void loop() {
     int i = 0;
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
-      Serial.print(command[i]);
+      // Serial.print(command[i]);
       i++;
     }
 
