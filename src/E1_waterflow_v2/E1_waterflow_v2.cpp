@@ -155,6 +155,17 @@ void loop() {
         RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);
+
+    // After getting new pressure data, check injector pressures to detect end of flow:
+    if (sensor->id==1 && Automation::inFlow()){
+
+      float loxInjector = farrbconvert.sensorReadings[2];
+      float propInjector = farrbconvert.sensorReadings[3];
+
+      Automation::detectPeaks(loxInjector, propInjector);
+    }
+
+
   }
   delay(50);
 }
