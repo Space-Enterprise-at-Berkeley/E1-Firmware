@@ -92,6 +92,9 @@ void setup() {
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
+
+  Automation::init();
+  actuators.updateIds();
 }
 
 void loop() {

@@ -28,10 +28,6 @@ int ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 const uint8_t numSensors = 4;
 sensorInfo *sensors;
 
-const uint8_t numActuators = 11;
-Actuator *backingStore[numActuators];
-ActuatorArray actuators(numActuators, backingStore);
-
 const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
 uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
 const uint8_t numSolenoidActuators = 9;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch
@@ -42,6 +38,14 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 AutomationSequenceActuator fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceActuator loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
+
+
+const uint8_t numActuators = 11;
+Actuator *backingStore[numActuators] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
+                                        &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
+                                        &Solenoids::high_p, &Solenoids::arm_rocket, &Solenoids::launch,
+                                        &fullFlow, &loxFlow};
+ActuatorArray actuators(numActuators, backingStore);
 
 namespace config {
   void setup() {
@@ -64,17 +68,17 @@ namespace config {
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
     debug("Initializing actuators");
-    actuators.insert(&Solenoids::lox_2);
-    actuators.insert(&Solenoids::lox_5);
-    actuators.insert(&Solenoids::lox_G);
-    actuators.insert(&Solenoids::prop_2);
-    actuators.insert(&Solenoids::prop_5);
-    actuators.insert(&Solenoids::prop_G);
-    actuators.insert(&Solenoids::high_p);
-    actuators.insert(&Solenoids::arm_rocket);
-    actuators.insert(&Solenoids::launch);
-    actuators.insert(&fullFlow);
-    actuators.insert(&loxFlow);
+    // actuators.insert(&Solenoids::lox_2);
+    // actuators.insert(&Solenoids::lox_5);
+    // actuators.insert(&Solenoids::lox_G);
+    // actuators.insert(&Solenoids::prop_2);
+    // actuators.insert(&Solenoids::prop_5);
+    // actuators.insert(&Solenoids::prop_G);
+    // actuators.insert(&Solenoids::high_p);
+    // actuators.insert(&Solenoids::arm_rocket);
+    // actuators.insert(&Solenoids::launch);
+    // actuators.insert(&fullFlow);
+    // actuators.insert(&loxFlow);
     // valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
   }
 }
