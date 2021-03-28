@@ -24,7 +24,7 @@ uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 0};
 uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2};
 
 const uint8_t numSensors = 4;
-sensorInfo *sensors;
+sensorInfo sensors[numSensors];
 
 const int numValves = 9;
 struct valveInfo *valves;
@@ -50,7 +50,6 @@ namespace config {
     }
 
     debug("Initializing sensors");
-    sensors = new sensorInfo[numSensors];
     sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
