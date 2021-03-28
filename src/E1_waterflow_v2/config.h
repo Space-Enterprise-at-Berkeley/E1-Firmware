@@ -22,10 +22,10 @@ const int numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
 uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
 
-const uint8_t numPressureTransducers = 8;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
-uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
-uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1};
+const uint8_t numPressureTransducers = 9;
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1, 1};
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7, 0};
+uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1, 1};
 
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};

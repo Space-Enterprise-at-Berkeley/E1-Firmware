@@ -261,7 +261,7 @@ namespace Automation {
         for (int i = 0; i < 4; i++) addEvent(&events[i]);
       }
     } else { // Prop is out
-      if (Solenoids::getProp5()) { // Lox is still open
+      if (Solenoids::getLox5()) { // Lox is still open
         autoEvent events[2];
         events[0] = {0, &(act_armCloseProp), false};
         events[1] = {750, &(Solenoids::disarmLOX)};
