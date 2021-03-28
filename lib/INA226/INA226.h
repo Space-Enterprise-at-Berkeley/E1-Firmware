@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define INA226_h
 
 #include <Arduino.h>
+#include <Wire.h>
 
 #define INA226_ADDRESS              (0x40)
 
