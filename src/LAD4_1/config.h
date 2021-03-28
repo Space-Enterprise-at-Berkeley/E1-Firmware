@@ -24,7 +24,7 @@ int thermAdcIndices[numAnalogThermocouples] = {1};
 int thermAdcChannels[numAnalogThermocouples] = {2};
 
 const uint8_t numSensors = 4;
-struct sensorInfo **sensors;
+struct sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -60,11 +60,10 @@ namespace config {
     *valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
 
     debug("Initializing sensors");
-    sensors = new sensorInfo*[numSensors];
-    *sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    *sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    *sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    *sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+    sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+    sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
+    sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
 
     pinMode(DROGUE_PIN, OUTPUT);
     pinMode(MAIN_CHUTE_PIN, OUTPUT);

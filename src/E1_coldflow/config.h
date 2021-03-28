@@ -34,7 +34,7 @@ uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
 uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1};
 
 const uint8_t numSensors = 6;
-sensorInfo *sensors;
+sensorInfo sensors[numSensors];
 
 const int numValves = 11;
 struct valveInfo *valves;
@@ -64,7 +64,6 @@ namespace config {
     }
 
     debug("Initializing sensors");
-    sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};

@@ -120,7 +120,7 @@ extern File file;
 extern struct Queue *sdBuffer;
 
 extern union floatArrToBytes farrbconvert;
-extern struct sensorInfo *sensors;
+extern struct sensorInfo sensors[];
 extern struct valveInfo *valves;
 extern int packetCounter;
 #endif // _COMMON_H_

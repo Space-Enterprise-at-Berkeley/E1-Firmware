@@ -37,7 +37,7 @@ uint8_t battMonINAAddr = 0x43;
 uint8_t boostPowerSupplyEnable = 39;
 
 const uint8_t numSensors = 4;
-sensorInfo *sensors;
+sensorInfo sensors[numSensors];
 
 const int numValves = 12;
 struct valveInfo *valves;
@@ -72,7 +72,6 @@ namespace config {
     }
 
     debug("Initializing sensors");
-    sensors = new sensorInfo[numSensors];
     sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
