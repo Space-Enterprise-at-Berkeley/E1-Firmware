@@ -8,9 +8,7 @@
 #ifndef APOGEE_H_
 #define APOGEE_H_
 
-#include <Arduino.h>
-#include <Dense>
-#include <Core>
+#include <kalman.h>
 
 using namespace std;
 using namespace Eigen;
@@ -18,10 +16,10 @@ using namespace Eigen;
 class ApogeeDetection
 {
     public:
+      ApogeeDetection();
       ApogeeDetection(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc);
       ~ApogeeDetection();
       void filter(double altitude, double accel_z);
-
       bool atApogee(double altitude, double accel_z);
     private:
       int _n;
@@ -31,6 +29,7 @@ class ApogeeDetection
       MatrixXd* _Q;
       MatrixXd* _R;
 
+      VectorXd* _x; // n
       VectorXd* _z; // might not even need to store anything here if it gets passed in all the time
 
       Kalman* kalmanfilter;

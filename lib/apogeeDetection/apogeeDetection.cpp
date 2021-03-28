@@ -5,11 +5,11 @@
  *      Author: Vamshi
  */
 
-#include <kalman.h>
-#include "apogeeDetection.h"
+#include <apogeeDetection.h>
 
 using namespace std;
 
+ApogeeDetection::ApogeeDetection() {}
 ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc) {
 		DeltaT = deltaT;
 		int n = 3;
@@ -35,12 +35,10 @@ ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accel
 
 		_z = new VectorXd(m);
 
-		_X = new MatrixXd(n);
-		*_X <<  initAlt,
-				initAcc,
-				0;
+		_x = new VectorXd(n);
+		*_x << initAlt, initAcc, 0;
 
-		kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_X);
+		kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_x);
 }
 
 void ApogeeDetection::filter(double altitude, double accel_z){

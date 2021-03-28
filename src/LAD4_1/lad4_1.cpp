@@ -1,11 +1,10 @@
-
+#include "apogeeDetection.h"
 #include <Arduino.h>
-#include "config.h"
 #include <batteryMonitor.h>
-#include "IMU.h"
 #include "Barometer.h"
+#include "config.h"
+#include "IMU.h"
 #include "GPS.h"
-
 
 #define SERIAL_INPUT 0
 
@@ -33,6 +32,10 @@ void sensorReadFunc(int id);
 IMU _imu;
 Barometer bmp;
 GPS gps = GPS(GPS_Serial);
+ApogeeDetection detector;
+
+double acc_z;
+double altitude;
 
 void setup() {
   //Setting up Serial Connection
@@ -89,13 +92,13 @@ void setup() {
 
   // Initializes initial state _x in Kalman filter to the alt and acc of the rocket at setup
   sensorReadFunc(0);
-  double acc_z = farrbconvert.sensorReadings[2];
-  sensorReadFunc(4)
-  double altitude = farrbconvert.sensorReadings[0];
+  acc_z = farrbconvert.sensorReadings[2];
+  sensorReadFunc(4);
+  altitude = farrbconvert.sensorReadings[0];
 
   double altVar = 0.5;
   double accVar = 0.5;
-  ApogeeDetection(20e-3, altVar, accVar, altitude, acc_z);
+  detector = ApogeeDetection(20e-3, altVar, accVar, altitude, acc_z);
 
 }
 
@@ -125,11 +128,11 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     if(sensor->id == 0) {
-      acc_z = data[0]
+      acc_z = farrbconvert.sensorReadings[0];
     }
     else if(sensor->id == 2) {
-      altitude = data[2];
-      if(atApogee(altitude, acc_z)) {
+      altitude = farrbconvert.sensorReadings[2];
+      if(detector.atApogee(altitude, acc_z)) {
         //deloy chute 
       }
     }
