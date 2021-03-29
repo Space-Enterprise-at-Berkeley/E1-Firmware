@@ -19,7 +19,7 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 namespace config {
   void setup() {
 
-    debug("Initializing sensors", DEBUG);
+    //debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"IMU Acceleration",   FLIGHT_BRAIN_ADDR, 14, 1};
