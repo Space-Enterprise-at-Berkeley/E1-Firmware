@@ -133,7 +133,7 @@ void loop() {
     else if(sensor->id == 2) {
       altitude = farrbconvert.sensorReadings[2];
       if(detector.atApogee(altitude, acc_z)) {
-        //deloy chute 
+        //deloy chute
       }
     }
     packet = make_packet(sensor->id, false);
@@ -149,25 +149,25 @@ void loop() {
 
 void sensorReadFunc(int id) {
   switch (id) {
-    case 0:
+    case 14:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
       break;
-    case 1:
+    case 15:
       _imu.readOrientationData(farrbconvert.sensorReadings);
       break;
-    case 2:
+    case 13:
       bmp.readAllData(farrbconvert.sensorReadings);
       break;
-    case 3:
+    case 2:
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
-    case 4:
+    case 11:
       gps.readPositionData(farrbconvert.sensorReadings);
       break;
-    case 5:
+    case 12:
       gps.readAuxilliaryData(farrbconvert.sensorReadings);
       break;
-    case 6:
+    case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
