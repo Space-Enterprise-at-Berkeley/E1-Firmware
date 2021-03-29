@@ -12,11 +12,8 @@
 float seaLevelPressure;
 bool updatedSeaLevelPressure;
 
-// Barometer::Barometer() {
-//   _bmp = Adafruit_BMP3XX();
-//   seaLevelPressure = SEALEVELPRESSURE_HPA;
-//   updatedSeaLevelPressure = false;
-// }
+Barometer::Barometer() {
+}
 
 void Barometer::init(TwoWire *theWire) {
 

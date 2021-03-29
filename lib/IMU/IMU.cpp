@@ -11,10 +11,8 @@
 //namespace IMU1 {
 #include "IMU.h"
 
-// IMU::IMU(TwoWire *theWire) {
-//   _bno = Adafruit_BNO055(55, BNO055_ADDRESS_A, theWire);
-//   init();
-// }
+IMU::IMU() {
+}
 
 void IMU::init(TwoWire *theWire){
   _bno = Adafruit_BNO055(55, BNO055_ADDRESS_A, theWire);

@@ -17,7 +17,7 @@
 #define GPS_Serial Serial8
 
 uint8_t val_index = 0;
-char command[50];
+char command[75];
 
 //Stores how often we should be requesting data from each sensor.
 int sensor_checks[numSensors][2];
@@ -31,7 +31,7 @@ void sensorReadFunc(int id);
 
 IMU _imu;
 Barometer bmp;
-GPS gps = GPS(GPS_Serial);
+GPS gps(GPS_Serial);
 ApogeeDetection detector;
 
 double acc_z;
@@ -46,17 +46,17 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -64,11 +64,10 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
 
-  debug("Writing Dummy Data", DEBUG);
+  debug("Writing Dummy Data");
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
@@ -78,14 +77,13 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Initializing Libraries", DEBUG);
+  debug("Initializing Libraries");
 
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
-  _imu = IMU();
+
   _imu.init(&Wire);
 
-  bmp = Barometer();
   bmp.init(&Wire);
 
   gps.init();
@@ -144,6 +142,7 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
+  delay(10);
 
 }
 
