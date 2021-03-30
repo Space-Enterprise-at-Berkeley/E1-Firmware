@@ -89,9 +89,9 @@ void setup() {
   gps.init();
 
   // Initializes initial state _x in Kalman filter to the alt and acc of the rocket at setup
-  sensorReadFunc(0);
+  sensorReadFunc(14);
   acc_z = farrbconvert.sensorReadings[2];
-  sensorReadFunc(4);
+  sensorReadFunc(13);
   altitude = farrbconvert.sensorReadings[0];
 
   double altVar = 0.5;
@@ -148,17 +148,11 @@ void loop() {
 
 void sensorReadFunc(int id) {
   switch (id) {
-    case 14:
-      _imu.readAccelerationData(farrbconvert.sensorReadings);
-      break;
-    case 15:
-      _imu.readOrientationData(farrbconvert.sensorReadings);
-      break;
-    case 13:
-      bmp.readAllData(farrbconvert.sensorReadings);
-      break;
     case 2:
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     case 11:
       gps.readPositionData(farrbconvert.sensorReadings);
@@ -166,8 +160,14 @@ void sensorReadFunc(int id) {
     case 12:
       gps.readAuxilliaryData(farrbconvert.sensorReadings);
       break;
-    case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
+    case 13:
+      bmp.readAllData(farrbconvert.sensorReadings);
+      break;
+    case 14:
+      _imu.readAccelerationData(farrbconvert.sensorReadings);
+      break;
+    case 15:
+      _imu.readOrientationData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

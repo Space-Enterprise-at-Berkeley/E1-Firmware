@@ -1,5 +1,5 @@
 /*
-  IMU.cpp - A c++ library to interface with the Arduino BMP3XX Barometer.
+  Barometer.cpp - A c++ library to interface with the Arduino BMP3XX Barometer.
   Created by Nolan Lautrette, March 21, 2021.
 */
 
