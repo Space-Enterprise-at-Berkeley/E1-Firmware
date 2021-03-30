@@ -8,10 +8,11 @@
 #include <INA219.h>
 #include <GpioExpander.h>
 #include <LTC4151.h>
+#include <loadCell.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
-std::string str_file_name = "E1_coldflow_v2.txt";
+std::string str_file_name = "DAQ.txt";
 const char * file_name = str_file_name.c_str();
 
 const uint8_t numCryoTherms = 4;
@@ -41,6 +42,12 @@ const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
+
+const uint8_t numLoadCells = 2;
+byte lcSckPins[numLoadCells] = {A1, A3};
+byte lcDoutPins[numLoadCells] = {A0, A2};
+float lcCalVals[numLoadCells] = {4000, -4000};
+HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
@@ -81,11 +88,19 @@ namespace config {
         powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
 
+    debug("Initializing the Load Cells");
+    for (int i = 0; i < numLoadCells; i++) {
+     loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
+     loadcells[i].set_scale(lcCalVals[i]);
+     loadcells[i].tare();
+  }
+
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"All Analog",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
+    sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
   }
 }

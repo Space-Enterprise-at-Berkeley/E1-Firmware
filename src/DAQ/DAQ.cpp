@@ -1,9 +1,5 @@
 /*
-   E1_coldflow.cpp - A c++ program that uses I2C to establish communication between
-   the sensors and valves inside the rocket & the ground station. Able to send
-   data to the ground station via RF. Can receive and process commands sent from
-   ground station.
-   Created by Vainavi Viswanath, Aug 21, 2020.
+   Main code for DAQ - vamshi
 */
 
 #include "config.h"
@@ -86,6 +82,9 @@ void setup() {
 
   _cryoTherms = Thermocouple::Cryo();
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire);
+
+  debug("Initializing Load Cell");
+  LoadCell::init(loadcells, numLoadCells, lcSckPins, lcDoutPins, lcCalVals);
 }
 
 void loop() {
@@ -142,6 +141,10 @@ void sensorReadFunc(int id) {
     case 2:
       debug("battery stats");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 3:
+      debug("Load Cells");
+      LoadCell::readLoadCells(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
