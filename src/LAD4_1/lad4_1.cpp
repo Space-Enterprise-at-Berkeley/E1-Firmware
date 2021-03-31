@@ -17,7 +17,7 @@
 #define GPS_Serial Serial8
 
 uint8_t val_index = 0;
-char command[50];
+char command[75];
 
 //Stores how often we should be requesting data from each sensor.
 int sensor_checks[numSensors][2];
@@ -31,7 +31,7 @@ void sensorReadFunc(int id);
 
 IMU _imu;
 Barometer bmp;
-GPS gps = GPS(GPS_Serial);
+GPS gps(GPS_Serial);
 ApogeeDetection detector;
 
 void setup() {
@@ -43,17 +43,17 @@ void setup() {
   while(!Serial);
   while(!RFSerial);
 
-  debug("Setting up Config", DEBUG);
+  debug("Setting up Config");
   config::setup();
 
-  debug("Initializing Sensor Frequencies", DEBUG);
+  debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD", DEBUG);
+  debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
@@ -61,11 +61,10 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Opening File", DEBUG);
+  debug("Opening File");
   file.open(file_name, O_RDWR | O_CREAT);
-  file.close();
 
-  debug("Writing Dummy Data", DEBUG);
+  debug("Writing Dummy Data");
   // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
@@ -75,23 +74,18 @@ void setup() {
     RFSerial.println(packet);
   }
 
-  debug("Initializing Libraries", DEBUG);
-
+  // Initialization of Components
+  debug("Initializing Libraries");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
-
-  _imu = IMU();
   _imu.init(&Wire);
-
-  bmp = Barometer();
   bmp.init(&Wire);
-
   gps.init();
 
-  // Initializes initial state _x in Kalman filter to the alt and acc of the rocket at setup
-  sensorReadFunc(0);
+  bmp.readAllData(farrbconvert.sensorReadings);
   double initAcc_z = farrbconvert.sensorReadings[2];
-  sensorReadFunc(4);
+  _imu.readAccelerationData(farrbconvert.sensorReadings);
   double initAlt = farrbconvert.sensorReadings[0];
+
   detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z);
 }
 
@@ -127,36 +121,37 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
+  delay(10);
 }
 
 void sensorReadFunc(int id) {
   switch (id) {
-    case 0:
-      _imu.readAccelerationData(farrbconvert.sensorReadings);
-      detector.updateAcc(farrbconvert.sensorReadings);
-      break;
-    case 1:
-      _imu.readOrientationData(farrbconvert.sensorReadings);
-      break;
     case 2:
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
+      break;
+    case 11:
+      gps.readPositionData(farrbconvert.sensorReadings);
+      break;
+    case 12:
+      gps.readAuxilliaryData(farrbconvert.sensorReadings);
+      break;
+    case 13:
       bmp.readAllData(farrbconvert.sensorReadings);
       detector.updateAlt(farrbconvert.sensorReadings);
+      break;
+    case 14:
+      _imu.readAccelerationData(farrbconvert.sensorReadings);
       if(detector.atApogee()) {
         // deloy chute 
         // send recovery ack packet
       }
+      detector.updateAcc(farrbconvert.sensorReadings);
       break;
-    case 3:
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      gps.readPositionData(farrbconvert.sensorReadings);
-      break;
-    case 5:
-      gps.readAuxilliaryData(farrbconvert.sensorReadings);
-      break;
-    case 6:
-      readPacketCounter(farrbconvert.sensorReadings);
+    case 15:
+      _imu.readOrientationData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

@@ -8,6 +8,7 @@
 #define COMMON_H_
 
 #include <string>
+#include <cstring>
 
 // Arduino Libraries
 #include <SPI.h>
@@ -16,76 +17,67 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+const uint8_t qMaxSize = 40;
 
 struct Queue {
 
   struct Node {
-    struct Node *next;
-    char *message;
-    int length; //length doesn't include the null terminator
+    char message[75];
+    int length;
   };
 
   uint16_t length = 0;
+  uint8_t front = 0, end = 0;
 
-  struct Node *end = 0;
-  struct Node *front = 0;
+  struct Node q[qMaxSize];
 
-  Queue() {
-    length = 0;
-    end = nullptr;
-    front = nullptr;
-  }
+  Queue() {}
 
   void enqueue(std::string message) {
-    struct Node *temp;
+    q[end].length = message.length();
+
+    strncpy(q[end].message, message.c_str(), message.length());
+    q[end].message[q[end].length] = '\n'; // add \n to string when enqueue
+
     length++;
-    temp = (struct Node *)malloc(sizeof(struct Node));
-
-    temp->length = message.length();
-    temp->message = (char *)malloc(temp->length + 2);
-
-    strncpy(temp->message, message.c_str(), temp->length + 1);
-    temp->message[temp->length] = '\n'; // add \n to string when enqueue
-    temp->message[temp->length + 1] = '\0';
-
-    temp->next = nullptr;
-    if (!front) {
-      front = temp;
-    } else {
-      end->next = temp;
+    end++;
+    if (end == qMaxSize) {
+      end = 0;
     }
-    end = temp;
   }
 
-  char * dequeue() { // string still needs to be cleared after dequeue; be very careful about this; wherever this is called.
+  uint8_t dequeue(char * buffer) {
     if(length > 0) {
+      #ifdef DEBUG
+          Serial.println("dequeuing, curr size " + String(length));
+          Serial.flush();
+      #endif
       length--;
-      struct Node *tmp = front;
-      char *msg = tmp->message;
 
-      if(length != 0) {
-        front = tmp->next;
-      } else {
-        front = nullptr;
-        end = nullptr;
+      strncpy(buffer, q[front].message, q[front].length + 1);
+      uint8_t strLength = q[front].length + 1;
+      front++;
+      if (front == qMaxSize) {
+        front = 0;
       }
-
-      tmp->message = nullptr;
-      tmp->next = nullptr;
-      free(tmp);
-
-      return msg;
+      return strLength;
     }
-    return nullptr;
+    #if DEBUG
+      Serial.println("queue is empty. returning null pointer");
+      Serial.flush();
+    #endif
+    return -1;
   }
 };
+
+const uint8_t maxReadings = 9;
 
 /*
  * Data structure to allow the conversion of bytes to floats and vice versa.
  */
 union floatArrToBytes {
-  char buffer[36];
-  float sensorReadings[9];
+  char buffer[4 * maxReadings];
+  float sensorReadings[maxReadings];
 };
 
 /*
@@ -120,7 +112,7 @@ void readPacketCounter(float *data);
 void incrementPacketCounter();
 void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
-void debug(String str, int debug);
+void debug(String str);
 
 extern SdFat sd;
 extern File file;

@@ -14,6 +14,7 @@ using namespace std;
 
 class Barometer {
   public:
+    Barometer();
     void readAltitudeData(float *data);
     void readPressureData(float *data);
     void readTemperatureData(float *data);

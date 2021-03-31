@@ -10,7 +10,7 @@
 
 namespace Thermocouple {
 
-    int Cryo::init(int numSensors, int * addrs, _themotype * types) { // assume that numSensors is < max Size of packet. Add some error checking here
+    int Cryo::init(int numSensors, Adafruit_MCP9600 *cryo_boards, int * addrs, _themotype * types) { // assume that numSensors is < max Size of packet. Add some error checking here
       _numSensors = numSensors;
       return 0;
     }

@@ -67,11 +67,12 @@ void GPS::readPositionData(float *data) {
  */
 void GPS::readAuxilliaryData(float *data) {
   _gps.read();
-  data[0] = _gps.altitude;
-  data[1] = _gps.speed;
-  data[2] = _gps.angle;
-  data[3] = _gps.satellites;
-  data[4] = -1;
+  data[0] = _gps.fix;
+  data[1] = _gps.satellites;
+  data[2] = _gps.altitude;
+  data[3] = _gps.speed;
+  data[4] = _gps.angle;
+  data[5] = -1;
 }
 
 
