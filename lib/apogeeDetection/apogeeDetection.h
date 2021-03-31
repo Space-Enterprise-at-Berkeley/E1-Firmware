@@ -17,10 +17,12 @@ class ApogeeDetection
 {
     public:
       ApogeeDetection();
-      ApogeeDetection(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc);
+      void init(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc);
       ~ApogeeDetection();
       void filter(double altitude, double accel_z);
-      bool atApogee(double altitude, double accel_z);
+      bool atApogee();
+      void updateAlt(float* data);
+      void updateAcc(float* data);
     private:
       int _n;
       int _m;
@@ -34,12 +36,12 @@ class ApogeeDetection
 
       Kalman* kalmanfilter;
 
+      double altitude;
+      double acc_z;
       double previousAltitude;
       double DeltaT;
       int outlook = 10; // how many data points should we be descending for before deciding
       int currConsecutiveDecreases = 0;
-      double altitude;
-      double acc_z;
 };
 
 #endif /* APOGEE_H_ */

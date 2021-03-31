@@ -17,6 +17,7 @@ const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const double altVar = 0.5;
 const double accVar = 0.5;
+const double avgSampleRate = 20e-3;
 
 namespace config {
   void setup() {

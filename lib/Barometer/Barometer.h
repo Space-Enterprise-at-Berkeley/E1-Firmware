@@ -3,7 +3,6 @@
   Created by Vamshi Balanaga, Sept 15, 2020.
 */
 
-
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP3XX.h>

@@ -34,9 +34,6 @@ Barometer bmp;
 GPS gps = GPS(GPS_Serial);
 ApogeeDetection detector;
 
-double acc_z;
-double altitude;
-
 void setup() {
   //Setting up Serial Connection
   Wire.begin();
@@ -92,10 +89,10 @@ void setup() {
 
   // Initializes initial state _x in Kalman filter to the alt and acc of the rocket at setup
   sensorReadFunc(0);
-  acc_z = farrbconvert.sensorReadings[2];
+  double initAcc_z = farrbconvert.sensorReadings[2];
   sensorReadFunc(4);
-  altitude = farrbconvert.sensorReadings[0];
-  detector = ApogeeDetection(20e-3, altVar, accVar, altitude, acc_z);
+  double initAlt = farrbconvert.sensorReadings[0];
+  detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z);
 }
 
 void loop() {
@@ -108,7 +105,6 @@ void loop() {
       Serial.print(command[i]);
       i++;
     }
-
   }
 
   //check for apogee somewhere in this loop, probably by storing altitude and acceleration data when
@@ -137,16 +133,17 @@ void sensorReadFunc(int id) {
   switch (id) {
     case 0:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
-      acc_z = farrbconvert.sensorReadings[0];
+      detector.updateAcc(farrbconvert.sensorReadings);
       break;
     case 1:
       _imu.readOrientationData(farrbconvert.sensorReadings);
       break;
     case 2:
       bmp.readAllData(farrbconvert.sensorReadings);
-      altitude = farrbconvert.sensorReadings[2];
-      if(detector.atApogee(altitude, acc_z)) {
-        //deloy chute 
+      detector.updateAlt(farrbconvert.sensorReadings);
+      if(detector.atApogee()) {
+        // deloy chute 
+        // send recovery ack packet
       }
       break;
     case 3:

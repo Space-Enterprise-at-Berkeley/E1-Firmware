@@ -10,7 +10,8 @@
 using namespace std;
 
 ApogeeDetection::ApogeeDetection() {}
-ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc) {
+
+void ApogeeDetection::init(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc) {
 		DeltaT = deltaT;
 		int n = 3;
 		int m = 2;
@@ -49,8 +50,8 @@ void ApogeeDetection::filter(double altitude, double accel_z){
 	kalmanfilter->update(*_z);
 }
 
-bool ApogeeDetection::atApogee(double altitude, double accel_z) {
-	filter(altitude, accel_z);
+bool ApogeeDetection::atApogee() {
+	filter(altitude, acc_z);
 
 	if (kalmanfilter->_x[0] < previousAltitude) {
 		currConsecutiveDecreases++;
@@ -62,6 +63,14 @@ bool ApogeeDetection::atApogee(double altitude, double accel_z) {
 		return true;
 	}
 	return false;
+}
+
+void ApogeeDetection::updateAlt(float* data) {
+	altitude = data[0];
+}
+
+void ApogeeDetection::updateAcc(float* data) {
+	acc_z = data[2];
 }
 
 ApogeeDetection::~ApogeeDetection() {
