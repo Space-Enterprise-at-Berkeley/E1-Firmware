@@ -16,11 +16,18 @@ const char * file_name = str_file_name.c_str();
 const uint8_t numSensors = 7;
 sensorInfo *sensors;
 
+// Constants
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const double altVar = 0.5;
 const double accVar = 0.5;
 const double avgSampleRate = 20e-3;
+
+double initAlt;
+double initAcc_z;
+
+// State variables
+bool passedApogee;
 
 namespace config {
   void setup() {

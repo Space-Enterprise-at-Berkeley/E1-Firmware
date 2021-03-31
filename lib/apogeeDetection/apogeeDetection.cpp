@@ -73,5 +73,8 @@ void ApogeeDetection::updateAcc(float* data) {
 	acc_z = data[2];
 }
 
+double ApogeeDetection::getAlt() {
+	return ApogeeDetection::altitude;
+}
 ApogeeDetection::~ApogeeDetection() {
 }

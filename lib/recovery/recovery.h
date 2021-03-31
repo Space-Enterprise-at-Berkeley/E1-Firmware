@@ -2,6 +2,7 @@
   solenoids.h - A c++ library to interface with all of the solenoids on our rocket.
   Created by Vamshi Balanaga, Sept 15, 2020.
 */
+
 #ifndef __RECOVERY__
 #define __RECOVERY__
 
@@ -19,8 +20,8 @@ namespace Recovery {
     drogue_chute_state = 0;
     main_chute_state = 0;
 
-    digitalWrite(drogue_pin, drogue_chute_state);
-    digitalWrite(main_pin, main_chute_state);
+    digitalWrite(DROGUE_PIN, drogue_chute_state);
+    digitalWrite(MAIN_CHUTE_PIN, main_chute_state);
   }
 
   void getAllStates(float *data){

@@ -23,6 +23,7 @@ class ApogeeDetection
       bool atApogee();
       void updateAlt(float* data);
       void updateAcc(float* data);
+      double getAlt();
     private:
       int _n;
       int _m;
