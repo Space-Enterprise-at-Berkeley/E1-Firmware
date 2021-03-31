@@ -15,6 +15,8 @@ sensorInfo *sensors;
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
+const double altVar = 0.5;
+const double accVar = 0.5;
 
 namespace config {
   void setup() {
@@ -29,6 +31,5 @@ namespace config {
     sensors[4] = {"GPS Lat Long",  FLIGHT_BRAIN_ADDR, 11, 3};
     sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 12, 3};
     sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-
   }
 }

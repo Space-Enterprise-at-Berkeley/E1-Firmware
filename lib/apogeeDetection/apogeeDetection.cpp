@@ -14,6 +14,8 @@ ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accel
 		DeltaT = deltaT;
 		int n = 3;
 		int m = 2;
+		altitude = initAlt;
+		acc_z = initAcc;
 
 		_F = new MatrixXd(n, n);
 		*_F << 1, DeltaT, pow(DeltaT, 2) / 2,
@@ -30,13 +32,13 @@ ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accel
 					0, 0, 1;
 
 		_R = new MatrixXd(m, m);
-		*_R << altitudeVar , 0,
+		*_R << altitudeVar, 0,
 		 			0,     accelVar;
 
 		_z = new VectorXd(m);
 
 		_x = new VectorXd(n);
-		*_x << initAlt, initAcc, 0;
+		*_x << altitude, 0, acc_z;
 
 		kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_x);
 }
