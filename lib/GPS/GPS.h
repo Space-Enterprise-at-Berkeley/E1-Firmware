@@ -11,7 +11,7 @@ using namespace std;
 class GPS {
   public:
     GPS(uint8_t i2c_addr);
-    GPS(HardwareSerial *ser);
+    GPS(HardwareSerial &ser);
     //GPS(SoftwareSerial &ser);
     GPS(TwoWire *theWire);
     GPS(SPIClass *theSPI, int8_t cspin);

@@ -35,22 +35,27 @@ void recoveryPacket();
 
 IMU _imu;
 Barometer bmp;
-GPS gps(&GPS_Serial);
+GPS gps(GPS_Serial);
 ApogeeDetection detector;
 
+int led = 13;
+
 void setup() {
+  pinMode(led, OUTPUT);
+  digitalWrite(led, HIGH);
   // Setting up Serial Connection
   Wire.begin();
-  Serial.begin(57600);
-  Serial.println("starting");
+  Serial.begin(9600);
+  //Serial.println("starting");
   RFSerial.begin(57600);
-   Serial.println("starting");
+  //Serial.println("starting");
   // Serial.println("starting");
   // Serial.println("starting");
   //Waiting for Serial Connection
-  while(!Serial);
-  Serial.println("starting");
-  while(!RFSerial);
+  //while(!Serial);
+  //Serial.println("starting");
+  //while(!RFSerial);
+  delay(3000);
   Serial.println("starting");
   debug("Setting up Config");
   config::setup();
@@ -100,9 +105,14 @@ void setup() {
 }
 
 void loop() {
+
+  digitalWrite(led, HIGH);   // turn the LED on (HIGH is the voltage level)
+  delay(1000);               // wait for a second
+  digitalWrite(led, LOW);    // turn the LED off by making the voltage LOW
+  delay(1000);
   // process command
-  gps.readChar();
-  gps.checkNMEA();
+  //gps.readChar();
+  //gps.checkNMEA();
 
   if (RFSerial.available() > 0) {
     int i = 0;
