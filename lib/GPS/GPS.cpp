@@ -40,7 +40,7 @@ void GPS::init() {
     _gps.begin(9600);
 
     _gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-    _gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
+    _gps.sendCommand(PMTK_SET_NMEA_UPDATE_10HZ); // 1 Hz update rate
     _gps.sendCommand(PGCMD_ANTENNA);
 
     delay(1000);
@@ -73,16 +73,7 @@ void GPS::readPositionData(float *data) {
   data[2] = -1;
 }
 
-void GPS::readChar() {
-  char c = _gps.read();
-}
 
-void GPS::checkNMEA() {
-  if (_gps.newNMEAreceived()) {
-    _gps.parse(_gps.lastNMEA());
-
-  }
-}
 
 /**
  * Define this in advance. Need to be agreed on by everyone.
