@@ -12,8 +12,8 @@
 int commMethod;
 Adafruit_GPS _gps;
 
-GPS::GPS(HardwareSerial &ser) {
-  _gps = Adafruit_GPS(&ser);
+GPS::GPS(HardwareSerial *ser) {
+  _gps = Adafruit_GPS(ser);
   commMethod = 1;
   //init();
 }
@@ -51,22 +51,31 @@ bool GPS::dataAvailable() {
   }
 
 bool GPS::gotSatelliteFix() {
-   _gps.read();
    return _gps.fix;
 }
 
 void GPS::readPositionData(float *data) {
-  _gps.read();
   data[0] = _gps.latitudeDegrees;
   data[1] = _gps.longitudeDegrees;
   data[2] = -1;
 }
 
+void GPS::readChar() {
+  char c = _gps.read();
+}
+
+void GPS::checkNMEA() {
+  if (_gps.newNMEAreceived()) {
+    _gps.parse(_gps.lastNMEA());
+
+  }
+}
+
+
 /**
  * Define this in advance. Need to be agreed on by everyone.
  */
 void GPS::readAuxilliaryData(float *data) {
-  _gps.read();
   data[0] = _gps.fix;
   data[1] = _gps.satellites;
   data[2] = _gps.altitude;

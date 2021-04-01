@@ -7,7 +7,7 @@
 #include "GPS.h"
 #include "recovery.h"
 
-#define SERIAL_INPUT 0
+#define SERIAL_INPUT 1
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -35,7 +35,7 @@ void recoveryPacket();
 
 IMU _imu;
 Barometer bmp;
-GPS gps(GPS_Serial);
+GPS gps(&GPS_Serial);
 ApogeeDetection detector;
 
 void setup() {
@@ -43,13 +43,16 @@ void setup() {
   Wire.begin();
   Serial.begin(57600);
   RFSerial.begin(57600);
+  // Serial.println("starting");
+  // Serial.println("starting");
+  // Serial.println("starting");
   //Waiting for Serial Connection
   while(!Serial);
   while(!RFSerial);
-
+  //Serial.println("starting");
   debug("Setting up Config");
   config::setup();
-
+  //Serial.println("starting");
   debug("Initializing Sensor Frequencies");
 
   for (int i = 0; i < numSensors; i++) {
@@ -89,13 +92,16 @@ void setup() {
   initAlt = farrbconvert.sensorReadings[0];
   _imu.readAccelerationData(farrbconvert.sensorReadings);
   initAcc_z = farrbconvert.sensorReadings[2];
-  
+
   detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z);
   Recovery::init(DROGUE_PIN, MAIN_CHUTE_PIN);
 }
 
 void loop() {
   // process command
+  gps.readChar();
+  gps.checkNMEA();
+
   if (RFSerial.available() > 0) {
     int i = 0;
 
@@ -173,9 +179,9 @@ void sensorReadFunc(int id) {
 
 bool aroundMainDeploy() {
   double alt = detector.getAlt();
-  if(290 <= alt && alt <= 310) 
+  if(290 <= alt && alt <= 310)
     return true;
-  else 
+  else
     return false;
 }
 
