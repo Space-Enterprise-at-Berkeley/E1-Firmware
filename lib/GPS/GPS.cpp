@@ -6,7 +6,6 @@
 #ifndef __GPS__
 #define __GPS__
 
-
 #include "GPS.h"
 
 int commMethod;
@@ -62,9 +61,8 @@ char GPS::readChar() {
 void GPS::checkNMEA() {
   if (_gps.newNMEAreceived()) {
       _gps.parse(_gps.lastNMEA());
+  }
 }
-}
-
 
 void GPS::readPositionData(float *data) {
   _gps.read();
@@ -72,8 +70,6 @@ void GPS::readPositionData(float *data) {
   data[1] = _gps.longitude;
   data[2] = -1;
 }
-
-
 
 /**
  * Define this in advance. Need to be agreed on by everyone.
@@ -86,9 +82,5 @@ void GPS::readAuxilliaryData(float *data) {
   data[4] = _gps.angle;
   data[5] = -1;
 }
-
-
-
-
 
 #endif
