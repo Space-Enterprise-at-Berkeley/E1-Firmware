@@ -1,70 +1,49 @@
-#include <solenoids.h>
-#include <Thermocouple.h>
-#include "common_fw.h"
-#include <ADS1219.h>
 
+#include "common_fw.h"
 
 // ============ THIS IS NOT UP TO DATE ==============
 // ============ THIS NEEDS TO BE SPECIFIED ==========
 
-
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 0
+
+const uint8_t DROGUE_PIN = 9;
+const uint8_t MAIN_CHUTE_PIN = 10;
 
 std::string str_file_name = "LAD4_1.txt";
 const char * file_name = str_file_name.c_str();
 
-const int numADCSensors = 2;
-int ADSAddrs[numADCSensors] = {0b1001010, 0b1001000};
-int adcDataReadyPins[numADCSensors] = {29, 28};
-ADS1219 ** ads;
+const uint8_t numSensors = 7;
+sensorInfo *sensors;
 
-const int numAnalogThermocouples = 1;
-int thermAdcIndices[numAnalogThermocouples] = {1};
-int thermAdcChannels[numAnalogThermocouples] = {2};
-
-const uint8_t numSensors = 4;
-struct sensorInfo **sensors;
-
+// Constants
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
+const double altVar = 0.5;
+const double accVar = 0.5;
+const double avgSampleRate = 20e-3;
 
-#define DROGUE_PIN 9
-#define MAIN_CHUTE_PIN 10
+double initAlt;
+double initAcc_z;
+
+// State variables
+bool passedApogee;
+bool MECO = false;
 
 namespace config {
   void setup() {
-    debug("Initializing ADCs");
-    // initialize all ADCs
-    ads = new ADS1219*[numADCSensors];
-    for (int i = 0; i < numADCSensors; i++) {
-      ads[i] = new ADS1219(adcDataReadyPins[i], ADSAddrs[i], &Wire);
-      ads[i]->setConversionMode(SINGLE_SHOT);
-      ads[i]->setVoltageReference(REF_EXTERNAL);
-      ads[i]->setGain(ONE);
-      ads[i]->setDataRate(1000);
-      pinMode(adcDataReadyPins[i], INPUT_PULLUP);
-      ads[i]->calibrate();
-    }
 
-    debug("Initializing valves");
-    valves = new valveInfo*[numValves];
-    *valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
-    *valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
-    *valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
-    *valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
-    *valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
-    *valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
-    *valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    *valves[7] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    *valves[8] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-
-    debug("Initializing sensors");
-    sensors = new sensorInfo*[numSensors];
-    *sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    *sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    *sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    *sensors[3] = {"Aux temp",      FLIGHT_BRAIN_ADDR, 4, 1};
+    //debug("Initializing sensors", DEBUG);
+    sensors = new sensorInfo[numSensors];
+    // the ordering in this array defines order of operation, not id
+    sensors[0] = {"IMU Acceleration",   FLIGHT_BRAIN_ADDR, 14, 1};
+    sensors[1] = {"IMU Orientation", FLIGHT_BRAIN_ADDR, 15, 1};
+    sensors[2] = {"Barometer", FLIGHT_BRAIN_ADDR, 13, 1};
+    sensors[3] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[4] = {"GPS Lat Long",  FLIGHT_BRAIN_ADDR, 11, 3};
+    sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 12, 3};
+    sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[7] = {"Recovery Acknowledgement", FLIGHT_BRAIN_ADDR, 10, 25};
 
     pinMode(DROGUE_PIN, OUTPUT);
     pinMode(MAIN_CHUTE_PIN, OUTPUT);
