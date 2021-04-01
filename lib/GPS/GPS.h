@@ -20,7 +20,7 @@ class GPS {
     void readPositionData(float *data);
     void readAuxilliaryData(float *data);
     void init();
-    void readChar();
+    char readChar();
     void checkNMEA();
 
   private:

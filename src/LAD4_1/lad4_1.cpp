@@ -41,8 +41,6 @@ ApogeeDetection detector;
 int led = 13;
 
 void setup() {
-  pinMode(led, OUTPUT);
-  digitalWrite(led, HIGH);
   // Setting up Serial Connection
   Wire.begin();
   Serial.begin(9600);
@@ -56,7 +54,6 @@ void setup() {
   //Serial.println("starting");
   //while(!RFSerial);
   delay(3000);
-  Serial.println("starting");
   debug("Setting up Config");
   config::setup();
   //Serial.println("starting");
@@ -106,10 +103,10 @@ void setup() {
 
 void loop() {
 
-  digitalWrite(led, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);               // wait for a second
-  digitalWrite(led, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);
+  for (int i = 0; i < 100; i++) {
+    char c = gps.readChar();
+    gps.checkNMEA();
+  }
   // process command
   //gps.readChar();
   //gps.checkNMEA();
@@ -152,6 +149,9 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 10:
+      Recovery::getAllStates(farrbconvert.sensorReadings);
+      break;
     case 11:
       gps.readPositionData(farrbconvert.sensorReadings);
       break;
@@ -173,8 +173,12 @@ void sensorReadFunc(int id) {
       if (detector.weAtMECOBro()) {
         MECO = true;
       }
-      if(MECO && detector.atApogee()) {
+      if(MECO & detector.atApogee()) {
         passedApogee = true;
+        sensors[4].clock_freq = 1;  //GPS Lat Long
+        sensors[5].clock_freq = 1;  //GPS Aux
+        sensors[1].clock_freq = 10; //IMU Orientation
+        sensors[6].clock_freq = 20; //Number Packets
         Recovery::releaseDrogueChute();
         recoveryPacket();
       }

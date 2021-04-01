@@ -54,9 +54,22 @@ bool GPS::gotSatelliteFix() {
    return _gps.fix;
 }
 
+char GPS::readChar() {
+  char c = _gps.read();
+  return c;
+}
+
+void GPS::checkNMEA() {
+  if (_gps.newNMEAreceived()) {
+      _gps.parse(_gps.lastNMEA());
+}
+}
+
+
 void GPS::readPositionData(float *data) {
-  data[0] = _gps.latitudeDegrees;
-  data[1] = _gps.longitudeDegrees;
+  _gps.read();
+  data[0] = _gps.latitude;
+  data[1] = _gps.longitude;
   data[2] = -1;
 }
 
@@ -70,7 +83,6 @@ void GPS::checkNMEA() {
 
   }
 }
-
 
 /**
  * Define this in advance. Need to be agreed on by everyone.
