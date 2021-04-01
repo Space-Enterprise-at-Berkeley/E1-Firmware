@@ -10,19 +10,17 @@
 
 using namespace std;
 
-
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
 
 class IMU {
   public:
-    IMU();
+    IMU(uint8_t i2c_addr);
     void readAccelerationData(float *data);
     void readOrientationData(float *data);
     void readOrientationChangeData(float *data);
-    void init(TwoWire *theWire);
 
   private:
     Adafruit_BNO055 _bno;
-    //void init();
+    void init();
 };

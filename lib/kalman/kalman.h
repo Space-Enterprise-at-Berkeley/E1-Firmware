@@ -15,10 +15,11 @@
 using namespace std;
 using namespace Eigen;
 
-class Kalman {
+class Kalman
+{
     public:
       Kalman(int stateDim, MatrixXd F, int measurementDim, int inputDim,
-	    MatrixXd H, MatrixXd B, MatrixXd Q, MatrixXd R, VectorXd initX);
+        MatrixXd H, MatrixXd B, MatrixXd Q, MatrixXd R);
       ~Kalman();
       void predict(VectorXd u);
       void update(VectorXd z);
