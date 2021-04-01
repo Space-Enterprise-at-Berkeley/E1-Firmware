@@ -175,10 +175,11 @@ void sensorReadFunc(int id) {
       }
       if(MECO & detector.atApogee()) {
         passedApogee = true;
-        sensors[4].clock_freq = 1;  //GPS Lat Long
-        sensors[5].clock_freq = 1;  //GPS Aux
+        sensors[5].clock_freq = 1;  //GPS Lat Long
+        sensors[6].clock_freq = 1;  //GPS Aux
         sensors[1].clock_freq = 10; //IMU Orientation
-        sensors[6].clock_freq = 20; //Number Packets
+        sensors[7].clock_freq = 20; //Number Packets
+        sensors[2].clock_freq = 5;
         Recovery::releaseDrogueChute();
         recoveryPacket();
       }
@@ -186,6 +187,9 @@ void sensorReadFunc(int id) {
       break;
     case 15:
       _imu.readOrientationData(farrbconvert.sensorReadings);
+      break;
+    case 16:
+      _imu.readQuaternionData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

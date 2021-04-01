@@ -31,6 +31,16 @@ void IMU::readAccelerationData(float *data){
   data[3] = -1;
 }
 
+void IMU::readQuaternionData(float *data) {
+  imu::Quaternion quat = _bno.getQuat();
+
+  data[0] = quat.w();
+  data[1] = quat.x();
+  data[2] = quat.y();
+  data[3] = quat.z();
+  data[4] = -1;
+}
+
 void IMU::readOrientationData(float *data){
   imu::Vector<3> orientationData = _bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
