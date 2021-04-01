@@ -5,43 +5,35 @@
  *      Author: Vamshi
  */
 
-#include <apogeeDetection.h>
+#include <kalman.h>
+#include "apogeeDetection.h"
 
 using namespace std;
 
-ApogeeDetection::ApogeeDetection() {}
-
-void ApogeeDetection::init(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc) {
+ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar) {
 		DeltaT = deltaT;
-		int n = 3;
-		int m = 2;
-		altitude = initAlt;
-		acc_z = initAcc;
 
-		_F = new MatrixXd(n, n);
+		_F = new MatrixXd(3, 3);
 		*_F << 1, DeltaT, pow(DeltaT, 2) / 2,
 					0, 1     , DeltaT,
 					0, 0     , 1;
 
-		_H = new MatrixXd(m, n);
+		_H = new MatrixXd(2, 3);
 		*_H << 1, 0, 0,
 						0, 0, 1;
 
-		_Q = new MatrixXd(n, n);
+		_Q = new MatrixXd(3, 3);
 		*_Q << 0, 0, 0,
 					0, 0, 0,
 					0, 0, 1;
 
-		_R = new MatrixXd(m, m);
-		*_R << altitudeVar, 0,
+		_R = new MatrixXd(2, 2);
+		*_R << altitudeVar , 0,
 		 			0,     accelVar;
 
-		_z = new VectorXd(m);
+		_z = new VectorXd(2);
 
-		_x = new VectorXd(n);
-		*_x << altitude, 0, acc_z;
-
-		kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_x);
+		kalmanfilter = new Kalman(3, *_F, 2, 1, *_H, MatrixXd::Zero(3,1), *_Q, *_R);
 }
 
 void ApogeeDetection::filter(double altitude, double accel_z){
@@ -50,8 +42,8 @@ void ApogeeDetection::filter(double altitude, double accel_z){
 	kalmanfilter->update(*_z);
 }
 
-bool ApogeeDetection::atApogee() {
-	filter(altitude, acc_z);
+bool ApogeeDetection::atApogee(double altitude, double accel_z) {
+	filter(altitude, accel_z);
 
 	if (kalmanfilter->_x[0] < previousAltitude) {
 		currConsecutiveDecreases++;
@@ -59,31 +51,10 @@ bool ApogeeDetection::atApogee() {
 		currConsecutiveDecreases = 0;
 	}
 	previousAltitude = kalmanfilter->_x[0];
-	previousAcc_z = kalmanfilter->_x[2];
 	if (currConsecutiveDecreases >= outlook) {
 		return true;
 	}
 	return false;
-}
-
-void ApogeeDetection::updateAlt(float data) {
-	altitude = data;
-}
-
-void ApogeeDetection::updateAcc(float data) {
-	acc_z = data;
-}
-
-double ApogeeDetection::getAlt() {
-	return ApogeeDetection::altitude;
-}
-
-bool ApogeeDetection::weAtMECOBro() {
-	if(acc_z - previousAcc_z <= -5)
-		return true;
-	else {
-		return false;
-	}
 }
 
 ApogeeDetection::~ApogeeDetection() {
