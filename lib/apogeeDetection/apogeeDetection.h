@@ -21,9 +21,10 @@ class ApogeeDetection
       ~ApogeeDetection();
       void filter(double altitude, double accel_z);
       bool atApogee();
-      void updateAlt(float* data);
-      void updateAcc(float* data);
+      void updateAlt(float data);
+      void updateAcc(float data);
       double getAlt();
+      int getCurrConDec();
     private:
       int _n;
       int _m;

@@ -28,6 +28,7 @@ double initAcc_z;
 
 // State variables
 bool passedApogee;
+bool MECO = false;
 
 namespace config {
   void setup() {
@@ -42,6 +43,7 @@ namespace config {
     sensors[4] = {"GPS Lat Long",  FLIGHT_BRAIN_ADDR, 11, 3};
     sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 12, 3};
     sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[7] = {"Recovery Acknowledgement", FLIGHT_BRAIN_ADDR, 10, 25};
 
     pinMode(DROGUE_PIN, OUTPUT);
     pinMode(MAIN_CHUTE_PIN, OUTPUT);

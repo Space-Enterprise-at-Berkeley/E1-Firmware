@@ -65,16 +65,21 @@ bool ApogeeDetection::atApogee() {
 	return false;
 }
 
-void ApogeeDetection::updateAlt(float* data) {
-	altitude = data[0];
+void ApogeeDetection::updateAlt(float data) {
+	altitude = data;
 }
 
-void ApogeeDetection::updateAcc(float* data) {
-	acc_z = data[2];
+void ApogeeDetection::updateAcc(float data) {
+	acc_z = data;
 }
 
 double ApogeeDetection::getAlt() {
 	return ApogeeDetection::altitude;
 }
+
+int ApogeeDetection::getCurrConDec(){
+	return ApogeeDetection::currConsecutiveDecreases;
+}
+
 ApogeeDetection::~ApogeeDetection() {
 }

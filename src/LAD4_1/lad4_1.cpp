@@ -86,12 +86,12 @@ void setup() {
   gps.init();
 
   bmp.readAllData(farrbconvert.sensorReadings);
-  initAcc_z = farrbconvert.sensorReadings[2];
-  _imu.readAccelerationData(farrbconvert.sensorReadings);
   initAlt = farrbconvert.sensorReadings[0];
-
+  _imu.readAccelerationData(farrbconvert.sensorReadings);
+  initAcc_z = farrbconvert.sensorReadings[2];
+  
   detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z);
-  Recovery::init();
+  Recovery::init(DROGUE_PIN, MAIN_CHUTE_PIN);
 }
 
 void loop() {
@@ -142,20 +142,25 @@ void sensorReadFunc(int id) {
       break;
     case 13:
       bmp.readAllData(farrbconvert.sensorReadings);
-      detector.updateAlt(farrbconvert.sensorReadings);
+      detector.updateAlt(farrbconvert.sensorReadings[0]);
       if(passedApogee && aroundMainDeploy()) {
         Recovery::releaseMainChute();
         recoveryPacket();
+        delay(500);
+        Recovery::closeMainActuator();
       }
       break;
     case 14:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
-      if(detector.atApogee()) {
+      if (weAtMECOBro()) {
+        MECO = true;
+      }
+      if(MECO && detector.atApogee()) {
         passedApogee = true;
         Recovery::releaseDrogueChute();
         recoveryPacket();
       }
-      detector.updateAcc(farrbconvert.sensorReadings);
+      detector.updateAcc(farrbconvert.sensorReadings[2]);
       break;
     case 15:
       _imu.readOrientationData(farrbconvert.sensorReadings);
@@ -178,4 +183,15 @@ void recoveryPacket() {
   Recovery::getAllStates(farrbconvert.sensorReadings);
   packet = make_packet(10, false);
   Serial.println(packet);
+  RFSerial.println(packet);
+  write_to_SD(packet.c_str(), file_name);
+}
+
+boolean weAtMECOBro() {
+  if(detector.getCurrConDec() >= 1) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
