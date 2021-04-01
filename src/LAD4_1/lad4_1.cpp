@@ -7,7 +7,7 @@
 #include "GPS.h"
 #include "recovery.h"
 
-#define SERIAL_INPUT 1
+#define SERIAL_INPUT 0
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -42,14 +42,16 @@ void setup() {
   // Setting up Serial Connection
   Wire.begin();
   Serial.begin(57600);
+  Serial.println("starting");
   RFSerial.begin(57600);
-  // Serial.println("starting");
+   Serial.println("starting");
   // Serial.println("starting");
   // Serial.println("starting");
   //Waiting for Serial Connection
   while(!Serial);
+  Serial.println("starting");
   while(!RFSerial);
-  //Serial.println("starting");
+  Serial.println("starting");
   debug("Setting up Config");
   config::setup();
   //Serial.println("starting");
