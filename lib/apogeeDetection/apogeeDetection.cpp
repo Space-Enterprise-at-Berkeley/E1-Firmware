@@ -79,7 +79,7 @@ double ApogeeDetection::getAlt() {
 }
 
 bool ApogeeDetection::weAtMECOBro() {
-	if(acc_z - previousAcc_z <= -5)
+	if(acc_z - previousAcc_z <= -5.0)
 		return true;
 	else {
 		return false;
