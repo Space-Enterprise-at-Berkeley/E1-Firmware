@@ -9,29 +9,34 @@
 using namespace std;
 
 namespace Recovery {
+  uint8_t drogue_pin, main_pin;
   int drogue_chute_state = 0;
   int main_chute_state = 0;
+  int deployedDrogue = 0;
+  int deployedMain = 0;
 
-  void init(int d_pin, int m_pin) {
+  void init(uint8_t droguePin, uint8_t mainPin) {
+    drogue_pin = droguePin;
+    main_pin = mainPin;
     drogue_chute_state = 0;
     main_chute_state = 0;
-
-    digitalWrite(d_pin, drogue_chute_state);
-    digitalWrite(m_pin, main_chute_state);
+    
+    digitalWrite(drogue_pin, drogue_chute_state);
+    digitalWrite(main_pin, main_chute_state);
   }
 
   void getAllStates(float *data){
-    data[0] = drogue_chute_state;
-    data[1] = main_chute_state;
+    data[0] = deployedDrogue;
+    data[1] = deployedMain;
     data[2] = -1;
   }
 
   bool drogueReleased() {
-    return drogue_chute_state == 1;
+    return deployedDrogue;
   }
 
   bool mainReleased() {
-    return main_chute_state == 1;
+    return deployedMain;
   }
 
   int toggleDrogueChuteActuator() {
@@ -40,7 +45,7 @@ namespace Recovery {
     } else {
       drogue_chute_state = 0;
     }
-    digitalWrite(DROGUE_PIN, drogue_chute_state);
+    digitalWrite(drogue_pin, drogue_chute_state);
     return drogue_chute_state;
   }
 
@@ -50,11 +55,12 @@ namespace Recovery {
     } else {
       main_chute_state = 0;
     }
-    digitalWrite(MAIN_CHUTE_PIN, main_chute_state);
+    digitalWrite(main_pin, main_chute_state);
     return main_chute_state;
   }
 
   int releaseDrogueChute() {
+    deployedDrogue = 1;
     if(drogue_chute_state == 0){
       toggleDrogueChuteActuator();
     } else {
@@ -64,7 +70,7 @@ namespace Recovery {
   }
 
   int closeDrogueActuator() {
-    if(drogue_chute_state == 1){
+    if(drogue_chute_state == 1) {
       toggleDrogueChuteActuator();
     } else {
       // already closed, do nothing.
@@ -73,7 +79,8 @@ namespace Recovery {
   }
 
   int releaseMainChute() {
-    if(main_chute_state == 0){
+    deployedMain = 1;
+    if(main_chute_state == 0) {
       toggleMainChuteActuator();
     } else {
       // already active, do nothing.

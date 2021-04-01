@@ -45,6 +45,8 @@ class ApogeeDetection
       double DeltaT;
       int outlook = 10; // how many data points should we be descending for before deciding
       int currConsecutiveDecreases = 0;
+      int accOutlook = 5;
+      int currAccConDec = 0;
 };
 
 #endif /* APOGEE_H_ */

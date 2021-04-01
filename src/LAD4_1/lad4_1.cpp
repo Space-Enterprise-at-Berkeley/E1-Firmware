@@ -163,7 +163,7 @@ void sensorReadFunc(int id) {
       if (detector.weAtMECOBro()) {
         MECO = true;
       }
-      if(MECO && detector.atApogee()) {
+      if(MECO & detector.atApogee()) {
         passedApogee = true;
         Recovery::releaseDrogueChute();
         recoveryPacket();

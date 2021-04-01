@@ -79,11 +79,16 @@ double ApogeeDetection::getAlt() {
 }
 
 bool ApogeeDetection::weAtMECOBro() {
-	if(acc_z - previousAcc_z <= -5.0)
-		return true;
-	else {
-		return false;
+	if (kalmanfilter->_x[2] < previousAcc_z) {
+		currAccConDec++;
+	} else {
+		currAccConDec = 0;
 	}
+	previousAcc_z = kalmanfilter->_x[2];
+	if (currAccConDec >= accOutlook) {
+		return true;
+	}
+	return false;
 }
 
 ApogeeDetection::~ApogeeDetection() {
