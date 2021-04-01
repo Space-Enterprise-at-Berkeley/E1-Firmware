@@ -2,17 +2,20 @@
   IMU.cpp - A c++ library to interface with the Arduino BNO055 IMU.
   Created by Vamshi Balanaga, Sept 8, 2020.
 */
+#ifndef __IMU1__
+#define __IMU1__
 
-#include "IMU.h"
+//#include "IMU.h"
 
 // ==================== NEED TO TEST =======================================
+//namespace IMU1 {
+#include "IMU.h"
 
-IMU::IMU(uint8_t i2c_addr) {
-  _bno = Adafruit_BNO055(-1, i2c_addr);
-  init();
+IMU::IMU() {
 }
 
-void IMU::init(){
+void IMU::init(TwoWire *theWire){
+  _bno = Adafruit_BNO055(55, BNO055_ADDRESS_A, theWire);
   if(!_bno.begin()){
     exit(1);
   }
@@ -45,3 +48,5 @@ void IMU::readOrientationChangeData(float *data){
   data[2] = gyroscopeData.z();
   data[3] = -1;
 }
+//}
+#endif
