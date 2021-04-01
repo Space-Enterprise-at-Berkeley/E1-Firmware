@@ -100,6 +100,11 @@ void setup() {
 }
 
 void loop() {
+
+  for (int i = 0; i < 100; i++) {
+    char c = gps.readChar();
+    gps.checkNMEA();
+  }
   // process command
   gps.readChar();
   gps.checkNMEA();
