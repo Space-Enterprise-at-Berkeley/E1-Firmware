@@ -60,19 +60,17 @@ char GPS::readChar() {
   return c;
 }
 
-bool GPS::checkNMEA() {
+void GPS::checkNMEA() {
   if (_gps.newNMEAreceived()) {
-      Serial.println(_gps.parse(_gps.lastNMEA()));
-      return true;
-  }
-  return false;
+      _gps.parse(_gps.lastNMEA());
+}
 }
 
 
 void GPS::readPositionData(float *data) {
   _gps.read();
-  data[0] = _gps.latitudeDegrees;
-  data[1] = _gps.longitudeDegrees;
+  data[0] = _gps.latitude;
+  data[1] = _gps.longitude;
   data[2] = -1;
 }
 

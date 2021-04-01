@@ -102,17 +102,9 @@ void setup() {
 
 void loop() {
 
-  // for (int i = 0; i < 200; i++) {
-  //   char c = gps.readChar();
-  //   Serial.print(c);
-  //   if (gps.checkNMEA()) {
-  //     Serial.println("NMEA received");
-  //   }
-  // }
-
-  while(!gps.checkNMEA()) {
+  for (int i = 0; i < 100; i++) {
     char c = gps.readChar();
-    Serial.print(c);
+    gps.checkNMEA();
   }
   // process command
   if (RFSerial.available() > 0) {
@@ -169,8 +161,6 @@ void sensorReadFunc(int id) {
       break;
     case 11:
       gps.readPositionData(farrbconvert.sensorReadings);
-      Serial.println(gps.gotSatelliteFix());
-      Serial.println(gps.dataAvailable());
       break;
     case 12:
       gps.readAuxilliaryData(farrbconvert.sensorReadings);
