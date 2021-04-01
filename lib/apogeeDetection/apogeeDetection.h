@@ -24,7 +24,7 @@ class ApogeeDetection
       void updateAlt(float data);
       void updateAcc(float data);
       double getAlt();
-      int getCurrConDec();
+      bool weAtMECOBro();
     private:
       int _n;
       int _m;
@@ -41,6 +41,7 @@ class ApogeeDetection
       double altitude;
       double acc_z;
       double previousAltitude;
+      double previousAcc_z;
       double DeltaT;
       int outlook = 10; // how many data points should we be descending for before deciding
       int currConsecutiveDecreases = 0;

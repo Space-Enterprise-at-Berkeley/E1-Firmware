@@ -59,6 +59,7 @@ bool ApogeeDetection::atApogee() {
 		currConsecutiveDecreases = 0;
 	}
 	previousAltitude = kalmanfilter->_x[0];
+	previousAcc_z = kalmanfilter->_x[2];
 	if (currConsecutiveDecreases >= outlook) {
 		return true;
 	}
@@ -77,8 +78,12 @@ double ApogeeDetection::getAlt() {
 	return ApogeeDetection::altitude;
 }
 
-int ApogeeDetection::getCurrConDec(){
-	return ApogeeDetection::currConsecutiveDecreases;
+bool ApogeeDetection::weAtMECOBro() {
+	if(acc_z - previousAcc_z <= -5)
+		return true;
+	else {
+		return false;
+	}
 }
 
 ApogeeDetection::~ApogeeDetection() {

@@ -39,7 +39,7 @@ GPS::GPS(SPIClass *theSPI, int8_t cspin) {
 void GPS::init() {
     _gps.begin(9600);
 
-    _gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCONLY);
+    _gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
     _gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
     _gps.sendCommand(PGCMD_ANTENNA);
 

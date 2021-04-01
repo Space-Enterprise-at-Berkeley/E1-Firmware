@@ -30,7 +30,7 @@ String packet;
 
 // Helper functions
 void sensorReadFunc(int id);
-boolean aroundMainDeploy();
+bool aroundMainDeploy();
 void recoveryPacket();
 
 IMU _imu;
@@ -152,7 +152,7 @@ void sensorReadFunc(int id) {
       break;
     case 14:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
-      if (weAtMECOBro()) {
+      if (detector.weAtMECOBro()) {
         MECO = true;
       }
       if(MECO && detector.atApogee()) {
@@ -171,7 +171,7 @@ void sensorReadFunc(int id) {
   }
 }
 
-boolean aroundMainDeploy() {
+bool aroundMainDeploy() {
   double alt = detector.getAlt();
   if(290 <= alt && alt <= 310) 
     return true;
@@ -185,13 +185,4 @@ void recoveryPacket() {
   Serial.println(packet);
   RFSerial.println(packet);
   write_to_SD(packet.c_str(), file_name);
-}
-
-boolean weAtMECOBro() {
-  if(detector.getCurrConDec() >= 1) {
-    return true;
-  }
-  else {
-    return false;
-  }
 }
