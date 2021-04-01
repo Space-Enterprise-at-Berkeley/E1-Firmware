@@ -175,7 +175,9 @@ void sensorReadFunc(int id) {
       Recovery::getAllStates(farrbconvert.sensorReadings);
       break;
     case 11:
-      gps.readPositionData(farrbconvert.sensorReadings);
+      if(gps.dataAvailable) {
+        gps.readPositionData(farrbconvert.sensorReadings);
+      }
       break;
     case 12:
       gps.readAuxilliaryData(farrbconvert.sensorReadings);

@@ -12,8 +12,8 @@
 int commMethod;
 Adafruit_GPS _gps;
 
-GPS::GPS(HardwareSerial &ser) {
-  _gps = Adafruit_GPS(&ser);
+GPS::GPS(HardwareSerial *ser) {
+  _gps = Adafruit_GPS(ser);
   commMethod = 1;
   //init();
 }
@@ -48,7 +48,7 @@ void GPS::init() {
 
 bool GPS::dataAvailable() {
     return _gps.newNMEAreceived();
-  }
+}
 
 bool GPS::gotSatelliteFix() {
    _gps.read();
@@ -57,9 +57,14 @@ bool GPS::gotSatelliteFix() {
 
 void GPS::readPositionData(float *data) {
   _gps.read();
-  data[0] = _gps.latitudeDegrees;
-  data[1] = _gps.longitudeDegrees;
-  data[2] = -1;
+  if(dataAvailable){
+    if(parse(...)){
+      data[0] = _gps.latitudeDegrees;
+      data[1] = _gps.longitudeDegrees;
+      data[2] = -1;
+    }
+  }
+
 }
 
 /**
