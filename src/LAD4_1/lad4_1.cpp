@@ -81,7 +81,6 @@ void setup() {
 
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
-
   _imu.init(&Wire);
 
   bmp.init(&Wire);
@@ -96,8 +95,9 @@ void setup() {
 
   double altVar = 0.5;
   double accVar = 0.5;
-  detector = ApogeeDetection(20e-3, altVar, accVar, altitude, acc_z);
+  detector = ApogeeDetection(20e-3, altVar, accVar, altitude, acc_z, mainChuteDeployLoc);
 
+  Recovery::init(DROGUE_PIN, MAIN_CHUTE_PIN);
 }
 
 void loop() {
@@ -125,15 +125,6 @@ void loop() {
     }
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
-    if(sensor->id == 0) {
-      acc_z = farrbconvert.sensorReadings[0];
-    }
-    else if(sensor->id == 2) {
-      altitude = farrbconvert.sensorReadings[2];
-      if(detector.atApogee(altitude, acc_z)) {
-        //deloy chute
-      }
-    }
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
 
@@ -142,6 +133,32 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
+
+  if(sensor->id == 14) { // imu accel
+    if (detector.onGround()){
+      detector.engineStarted(altitude, acc_z);
+    } else if(detector.engineLit()) {
+      detector.MeCo(altitude, acc_z);
+    } else if (detector.engineOff() && detector.atApogee(altitude, acc_z)) {
+      //deploy chute
+      Recovery::releaseDrogueChute();
+      Recovery::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(recoverAckId, false);
+      Serial.println(packet);
+      write_to_SD(packet.c_str(), file_name);
+      delay(10);
+      Recovery::closeDrogueActuator();
+    } else if (detector.drogueReleased() && detector.atMainChuteDeployLoc(altitude, acc_z)){
+      Recovery::releaseMainChute();
+      Recovery::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(recoverAckId, false);
+      Serial.println(packet);
+      write_to_SD(packet.c_str(), file_name);
+      delay(10);
+      Recovery::closeMainActuator();
+    }
+  }
+
   delay(10);
 
 }
@@ -154,6 +171,9 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 10:
+      Recovery::getAllStates(farrbconvert.sensorReadings);
+      break;
     case 11:
       gps.readPositionData(farrbconvert.sensorReadings);
       break;
@@ -162,9 +182,11 @@ void sensorReadFunc(int id) {
       break;
     case 13:
       bmp.readAllData(farrbconvert.sensorReadings);
+      altitude = farrbconvert.sensorReadings[0];
       break;
     case 14:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
+      acc_z = farrbconvert.sensorReadings[2];
       break;
     case 15:
       _imu.readOrientationData(farrbconvert.sensorReadings);

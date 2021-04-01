@@ -9,13 +9,16 @@ using namespace std;
 
 namespace Recovery {
 
-  int drogue_pin, main_pin;
+  uint8_t drogue_pin, main_pin;
 
   int drogue_chute_state = 0;
   int main_chute_state = 0;
 
 
-  void init() {
+  void init(uint8_t droguePin, uint8_t mainPin) {
+    drogue_pin = droguePin;
+    main_pin = mainPin;
+    
     drogue_chute_state = 0;
     main_chute_state = 0;
 
