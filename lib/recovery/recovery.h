@@ -17,7 +17,6 @@ namespace Recovery {
   int deployedDrogue = 0;
   int deployedMain = 0;
 
-
   void init(uint8_t droguePin, uint8_t mainPin) {
     drogue_pin = droguePin;
     main_pin = mainPin;

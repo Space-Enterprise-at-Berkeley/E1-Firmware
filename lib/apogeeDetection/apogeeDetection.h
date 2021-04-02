@@ -26,6 +26,7 @@ class ApogeeDetection
       bool engineLit();
       bool engineOff();
       bool drogueReleased();
+      bool mainReleased();
 
       void filter(double altitude, double accel_z);
       bool atApogee(double altitude, double accel_z);
@@ -59,8 +60,8 @@ class ApogeeDetection
 
       bool _onGround = true;
       bool _engineLit = false;
-
       bool _drogueReleased = false;
+      bool _mainReleased = false;
 };
 
 #endif /* APOGEE_H_ */

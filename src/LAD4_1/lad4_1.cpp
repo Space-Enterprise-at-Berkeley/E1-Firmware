@@ -137,24 +137,26 @@ void loop() {
   if(sensor->id == 14) { // imu accel
     if (detector.onGround()){
       detector.engineStarted(altitude, acc_z);
-    } else if(detector.engineLit()) {
+    } else if(detector.engineLit() && !detector.onGround()) {
       detector.MeCo(altitude, acc_z);
-    } else if (detector.engineOff() && detector.atApogee(altitude, acc_z)) {
+    } else if (detector.engineOff() && !detector.drogueReleased() && !detector.onGround() && detector.atApogee(altitude, acc_z)) {
       //deploy chute
       Recovery::releaseDrogueChute();
       Recovery::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(recoverAckId, false);
       Serial.println(packet);
+      RFSerial.println(packet);
       write_to_SD(packet.c_str(), file_name);
-      delay(10);
+      delay(500);
       Recovery::closeDrogueActuator();
-    } else if (detector.drogueReleased() && detector.atMainChuteDeployLoc(altitude, acc_z)){
+    } else if (detector.drogueReleased() && !detector.mainReleased() && !detector.onGround() && detector.atMainChuteDeployLoc(altitude, acc_z)){
       Recovery::releaseMainChute();
       Recovery::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(recoverAckId, false);
       Serial.println(packet);
+      RFSerial.println(packet);
       write_to_SD(packet.c_str(), file_name);
-      delay(10);
+      delay(500);
       Recovery::closeMainActuator();
     }
   }

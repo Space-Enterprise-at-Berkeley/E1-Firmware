@@ -74,6 +74,10 @@ bool ApogeeDetection::drogueReleased() {
 	return _drogueReleased;
 }
 
+bool ApogeeDetection::mainReleased() {
+	return _mainReleased;
+}
+
 bool ApogeeDetection::engineStarted(double altitude, double accel_z) {
 	filter(altitude, accel_z);
 	if (kalmanfilter->_x[0] > previousAltitude) {
@@ -83,11 +87,12 @@ bool ApogeeDetection::engineStarted(double altitude, double accel_z) {
 	}
 	// AVERAGE ACCEL > 15
 
-	memmove(previousAccel, previousAccel + 1, sizeof(double)*(numPreviousAccel - 1));
+	memmove(previousAccel + 1, previousAccel, sizeof(double)*(numPreviousAccel - 1));
 	previousAccel[0] = kalmanfilter->_x[2];
 	previousAltitude = kalmanfilter->_x[0];
 
 	if (currConsecutiveIncreases >= outlook && mean(previousAccel, numPreviousAccel) > 15) {
+		_onGround = false;
 		_engineLit = false;
 		return true;
 	}
@@ -101,7 +106,7 @@ bool ApogeeDetection::MeCo(double altitude, double accel_z) {
 	} else {
 		currConsecutiveAccelDecreases = 0;
 	}
-	memmove(previousAccel, previousAccel + 1, sizeof(double)*(numPreviousAccel - 1));
+	memmove(previousAccel + 1, previousAccel, sizeof(double)*(numPreviousAccel - 1));
 	previousAccel[0] = kalmanfilter->_x[2];
 	if (currConsecutiveAccelDecreases >= outlook) {
 		_engineLit = false;
