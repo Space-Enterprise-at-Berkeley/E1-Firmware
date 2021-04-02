@@ -20,10 +20,6 @@ namespace Automation {
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
 
-  bool _engineOn = false;
-  bool _apogee = false;
-  bool _mainDeployed = false;
-
  struct autoEventList* _eventList;
 
   /* Delays during startup sequence:
@@ -41,11 +37,6 @@ namespace Automation {
 
   float prevPressures[2][5]; //array containing 2 arrays, which contain the previous 5 pressure values of lox, prop, respectively.
   int sizes[2]= {0,0};
-
-  // apogee related stuff
-  float prevAltitude[10];
-  uint8_t prevAltIdx = 0;
-
 
 //-----------------------Functions-----------------------
 

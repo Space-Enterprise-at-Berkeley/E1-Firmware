@@ -11,8 +11,8 @@
 int commMethod;
 Adafruit_GPS _gps;
 
-GPS::GPS(HardwareSerial *ser) {
-  _gps = Adafruit_GPS(ser);
+GPS::GPS(HardwareSerial &ser) {
+  _gps = Adafruit_GPS(&ser);
   commMethod = 1;
   //init();
 }

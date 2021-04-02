@@ -86,7 +86,7 @@ void setup() {
   _imu.readAccelerationData(farrbconvert.sensorReadings);
   initAcc_z = farrbconvert.sensorReadings[2];
 
-  detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z);
+  detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z, mainChuteDeployLoc);
   Recovery::init(drogue_pin, main_chute_pin);
 }
 
@@ -127,10 +127,10 @@ void loop() {
 
   if(sensor->id == 14) { // imu accel
     if (detector.onGround()){
-      detector.engineStarted(altitude, acc_z);
+      detector.engineStarted();
     } else if(detector.engineLit() && !detector.onGround()) {
-      detector.MeCo(altitude, acc_z);
-    } else if (detector.engineOff() && !detector.drogueReleased() && !detector.onGround() && detector.atApogee(altitude, acc_z)) {
+      detector.MeCo();
+    } else if (detector.engineOff() && !detector.drogueReleased() && !detector.onGround() && detector.atApogee()) {
       //deploy chute
       Recovery::releaseDrogueChute();
       recoveryPacket();
@@ -142,7 +142,7 @@ void loop() {
       sensors[6].clock_freq = 20; //Number Packets
 
       Recovery::closeDrogueActuator();
-    } else if (detector.drogueReleased() && !detector.mainReleased() && !detector.onGround() && detector.atMainChuteDeployLoc(altitude, acc_z)){
+    } else if (detector.drogueReleased() && !detector.mainReleased() && !detector.onGround() && detector.atMainChuteDeployLoc()){
       Recovery::releaseMainChute();
       recoveryPacket();
       delay(500);

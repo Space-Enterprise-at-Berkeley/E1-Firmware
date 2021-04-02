@@ -11,7 +11,7 @@ using namespace std;
 
 ApogeeDetection::ApogeeDetection() {}
 ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc) {
-	init();
+	init(deltaT, altitudeVar, accelVar, initAlt, initAcc, mainChuteDeployLoc);
 }
 
 void ApogeeDetection::init(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc) {
@@ -19,7 +19,7 @@ void ApogeeDetection::init(double deltaT, double altitudeVar, double accelVar, d
 	int n = 3;
 	int m = 2;
 	altitude = initAlt;
-	acc_z = initAcc;
+	accel_z = initAcc;
 
 	_F = new MatrixXd(n, n);
 	*_F << 1, DeltaT, pow(DeltaT, 2) / 2,
@@ -42,7 +42,7 @@ void ApogeeDetection::init(double deltaT, double altitudeVar, double accelVar, d
 	_z = new VectorXd(m);
 
 	_x = new VectorXd(n);
-	*_x << altitude, 0, acc_z;
+	*_x << altitude, 0, accel_z;
 
 	mainDeployLoc = mainChuteDeployLoc + initAlt;
 
@@ -83,7 +83,7 @@ bool ApogeeDetection::mainReleased() {
 	return _mainReleased;
 }
 
-bool ApogeeDetection::engineStarted(double altitude, double accel_z) {
+bool ApogeeDetection::engineStarted() {
 	filter(altitude, accel_z);
 	if (kalmanfilter->_x[0] > previousAltitude) {
 		currConsecutiveIncreases++;
@@ -104,7 +104,7 @@ bool ApogeeDetection::engineStarted(double altitude, double accel_z) {
 	return false;
 }
 
-bool ApogeeDetection::MeCo(double altitude, double accel_z) {
+bool ApogeeDetection::MeCo() {
 	filter(altitude, accel_z);
 	if (kalmanfilter->_x[2] < previousAccel[0]) {
 		currConsecutiveAccelDecreases++;
@@ -120,7 +120,7 @@ bool ApogeeDetection::MeCo(double altitude, double accel_z) {
 	return false;
 }
 
-bool ApogeeDetection::atApogee(double altitude, double accel_z) {
+bool ApogeeDetection::atApogee() {
 	filter(altitude, accel_z);
 
 	if (kalmanfilter->_x[0] < previousAltitude) {
@@ -129,7 +129,8 @@ bool ApogeeDetection::atApogee(double altitude, double accel_z) {
 		currConsecutiveDecreases = 0;
 	}
 	previousAltitude = kalmanfilter->_x[0];
-	previousAcc_z = kalmanfilter->_x[2];
+	memmove(previousAccel + 1, previousAccel, sizeof(double)*(numPreviousAccel - 1));
+	previousAccel[0] = kalmanfilter->_x[2];
 	if (currConsecutiveDecreases >= outlook) {
 		_drogueReleased = true;
 		return true;
@@ -137,7 +138,7 @@ bool ApogeeDetection::atApogee(double altitude, double accel_z) {
 	return false;
 }
 
-bool ApogeeDetection::atMainChuteDeployLoc(double altitude, double accel_z) {
+bool ApogeeDetection::atMainChuteDeployLoc() {
 	filter(altitude, accel_z);
 
 	if (fabs(kalmanfilter->_x[0] - mainDeployLoc) < tolerance) {
@@ -151,7 +152,7 @@ void ApogeeDetection::updateAlt(double data) {
 }
 
 void ApogeeDetection::updateAcc(double data) {
-	acc_z = data;
+	accel_z = data;
 }
 
 double ApogeeDetection::getAlt() {
