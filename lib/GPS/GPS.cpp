@@ -6,7 +6,6 @@
 #ifndef __GPS__
 #define __GPS__
 
-
 #include "GPS.h"
 
 int commMethod;
@@ -39,8 +38,8 @@ GPS::GPS(SPIClass *theSPI, int8_t cspin) {
 void GPS::init() {
     _gps.begin(9600);
 
-    _gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCONLY);
-    _gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
+    _gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+    _gps.sendCommand(PMTK_SET_NMEA_UPDATE_10HZ); // 1 Hz update rate
     _gps.sendCommand(PGCMD_ANTENNA);
 
     delay(1000);
@@ -51,27 +50,31 @@ bool GPS::dataAvailable() {
 }
 
 bool GPS::gotSatelliteFix() {
-   _gps.read();
    return _gps.fix;
+}
+
+char GPS::readChar() {
+  char c = _gps.read();
+  return c;
+}
+
+void GPS::checkNMEA() {
+  if (_gps.newNMEAreceived()) {
+      _gps.parse(_gps.lastNMEA());
+  }
 }
 
 void GPS::readPositionData(float *data) {
   _gps.read();
-  if(dataAvailable){
-    if(parse(...)){
-      data[0] = _gps.latitudeDegrees;
-      data[1] = _gps.longitudeDegrees;
-      data[2] = -1;
-    }
-  }
-
+  data[0] = _gps.latitude;
+  data[1] = _gps.longitude;
+  data[2] = -1;
 }
 
 /**
  * Define this in advance. Need to be agreed on by everyone.
  */
 void GPS::readAuxilliaryData(float *data) {
-  _gps.read();
   data[0] = _gps.fix;
   data[1] = _gps.satellites;
   data[2] = _gps.altitude;
@@ -79,9 +82,5 @@ void GPS::readAuxilliaryData(float *data) {
   data[4] = _gps.angle;
   data[5] = -1;
 }
-
-
-
-
 
 #endif

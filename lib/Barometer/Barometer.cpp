@@ -8,7 +8,6 @@
 
 #include "Barometer.h"
 
-
 float seaLevelPressure;
 bool updatedSeaLevelPressure;
 

@@ -11,37 +11,42 @@ using namespace std;
 
 ApogeeDetection::ApogeeDetection() {}
 ApogeeDetection::ApogeeDetection(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc) {
+	init();
+}
 
-		DeltaT = deltaT;
-		int n = 3;
-		int m = 2;
+void ApogeeDetection::init(double deltaT, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc) {
+	DeltaT = deltaT;
+	int n = 3;
+	int m = 2;
+	altitude = initAlt;
+	acc_z = initAcc;
 
-		_F = new MatrixXd(n, n);
-		*_F << 1, DeltaT, pow(DeltaT, 2) / 2,
-					0, 1     , DeltaT,
-					0, 0     , 1;
+	_F = new MatrixXd(n, n);
+	*_F << 1, DeltaT, pow(DeltaT, 2) / 2,
+				0, 1     , DeltaT,
+				0, 0     , 1;
 
-		_H = new MatrixXd(m, n);
-		*_H << 1, 0, 0,
-						0, 0, 1;
-
-		_Q = new MatrixXd(n, n);
-		*_Q << 0, 0, 0,
-					0, 0, 0,
+	_H = new MatrixXd(m, n);
+	*_H << 1, 0, 0,
 					0, 0, 1;
 
-		_R = new MatrixXd(m, m);
-		*_R << altitudeVar , 0,
-		 			0,     accelVar;
+	_Q = new MatrixXd(n, n);
+	*_Q << 0, 0, 0,
+				0, 0, 0,
+				0, 0, 1;
 
-		_z = new VectorXd(m);
+	_R = new MatrixXd(m, m);
+	*_R << altitudeVar, 0,
+				0,     accelVar;
 
-		_x = new VectorXd(n);
-		*_x << initAlt, initAcc, 0;
+	_z = new VectorXd(m);
 
-		mainDeployLoc = mainChuteDeployLoc + initAlt;
+	_x = new VectorXd(n);
+	*_x << altitude, 0, acc_z;
 
-		kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_x);
+	mainDeployLoc = mainChuteDeployLoc + initAlt;
+
+	kalmanfilter = new Kalman(n, *_F, m, 1, *_H, MatrixXd::Zero(n,1), *_Q, *_R, *_x);
 }
 
 double mean(double * arr, uint8_t len) {
@@ -124,6 +129,7 @@ bool ApogeeDetection::atApogee(double altitude, double accel_z) {
 		currConsecutiveDecreases = 0;
 	}
 	previousAltitude = kalmanfilter->_x[0];
+	previousAcc_z = kalmanfilter->_x[2];
 	if (currConsecutiveDecreases >= outlook) {
 		_drogueReleased = true;
 		return true;
@@ -138,6 +144,18 @@ bool ApogeeDetection::atMainChuteDeployLoc(double altitude, double accel_z) {
 		return true;
 	}
 	return false;
+}
+
+void ApogeeDetection::updateAlt(double data) {
+	altitude = data;
+}
+
+void ApogeeDetection::updateAcc(double data) {
+	acc_z = data;
+}
+
+double ApogeeDetection::getAlt() {
+	return ApogeeDetection::altitude;
 }
 
 ApogeeDetection::~ApogeeDetection() {

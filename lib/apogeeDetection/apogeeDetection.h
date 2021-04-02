@@ -21,6 +21,7 @@ class ApogeeDetection
     public:
       ApogeeDetection();
       ApogeeDetection(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc);
+      void init      (double dt, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc);
       ~ApogeeDetection();
       bool onGround();
       bool engineLit();
@@ -33,6 +34,10 @@ class ApogeeDetection
       bool atMainChuteDeployLoc(double altitude, double accel_z);
       bool MeCo(double altitude, double accel_z);
       bool engineStarted(double altitude, double accel_z);
+
+      double getAlt();
+      void updateAlt(double data);
+      void updateAcc(double data);
 
 
     private:
@@ -48,6 +53,8 @@ class ApogeeDetection
 
       Kalman* kalmanfilter;
 
+      double altitude;
+      double acc_z;
       double previousAltitude;
       double previousAccel[numPreviousAccel] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
       double mainDeployLoc;

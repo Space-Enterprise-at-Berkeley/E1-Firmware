@@ -20,6 +20,8 @@ class GPS {
     void readPositionData(float *data);
     void readAuxilliaryData(float *data);
     void init();
+    char readChar();
+    void checkNMEA();
 
   private:
     Adafruit_GPS _gps;

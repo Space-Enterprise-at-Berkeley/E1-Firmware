@@ -2,6 +2,7 @@
   solenoids.h - A c++ library to interface with all of the solenoids on our rocket.
   Created by Vamshi Balanaga, Sept 15, 2020.
 */
+
 #ifndef __RECOVERY__
 #define __RECOVERY__
 
