@@ -90,12 +90,12 @@ bool ApogeeDetection::engineStarted() {
 	} else {
 		currConsecutiveIncreases = 0;
 	}
-	// AVERAGE ACCEL > 15
 
 	memmove(previousAccel + 1, previousAccel, sizeof(double)*(numPreviousAccel - 1));
 	previousAccel[0] = kalmanfilter->_x[2];
 	previousAltitude = kalmanfilter->_x[0];
 
+	// AVERAGE ACCEL > 15
 	if (currConsecutiveIncreases >= outlook && mean(previousAccel, numPreviousAccel) > 15) {
 		_onGround = false;
 		_engineLit = false;
