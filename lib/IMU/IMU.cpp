@@ -34,10 +34,10 @@ void IMU::readAccelerationData(float *data){
 void IMU::readQuaternionData(float *data) {
   imu::Quaternion quat = _bno.getQuat();
 
-  data[0] = quat.w();
-  data[1] = quat.x();
-  data[2] = quat.y();
-  data[3] = quat.z();
+  data[0] = quat.w() * 100000;
+  data[1] = quat.x() * 100000;
+  data[2] = quat.y() * 100000;
+  data[3] = quat.z() * 100000;
   data[4] = -1;
 }
 
