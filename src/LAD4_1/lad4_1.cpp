@@ -84,7 +84,7 @@ void setup() {
   bmp.readAllData(farrbconvert.sensorReadings);
   initAlt = farrbconvert.sensorReadings[0];
   _imu.readAccelerationData(farrbconvert.sensorReadings);
-  initAcc_z = farrbconvert.sensorReadings[2];
+  initAcc_z = farrbconvert.sensorReadings[0];
 
   detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z, mainChuteDeployLoc);
   Recovery::init(drogue_pin, main_chute_pin);
@@ -176,7 +176,7 @@ void sensorReadFunc(int id) {
       break;
     case 14:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
-      detector.updateAcc(farrbconvert.sensorReadings[2]);
+      detector.updateAcc(farrbconvert.sensorReadings[0]);
       break;
     case 15:
       _imu.readQuaternionData(farrbconvert.sensorReadings);
