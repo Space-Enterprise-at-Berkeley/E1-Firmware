@@ -20,6 +20,8 @@ void IMU::init(TwoWire *theWire){
     exit(1);
   }
   _bno.setExtCrystalUse(true);
+  //_bno.setAxisRemap(adafruit_bno055_axis_remap_config_t(0b00000110));
+  _bno.setAxisRemap(Adafruit_BNO055::REMAP_CONFIG_P2);
 }
 
 void IMU::readAccelerationData(float *data){
