@@ -63,6 +63,11 @@ void ApogeeDetection::filter(double altitude, double accel_z){
 	kalmanfilter->update(*_z);
 }
 
+flight_state_t ApogeeDetection::getFlightState(float *data) {
+	data[0] = (float)currState;
+	data[1] = -1;
+}
+
 bool ApogeeDetection::onGround() {
 	return _onGround;
 }
@@ -99,6 +104,7 @@ bool ApogeeDetection::engineStarted() {
 	if (currConsecutiveIncreases >= outlook && mean(previousAccel, numPreviousAccel) > 15) {
 		_onGround = false;
 		_engineLit = false;
+		currState = ENGINE_ON_ASCENT;
 		return true;
 	}
 	return false;
@@ -115,6 +121,7 @@ bool ApogeeDetection::MeCo() {
 	previousAccel[0] = kalmanfilter->_x[2];
 	if (currConsecutiveAccelDecreases >= outlook) {
 		_engineLit = false;
+		currState = ENGINE_OFF_ASCENT;
 		return true;
 	}
 	return false;
@@ -133,6 +140,7 @@ bool ApogeeDetection::atApogee() {
 	previousAccel[0] = kalmanfilter->_x[2];
 	if (currConsecutiveDecreases >= outlook) {
 		_drogueReleased = true;
+		currState = DESCENT;
 		return true;
 	}
 	return false;

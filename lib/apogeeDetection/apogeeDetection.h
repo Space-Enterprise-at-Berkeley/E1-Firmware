@@ -16,6 +16,13 @@ using namespace Eigen;
 
 const uint8_t numPreviousAccel = 10;
 
+typedef enum {
+    ON_PAD = 0,
+    ENGINE_ON_ASCENT = 1,
+    ENGINE_OFF_ASCENT = 2,
+    DESCENT = 3
+  } flight_state_t;
+
 class ApogeeDetection
 {
     public:
@@ -35,6 +42,7 @@ class ApogeeDetection
       bool MeCo();
       bool engineStarted();
 
+      flight_state_t getFlightState(float * data);
       double getAlt();
       void updateAlt(double data);
       void updateAcc(double data);
@@ -64,6 +72,7 @@ class ApogeeDetection
       int currConsecutiveIncreases = 0;
       int currConsecutiveAccelDecreases = 0;
 
+      flight_state_t currState = ON_PAD;
       bool _onGround = true;
       bool _engineLit = false;
       bool _drogueReleased = false;

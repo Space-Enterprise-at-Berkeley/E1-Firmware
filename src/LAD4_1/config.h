@@ -43,6 +43,7 @@ namespace config {
     sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 12, 3};
     sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[7] = {"Recovery Acknowledgement", FLIGHT_BRAIN_ADDR, 10, 25};
+    sensors[8] = {"Flight state", FLIGHT_BRAIN_ADDR, 9, 25};
 
     pinMode(drogue_pin, OUTPUT);
     pinMode(main_chute_pin, OUTPUT);
