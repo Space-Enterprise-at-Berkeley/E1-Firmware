@@ -5,13 +5,16 @@
 #include <ADS1219.h>
 #include "Automation.h"
 
-
-
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
 
 std::string str_file_name = "E1_coldflow.txt";
 const char * file_name = str_file_name.c_str();
+
+byte mac[] = {
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
+IPAddress ip(192, 168, 1, 177); // depndent on local network
 
 const int numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems

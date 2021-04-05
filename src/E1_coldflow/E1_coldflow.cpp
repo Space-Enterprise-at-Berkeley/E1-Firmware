@@ -81,6 +81,9 @@ void setup() {
     RFSerial.println(packet);
   }
 
+  debug("Setup Ethernet");
+  setupEthernetComms(mac, ip);
+
   debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins);

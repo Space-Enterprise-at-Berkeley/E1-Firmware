@@ -17,6 +17,10 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#include <Ethernet.h>
+#include <EthernetUdp.h>
+
+
 const uint8_t qMaxSize = 40;
 
 struct Queue {
@@ -104,14 +108,20 @@ struct valveInfo {
 
 
 String make_packet (int id, bool error);
-uint16_t Fletcher16 (uint8_t *data, int count);
-void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
-bool write_to_SD(std::string message, const char * file_name);
 int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves);
+
+uint16_t Fletcher16 (uint8_t *data, int count);
+
+void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
+void take_action(valveInfo *valve, int action);
+
+bool write_to_SD(std::string message, const char * file_name);
+
 void readPacketCounter(float *data);
 void incrementPacketCounter();
-void take_action(valveInfo *valve, int action);
-uint16_t Fletcher16(uint8_t *data, int count);
+
+bool setupEthernetComms(byte * mac, IPAddress &ip);
+
 void debug(String str);
 
 extern SdFat sd;
@@ -123,4 +133,6 @@ extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo *sensors;
 extern struct valveInfo *valves;
 extern int packetCounter;
+
+extern unsigned int localPort;
 #endif // _COMMON_H_
