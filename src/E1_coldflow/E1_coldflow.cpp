@@ -34,7 +34,7 @@ valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
-String packet;
+std::string packet;
 
 TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
 TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
@@ -107,8 +107,8 @@ void loop() {
       i++;
     }
 
-    debug(String(command));
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
+    debug(std::string(command));
+    int action = decode_received_packet(std::string(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);

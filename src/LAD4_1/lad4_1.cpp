@@ -26,7 +26,7 @@ int sensor_checks[numSensors][2];
 sensorInfo *sensor;
 
 long startTime;
-String packet;
+std::string packet;
 
 // Helper functions
 void sensorReadFunc(int id);

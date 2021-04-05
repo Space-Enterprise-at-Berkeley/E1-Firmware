@@ -39,14 +39,14 @@ bool write_to_SD(std::string message, const char * file_name) {
  * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
  */
-String make_packet(int id, bool error) {
-  String packet_content = (String)id;
+std::string make_packet(int id, bool error) {
+  std::string packet_content = (String)id;
   packet_content += ",";
   if (!error) {
-    for (int i=0; i<7; i++) {
+    for (int i=0; i<7; i++) { //TODO shouldn't be hardcoding no. of sensor readings at 7
       float reading = farrbconvert.sensorReadings[i];
       if (reading != -1) {
-        packet_content += (String)reading;
+        packet_content += (String) reading;
         packet_content += ",";
       } else {
         break;
@@ -56,17 +56,17 @@ String make_packet(int id, bool error) {
     packet_content += "0,";
   }
 
-  packet_content.remove(packet_content.length()-1);
+  packet_content.remove(packet_content.length()-1); //removes last comma?
   int count = packet_content.length();
   char const *data = packet_content.c_str();
   uint16_t checksum = Fletcher16((uint8_t *) data, count);
   packet_content += "|";
-  String check_ = String(checksum, HEX);
+  std::string check_ = std::string(checksum, HEX);
   while(check_.length() < 4) {
     check_ = "0" + check_;
   }
   packet_content += check_;
-  String packet = "{" + packet_content + "}";
+  std::string packet = "{" + packet_content + "}";
   incrementPacketCounter();
   return packet;
 }
@@ -77,7 +77,7 @@ String make_packet(int id, bool error) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], int numValves) {
+int decode_received_packet(std::string packet, valveInfo *valve, valveInfo valves[], int numValves) {
   debug(packet);
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
@@ -90,13 +90,13 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], 
   }
   int action = packet.substring(data_start_index + 1,data_end_index).toInt();
 
-  String checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
+  std::string checksumstr = packet.substring(data_end_index + 1, packet.length()-1);
   const char *checksum_char = checksumstr.c_str();
   int checksum = strtol(checksum_char, NULL, 16);
   debug(checksum);
 
   const int count = packet.substring(1, data_end_index).length();
-  String str_data= packet.substring(1,data_end_index);
+  std::string str_data= packet.substring(1,data_end_index);
   char const *data = str_data.c_str();
   debug(data);
 
@@ -164,7 +164,7 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-void debug(String str) {
+void debug(std::string str) {
   #ifdef DEBUG
     Serial.println(str);
     Serial.flush();

@@ -33,7 +33,7 @@ valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
-String packet;
+std::string packet;
 
 int packet_count = 0;
 
@@ -58,7 +58,7 @@ void setup() {
   }
 
   debug("Sensor IDs:");
-  debug(String(sensors[0].name));
+  debug(std::string(sensors[0].name));
 
   debug("Starting SD");
 
@@ -106,8 +106,8 @@ void loop() {
       i++;
     }
 
-    debug(String(command));
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
+    debug(std::string(command));
+    int action = decode_received_packet(std::string(command), &valve, valves, numValves);
     if (action != -1) {
       take_action(&valve, action);
       packet = make_packet(valve.id, false);
@@ -116,7 +116,7 @@ void loop() {
         RFSerial.println(packet);
       #endif
       packet_count++;
-      debug(String(packet_count));
+      debug(std::string(packet_count));
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -139,7 +139,7 @@ void loop() {
         RFSerial.println(packet);
     #endif
     packet_count++;
-    debug(String(packet_count));
+    debug(std::string(packet_count));
     write_to_SD(packet.c_str(), file_name);
   }
   delay(50);
