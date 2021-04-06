@@ -15,10 +15,10 @@ struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
 
-char ethPacketBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
-char ethAck[] = "acknowledged";
+//char ethPacketBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
 EthernetUDP Udp;
-unsigned int localPort = 6969; //something arbitrary as shit - for ethernet comms
+unsigned int port = 6969; // try to find something that can be the same on gs
+IPAddress groundIP(192, 168, 1, 69);
 
 /*
  * Constructs packet in the following format:
@@ -187,7 +187,13 @@ bool setupEthernetComms(byte * mac, IPAddress &ip){
     exit(1);
   }
 
-  Udp.begin(localPort);
+  Udp.begin(port);
+}
+
+void sendEthPacket(std::string packet){
+  Udp.beginPacket(groundIP, port);
+  Udp.write(packet.c_str());
+  Udp.endPacket();
 }
 
 void debug(String str) {

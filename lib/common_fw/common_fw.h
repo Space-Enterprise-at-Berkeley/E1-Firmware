@@ -121,6 +121,7 @@ void readPacketCounter(float *data);
 void incrementPacketCounter();
 
 bool setupEthernetComms(byte * mac, IPAddress &ip);
+void sendEthPacket(std::string packet);
 
 void debug(String str);
 
@@ -134,5 +135,8 @@ extern struct sensorInfo *sensors;
 extern struct valveInfo *valves;
 extern int packetCounter;
 
-extern unsigned int localPort;
+extern unsigned int port;
+extern EthernetUDP Udp;
+extern IPAddress groundIP;
+
 #endif // _COMMON_H_

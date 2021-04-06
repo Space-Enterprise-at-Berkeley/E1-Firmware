@@ -35,6 +35,7 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
+bool receivedCommand = false;
 
 TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
 TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
@@ -101,7 +102,13 @@ void setup() {
 
 void loop() {
   // process command
-  if (RFSerial.available() > 0) {
+  if (Udp.parsePacket()) {
+    if(Udp.remoteIP() == groundIP){
+      receivedCommand = true;
+      Udp.read(command, UDP_TX_PACKET_MAX_SIZE);
+      debug(String(command));
+    }
+  } else if (RFSerial.available() > 0) {
     int i = 0;
 
     while (RFSerial.available()) {
@@ -109,7 +116,10 @@ void loop() {
       Serial.print(command[i]);
       i++;
     }
+    receivedCommand = true;
+  }
 
+  if(receivedCommand) {
     debug(String(command));
     int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
@@ -121,6 +131,7 @@ void loop() {
       #endif
       write_to_SD(packet.c_str(), file_name);
     }
+    receivedCommand = false;
   }
 
 
