@@ -18,7 +18,7 @@ union floatArrToBytes farrbconvert;
 //char ethPacketBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
 EthernetUDP Udp;
 unsigned int port = 6969; // try to find something that can be the same on gs
-IPAddress groundIP(192, 168, 1, 69);
+IPAddress groundIP(10, 0, 0, 226);
 
 /*
  * Constructs packet in the following format:
@@ -171,11 +171,14 @@ void incrementPacketCounter() {
     packetCounter+=1;
 }
 
-bool setupEthernetComms(byte * mac, IPAddress &ip){
-  Ethernet.init(20);  // Teensy++ 2.0
-
+bool setupEthernetComms(byte * mac, IPAddress ip){
+  // Ethernet.init();  // Teensy++ 2.0
+  Serial.println("start eth setup");
+  Serial.println(ip);
+  Serial.flush();
   Ethernet.begin(mac, ip);
-
+  Serial.println("finish eth begin");
+  Serial.flush();
   // Check for Ethernet hardware present
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
     Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
@@ -187,7 +190,13 @@ bool setupEthernetComms(byte * mac, IPAddress &ip){
     exit(1);
   }
 
+  Serial.println("finish eth if ladder");
+  Serial.flush();
+
   Udp.begin(port);
+  Serial.println("finish udp begin ");
+  Serial.flush();
+  return true;
 }
 
 void sendEthPacket(std::string packet){

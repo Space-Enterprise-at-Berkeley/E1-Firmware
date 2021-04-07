@@ -17,8 +17,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include <Ethernet.h>
-#include <EthernetUdp.h>
+#include <NativeEthernet.h>
+#include <NativeEthernetUdp.h>
 
 
 const uint8_t qMaxSize = 40;
@@ -120,7 +120,7 @@ bool write_to_SD(std::string message, const char * file_name);
 void readPacketCounter(float *data);
 void incrementPacketCounter();
 
-bool setupEthernetComms(byte * mac, IPAddress &ip);
+bool setupEthernetComms(byte * mac, IPAddress ip);
 void sendEthPacket(std::string packet);
 
 void debug(String str);

@@ -14,7 +14,7 @@ const char * file_name = str_file_name.c_str();
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
-IPAddress ip(192, 168, 1, 177); // depndent on local network
+IPAddress ip(10, 0, 0, 177); // depndent on local network
 
 const int numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems

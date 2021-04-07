@@ -12,7 +12,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
+#define SERIAL_INPUT 1 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -103,9 +103,18 @@ void setup() {
 void loop() {
   // process command
   if (Udp.parsePacket()) {
-    if(Udp.remoteIP() == groundIP){
+    debug("received udp packet");
+    IPAddress remote = Udp.remoteIP();
+    for (int i=0; i < 4; i++) {
+      Serial.print(remote[i], DEC);
+      if (i < 3) {
+        Serial.print(".");
+      }
+    }
+    if(Udp.remoteIP() == groundIP) {
+      debug("received packet came from groundIP");
       receivedCommand = true;
-      Udp.read(command, UDP_TX_PACKET_MAX_SIZE);
+      Udp.read(command, 75);
       debug(String(command));
     }
   } else if (RFSerial.available() > 0) {
@@ -183,7 +192,7 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
-  delay(10);
+  delay(100);
 }
 
 
