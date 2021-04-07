@@ -8,9 +8,9 @@
 #include "recovery.h"
 
 #ifdef SERIAL_INPUT_DEBUG
-  #define RFSerial Serial
+  HardwareSerial RFSerial = Serial;
 #else
-  #define RFSerial Serial6
+  HardwareSerial RFSerial = Serial6;
 #endif
 
 #define GPS_Serial Serial8

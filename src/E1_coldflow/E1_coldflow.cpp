@@ -153,7 +153,6 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
-
     #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
