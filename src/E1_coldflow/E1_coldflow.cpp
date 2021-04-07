@@ -102,6 +102,7 @@ void setup() {
 
 void loop() {
   // process command
+  #ifdef ETH
   if (Udp.parsePacket()) {
     debug("received udp packet");
     IPAddress remote = Udp.remoteIP();
@@ -117,7 +118,9 @@ void loop() {
       Udp.read(command, 75);
       debug(String(command));
     }
-  } else if (RFSerial.available() > 0) {
+  }
+  #endif
+  if (RFSerial.available() > 0) {
     int i = 0;
 
     while (RFSerial.available()) {
@@ -178,7 +181,10 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
-
+    #ifdef ETH
+    sendEthPacket(packet);
+    #endif
+    
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
