@@ -2,6 +2,7 @@
   solenoids.h - A c++ library to interface with all of the solenoids on our rocket.
   Created by Vamshi Balanaga, Sept 15, 2020.
 */
+
 #ifndef __RECOVERY__
 #define __RECOVERY__
 
@@ -9,13 +10,18 @@ using namespace std;
 
 namespace Recovery {
 
-  int drogue_pin, main_pin;
+  uint8_t drogue_pin, main_pin;
 
   int drogue_chute_state = 0;
   int main_chute_state = 0;
 
+  int deployedDrogue = 0;
+  int deployedMain = 0;
 
-  void init() {
+  void init(uint8_t droguePin, uint8_t mainPin) {
+    drogue_pin = droguePin;
+    main_pin = mainPin;
+
     drogue_chute_state = 0;
     main_chute_state = 0;
 
@@ -24,17 +30,17 @@ namespace Recovery {
   }
 
   void getAllStates(float *data){
-    data[0] = drogue_chute_state;
-    data[1] = main_chute_state;
+    data[0] = deployedDrogue;
+    data[1] = deployedMain;
     data[2] = -1;
   }
 
   bool drogueReleased() {
-    return drogue_chute_state == 1;
+    return deployedDrogue;
   }
 
   bool mainReleased() {
-    return main_chute_state == 1;
+    return deployedMain;
   }
 
   int toggleDrogueChuteActuator() {
@@ -58,6 +64,7 @@ namespace Recovery {
   }
 
   int releaseDrogueChute() {
+    deployedDrogue = 1;
     if(drogue_chute_state == 0){
       toggleDrogueChuteActuator();
     } else {
@@ -67,7 +74,7 @@ namespace Recovery {
   }
 
   int closeDrogueActuator() {
-    if(drogue_chute_state == 1){
+    if(drogue_chute_state == 1) {
       toggleDrogueChuteActuator();
     } else {
       // already closed, do nothing.
@@ -76,7 +83,8 @@ namespace Recovery {
   }
 
   int releaseMainChute() {
-    if(main_chute_state == 0){
+    deployedMain = 1;
+    if(main_chute_state == 0) {
       toggleMainChuteActuator();
     } else {
       // already active, do nothing.
