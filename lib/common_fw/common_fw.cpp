@@ -18,9 +18,7 @@ union floatArrToBytes farrbconvert;
  * dequeue everything and dump it onto the sd.
  */
 bool write_to_SD(std::string message, const char * file_name) {
-    char buffer2 [34];
-    std::string newMessage = std::string(itoa(millis(), buffer2, 10)) + ", " + message;
-    //std::string newMessage = std::to_string(millis()) + ", " + message;
+    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
     sdBuffer->enqueue(newMessage);
     if(sdBuffer->length >= qMaxSize) {
         int initialLength = sdBuffer->length;
