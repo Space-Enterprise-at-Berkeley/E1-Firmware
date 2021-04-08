@@ -38,7 +38,6 @@ namespace Automation {
   float prevPressures[2][5]; //array containing 2 arrays, which contain the previous 5 pressure values of lox, prop, respectively.
   int sizes[2]= {0,0};
 
-
 //-----------------------Functions-----------------------
 
   bool init() {

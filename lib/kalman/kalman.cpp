@@ -10,7 +10,7 @@
 using namespace std;
 
 Kalman::Kalman(int stateDim, MatrixXd F, int measurementDim, int inputDim,
-	MatrixXd H, MatrixXd B, MatrixXd Q, MatrixXd R) {
+	MatrixXd H, MatrixXd B, MatrixXd Q, MatrixXd R, VectorXd initX) {
 		_n = stateDim;
 		_m = measurementDim;
 		_l = inputDim;
@@ -24,7 +24,7 @@ Kalman::Kalman(int stateDim, MatrixXd F, int measurementDim, int inputDim,
 		_K = MatrixXd(_n, _m);
 		__S = MatrixXd(_m, _m);
 		__P = MatrixXd::Identity(_n, _n);
-		_x = VectorXd::Zero(_n);
+		_x = initX;
 		_y = VectorXd(_m);
 }
 
