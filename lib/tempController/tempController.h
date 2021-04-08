@@ -9,7 +9,7 @@
 #define __TEMP_CONTROLLER__
 #include <cmath>
 #include "pid.h"
-#include <actuator.h>
+#include <command.h>
 
 using namespace std;
 
@@ -39,16 +39,16 @@ class TempController {
 };
 
 
-class HeaterActuator : public Actuator, public TempController {
+class HeaterCommand : public Command, public TempController {
 
   public:
-    HeaterActuator(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, int heaterPin):
-      Actuator(name, id),
+    HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, int heaterPin):
+      Command(name, id),
       TempController(tempSetPoint, algorithmChoice, heaterPin)
     {}
 
-    HeaterActuator(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin):
-      Actuator(name),
+    HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin):
+      Command(name),
       TempController(tempSetPoint, algorithmChoice, heaterPin)
     {}
 

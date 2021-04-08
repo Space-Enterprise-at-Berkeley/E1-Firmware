@@ -30,22 +30,22 @@ sensorInfo *sensors;
 
 const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
 uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
-const uint8_t numSolenoidActuators = 9;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch
-uint8_t solenoidActuatorIds[numSolenoidActuators] = {20, 21, 22, 23, 24, 25, 26,  27, 28};
+const uint8_t numSolenoidCommands = 9;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch
+uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
-AutomationSequenceActuator fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
-AutomationSequenceActuator loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
+AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
+AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
 
-const uint8_t numActuators = 11;
-Actuator *backingStore[numActuators] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
+const uint8_t numCommands = 11;
+Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::arm_rocket, &Solenoids::launch,
                                         &fullFlow, &loxFlow};
-ActuatorArray actuators(numActuators, backingStore);
+CommandArray commands(numCommands, backingStore);
 
 namespace config {
   void setup() {
@@ -67,18 +67,18 @@ namespace config {
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
 
-    debug("Initializing actuators");
-    // actuators.insert(&Solenoids::lox_2);
-    // actuators.insert(&Solenoids::lox_5);
-    // actuators.insert(&Solenoids::lox_G);
-    // actuators.insert(&Solenoids::prop_2);
-    // actuators.insert(&Solenoids::prop_5);
-    // actuators.insert(&Solenoids::prop_G);
-    // actuators.insert(&Solenoids::high_p);
-    // actuators.insert(&Solenoids::arm_rocket);
-    // actuators.insert(&Solenoids::launch);
-    // actuators.insert(&fullFlow);
-    // actuators.insert(&loxFlow);
+    debug("Initializing Commands");
+    // Commands.insert(&Solenoids::lox_2);
+    // Commands.insert(&Solenoids::lox_5);
+    // Commands.insert(&Solenoids::lox_G);
+    // Commands.insert(&Solenoids::prop_2);
+    // Commands.insert(&Solenoids::prop_5);
+    // Commands.insert(&Solenoids::prop_G);
+    // Commands.insert(&Solenoids::high_p);
+    // Commands.insert(&Solenoids::arm_rocket);
+    // Commands.insert(&Solenoids::launch);
+    // Commands.insert(&fullFlow);
+    // Commands.insert(&loxFlow);
     // valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
   }
 }

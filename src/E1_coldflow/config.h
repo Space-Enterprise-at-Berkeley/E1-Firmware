@@ -1,5 +1,5 @@
 #include <solenoids.h>
-#include <actuator.h>
+#include <command.h>
 #include <Analog_Thermocouple.h>
 #include <Cryo_Thermocouple.h>
 #include <tempController.h>
@@ -39,8 +39,8 @@ sensorInfo *sensors;
 
 const uint8_t numSolenoids = 7;   // l2, l5, lg, p2, p5, pg, h
 uint8_t solenoidPins[numSolenoids] = {0,  2,  4,  1,  3,  5, 6};
-const uint8_t numSolenoidActuators = 9;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch
-uint8_t solenoidActuatorIds[numSolenoidActuators] = {20, 21, 22, 23, 24, 25, 26,  27, 28};
+const uint8_t numSolenoidCommands = 9;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch
+uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -48,18 +48,18 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const uint8_t loxAdapterPTHeaterPin = 9;
 const uint8_t loxGemsHeaterPin = 7;
 
-HeaterActuator loxPTHeater("LOX PT Heater", 40, 10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID
-HeaterActuator loxGemsHeater("LOX Gems Heater", 41, 10, 2, loxGemsHeaterPin); // setPoint = 10C, alg = PID
+HeaterCommand loxPTHeater("LOX PT Heater", 40, 10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID
+HeaterCommand loxGemsHeater("LOX Gems Heater", 41, 10, 2, loxGemsHeaterPin); // setPoint = 10C, alg = PID
 
-AutomationSequenceActuator fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
-AutomationSequenceActuator loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
+AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
+AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
-const uint8_t numActuators = 13;
-Actuator *backingStore[numActuators] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
+const uint8_t numCommands = 13;
+Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::arm_rocket, &Solenoids::launch,
                                         &fullFlow, &loxFlow, &loxPTHeater, &loxGemsHeater};
-ActuatorArray actuators(numActuators, backingStore);
+CommandArray commands(numCommands, backingStore);
 
 namespace config {
   void setup() {
@@ -85,20 +85,20 @@ namespace config {
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
-    debug("Initializing actuators");
-    // actuators.insert(&Solenoids::lox_2);
-    // actuators.insert(&Solenoids::lox_5);
-    // actuators.insert(&Solenoids::lox_G);
-    // actuators.insert(&Solenoids::prop_2);
-    // actuators.insert(&Solenoids::prop_5);
-    // actuators.insert(&Solenoids::prop_G);
-    // actuators.insert(&Solenoids::high_p);
-    // actuators.insert(&Solenoids::arm_rocket);
-    // actuators.insert(&Solenoids::launch);
-    // actuators.insert(&fullFlow);
-    // actuators.insert(&loxFlow);
-    // actuators.insert(&loxPTHeater);
-    // actuators.insert(&loxGemsHeater);
+    debug("Initializing Commands");
+    // Commands.insert(&Solenoids::lox_2);
+    // Commands.insert(&Solenoids::lox_5);
+    // Commands.insert(&Solenoids::lox_G);
+    // Commands.insert(&Solenoids::prop_2);
+    // Commands.insert(&Solenoids::prop_5);
+    // Commands.insert(&Solenoids::prop_G);
+    // Commands.insert(&Solenoids::high_p);
+    // Commands.insert(&Solenoids::arm_rocket);
+    // Commands.insert(&Solenoids::launch);
+    // Commands.insert(&fullFlow);
+    // Commands.insert(&loxFlow);
+    // Commands.insert(&loxPTHeater);
+    // Commands.insert(&loxGemsHeater);
 
     pinMode(loxAdapterPTHeaterPin, OUTPUT);
     pinMode(loxGemsHeaterPin, OUTPUT);

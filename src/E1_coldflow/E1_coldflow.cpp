@@ -78,7 +78,7 @@ void setup() {
 
   debug("Initializing Libraries");
 
-  Solenoids::init(numSolenoids, solenoidPins, numSolenoidActuators, solenoidActuatorIds);
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
@@ -90,7 +90,7 @@ void setup() {
 
   Automation::init();
 
-  actuators.updateIds();
+  commands.updateIds();
 }
 
 void loop() {

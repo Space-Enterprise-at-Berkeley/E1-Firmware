@@ -13,7 +13,7 @@ char buffer[75];
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
-Actuator *tmpActuator;
+Command *tmpCommand;
 
 /**
  * Add messages to a queue, and every n messages,
@@ -85,7 +85,7 @@ int8_t parseCommand(String packet) {
     return -1;
   }
   debug(String(data_start_index));
-  int actuator_id = packet.substring(1,data_start_index).toInt();
+  int command_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
   if(data_end_index == -1) {
     return -1;
@@ -119,10 +119,10 @@ int8_t parseCommand(String packet) {
   int _check = (int)Fletcher16((uint8_t *) data, count);
   if (_check == checksum) {
     debug("Checksum correct, taking action");
-    tmpActuator = actuators.get(actuator_id); //chooseValveById(valve_id, valve, valves, numValves);
-    tmpActuator->parseCommand(command_data);
-    tmpActuator->confirmation(farrbconvert.sensorReadings);
-    return tmpActuator->ID();
+    tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
+    tmpCommand->parseCommand(command_data);
+    tmpCommand->confirmation(farrbconvert.sensorReadings);
+    return tmpCommand->ID();
   } else {
     return -1;
   }

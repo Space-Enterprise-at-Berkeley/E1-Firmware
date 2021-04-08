@@ -6,7 +6,7 @@
 #define __SOLENOIDS__
 
 #include <Arduino.h>
-#include <actuator.h>
+#include <command.h>
 
 using namespace std;
 
@@ -27,7 +27,7 @@ namespace Solenoids {
   extern uint8_t prop5_state;
   extern uint8_t prop_gems_state;
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numActuators, uint8_t * actuatorIds);
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds);
 
   int toggleHighPressureSolenoid();
   int toggleLOX2Way();
@@ -66,19 +66,19 @@ namespace Solenoids {
   bool propArmed();
 
 
-  class SolenoidActuator : public Actuator {
+  class SolenoidCommand : public Command {
 
     typedef int (*func_t)();
 
     public:
-      SolenoidActuator(std::string name, uint8_t id, func_t openFunc, func_t closeFunc):
-        Actuator(name, id),
+      SolenoidCommand(std::string name, uint8_t id, func_t openFunc, func_t closeFunc):
+        Command(name, id),
         openSolenoid(openFunc),
         closeSolenoid(closeFunc)
       {}
 
-      SolenoidActuator(std::string name, func_t openFunc, func_t closeFunc):
-        Actuator(name),
+      SolenoidCommand(std::string name, func_t openFunc, func_t closeFunc):
+        Command(name),
         openSolenoid(openFunc),
         closeSolenoid(closeFunc)
       {}
@@ -105,16 +105,16 @@ namespace Solenoids {
 
   };
 
-  extern SolenoidActuator lox_2;
-  extern SolenoidActuator lox_5;
-  extern SolenoidActuator lox_G;
-  extern SolenoidActuator prop_2;
-  extern SolenoidActuator prop_5;
-  extern SolenoidActuator prop_G;
+  extern SolenoidCommand lox_2;
+  extern SolenoidCommand lox_5;
+  extern SolenoidCommand lox_G;
+  extern SolenoidCommand prop_2;
+  extern SolenoidCommand prop_5;
+  extern SolenoidCommand prop_G;
 
-  extern SolenoidActuator high_p;
-  extern SolenoidActuator arm_rocket;
-  extern SolenoidActuator launch;
+  extern SolenoidCommand high_p;
+  extern SolenoidCommand arm_rocket;
+  extern SolenoidCommand launch;
 
 }
 #endif /* end of include guard: SOLENOIDS */

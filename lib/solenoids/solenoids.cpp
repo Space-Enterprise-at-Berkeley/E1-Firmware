@@ -13,8 +13,8 @@ namespace Solenoids {
   uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
   uint8_t high_sol_pin;
 
-  uint8_t *_actuatorIds;
-  uint8_t _numActuators;
+  uint8_t *_commandIds;
+  uint8_t _numCommands;
 
   uint8_t high_sol_state = 0;
 
@@ -27,7 +27,7 @@ namespace Solenoids {
   uint8_t prop_gems_state = 0;
 
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numActuators, uint8_t * actuatorIds) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -48,8 +48,8 @@ namespace Solenoids {
 
     high_sol_pin = solenoidPins[6];
 
-    _numActuators = numActuators;
-    _actuatorIds = actuatorIds;
+    _numCommands = numCommands;
+    _commandIds = commandIds;
 
     pinMode(lox_2_pin, OUTPUT);
     pinMode(lox_5_pin, OUTPUT);
@@ -71,18 +71,18 @@ namespace Solenoids {
 
     digitalWrite(high_sol_pin, high_sol_state);
 
-    lox_2.setId(_actuatorIds[0]);
-    lox_5.setId(_actuatorIds[1]);
-    lox_G.setId(_actuatorIds[2]);
+    lox_2.setId(_commandIds[0]);
+    lox_5.setId(_commandIds[1]);
+    lox_G.setId(_commandIds[2]);
 
-    prop_2.setId(_actuatorIds[3]);
-    prop_5.setId(_actuatorIds[4]);
-    prop_G.setId(_actuatorIds[5]);
+    prop_2.setId(_commandIds[3]);
+    prop_5.setId(_commandIds[4]);
+    prop_G.setId(_commandIds[5]);
 
-    high_p.setId(_actuatorIds[6]);
+    high_p.setId(_commandIds[6]);
 
-    arm_rocket.setId(_actuatorIds[7]);
-    launch.setId(_actuatorIds[8]);
+    arm_rocket.setId(_commandIds[7]);
+    launch.setId(_commandIds[8]);
 
 
   }
@@ -354,15 +354,15 @@ namespace Solenoids {
     return prop_gems_state;
   }
 
-  SolenoidActuator lox_2("LOX 2 Way", &armLOX, &disarmLOX);
-  SolenoidActuator lox_5("LOX 5 Way", &openLOX, &closeLOX);
-  SolenoidActuator lox_G("LOX Gems", &ventLOXGems, &closeLOXGems);
-  SolenoidActuator prop_2("Propane 2 Way", &armPropane, &disarmPropane);
-  SolenoidActuator prop_5("Propane 5 Way", &openPropane, &closePropane);
-  SolenoidActuator prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
+  SolenoidCommand lox_2("LOX 2 Way", &armLOX, &disarmLOX);
+  SolenoidCommand lox_5("LOX 5 Way", &openLOX, &closeLOX);
+  SolenoidCommand lox_G("LOX Gems", &ventLOXGems, &closeLOXGems);
+  SolenoidCommand prop_2("Propane 2 Way", &armPropane, &disarmPropane);
+  SolenoidCommand prop_5("Propane 5 Way", &openPropane, &closePropane);
+  SolenoidCommand prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
 
-  SolenoidActuator high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
+  SolenoidCommand high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
 
-  SolenoidActuator arm_rocket("Arm Rocket", &armAll, &disarmAll);
-  SolenoidActuator launch("Launch Rocket", &LAUNCH, &endBurn);
+  SolenoidCommand arm_rocket("Arm Rocket", &armAll, &disarmAll);
+  SolenoidCommand launch("Launch Rocket", &LAUNCH, &endBurn);
 }

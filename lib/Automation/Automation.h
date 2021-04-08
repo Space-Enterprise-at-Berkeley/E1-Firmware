@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <solenoids.h>
+#include <command.h>
 
 using namespace std;
 
@@ -115,19 +116,19 @@ extern struct autoEventList* _eventList;
   void detectPeaks(float loxInjector, float propInjector);
 }
 
-class AutomationSequenceActuator : public Actuator {
+class AutomationSequenceCommand : public Command {
 
   typedef int (*func_t)();
 
   public:
-    AutomationSequenceActuator(std::string name, uint8_t id, func_t startFunc, func_t endFunc):
-      Actuator(name, id),
+    AutomationSequenceCommand(std::string name, uint8_t id, func_t startFunc, func_t endFunc):
+      Command(name, id),
       startSequence(startFunc),
       endSequence(endFunc)
     {}
 
-    AutomationSequenceActuator(std::string name, func_t startFunc, func_t endFunc):
-      Actuator(name),
+    AutomationSequenceCommand(std::string name, func_t startFunc, func_t endFunc):
+      Command(name),
       startSequence(startFunc),
       endSequence(endFunc)
     {}
@@ -146,7 +147,6 @@ class AutomationSequenceActuator : public Actuator {
   private:
     func_t startSequence;
     func_t endSequence;
-
 };
 
 #endif

@@ -17,7 +17,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include <actuator.h>
+#include <command.h>
 
 const uint8_t qMaxSize = 40;
 
@@ -119,7 +119,7 @@ extern struct Queue *sdBuffer;
 
 extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo *sensors;
-extern const uint8_t numActuators;
-extern ActuatorArray actuators;
+extern const uint8_t numCommands;
+extern CommandArray commands;
 extern int packetCounter;
 #endif // _COMMON_H_
