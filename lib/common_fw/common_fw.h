@@ -134,6 +134,7 @@ extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo *sensors;
 extern struct valveInfo *valves;
 extern int packetCounter;
+extern bool receivedCommand;
 
 extern unsigned int port;
 extern EthernetUDP Udp;

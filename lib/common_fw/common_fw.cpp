@@ -8,18 +8,19 @@
 SdFat sd;
 File file;
 
+bool receivedCommand = false;
+
 int packetCounter = 0;
 
 char buffer[75];
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
-
-//char ethPacketBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
+#ifdef ETH
 EthernetUDP Udp;
 unsigned int port = 6969; // try to find something that can be the same on gs
 IPAddress groundIP(10, 0, 0, 226);
-
+#endif
 
 /*
  * Constructs packet in the following format:
@@ -52,7 +53,7 @@ String make_packet(int id, bool error) {
     check_ = "0" + check_;
   }
   packet_content += check_;
-  String packet = "{" + packet_content + "}";
+  String packet = "{" + packet_content + "}\n";
   incrementPacketCounter();
   return packet;
 }
@@ -170,8 +171,8 @@ void incrementPacketCounter() {
     packetCounter+=1;
 }
 
+#ifdef ETH
 bool setupEthernetComms(byte * mac, IPAddress ip){
-  // Ethernet.init();  // Teensy++ 2.0
   Serial.println("start eth setup");
   Serial.println(ip);
   Serial.flush();
@@ -203,6 +204,7 @@ void sendEthPacket(std::string packet){
   Udp.write(packet.c_str());
   Udp.endPacket();
 }
+#endif
 
 void debug(String str) {
   #ifdef DEBUG

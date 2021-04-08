@@ -35,7 +35,6 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
-bool receivedCommand = false;
 
 TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
 TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
@@ -51,6 +50,11 @@ void setup() {
 
   while(!Serial);
   while(!RFSerial);
+
+  #ifdef ETH
+  debug("Setup Ethernet");
+  setupEthernetComms(mac, ip);
+  #endif
 
   debug("Setting up Config");
   config::setup();
@@ -81,9 +85,6 @@ void setup() {
     packet = make_packet(101, true);
     RFSerial.println(packet);
   }
-
-  debug("Setup Ethernet");
-  setupEthernetComms(mac, ip);
 
   debug("Initializing Libraries");
 
@@ -182,9 +183,9 @@ void loop() {
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
     #ifdef ETH
-    sendEthPacket(packet);
+    sendEthPacket(packet.c_str());
     #endif
-    
+
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif

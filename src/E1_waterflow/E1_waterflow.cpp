@@ -84,7 +84,10 @@ void setup() {
     debug(String(packet_count));
   }
 
-  // config::setup();
+  #ifdef ETH
+  debug("Setup Ethernet");
+  setupEthernetComms(mac, ip);
+  #endif
 
   debug("Initializing Libraries");
 
@@ -98,14 +101,36 @@ void setup() {
 
 void loop() {
   // process command
+  #ifdef ETH
+  if (Udp.parsePacket()) {
+    debug("received udp packet");
+    IPAddress remote = Udp.remoteIP();
+    for (int i=0; i < 4; i++) {
+      Serial.print(remote[i], DEC);
+      if (i < 3) {
+        Serial.print(".");
+      }
+    }
+    if(Udp.remoteIP() == groundIP) {
+      debug("received packet came from groundIP");
+      receivedCommand = true;
+      Udp.read(command, 75);
+      debug(String(command));
+    }
+  }
+  #endif
   if (RFSerial.available() > 0) {
     int i = 0;
+
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
       i++;
     }
+    receivedCommand = true;
+  }
 
+  if(receivedCommand) {
     debug(String(command));
     int action = decode_received_packet(String(command), &valve, valves, numValves);
     if (action != -1) {
@@ -115,10 +140,9 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      packet_count++;
-      debug(String(packet_count));
       write_to_SD(packet.c_str(), file_name);
     }
+    receivedCommand = false;
   }
 
   /*
