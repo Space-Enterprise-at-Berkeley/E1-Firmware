@@ -8,9 +8,9 @@
 #include "recovery.h"
 
 #ifdef SERIAL_INPUT_DEBUG
-  HardwareSerial RFSerial = Serial;
+  #define RFSerial Serial
 #else
-  HardwareSerial RFSerial = Serial6;
+  #define RFSerial Serial6
 #endif
 
 #define GPS_Serial Serial8
@@ -117,7 +117,7 @@ void loop() {
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
 
-    #ifndef SERIAL_INPUT_DEBUG
+    #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);
