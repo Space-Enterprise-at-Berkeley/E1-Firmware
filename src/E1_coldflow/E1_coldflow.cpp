@@ -72,6 +72,9 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    #ifdef ETH
+    sendEthPacket(packet.c_str());
+    #endif
   }
 
   debug("Opening File");
@@ -84,6 +87,9 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
+    #ifdef ETH
+    sendEthPacket(packet.c_str());
+    #endif
   }
 
   debug("Initializing Libraries");
@@ -142,6 +148,9 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
       write_to_SD(packet.c_str(), file_name);
     }
     receivedCommand = false;
@@ -161,6 +170,9 @@ void loop() {
       packet = make_packet(29, false);
       Serial.println(packet);
       RFSerial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
 
       Automation::removeEvent();
       //reset timer

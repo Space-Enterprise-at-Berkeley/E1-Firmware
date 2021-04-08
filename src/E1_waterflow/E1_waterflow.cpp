@@ -66,8 +66,6 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
 
   debug("Opening File");
@@ -80,8 +78,6 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
 
   #ifdef ETH
@@ -140,6 +136,9 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
+      #ifdef ETH
+        sendEthPacket(packet.c_str());
+      #endif
       write_to_SD(packet.c_str(), file_name);
     }
     receivedCommand = false;
@@ -162,8 +161,9 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
-    packet_count++;
-    debug(String(packet_count));
+    #ifdef ETH
+      sendEthPacket(packet.c_str());
+    #endif
     write_to_SD(packet.c_str(), file_name);
   }
   delay(50);

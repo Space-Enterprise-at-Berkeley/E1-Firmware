@@ -53,7 +53,7 @@ String make_packet(int id, bool error) {
     check_ = "0" + check_;
   }
   packet_content += check_;
-  String packet = "{" + packet_content + "}\n";
+  String packet = "{" + packet_content + "}";
   incrementPacketCounter();
   return packet;
 }
@@ -148,11 +148,15 @@ void take_action(valveInfo *valve, int action) {
  */
 bool write_to_SD(std::string message, const char * file_name) {
     std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
+    // Serial.println("new message to write to sd: ");
+    // Serial.print(String(newMessage.c_str()));
     sdBuffer->enqueue(newMessage);
     if(sdBuffer->length >= qMaxSize) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
           uint8_t strLength = sdBuffer->dequeue(buffer);
+          // Serial.println("dequeue: ");
+          // Serial.print(String(buffer));
           file.write(buffer, strLength);
         }
         debug("flushing file");
@@ -173,12 +177,8 @@ void incrementPacketCounter() {
 
 #ifdef ETH
 bool setupEthernetComms(byte * mac, IPAddress ip){
-  Serial.println("start eth setup");
-  Serial.println(ip);
-  Serial.flush();
   Ethernet.begin(mac, ip);
-  Serial.println("finish eth begin");
-  Serial.flush();
+
   // Check for Ethernet hardware present
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
     Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
@@ -190,12 +190,7 @@ bool setupEthernetComms(byte * mac, IPAddress ip){
     exit(1);
   }
 
-  Serial.println("finish eth if ladder");
-  Serial.flush();
-
   Udp.begin(port);
-  Serial.println("finish udp begin ");
-  Serial.flush();
   return true;
 }
 

@@ -58,7 +58,7 @@ void setup() {
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
-    RFSerial.println(packet);
+    RFSerial.print(packet);
   }
 
   debug("Opening File");
@@ -70,7 +70,7 @@ void setup() {
   std::string start = "beginning writing data";
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
-    RFSerial.println(packet);
+    RFSerial.print(packet);
   }
 
   // Initialization of Components
@@ -117,10 +117,10 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
-    Serial.println(packet);
+    Serial.print(packet);
 
     #if SERIAL_INPUT != 1
-        RFSerial.println(packet);
+        RFSerial.print(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
@@ -190,7 +190,7 @@ void sensorReadFunc(int id) {
 void recoveryPacket() {
   Recovery::getAllStates(farrbconvert.sensorReadings);
   packet = make_packet(recoverAckId, false);
-  Serial.println(packet);
-  RFSerial.println(packet);
+  Serial.print(packet);
+  RFSerial.print(packet);
   write_to_SD(packet.c_str(), file_name);
 }
