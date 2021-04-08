@@ -20,6 +20,7 @@ EthernetUDP Udp;
 unsigned int port = 6969; // try to find something that can be the same on gs
 IPAddress groundIP(10, 0, 0, 226);
 
+
 /*
  * Constructs packet in the following format:
  * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
@@ -145,9 +146,7 @@ void take_action(valveInfo *valve, int action) {
  * dequeue everything and dump it onto the sd.
  */
 bool write_to_SD(std::string message, const char * file_name) {
-    char buffer2 [34];
-    std::string newMessage = std::string(itoa(millis(), buffer2, 10)) + ", " + message;
-    //std::string newMessage = std::to_string(millis()) + ", " + message;
+    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
     sdBuffer->enqueue(newMessage);
     if(sdBuffer->length >= qMaxSize) {
         int initialLength = sdBuffer->length;
