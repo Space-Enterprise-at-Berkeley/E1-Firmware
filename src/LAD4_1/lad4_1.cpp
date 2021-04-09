@@ -159,6 +159,9 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 9:
+      detector.getFlightState(farrbconvert.sensorReadings);
+      break;
     case 10:
       Recovery::getAllStates(farrbconvert.sensorReadings);
       break;

@@ -3,7 +3,6 @@
 #include <recovery.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
-#define DEBUG 0
 
 const uint8_t drogue_pin = 9;
 const uint8_t main_chute_pin = 10;
@@ -11,7 +10,7 @@ const uint8_t main_chute_pin = 10;
 std::string str_file_name = "LAD4_1.txt";
 const char * file_name = str_file_name.c_str();
 
-const uint8_t numSensors = 8;
+const uint8_t numSensors = 9;
 sensorInfo *sensors;
 
 // Constants
@@ -43,6 +42,7 @@ namespace config {
     sensors[5] = {"GPS AUX",      FLIGHT_BRAIN_ADDR, 12, 3};
     sensors[6] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[7] = {"Recovery Acknowledgement", FLIGHT_BRAIN_ADDR, 10, 25};
+    sensors[8] = {"Flight state", FLIGHT_BRAIN_ADDR, 9, 25};
 
     pinMode(drogue_pin, OUTPUT);
     pinMode(main_chute_pin, OUTPUT);

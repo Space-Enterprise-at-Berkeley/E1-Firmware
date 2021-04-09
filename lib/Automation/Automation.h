@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <solenoids.h>
+#include <command.h>
 
 using namespace std;
 
@@ -113,7 +114,39 @@ extern struct autoEventList* _eventList;
   void autoShutdown(int index);
   void detectPeak(float currentPressure, int recordingIndex);
   void detectPeaks(float loxInjector, float propInjector);
+}
 
+class AutomationSequenceCommand : public Command {
+
+  typedef int (*func_t)();
+
+  public:
+    AutomationSequenceCommand(std::string name, uint8_t id, func_t startFunc, func_t endFunc):
+      Command(name, id),
+      startSequence(startFunc),
+      endSequence(endFunc)
+    {}
+
+    AutomationSequenceCommand(std::string name, func_t startFunc, func_t endFunc):
+      Command(name),
+      startSequence(startFunc),
+      endSequence(endFunc)
+    {}
+
+    void parseCommand(float *data) {
+      if (data[0] == 1)
+        startSequence();
+      else
+        endSequence();
+    }
+
+    void confirmation(float *data) {
+      Automation::flowConfirmation(data);
+    }
+
+  private:
+    func_t startSequence;
+    func_t endSequence;
 };
 
 #endif
