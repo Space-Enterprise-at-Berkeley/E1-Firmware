@@ -95,7 +95,7 @@ void setup() {
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire);
 
   debug("Initializing Load Cell");
-  LoadCell::init(loadcells, numLoadCells, lcSckPins, lcDoutPins, lcCalVals);
+  LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
 }
 
 void loop() {
