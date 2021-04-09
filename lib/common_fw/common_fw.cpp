@@ -7,31 +7,20 @@
 
 SdFat sd;
 File file;
+
+bool receivedCommand = false;
+
 int packetCounter = 0;
 
 char buffer[75];
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
-/**
- * Add messages to a queue, and every n messages,
- * dequeue everything and dump it onto the sd.
- */
-bool write_to_SD(std::string message, const char * file_name) {
-    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
-    sdBuffer->enqueue(newMessage);
-    if(sdBuffer->length >= qMaxSize) {
-        int initialLength = sdBuffer->length;
-        for(int i = 0; i < initialLength; i++) {
-          uint8_t strLength = sdBuffer->dequeue(buffer);
-          file.write(buffer, strLength);
-        }
-        debug("flushing file");
-        file.flush();
-        return true;
-    }
-    return true;
-}
+#ifdef ETH
+EthernetUDP Udp;
+unsigned int port = 6969; // try to find something that can be the same on gs
+IPAddress groundIP(10, 0, 0, 226);
+#endif
 
 /*
  * Constructs packet in the following format:
@@ -109,13 +98,22 @@ int decode_received_packet(String packet, valveInfo *valve, valveInfo valves[], 
   }
 }
 
-void readPacketCounter(float *data) {
-    data[0] = packetCounter;
-    data[1] = -1;
-  }
+/*
+ * Calculates checksum for key values being sent to ground station:
+ * sensor_ID and it's corresponding data points
+ */
+uint16_t Fletcher16(uint8_t *data, int count) {
 
-void incrementPacketCounter() {
-    packetCounter+=1;
+  uint16_t sum1 = 0;
+  uint16_t sum2 = 0;
+
+  for (int index=0; index<count; index++) {
+    if (data[index] > 0) {
+      sum1 = (sum1 + data[index]) % 255;
+      sum2 = (sum2 + sum1) % 255;
+    }
+  }
+  return (sum2 << 8) | sum1;
 }
 
 /**
@@ -144,23 +142,64 @@ void take_action(valveInfo *valve, int action) {
     valve->ackFunc(farrbconvert.sensorReadings);
 }
 
-/*
- * Calculates checksum for key values being sent to ground station:
- * sensor_ID and it's corresponding data points
+/**
+ * Add messages to a queue, and every n messages,
+ * dequeue everything and dump it onto the sd.
  */
-uint16_t Fletcher16(uint8_t *data, int count) {
-
-  uint16_t sum1 = 0;
-  uint16_t sum2 = 0;
-
-  for (int index=0; index<count; index++) {
-    if (data[index] > 0) {
-      sum1 = (sum1 + data[index]) % 255;
-      sum2 = (sum2 + sum1) % 255;
+bool write_to_SD(std::string message, const char * file_name) {
+    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
+    // Serial.println("new message to write to sd: ");
+    // Serial.print(String(newMessage.c_str()));
+    sdBuffer->enqueue(newMessage);
+    if(sdBuffer->length >= qMaxSize) {
+        int initialLength = sdBuffer->length;
+        for(int i = 0; i < initialLength; i++) {
+          uint8_t strLength = sdBuffer->dequeue(buffer);
+          // Serial.println("dequeue: ");
+          // Serial.print(String(buffer));
+          file.write(buffer, strLength);
+        }
+        debug("flushing file");
+        file.flush();
+        return true;
     }
-  }
-  return (sum2 << 8) | sum1;
+    return true;
 }
+
+void readPacketCounter(float *data) {
+    data[0] = packetCounter;
+    data[1] = -1;
+  }
+
+void incrementPacketCounter() {
+    packetCounter+=1;
+}
+
+#ifdef ETH
+bool setupEthernetComms(byte * mac, IPAddress ip){
+  Ethernet.begin(mac, ip);
+
+  // Check for Ethernet hardware present
+  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    Serial.flush();
+    exit(1);
+  } else if (Ethernet.linkStatus() == LinkOFF) {
+    Serial.println("Ethernet cable is not connected.");
+    Serial.flush();
+    exit(1);
+  }
+
+  Udp.begin(port);
+  return true;
+}
+
+void sendEthPacket(std::string packet){
+  Udp.beginPacket(groundIP, port);
+  Udp.write(packet.c_str());
+  Udp.endPacket();
+}
+#endif
 
 void debug(String str) {
   #ifdef DEBUG

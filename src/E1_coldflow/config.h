@@ -3,13 +3,19 @@
 #include <Cryo_Thermocouple.h>
 #include <common_fw.h>
 #include <ADS1219.h>
-#include <Automation.h>
-
+#include "Automation.h"
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
 std::string str_file_name = "E1_coldflow.txt";
 const char * file_name = str_file_name.c_str();
+
+#ifdef ETH
+byte mac[] = {
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
+IPAddress ip(10, 0, 0, 177); // dependent on local network
+#endif
 
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
