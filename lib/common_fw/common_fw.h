@@ -136,8 +136,9 @@ extern struct valveInfo *valves;
 extern int packetCounter;
 extern bool receivedCommand;
 
-extern unsigned int port;
 extern EthernetUDP Udp;
+extern byte mac[];
+extern unsigned int port;
 extern IPAddress groundIP;
 
 #endif // _COMMON_H_

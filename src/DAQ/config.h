@@ -15,6 +15,10 @@
 std::string str_file_name = "DAQ.txt";
 const char * file_name = str_file_name.c_str();
 
+#ifdef ETH
+IPAddress ip(10, 0, 0, 177); // dependent on local network
+#endif
+
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
