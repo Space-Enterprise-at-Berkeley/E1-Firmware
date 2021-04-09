@@ -3,7 +3,6 @@
 #include <recovery.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
-#define DEBUG 0
 
 const uint8_t drogue_pin = 9;
 const uint8_t main_chute_pin = 10;

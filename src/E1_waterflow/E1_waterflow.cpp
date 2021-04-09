@@ -29,7 +29,6 @@ char command[75]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
@@ -57,17 +56,12 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
-  debug("Sensor IDs:");
-  debug(String(sensors[0].name));
-
   debug("Starting SD");
 
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
 
   debug("Opening File");
@@ -80,26 +74,26 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
-
-  // config::setup();
 
   debug("Initializing Libraries");
 
-  Solenoids::init(numSolenoids, solenoidPins);
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
+
+  Automation::init();
+  commands.updateIds();
 }
 
 void loop() {
   // process command
   if (RFSerial.available() > 0) {
     int i = 0;
+
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
       Serial.print(command[i]);
@@ -107,16 +101,13 @@ void loop() {
     }
 
     debug(String(command));
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
-    if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+    int8_t id = processCommand(String(command));
+    if (id != -1) {
+      packet = make_packet(id, false);
       Serial.println(packet);
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      packet_count++;
-      debug(String(packet_count));
       write_to_SD(packet.c_str(), file_name);
     }
   }
@@ -135,14 +126,13 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
+
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
-    packet_count++;
-    debug(String(packet_count));
     write_to_SD(packet.c_str(), file_name);
   }
-  delay(50);
+  delay(10);
 }
 
 
@@ -164,6 +154,9 @@ void sensorReadFunc(int id) {
     case 2:
       debug("Batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

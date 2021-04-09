@@ -9,8 +9,10 @@
 #define __TEMP_CONTROLLER__
 #include <cmath>
 #include "pid.h"
+#include <command.h>
 
 using namespace std;
+
 
 class TempController {
   private:
@@ -25,9 +27,44 @@ class TempController {
 
     PID *controller = new PID(255, 0, k_p, k_i, k_d);
 
+  protected:
+    bool humanOverride = false;
+    uint16_t humanSpecifiedValue = 300;
+
   public:
+
     TempController(int tempSetPoint, int algorithmChoice, int heaterPin);
     int calculateOutput(float currTemp);
     float controlTemp(float currTemp);
+};
+
+
+class HeaterCommand : public Command, public TempController {
+
+  public:
+    HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, int heaterPin):
+      Command(name, id),
+      TempController(tempSetPoint, algorithmChoice, heaterPin)
+    {}
+
+    HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin):
+      Command(name),
+      TempController(tempSetPoint, algorithmChoice, heaterPin)
+    {}
+
+    void parseCommand(float *data) {
+      if (data[0] == 300)
+        humanOverride = false;
+      else {
+        humanOverride = true;
+        humanSpecifiedValue = max(0, min(255, data[0]));
+      }
+    }
+
+    void confirmation(float *data) {
+      data[0] = humanOverride;
+      data[1] = (humanOverride)? humanSpecifiedValue : -1;
+      data[2] = -1;
+    }
 };
 #endif
