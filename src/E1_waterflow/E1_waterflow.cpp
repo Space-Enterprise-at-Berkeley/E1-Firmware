@@ -152,17 +152,17 @@ void sensorReadFunc(int id) {
   switch (id) {
     case 0:
       debug("Heater");
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      // Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
       debug("Ducers");
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
+      // Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
       debug("Batt");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
