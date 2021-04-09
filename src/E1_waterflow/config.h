@@ -65,19 +65,5 @@ namespace config {
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-
-    debug("Initializing Commands");
-    // Commands.insert(&Solenoids::lox_2);
-    // Commands.insert(&Solenoids::lox_5);
-    // Commands.insert(&Solenoids::lox_G);
-    // Commands.insert(&Solenoids::prop_2);
-    // Commands.insert(&Solenoids::prop_5);
-    // Commands.insert(&Solenoids::prop_G);
-    // Commands.insert(&Solenoids::high_p);
-    // Commands.insert(&Solenoids::arm_rocket);
-    // Commands.insert(&Solenoids::launch);
-    // Commands.insert(&fullFlow);
-    // Commands.insert(&loxFlow);
-    // valves[10] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
   }
 }

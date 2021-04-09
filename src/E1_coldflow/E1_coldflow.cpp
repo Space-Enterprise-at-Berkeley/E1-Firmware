@@ -71,10 +71,10 @@ void setup() {
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-  //   packet = make_packet(101, true);
-  //   RFSerial.println(packet);
-  // }
+  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+    packet = make_packet(101, true);
+    RFSerial.println(packet);
+  }
 
   debug("Initializing Libraries");
 
@@ -85,8 +85,8 @@ void setup() {
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
 
-  // _cryoTherms = Thermocouple::Cryo();
-  // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes);
+  _cryoTherms = Thermocouple::Cryo();
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
 
@@ -104,15 +104,14 @@ void loop() {
     }
 
     debug(String(command));
-    int8_t id = parseCommand(String(command));
+    int8_t id = processCommand(String(command));
     if (id != -1) {
-      //take_action(&valve, action);
       packet = make_packet(id, false);
       Serial.println(packet);
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      // write_to_SD(packet.c_str(), file_name);
+      write_to_SD(packet.c_str(), file_name);
     }
   }
 
@@ -155,7 +154,7 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
-    // write_to_SD(packet.c_str(), file_name);
+    write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
     if (sensor->id == 1 && Automation::inFlow()){
@@ -175,25 +174,25 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      // _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
+      _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      // Ducers::readAllPressures(farrbconvert.sensorReadings);
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
-      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
-      // _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
     case 6:
       // this hardcoded 3 is kinda sus.
-      // _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
+      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;

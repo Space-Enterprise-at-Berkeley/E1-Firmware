@@ -22,7 +22,6 @@ Command *tmpCommand;
 bool write_to_SD(std::string message, const char * file_name) {
     std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
     sdBuffer->enqueue(newMessage);
-    sdBuffer->dequeue(buffer);
     if(sdBuffer->length >= qMaxSize) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
@@ -78,7 +77,7 @@ String make_packet(int id, bool error) {
  * Populated the fields of the valve and returns the action to be taken
  * This is a pretty beefy function; can we split this up
  */
-int8_t parseCommand(String packet) {
+int8_t processCommand(String packet) {
   debug("Parse Command");
   debug(packet);
   int data_start_index = packet.indexOf(',');

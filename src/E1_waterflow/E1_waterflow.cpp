@@ -63,8 +63,6 @@ void setup() {
   if (!res) {
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
 
   debug("Opening File");
@@ -77,16 +75,11 @@ void setup() {
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
     RFSerial.println(packet);
-    packet_count++;
-    debug(String(packet_count));
   }
-
-  // config::setup();
 
   debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
-  // Solenoids::init(LOX_2_PIN, LOX_5_PIN, LOX_GEMS_PIN, PROP_2_PIN, PROP_5_PIN, PROP_GEMS_PIN, HIGH_SOL_PIN);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
@@ -109,9 +102,8 @@ void loop() {
     }
 
     debug(String(command));
-    int8_t id = parseCommand(String(command));
+    int8_t id = processCommand(String(command));
     if (id != -1) {
-      //take_action(&valve, action);
       packet = make_packet(id, false);
       Serial.println(packet);
       #if SERIAL_INPUT != 1
@@ -141,7 +133,7 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
-  delay(50);
+  delay(10);
 }
 
 
@@ -152,17 +144,17 @@ void sensorReadFunc(int id) {
   switch (id) {
     case 0:
       debug("Heater");
-      // Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
       debug("Ducers");
-      // Ducers::readAllPressures(farrbconvert.sensorReadings);
+      Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
       debug("Batt");
-      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
