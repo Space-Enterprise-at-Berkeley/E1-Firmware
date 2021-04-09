@@ -11,7 +11,7 @@ const uint8_t main_chute_pin = 10;
 std::string str_file_name = "LAD4_1.txt";
 const char * file_name = str_file_name.c_str();
 
-const uint8_t numSensors = 8;
+const uint8_t numSensors = 9;
 sensorInfo *sensors;
 
 // Constants
