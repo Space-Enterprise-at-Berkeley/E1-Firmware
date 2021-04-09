@@ -97,7 +97,7 @@ namespace config {
      loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
      loadcells[i].set_scale(lcCalVals[i]);
      loadcells[i].tare();
-  }
+    }
 
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
