@@ -11,7 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 1 // 0 is flight config, 1 is for debug
+#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
 #if SERIAL_INPUT
   #define RFSerial Serial
@@ -29,7 +29,6 @@ char command[75]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-// valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;

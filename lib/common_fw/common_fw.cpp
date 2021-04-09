@@ -132,33 +132,6 @@ int8_t processCommand(String packet) {
   }
 }
 
-/**
- *
-//  */
-// void chooseValveById(int id, valveInfo *valve, valveInfo valves[], int numValves) {
-//   for (int i = 0; i < numValves; i++) {
-//     if (valves[i].id == id) {
-//       *valve = valves[i];
-//       break;
-//     }
-//   }
-// }
-
-// /*
-//  * Calls the corresponding method for this valve with the appropriate
-//  * action in solenoids.h
-//  */
-// void take_action(valveInfo *valve, int action) {
-//   if (action == 1) {
-//     valve->openValve();
-//   } else if (action == 0) {
-//     valve->closeValve();
-//   }
-//   if(action != -1)
-//     valve->ackFunc(farrbconvert.sensorReadings);
-// }
-
-
 void readPacketCounter(float *data) {
     data[0] = packetCounter;
     data[1] = -1;

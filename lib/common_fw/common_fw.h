@@ -88,27 +88,12 @@ struct sensorInfo {
   int clock_freq;
 };
 
-/*
- * Data structure to store all information relevant to a specific valve.
- */
-// struct valveInfo {
-//   String name;
-//   int id;
-//   int (*openValve)();
-//   int (*closeValve)();
-//   void (*ackFunc)(float *data);
-// };
-
-
-
 String make_packet (int id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
-// void chooseValveById (int id, struct valveInfo *valve, valveInfo valves[], int numValves);
 bool write_to_SD(std::string message, const char * file_name);
 int8_t processCommand(String packet);
 void readPacketCounter(float *data);
 void incrementPacketCounter();
-// void take_action(valveInfo *valve, int action);
 uint16_t Fletcher16(uint8_t *data, int count);
 void debug(String str);
 
