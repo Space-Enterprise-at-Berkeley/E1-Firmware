@@ -85,21 +85,6 @@ namespace config {
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
 
-    debug("Initializing Commands");
-    // Commands.insert(&Solenoids::lox_2);
-    // Commands.insert(&Solenoids::lox_5);
-    // Commands.insert(&Solenoids::lox_G);
-    // Commands.insert(&Solenoids::prop_2);
-    // Commands.insert(&Solenoids::prop_5);
-    // Commands.insert(&Solenoids::prop_G);
-    // Commands.insert(&Solenoids::high_p);
-    // Commands.insert(&Solenoids::arm_rocket);
-    // Commands.insert(&Solenoids::launch);
-    // Commands.insert(&fullFlow);
-    // Commands.insert(&loxFlow);
-    // Commands.insert(&loxPTHeater);
-    // Commands.insert(&loxGemsHeater);
-
     pinMode(loxAdapterPTHeaterPin, OUTPUT);
     pinMode(loxGemsHeaterPin, OUTPUT);
   }

@@ -39,7 +39,6 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
-
 const uint8_t numCommands = 11;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
