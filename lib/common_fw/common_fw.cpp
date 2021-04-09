@@ -120,9 +120,13 @@ int8_t parseCommand(String packet) {
   if (_check == checksum) {
     debug("Checksum correct, taking action");
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
-    tmpCommand->parseCommand(command_data);
-    tmpCommand->confirmation(farrbconvert.sensorReadings);
-    return tmpCommand->ID();
+    if (tmpCommand != nullptr){
+      tmpCommand->parseCommand(command_data);
+      tmpCommand->confirmation(farrbconvert.sensorReadings);
+      return tmpCommand->ID();
+    } else {
+      return -1;
+    }
   } else {
     return -1;
   }

@@ -28,8 +28,9 @@ Command * CommandArray::get(uint8_t id) {
   } else {
     Serial.println("ERROR. ID NOT FOUND IN COMMAND ARRAY.");
     Serial.flush();
-    delay(1000);
-    exit(1);
+    return nullptr;
+    // delay(1000);
+    // exit(1);
   }
 }
 
