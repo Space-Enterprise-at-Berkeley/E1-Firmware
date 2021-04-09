@@ -145,6 +145,8 @@ namespace Automation {
   }
 
   int beginLoxFlow() {
+    Serial.println("begin lox FLOW");
+    Serial.flush();
     autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
     events[1] = {1000, &(act_armOpenLox), false};
@@ -154,6 +156,8 @@ namespace Automation {
   }
 
   int endLoxFlow() {
+    Serial.println("End lox flow");
+    Serial.flush();
     autoEvent events[4];
     events[0] = {0, &(act_armCloseLox), false};
     events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
@@ -177,6 +181,8 @@ namespace Automation {
   }
 
   int beginBothFlow() {
+    Serial.println("begin both FLOW");
+    Serial.flush();
     /* Check if rocket is in required state for a flow:
       Pressure - Closed
       LOX GEMS & Prop GEMS - Open

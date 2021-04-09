@@ -71,10 +71,10 @@ void setup() {
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-  }
+  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+  //   packet = make_packet(101, true);
+  //   RFSerial.println(packet);
+  // }
 
   debug("Initializing Libraries");
 
@@ -112,7 +112,7 @@ void loop() {
       #if SERIAL_INPUT != 1
         RFSerial.println(packet);
       #endif
-      write_to_SD(packet.c_str(), file_name);
+      // write_to_SD(packet.c_str(), file_name);
     }
   }
 
@@ -155,7 +155,7 @@ void loop() {
     #if SERIAL_INPUT != 1
         RFSerial.println(packet);
     #endif
-    write_to_SD(packet.c_str(), file_name);
+    // write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
     if (sensor->id == 1 && Automation::inFlow()){
