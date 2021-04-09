@@ -11,9 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 
-#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
-
-#if SERIAL_INPUT
+#ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
   #define RFSerial Serial6
@@ -108,7 +106,7 @@ void loop() {
     if (id != -1) {
       packet = make_packet(id, false);
       Serial.println(packet);
-      #if SERIAL_INPUT != 1
+      #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
       write_to_SD(packet.c_str(), file_name);
@@ -150,8 +148,7 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
-
-    #if SERIAL_INPUT != 1
+    #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);

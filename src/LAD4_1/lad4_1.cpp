@@ -7,9 +7,7 @@
 #include "GPS.h"
 #include "recovery.h"
 
-#define SERIAL_INPUT 0
-
-#if SERIAL_INPUT
+#ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
   #define RFSerial Serial6
