@@ -22,6 +22,7 @@ Command *tmpCommand;
 bool write_to_SD(std::string message, const char * file_name) {
     std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
     sdBuffer->enqueue(newMessage);
+    sdBuffer->dequeue(buffer);
     if(sdBuffer->length >= qMaxSize) {
         int initialLength = sdBuffer->length;
         for(int i = 0; i < initialLength; i++) {
