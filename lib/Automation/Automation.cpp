@@ -49,7 +49,6 @@ namespace Automation {
     return true;
   }
 
-
   bool inStartup() {
     return _startup;
   }
@@ -222,7 +221,6 @@ namespace Automation {
     data[1] = _shutdown ? 1 : 0;
     data[2] = -1;
   }
-
 
   float findAverage(int index) {
     float sum = 0;
