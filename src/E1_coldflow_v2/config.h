@@ -14,6 +14,13 @@
 std::string str_file_name = "E1_coldflow_v2.txt";
 const char * file_name = str_file_name.c_str();
 
+#ifdef ETH
+byte mac[] = {
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
+IPAddress ip(10, 0, 0, 178); // dependent on local network
+#endif
+
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
