@@ -27,7 +27,6 @@ char command[75]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
@@ -54,9 +53,6 @@ void setup() {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-
-  debug("Sensor IDs:");
-  debug(String(sensors[0].name));
 
   debug("Starting SD");
 
@@ -85,12 +81,15 @@ void setup() {
 
   debug("Initializing Libraries");
 
-  Solenoids::init(numSolenoids, solenoidPins);
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
+
+  Automation::init();
+  commands.updateIds();
 }
 
 void loop() {
@@ -126,10 +125,9 @@ void loop() {
 
   if(receivedCommand) {
     debug(String(command));
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
-    if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+    int8_t id = processCommand(String(command));
+    if (id != -1) {
+      packet = make_packet(id, false);
       Serial.println(packet);
       #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
@@ -164,7 +162,7 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
-  delay(50);
+  delay(10);
 }
 
 

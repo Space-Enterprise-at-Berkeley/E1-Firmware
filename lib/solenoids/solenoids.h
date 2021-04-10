@@ -6,6 +6,7 @@
 #define __SOLENOIDS__
 
 #include <Arduino.h>
+#include <command.h>
 
 using namespace std;
 
@@ -27,11 +28,8 @@ namespace Solenoids {
   extern uint8_t prop5_state;
   extern uint8_t prop_gems_state;
 
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds);
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins);
-  void getAllStates(float *data);
-  bool loxArmed();
-  bool propArmed();
   int toggleHighPressureSolenoid();
   int toggleLOX2Way();
   int toggleLOX5Way();
@@ -66,6 +64,60 @@ namespace Solenoids {
   int getProp2();
   int getProp5();
   int getPropGems();
-}
+  void getAllStates(float *data);
+  bool loxArmed();
+  bool propArmed();
 
+
+  class SolenoidCommand : public Command {
+
+    typedef int (*func_t)();
+
+    public:
+      SolenoidCommand(std::string name, uint8_t id, func_t openFunc, func_t closeFunc):
+        Command(name, id),
+        openSolenoid(openFunc),
+        closeSolenoid(closeFunc)
+      {}
+
+      SolenoidCommand(std::string name, func_t openFunc, func_t closeFunc):
+        Command(name),
+        openSolenoid(openFunc),
+        closeSolenoid(closeFunc)
+      {}
+
+      void parseCommand(float *data) {
+        Serial.println("Solenoid, parse command");
+        Serial.flush();
+        if (data[0] == 1) {
+          Serial.println("open");
+          openSolenoid();
+        } else {
+          Serial.println("close");
+          closeSolenoid();
+        }
+      }
+
+      void confirmation(float *data) {
+        Solenoids::getAllStates(data);
+      }
+
+    private:
+      func_t openSolenoid;
+      func_t closeSolenoid;
+
+  };
+
+  extern SolenoidCommand lox_2;
+  extern SolenoidCommand lox_5;
+  extern SolenoidCommand lox_G;
+  extern SolenoidCommand prop_2;
+  extern SolenoidCommand prop_5;
+  extern SolenoidCommand prop_G;
+
+  extern SolenoidCommand high_p;
+  extern SolenoidCommand arm_rocket;
+  extern SolenoidCommand launch;
+
+}
 #endif /* end of include guard: SOLENOIDS */

@@ -7,9 +7,7 @@
 #include "GPS.h"
 #include "recovery.h"
 
-#define SERIAL_INPUT 0
-
-#if SERIAL_INPUT
+#ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
   #define RFSerial Serial6
@@ -159,6 +157,9 @@ void sensorReadFunc(int id) {
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
+      break;
+    case 9:
+      detector.getFlightState(farrbconvert.sensorReadings);
       break;
     case 10:
       Recovery::getAllStates(farrbconvert.sensorReadings);
