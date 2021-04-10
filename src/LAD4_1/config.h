@@ -11,7 +11,7 @@ std::string str_file_name = "LAD4_1.txt";
 const char * file_name = str_file_name.c_str();
 
 const uint8_t numSensors = 9;
-sensorInfo *sensors;
+sensorInfo sensors[numSensors];
 
 // Constants
 const float batteryMonitorShuntR = 0.002; // ohms
