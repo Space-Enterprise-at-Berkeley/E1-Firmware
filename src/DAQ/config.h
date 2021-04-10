@@ -9,6 +9,7 @@
 #include <GpioExpander.h>
 #include <LTC4151.h>
 #include <loadCell.h>
+#include <command.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -57,9 +58,6 @@ uint8_t battMonINAAddr = 0x40;
 
 const uint8_t numSensors = 4;
 sensorInfo sensors[numSensors];
-
-const int numValves = 0;
-struct valveInfo *valves;
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps

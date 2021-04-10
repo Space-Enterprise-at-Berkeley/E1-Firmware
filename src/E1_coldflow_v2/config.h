@@ -59,9 +59,6 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];
 
-const int numValves = 12;
-struct valveInfo *valves;
-
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
 uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
