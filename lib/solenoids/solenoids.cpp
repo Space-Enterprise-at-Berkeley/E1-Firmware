@@ -90,6 +90,9 @@ namespace Solenoids {
 
     arm_rocket.setId(_commandIds[7]);
     launch.setId(_commandIds[8]);
+    if(_numCommands > 9) {
+      high_p_enable.setId(_commandIds[9]);
+    }
   }
 
   void getAllStates(float *data) {
@@ -379,6 +382,7 @@ namespace Solenoids {
   SolenoidCommand prop_5("Propane 5 Way", &openPropane, &closePropane);
   SolenoidCommand prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
 
+  SolenoidCommand high_p_enable("Enable High Pressure Solenoid", &enableHighPressureSolenoid, &disableHighPressureSolenoid);
   SolenoidCommand high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
 
   SolenoidCommand arm_rocket("Arm Rocket", &armAll, &disarmAll);

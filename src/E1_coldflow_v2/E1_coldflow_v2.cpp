@@ -9,7 +9,6 @@
 #include "config.h"
 
 #include <ducer.h>
-#include <tempController.h>
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
 
@@ -29,14 +28,13 @@ char command[75]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
 String packet;
-
-TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
-TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
+//
+// TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
+// TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
@@ -47,8 +45,6 @@ void setup() {
   Serial.begin(57600);
   RFSerial.begin(57600);
 
-  while(!Serial);
-  while(!RFSerial);
   delay(3000);
 
   #ifdef ETH
@@ -95,7 +91,7 @@ void setup() {
   debug("Initializing Libraries");
 
   debug("Initializing Solenoids");
-  Solenoids::init(numSolenoids, solenoidPins);
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   debug("Initializing battery monitor");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
@@ -146,10 +142,9 @@ void loop() {
 
   if(receivedCommand) {
     debug(String(command));
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
-    if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+    int8_t id = processCommand(String(command));
+    if (id != -1) {
+      packet = make_packet(id, false);
       Serial.println(packet);
       #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);

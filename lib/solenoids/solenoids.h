@@ -116,6 +116,7 @@ namespace Solenoids {
   extern SolenoidCommand prop_G;
 
   extern SolenoidCommand high_p;
+  extern SolenoidCommand high_p_enable;
   extern SolenoidCommand arm_rocket;
   extern SolenoidCommand launch;
 
