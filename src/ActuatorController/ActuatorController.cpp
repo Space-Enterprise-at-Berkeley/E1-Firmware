@@ -162,6 +162,10 @@ void loop() {
     }
   }
 
+  for (int i = 0; i < numLinActs; i++) {
+    
+  }
+
   /*
      Code for requesting data and relaying back to ground station
   */

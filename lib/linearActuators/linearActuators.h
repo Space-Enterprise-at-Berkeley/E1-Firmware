@@ -33,7 +33,7 @@ namespace LinearActuators {
 
   class LinActCommand : public Command {
 
-    typedef void (*func_t)(bool p);
+    typedef void (*func_t)();
 
     public:
       LinActCommand(std::string name, uint8_t id, bool pair, func_t forward, func_t back, func_t off, func_t damp):
@@ -52,10 +52,6 @@ namespace LinearActuators {
         _brake(damp)
       {}
 
-      void setPair(bool p) {
-        paired = p;
-      }
-
       void parseCommand(float *data) {
         #ifdef DEBUG
           Serial.println("lin act, parse command");
@@ -63,13 +59,13 @@ namespace LinearActuators {
         #endif
         // data[1] will specify millis, or full extension
         if (data[0] == 0) { // off
-          _off(paired);
+          _off();
         } else if (data[0] == 1)  { // forward
-          _forward(paired);
+          _forward();
         }  else if (data[0] == 2)  { // backward
-          _backward(paired);
+          _backward();
         } else if (data[0] == 3)  { // brake
-          _brake(paired);
+          _brake();
         }
       }
 
@@ -82,8 +78,6 @@ namespace LinearActuators {
       func_t _backward;
       func_t _brake;
       func_t _off;
-
-      bool paired = false;
   };
 
   extern LinActCommand zero;

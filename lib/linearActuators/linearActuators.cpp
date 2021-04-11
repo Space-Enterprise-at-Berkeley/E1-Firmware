@@ -59,7 +59,6 @@ namespace LinearActuators {
     four.setId(_commandIds[4]);
     five.setId(_commandIds[5]);
     six.setId(_commandIds[6]);
-
   }
 
   /** In 1, In 2, state
@@ -121,11 +120,11 @@ namespace LinearActuators {
     }
   }
 
-  LinActCommand zero("0", [&] (bool p) { return driveForward(0, p); }, [&] (bool p) { return driveBackward(0, p); }, [&] (bool p) { return switchOff(0, p); }, [&] (bool p) { return brake(0, p); });
-  LinActCommand one("1", [&] (bool p) { return driveForward(1, p); }, [&] (bool p) { return driveBackward(1, p); }, [&] (bool p) { return switchOff(1, p); }, [&] (bool p) { return brake(1, p); });
-  LinActCommand two("2", [&] (bool p) { return driveForward(2, p); }, [&] (bool p) { return driveBackward(2, p); }, [&] (bool p) { return switchOff(2, p); }, [&] (bool p) { return brake(2, p); });
-  LinActCommand three("3", [&] (bool p) { return driveForward(3, p); }, [&] (bool p) { return driveBackward(3, p); }, [&] (bool p) { return switchOff(3, p); }, [&] (bool p) { return brake(3, p); });
-  LinActCommand four("4", [&] (bool p) { return driveForward(4, p); }, [&] (bool p) { return driveBackward(4, p); }, [&] (bool p) { return switchOff(4, p); }, [&] (bool p) { return brake(4, p); });
-  LinActCommand five("5", [&] (bool p) { return driveForward(5, p); }, [&] (bool p) { return driveBackward(5, p); }, [&] (bool p) { return switchOff(5, p); }, [&] (bool p) { return brake(5, p); });
-  LinActCommand six("6", [&] (bool p) { return driveForward(6, p); }, [&] (bool p) { return driveBackward(6, p); }, [&] (bool p) { return switchOff(6, p); }, [&] (bool p) { return brake(6, p); });
+  LinActCommand zero("0", [&] () { return driveForward(0); }, [&] () { return driveBackward(0); }, [&] () { return switchOff(0); }, [&] () { return brake(0); });
+  LinActCommand one("1", [&] () { return driveForward(1); }, [&] () { return driveBackward(1); }, [&] () { return switchOff(1); }, [&] () { return brake(1); });
+  LinActCommand two("2", [&] () { return driveForward(2); }, [&] () { return driveBackward(2); }, [&] () { return switchOff(2); }, [&] () { return brake(2); });
+  LinActCommand three("3", [&] () { return driveForward(3); }, [&] () { return driveBackward(3); }, [&] () { return switchOff(3); }, [&] () { return brake(3); });
+  LinActCommand four("4", [&] () { return driveForward(4); }, [&] () { return driveBackward(4); }, [&] () { return switchOff(4); }, [&] () { return brake(4); });
+  LinActCommand five("5", [&] () { return driveForward(5); }, [&] () { return driveBackward(5); }, [&] () { return switchOff(5); }, [&] () { return brake(5); });
+  LinActCommand six("6", [&] () { return driveForward(6); }, [&] () { return driveBackward(6); }, [&] () { return switchOff(6); }, [&] () { return brake(6); });
 }
