@@ -100,6 +100,8 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
   Automation::init();
+
+  commands.updateIds();
 }
 
 void loop() {

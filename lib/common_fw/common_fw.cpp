@@ -22,7 +22,7 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 unsigned int port = 6969; // try to find something that can be the same on gs
-IPAddress groundIP(10, 0, 0, 226);
+IPAddress groundIP(10, 0, 0, 69);
 #endif
 
 Command *tmpCommand;

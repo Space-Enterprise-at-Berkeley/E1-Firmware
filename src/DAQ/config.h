@@ -1,8 +1,6 @@
-#include <solenoids.h>
 #include <Analog_Thermocouple.h>
 #include <Cryo_Thermocouple.h>
 #include <common_fw.h>
-#include <ADS1219.h>
 #include <ADS8167.h>
 #include <Automation.h>
 #include <INA219.h>

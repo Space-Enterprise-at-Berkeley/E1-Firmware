@@ -14,6 +14,7 @@ TempController::TempController(int tempSetPoint, int algorithmChoice, int heater
   if (algorithmChoice > 2 || algorithmChoice < 0) {
     exit(1);
   }
+  pinMode(_heaterPin, OUTPUT);
 }
 
 int TempController::calculateOutput(float currTemp) {

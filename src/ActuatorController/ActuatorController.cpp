@@ -12,12 +12,6 @@
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
 
-#ifdef SERIAL_INPUT_DEBUG
-  #define RFSerial Serial
-#else
-  #define RFSerial Serial6
-#endif
-
 // within loop state variables
 
 uint8_t val_index = 0;
@@ -38,12 +32,9 @@ String packet;
 
 void sensorReadFunc(int id);
 
-Thermocouple::Cryo _cryoTherms;
-
 void setup() {
   Wire.begin();
   Serial.begin(57600);
-  RFSerial.begin(57600);
 
   delay(3000);
 
@@ -67,7 +58,7 @@ void setup() {
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
-    RFSerial.println(packet);
+    Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
@@ -82,7 +73,7 @@ void setup() {
   std::string start = "beginning writing data";
   if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
     packet = make_packet(101, true);
-    RFSerial.println(packet);
+    Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
@@ -91,20 +82,12 @@ void setup() {
   debug("Initializing Libraries");
 
   debug("Initializing Solenoids");
-  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
+  ACSolenoids::init(numSolenoids, solenoidPins, solenoidCommandIds);
+  LinearActuators::init(numLinActs, numLinActPairs, in1Pins, in2Pins, linActPairIds, linActCommandIds);
   debug("Initializing battery monitor");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
-
-  debug("Initializing ducers");
-  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
-
-  debug("Initializing Thermocouples");
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
-
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire);
 
   Automation::init();
 
@@ -131,11 +114,11 @@ void loop() {
     }
   }
   #endif
-  if (RFSerial.available() > 0) {
+  if (Serial.available() > 0) {
     int i = 0;
 
-    while (RFSerial.available()) {
-      command[i] = RFSerial.read();
+    while (Serial.available()) {
+      command[i] = Serial.read();
       Serial.print(command[i]);
       i++;
     }
@@ -148,9 +131,6 @@ void loop() {
     if (id != -1) {
       packet = make_packet(id, false);
       Serial.println(packet);
-      #ifndef SERIAL_INPUT_DEBUG
-        RFSerial.println(packet);
-      #endif
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
@@ -172,7 +152,6 @@ void loop() {
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(29, false);
       Serial.println(packet);
-      RFSerial.println(packet);
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
@@ -200,10 +179,6 @@ void loop() {
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
-
-    #ifndef SERIAL_INPUT_DEBUG
-        RFSerial.println(packet);
-    #endif
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
@@ -223,34 +198,34 @@ void loop() {
  */
 void sensorReadFunc(int id) {
   switch (id) {
-    case 0:
-      debug("cryo specific read");
-      _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
-      break;
-    case 1:
-      debug("pressures all");
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
-      break;
-    case 2:
-      debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 4:
-      debug("Cryo all");
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
-      break;
-    case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
-      break;
-    case 6:
-      // this hardcoded 3 is kinda sus.
-      debug("cryo specific read");
-      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
-      break;
+    // case 0:
+    //   debug("cryo specific read");
+    //   _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
+    //   farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+    //   farrbconvert.sensorReadings[2] = -1;
+    //   break;
+    // case 1:
+    //   debug("pressures all");
+    //   Ducers::readAllPressures(farrbconvert.sensorReadings);
+    //   break;
+    // case 2:
+    //   debug("battery stats");
+    //   batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+    //   break;
+    // case 4:
+    //   debug("Cryo all");
+    //   _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+    //   break;
+    // case 5:
+    //   readPacketCounter(farrbconvert.sensorReadings);
+    //   break;
+    // case 6:
+    //   // this hardcoded 3 is kinda sus.
+    //   debug("cryo specific read");
+    //   _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
+    //   farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+    //   farrbconvert.sensorReadings[2] = -1;
+    //   break;
     default:
       Serial.println("some other sensor");
       break;

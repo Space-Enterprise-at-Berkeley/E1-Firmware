@@ -18,7 +18,7 @@ std::string str_file_name = "E1_coldflow_v2.txt";
 const char * file_name = str_file_name.c_str();
 
 #ifdef ETH
-IPAddress ip(10, 0, 0, 178); // dependent on local network
+IPAddress ip(10, 0, 0, 42); // dependent on local network
 #endif
 
 const uint8_t numCryoTherms = 4;

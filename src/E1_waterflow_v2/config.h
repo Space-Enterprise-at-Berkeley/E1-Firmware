@@ -14,7 +14,7 @@ std::string str_file_name = "E1_waterflow_v2.txt";
 const char * file_name = str_file_name.c_str();
 
 #ifdef ETH
-IPAddress ip(10, 0, 0, 178); // dependent on local network
+IPAddress ip(10, 0, 0, 42); // dependent on local network
 #endif
 
 const uint8_t numADCSensors = 2;
