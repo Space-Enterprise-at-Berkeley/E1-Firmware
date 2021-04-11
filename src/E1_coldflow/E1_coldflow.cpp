@@ -11,6 +11,7 @@
 #include <ducer.h>
 #include <tempController.h>
 #include <batteryMonitor.h>
+#include <realTimeClock.h>
 
 #define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
 
@@ -94,6 +95,8 @@ void setup() {
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
+  
+  RealTimeClock::init();
 }
 
 void loop() {
