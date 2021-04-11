@@ -26,6 +26,10 @@ namespace ACSolenoids {
       _states[i] = 0;
       digitalWrite(_pins[i], _states[i]);
     }
+    zero.setId(_ids[0]);
+    one.setId(_ids[1]);
+    two.setId(_ids[2]);
+    three.setId(_ids[3]);
   }
 
   void getAllStates(float *data) {
