@@ -13,10 +13,23 @@ namespace ACSolenoids {
   uint8_t *_states;
   uint8_t *_ids;
 
-  void init(uint8_t numSolenoids, uint8_t * pins, uint8_t * commandIds) {
+  TwoWire *_wire;
+  uint8_t *_outputMonAddrs;
+
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t * commandIds, TwoWire *wire, uint8_t *outputMonAddrs, float shuntR, float maxExCurrent) {
+    _wire = wire;
+    _outputMonAddrs = outputMonAddrs;
+    init(numSolenoids, solenoidPins, commandIds);
+    zero.initINA219(_wire, _outputMonAddrs[0], shuntR, maxExCurrent);
+    one.initINA219(_wire, _outputMonAddrs[1], shuntR, maxExCurrent);
+    two.initINA219(_wire, _outputMonAddrs[2], shuntR, maxExCurrent);
+    three.initINA219(_wire, _outputMonAddrs[3], shuntR, maxExCurrent);
+  }
+
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t * commandIds) {
 
     _numSolenoids = numSolenoids;
-    _pins = pins;
+    _pins = solenoidPins;
     _ids = commandIds;
 
     _states = (uint8_t *) malloc(numSolenoids * sizeof(uint8_t));
@@ -43,6 +56,17 @@ namespace ACSolenoids {
     data[_numSolenoids] = -1;
   }
 
+  void getAllCurrentDraw(float *data) {
+    #ifdef DEBUG
+      Serial.println("ACSolenoids, get all currents");
+      Serial.flush();
+    #endif
+    for (int i = 0; i < _numSolenoids; i++) {
+      data[i] = _commands[i]->outputMonitor.readShuntCurrent();
+    }
+    data[_numSolenoids] = -1;
+  }
+
   int open(int idx) {
     _states[idx] = 1;
     digitalWrite(_pins[idx], _states[idx]);
@@ -59,4 +83,7 @@ namespace ACSolenoids {
   ACSolenoidCommand one("one", [&] () { return open(1); }, [&] () { return close(1); });
   ACSolenoidCommand two("two", [&] () { return open(2); }, [&] () { return close(2); });
   ACSolenoidCommand three("three", [&] () { return open(3); }, [&] () { return close(3); });
+
+ACSolenoidCommand * _commands[4] = {&zero, &one, &two, &three};
+
 }

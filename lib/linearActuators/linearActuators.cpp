@@ -23,6 +23,25 @@ namespace LinearActuators {
   uint8_t * _pairIds;
   uint8_t * _commandIds;
 
+
+  LinActCommand zero("0", [&] () { return driveForward(0); }, [&] () { return driveBackward(0); }, [&] () { return switchOff(0); }, [&] () { return brake(0); });
+  LinActCommand one("1", [&] () { return driveForward(1); }, [&] () { return driveBackward(1); }, [&] () { return switchOff(1); }, [&] () { return brake(1); });
+  LinActCommand two("2", [&] () { return driveForward(2); }, [&] () { return driveBackward(2); }, [&] () { return switchOff(2); }, [&] () { return brake(2); });
+  LinActCommand three("3", [&] () { return driveForward(3); }, [&] () { return driveBackward(3); }, [&] () { return switchOff(3); }, [&] () { return brake(3); });
+  LinActCommand four("4", [&] () { return driveForward(4); }, [&] () { return driveBackward(4); }, [&] () { return switchOff(4); }, [&] () { return brake(4); });
+  LinActCommand five("5", [&] () { return driveForward(5); }, [&] () { return driveBackward(5); }, [&] () { return switchOff(5); }, [&] () { return brake(5); });
+  LinActCommand six("6", [&] () { return driveForward(6); }, [&] () { return driveBackward(6); }, [&] () { return switchOff(6); }, [&] () { return brake(6); });
+
+  LinActCommand * _linActCommands[7] = {&zero, &one, &two, &three, &four, &five, &six};
+
+  void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds, TwoWire *wire, uint8_t *outputMonAddrs, float shuntR, float maxExCurrent) {
+    init(numActuators, numPairs, in1Pins, in2Pins, pairIds, commandIds);
+    for (int i = 0; i < _numlinearActuators; i++){
+      _linActCommands[i]->initINA219(wire, outputMonAddrs[i], shuntR, maxExCurrent);
+    }
+  }
+
+
   void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds) {
     if(numPairs > numActuators || numPairs % 2 != 0) {
       Serial.println("Error Initializing Linear numActuators! numPairs should be less than numActuators and numPairs should be an even number.");
@@ -51,14 +70,8 @@ namespace LinearActuators {
 
       digitalWrite(_in1Pins[i], _in1PinState[i]);
       digitalWrite(_in2Pins[i], _in2PinState[i]);
+      _linActCommands[i]->setId(_commandIds[0]);
     }
-    zero.setId(_commandIds[0]);
-    one.setId(_commandIds[1]);
-    two.setId(_commandIds[2]);
-    three.setId(_commandIds[3]);
-    four.setId(_commandIds[4]);
-    five.setId(_commandIds[5]);
-    six.setId(_commandIds[6]);
   }
 
   /** In 1, In 2, state
@@ -79,6 +92,18 @@ namespace LinearActuators {
     }
     data[_numlinearActuators] = -1;
   }
+
+  void getAllCurrentDraw(float *data) {
+    #ifdef DEBUG
+      Serial.println("Actuators, get all currents");
+      Serial.flush();
+    #endif
+    for (int i = 0; i < _numlinearActuators; i++){
+      data[i] = _linActCommands[i]->outputMonitor.readShuntCurrent();
+    }
+    data[_numlinearActuators] = -1;
+  }
+
 
   void driveForward(uint8_t actuatorId, bool activatePair = true) {
     _in1PinState[actuatorId] = 0;
@@ -111,7 +136,7 @@ namespace LinearActuators {
   }
 
   void switchOff(uint8_t actuatorId, bool activatePair = true) {
-    _in1PinState[actuatorId] = 1;
+    _in1PinState[actuatorId] = 0;
     _in2PinState[actuatorId] = 0;
     digitalWrite(_in1Pins[actuatorId], _in1PinState[actuatorId]);
     digitalWrite(_in2Pins[actuatorId], _in2PinState[actuatorId]);
@@ -120,11 +145,4 @@ namespace LinearActuators {
     }
   }
 
-  LinActCommand zero("0", [&] () { return driveForward(0); }, [&] () { return driveBackward(0); }, [&] () { return switchOff(0); }, [&] () { return brake(0); });
-  LinActCommand one("1", [&] () { return driveForward(1); }, [&] () { return driveBackward(1); }, [&] () { return switchOff(1); }, [&] () { return brake(1); });
-  LinActCommand two("2", [&] () { return driveForward(2); }, [&] () { return driveBackward(2); }, [&] () { return switchOff(2); }, [&] () { return brake(2); });
-  LinActCommand three("3", [&] () { return driveForward(3); }, [&] () { return driveBackward(3); }, [&] () { return switchOff(3); }, [&] () { return brake(3); });
-  LinActCommand four("4", [&] () { return driveForward(4); }, [&] () { return driveBackward(4); }, [&] () { return switchOff(4); }, [&] () { return brake(4); });
-  LinActCommand five("5", [&] () { return driveForward(5); }, [&] () { return driveBackward(5); }, [&] () { return switchOff(5); }, [&] () { return brake(5); });
-  LinActCommand six("6", [&] () { return driveForward(6); }, [&] () { return driveBackward(6); }, [&] () { return switchOff(6); }, [&] () { return brake(6); });
 }

@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 #include <command.h>
+#include <INA219.h>
 
 using namespace std;
 
@@ -28,7 +29,7 @@ namespace Solenoids {
   extern uint8_t prop5_state;
   extern uint8_t prop_gems_state;
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds);
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs = nullptr);
 
   int toggleHighPressureSolenoid();
   int toggleLOX2Way();
@@ -86,6 +87,12 @@ namespace Solenoids {
         closeSolenoid(closeFunc)
       {}
 
+      void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
+        outputMonitor.begin(wire, inaAddr);
+        outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        outputMonitor.calibrate(shuntR, maxExpectedCurrent);
+      }
+
       void parseCommand(float *data) {
         Serial.println("Solenoid, parse command");
         Serial.flush();
@@ -105,7 +112,7 @@ namespace Solenoids {
     private:
       func_t openSolenoid;
       func_t closeSolenoid;
-
+      INA219 outputMonitor;
   };
 
   extern SolenoidCommand lox_2;

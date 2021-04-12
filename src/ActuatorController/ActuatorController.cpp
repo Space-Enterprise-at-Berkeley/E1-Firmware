@@ -11,6 +11,7 @@
 #include <ducer.h>
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
+#include <numeric>
 
 // within loop state variables
 
@@ -162,8 +163,17 @@ void loop() {
     }
   }
 
+  LinearActuators::getAllStates(farrbconvert.sensorReadings);
   for (int i = 0; i < numLinActs; i++) {
-    
+    if(farrbconvert.sensorReadings[i] > 0) {
+      if(LinearActuators::_linActCommands[i]->outputMonitor.readShuntCurrent() < 0.1){
+        LinearActuators::_linActCommands[i]->_off();
+        LinearActuators::_linActCommands[i]->endtime = -1;
+      } else if(LinearActuators::_linActCommands[i]->endtime != -1 && millis() > LinearActuators::_linActCommands[i]->endtime) {
+        LinearActuators::_linActCommands[i]->_off();
+        LinearActuators::_linActCommands[i]->endtime = -1;
+      }
+    }
   }
 
   /*
@@ -202,34 +212,23 @@ void loop() {
  */
 void sensorReadFunc(int id) {
   switch (id) {
-    // case 0:
-    //   debug("cryo specific read");
-    //   _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
-    //   farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
-    //   farrbconvert.sensorReadings[2] = -1;
-    //   break;
-    // case 1:
-    //   debug("pressures all");
-    //   Ducers::readAllPressures(farrbconvert.sensorReadings);
-    //   break;
-    // case 2:
-    //   debug("battery stats");
-    //   batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-    //   break;
-    // case 4:
-    //   debug("Cryo all");
-    //   _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
-    //   break;
-    // case 5:
-    //   readPacketCounter(farrbconvert.sensorReadings);
-    //   break;
-    // case 6:
-    //   // this hardcoded 3 is kinda sus.
-    //   debug("cryo specific read");
-    //   _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-    //   farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-    //   farrbconvert.sensorReadings[2] = -1;
-    //   break;
+    case 2:
+      debug("battery stats");
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 5:
+      readPacketCounter(farrbconvert.sensorReadings);
+      break;
+    case 49:
+      ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
+      break;
+    case 57:
+      LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
+
+      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1){
+        sensors[4].clock_freq = 5;
+      }
+      break;
     default:
       Serial.println("some other sensor");
       break;

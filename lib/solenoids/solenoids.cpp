@@ -17,6 +17,8 @@ namespace Solenoids {
   uint8_t *_commandIds;
   uint8_t _numCommands;
 
+  uint8_t *_outputMonitorAddrs;
+
   uint8_t high_sol_state = 0;
 
   uint8_t lox2_state = 0;
@@ -28,7 +30,7 @@ namespace Solenoids {
   uint8_t prop_gems_state = 0;
 
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs = nullptr) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -55,6 +57,8 @@ namespace Solenoids {
 
     _numCommands = numCommands;
     _commandIds = commandIds;
+
+    _outputMonitorAddrs = outputMonitorAddrs;
 
     pinMode(lox_2_pin, OUTPUT);
     pinMode(lox_5_pin, OUTPUT);

@@ -48,8 +48,11 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
-const uint8_t numCommands = 4;
-Command *backingStore[numCommands] = {&ACSolenoids::zero,  &ACSolenoids::one, &heater1, &heater2};
+const uint8_t numCommands = 11;
+Command *backingStore[numCommands] = {&ACSolenoids::zero,  &ACSolenoids::one, &heater1, &heater2,
+                                      &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
+                                      &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
+                                      &LinearActuators::six};
 CommandArray commands(numCommands, backingStore);
 
 namespace config {
@@ -65,11 +68,11 @@ namespace config {
 
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
-    sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[3] = {"Lox PT Temperature",   FLIGHT_BRAIN_ADDR, 0, 4}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
+    sensors[0] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 49, 10};
+    sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 57, 10};
+
+
   }
 }

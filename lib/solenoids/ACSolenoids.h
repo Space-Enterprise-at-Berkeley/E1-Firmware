@@ -7,6 +7,8 @@
 
 #include <Arduino.h>
 #include <command.h>
+#include <Wire.h>
+#include <INA219.h>
 
 using namespace std;
 
@@ -16,18 +18,17 @@ namespace ACSolenoids {
   extern uint8_t *states;
   extern uint8_t *ids;
 
+  extern TwoWire *_wire;
+  extern uint8_t *_outputMonAddrs;
+
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t * commandIds, TwoWire *wire, uint8_t *outputMonAddrs, float shuntR, float maxExCurrent);
   void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t * commandIds);
 
   int open(int idx);
   int close(int idx);
-  // int open1();
-  // int close1();
-  // int open2();
-  // int close2();
-  // int open3();
-  // int close3();
 
   void getAllStates(float *data);
+  void getAllCurrentDraw(float *data);
 
   class ACSolenoidCommand : public Command {
 
@@ -46,6 +47,12 @@ namespace ACSolenoids {
         closeSolenoid(closeFunc)
       {}
 
+      void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
+        outputMonitor.begin(wire, inaAddr);
+        outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        outputMonitor.calibrate(shuntR, maxExpectedCurrent);
+      }
+
       void parseCommand(float *data) {
         #ifdef DEBUG
           Serial.println("Solenoid, parse command");
@@ -62,15 +69,20 @@ namespace ACSolenoids {
         ACSolenoids::getAllStates(data);
       }
 
+    INA219 outputMonitor;
+
     private:
       func_t openSolenoid;
       func_t closeSolenoid;
+
   };
 
   extern ACSolenoidCommand zero;
   extern ACSolenoidCommand one;
   extern ACSolenoidCommand two;
   extern ACSolenoidCommand three;
+
+  extern ACSolenoidCommand * _commands[];
 
 }
 #endif /* end of include guard: SOLENOIDS */

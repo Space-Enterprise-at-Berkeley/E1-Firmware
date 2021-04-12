@@ -7,6 +7,8 @@
 
 #include <Arduino.h>
 #include <command.h>
+#include <Wire.h>
+#include <INA219.h>
 
 using namespace std;
 
@@ -24,8 +26,11 @@ namespace LinearActuators {
   extern uint8_t * _pairIds;
   extern uint8_t * _commandIds;
 
+
+  void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds, TwoWire *wire, uint8_t *outputMonAddrs, float shuntR, float maxExCurrent);
   void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds);
   void getAllStates(float *data);
+  void getAllCurrentDraw(float *data);
   void driveForward(uint8_t actuatorId, bool activatePair = true);
   void driveBackward(uint8_t actuatorId, bool activatePair = true);
   void brake(uint8_t actuatorId, bool activatePair = true);
@@ -52,20 +57,36 @@ namespace LinearActuators {
         _brake(damp)
       {}
 
+      void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
+        outputMonitor.begin(wire, inaAddr);
+        outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        outputMonitor.calibrate(shuntR, maxExpectedCurrent);
+      }
+
       void parseCommand(float *data) {
         #ifdef DEBUG
           Serial.println("lin act, parse command");
           Serial.flush();
         #endif
-        // data[1] will specify millis, or full extension
         if (data[0] == 0) { // off
           _off();
         } else if (data[0] == 1)  { // forward
           _forward();
+          if (data[1] == -1) {
+            endtime = -1;
+          } else {
+            endtime = millis() + data[1];
+          }
         }  else if (data[0] == 2)  { // backward
           _backward();
+          if (data[1] == -1) {
+            endtime = -1;
+          } else {
+            endtime = millis() + data[1];
+          }
         } else if (data[0] == 3)  { // brake
           _brake();
+          endtime = millis() + data[1];
         }
       }
 
@@ -73,11 +94,15 @@ namespace LinearActuators {
         LinearActuators::getAllStates(data);
       }
 
+      INA219 outputMonitor;
+      long endtime;
+      func_t _off;
+
     private:
       func_t _forward;
       func_t _backward;
       func_t _brake;
-      func_t _off;
+
   };
 
   extern LinActCommand zero;
@@ -88,6 +113,9 @@ namespace LinearActuators {
   extern LinActCommand five;
   extern LinActCommand six;
   extern LinActCommand seven;
+
+  extern LinActCommand * _linActCommands[];
+
 }
 
 #endif /* end of include guard: LINACT */
