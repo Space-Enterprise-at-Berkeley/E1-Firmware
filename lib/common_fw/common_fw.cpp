@@ -41,8 +41,8 @@ bool write_to_SD(std::string message, const char * file_name) {
  */
 String make_packet(int id, bool error) {
   String packet_content = (String)id;
-  packet_countent += ",";
-  packet_content += std::string(itoa(millis(), buffer, 10));
+  packet_content += ",";
+  packet_content += String(millis());
   packet_content += ",";
   if (!error) {
     for (int i=0; i<7; i++) {
