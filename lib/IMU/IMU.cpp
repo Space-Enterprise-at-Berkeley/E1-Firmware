@@ -20,6 +20,8 @@ void IMU::init(TwoWire *theWire){
     exit(1);
   }
   _bno.setExtCrystalUse(true);
+  //_bno.setAxisRemap(adafruit_bno055_axis_remap_config_t(0b00000110));
+  _bno.setAxisRemap(Adafruit_BNO055::REMAP_CONFIG_P2);
 }
 
 void IMU::readAccelerationData(float *data){
@@ -29,6 +31,16 @@ void IMU::readAccelerationData(float *data){
   data[1] = accelData.y();
   data[2] = accelData.z();
   data[3] = -1;
+}
+
+void IMU::readQuaternionData(float *data) {
+  imu::Quaternion quat = _bno.getQuat();
+
+  data[0] = quat.w() * 100000;
+  data[1] = quat.x() * 100000;
+  data[2] = quat.y() * 100000;
+  data[3] = quat.z() * 100000;
+  data[4] = -1;
 }
 
 void IMU::readOrientationData(float *data){

@@ -9,13 +9,10 @@
 #include "config.h"
 
 #include <ducer.h>
-#include <tempController.h>
 #include <batteryMonitor.h>
 #include <realTimeClock.h>
 
-#define SERIAL_INPUT 0 // 0 is flight config, 1 is for debug
-
-#if SERIAL_INPUT
+#ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
   #define RFSerial Serial6
@@ -31,14 +28,10 @@ char command[75]; //input command from GS
 */
 int sensor_checks[numSensors][2];
 
-valveInfo valve;
 sensorInfo *sensor;
 
 long startTime;
 String packet;
-
-TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
-TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
@@ -84,7 +77,7 @@ void setup() {
 
   debug("Initializing Libraries");
 
-  Solenoids::init(numSolenoids, solenoidPins);
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
@@ -97,6 +90,8 @@ void setup() {
   Automation::init();
   
   RealTimeClock::init();
+
+  commands.updateIds();
 }
 
 void loop() {
@@ -106,17 +101,15 @@ void loop() {
 
     while (RFSerial.available()) {
       command[i] = RFSerial.read();
-      Serial.print(command[i]);
       i++;
     }
 
     debug(String(command));
-    int action = decode_received_packet(String(command), &valve, valves, numValves);
-    if (action != -1) {
-      take_action(&valve, action);
-      packet = make_packet(valve.id, false);
+    int8_t id = processCommand(String(command));
+    if (id != -1) {
+      packet = make_packet(id, false);
       Serial.println(packet);
-      #if SERIAL_INPUT != 1
+      #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
       write_to_SD(packet.c_str(), file_name);
@@ -158,14 +151,13 @@ void loop() {
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
-
-    #if SERIAL_INPUT != 1
+    #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
+    if (sensor->id == 1 && Automation::inFlow()){
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
 

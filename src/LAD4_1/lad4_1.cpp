@@ -7,9 +7,7 @@
 #include "GPS.h"
 #include "recovery.h"
 
-#define SERIAL_INPUT 0
-
-#if SERIAL_INPUT
+#ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
   #define RFSerial Serial6
@@ -35,35 +33,26 @@ void recoveryPacket();
 
 IMU _imu;
 Barometer bmp;
-GPS gps(&GPS_Serial);
+GPS gps(GPS_Serial);
 ApogeeDetection detector;
 
 void setup() {
-  // Setting up Serial Connection
   Wire.begin();
-  Serial.begin(57600);
-  Serial.println("starting");
+  Serial.begin(9600);
   RFSerial.begin(57600);
-   Serial.println("starting");
-  // Serial.println("starting");
-  // Serial.println("starting");
-  //Waiting for Serial Connection
-  while(!Serial);
-  Serial.println("starting");
-  while(!RFSerial);
-  Serial.println("starting");
+
+  delay(3000);
+
   debug("Setting up Config");
   config::setup();
-  //Serial.println("starting");
-  debug("Initializing Sensor Frequencies");
 
+  debug("Initializing Sensor Frequencies");
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
 
   debug("Starting SD");
-
   int res = sd.begin(SdioConfig(FIFO_SDIO));
   if (!res) {
     packet = make_packet(101, true);
@@ -74,7 +63,6 @@ void setup() {
   file.open(file_name, O_RDWR | O_CREAT);
 
   debug("Writing Dummy Data");
-  // NEED TO DO THIS BEFORE ANY CALLS TO write_to_SD
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
@@ -86,6 +74,7 @@ void setup() {
   // Initialization of Components
   debug("Initializing Libraries");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
+
   _imu.init(&Wire);
   bmp.init(&Wire);
   gps.init();
@@ -93,21 +82,18 @@ void setup() {
   bmp.readAllData(farrbconvert.sensorReadings);
   initAlt = farrbconvert.sensorReadings[0];
   _imu.readAccelerationData(farrbconvert.sensorReadings);
-  initAcc_z = farrbconvert.sensorReadings[2];
+  initAcc_z = farrbconvert.sensorReadings[0];
 
-  detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z);
-  Recovery::init(DROGUE_PIN, MAIN_CHUTE_PIN);
+  detector.init(avgSampleRate, altVar, accVar, initAlt, initAcc_z, mainChuteDeployLoc);
+  Recovery::init(drogue_pin, main_chute_pin);
 }
 
 void loop() {
 
   for (int i = 0; i < 100; i++) {
-    char c = gps.readChar();
+    gps.readChar();
     gps.checkNMEA();
   }
-  // process command
-  gps.readChar();
-  gps.checkNMEA();
 
   if (RFSerial.available() > 0) {
     int i = 0;
@@ -136,6 +122,32 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
   }
+
+  if(sensor->id == 14) { // imu accel
+    if (detector.onGround()){
+      detector.engineStarted();
+    } else if(detector.engineLit() && !detector.onGround()) {
+      detector.MeCo();
+    } else if (detector.engineOff() && !detector.drogueReleased() && !detector.onGround() && detector.atApogee()) {
+      //deploy chute
+      Recovery::releaseDrogueChute();
+      recoveryPacket();
+      delay(300);
+
+      sensors[4].clock_freq = 1;  //GPS Lat Long
+      sensors[5].clock_freq = 1;  //GPS Aux
+      sensors[1].clock_freq = 10; //IMU Orientation
+      sensors[6].clock_freq = 20; //Number Packets
+
+      Recovery::closeDrogueActuator();
+    } else if (detector.drogueReleased() && !detector.mainReleased() && !detector.onGround() && detector.atMainChuteDeployLoc()){
+      Recovery::releaseMainChute();
+      recoveryPacket();
+      delay(500);
+      Recovery::closeMainActuator();
+    }
+  }
+
   delay(10);
 }
 
@@ -147,6 +159,12 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 9:
+      detector.getFlightState(farrbconvert.sensorReadings);
+      break;
+    case 10:
+      Recovery::getAllStates(farrbconvert.sensorReadings);
+      break;
     case 11:
       gps.readPositionData(farrbconvert.sensorReadings);
       break;
@@ -156,27 +174,13 @@ void sensorReadFunc(int id) {
     case 13:
       bmp.readAllData(farrbconvert.sensorReadings);
       detector.updateAlt(farrbconvert.sensorReadings[0]);
-      if(passedApogee && aroundMainDeploy()) {
-        Recovery::releaseMainChute();
-        recoveryPacket();
-        delay(500);
-        Recovery::closeMainActuator();
-      }
       break;
     case 14:
       _imu.readAccelerationData(farrbconvert.sensorReadings);
-      if (detector.weAtMECOBro()) {
-        MECO = true;
-      }
-      if(MECO & detector.atApogee()) {
-        passedApogee = true;
-        Recovery::releaseDrogueChute();
-        recoveryPacket();
-      }
-      detector.updateAcc(farrbconvert.sensorReadings[2]);
+      detector.updateAcc(farrbconvert.sensorReadings[0]);
       break;
     case 15:
-      _imu.readOrientationData(farrbconvert.sensorReadings);
+      _imu.readQuaternionData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
@@ -184,17 +188,9 @@ void sensorReadFunc(int id) {
   }
 }
 
-bool aroundMainDeploy() {
-  double alt = detector.getAlt();
-  if(290 <= alt && alt <= 310)
-    return true;
-  else
-    return false;
-}
-
 void recoveryPacket() {
   Recovery::getAllStates(farrbconvert.sensorReadings);
-  packet = make_packet(10, false);
+  packet = make_packet(recoverAckId, false);
   Serial.println(packet);
   RFSerial.println(packet);
   write_to_SD(packet.c_str(), file_name);

@@ -11,8 +11,8 @@
 int commMethod;
 Adafruit_GPS _gps;
 
-GPS::GPS(HardwareSerial *ser) {
-  _gps = Adafruit_GPS(ser);
+GPS::GPS(HardwareSerial &ser) {
+  _gps = Adafruit_GPS(&ser);
   commMethod = 1;
   //init();
 }
@@ -39,7 +39,7 @@ void GPS::init() {
     _gps.begin(9600);
 
     _gps.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-    _gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
+    _gps.sendCommand(PMTK_SET_NMEA_UPDATE_10HZ); // 1 Hz update rate
     _gps.sendCommand(PGCMD_ANTENNA);
 
     delay(1000);
@@ -47,7 +47,7 @@ void GPS::init() {
 
 bool GPS::dataAvailable() {
     return _gps.newNMEAreceived();
-  }
+}
 
 bool GPS::gotSatelliteFix() {
    return _gps.fix;
