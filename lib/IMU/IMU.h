@@ -20,6 +20,7 @@ class IMU {
     void readAccelerationData(float *data);
     void readOrientationData(float *data);
     void readOrientationChangeData(float *data);
+    void readQuaternionData(float *data);
     void init(TwoWire *theWire);
 
   private:

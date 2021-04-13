@@ -38,7 +38,6 @@ namespace Automation {
   float prevPressures[2][5]; //array containing 2 arrays, which contain the previous 5 pressure values of lox, prop, respectively.
   int sizes[2]= {0,0};
 
-
 //-----------------------Functions-----------------------
 
   bool init() {
@@ -49,7 +48,6 @@ namespace Automation {
     _eventList->length = 0;
     return true;
   }
-
 
   bool inStartup() {
     return _startup;
@@ -62,7 +60,6 @@ namespace Automation {
   bool inShutdown() {
     return _shutdown;
   }
-
 
   /*
    * For now copies the passed into autoEvent into the eventList. Copying requires slightly more
@@ -224,7 +221,6 @@ namespace Automation {
     data[1] = _shutdown ? 1 : 0;
     data[2] = -1;
   }
-
 
   float findAverage(int index) {
     float sum = 0;

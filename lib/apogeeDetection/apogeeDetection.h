@@ -9,22 +9,44 @@
 #define APOGEE_H_
 
 #include <kalman.h>
+#include <cmath>
 
 using namespace std;
 using namespace Eigen;
+
+const uint8_t numPreviousAccel = 10;
+
+typedef enum {
+    ON_PAD = 0,
+    ENGINE_ON_ASCENT = 1,
+    ENGINE_OFF_ASCENT = 2,
+    DESCENT = 3
+  } flight_state_t;
 
 class ApogeeDetection
 {
     public:
       ApogeeDetection();
-      void init(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc);
+      ApogeeDetection(double dt, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc);
+      void init      (double dt, double altitudeVar, double accelVar, double initAlt, double initAcc, double mainChuteDeployLoc);
       ~ApogeeDetection();
+      bool onGround();
+      bool engineLit();
+      bool engineOff();
+      bool drogueReleased();
+      bool mainReleased();
+
       void filter(double altitude, double accel_z);
       bool atApogee();
-      void updateAlt(float data);
-      void updateAcc(float data);
+      bool atMainChuteDeployLoc();
+      bool MeCo();
+      bool engineStarted();
+
+      flight_state_t getFlightState(float * data);
       double getAlt();
-      bool weAtMECOBro();
+      void updateAlt(double data);
+      void updateAcc(double data);
+
     private:
       int _n;
       int _m;
@@ -39,14 +61,22 @@ class ApogeeDetection
       Kalman* kalmanfilter;
 
       double altitude;
-      double acc_z;
+      double accel_z;
       double previousAltitude;
-      double previousAcc_z;
+      double previousAccel[numPreviousAccel] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      double mainDeployLoc;
       double DeltaT;
       int outlook = 10; // how many data points should we be descending for before deciding
+      double tolerance = 20; // how close to mainDeployLoc does the reading need to be (metres)
       int currConsecutiveDecreases = 0;
-      int accOutlook = 5;
-      int currAccConDec = 0;
+      int currConsecutiveIncreases = 0;
+      int currConsecutiveAccelDecreases = 0;
+
+      flight_state_t currState = ON_PAD;
+      bool _onGround = true;
+      bool _engineLit = false;
+      bool _drogueReleased = false;
+      bool _mainReleased = false;
 };
 
 #endif /* APOGEE_H_ */

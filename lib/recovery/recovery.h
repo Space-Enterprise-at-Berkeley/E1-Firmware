@@ -9,18 +9,22 @@
 using namespace std;
 
 namespace Recovery {
+
   uint8_t drogue_pin, main_pin;
+
   int drogue_chute_state = 0;
   int main_chute_state = 0;
+
   int deployedDrogue = 0;
   int deployedMain = 0;
 
   void init(uint8_t droguePin, uint8_t mainPin) {
     drogue_pin = droguePin;
     main_pin = mainPin;
+
     drogue_chute_state = 0;
     main_chute_state = 0;
-    
+
     digitalWrite(drogue_pin, drogue_chute_state);
     digitalWrite(main_pin, main_chute_state);
   }
