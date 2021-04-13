@@ -251,6 +251,19 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
+    case 8:
+      // this hardcoded 3 is kinda sus.
+      debug("propane gems");
+      _cryoTherms.readSpecificCryoTemp(0, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 16:
+      debug("propane pt");
+      _cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
     default:
       Serial.println("some other sensor");
       break;

@@ -9,6 +9,7 @@
 #include <Arduino.h>
 #include <ADS1219.h>
 #include <ADS8167.h>
+#include <cmath>
 
 
 using namespace std;
@@ -35,36 +36,20 @@ namespace Ducers {
     _adcs = adcs;
   }
 
-  // void init (int numSensors, int * adcIndices, int * adcChannels, int * ptTypes, ADS8167 ** adcs) {
-  //   _numSensors = numSensors;
-  //   _adcIndices = adcIndices;
-  //   _adcChannels = adcChannels;
-  //   _ptTypes = ptTypes;
-  //   _adcs = adcs;
-  // }
-
   float interpolateHigh(long rawValue) {
       double values[2][2] =  {
                 { 0, 0 },
-                { 64850, 5000 },
+                { 64850, 5000 }
     };
-    bool check = true;
-    int index = 0;
-    while(check){
-      if(rawValue > values[index][0]){index++;}
-      else if (rawValue < values[0][0]){return 0;}
 
-        check = false;
-      }
-      float upperBound = values[index][0];
-      float lowerBound = values[index-1][0];
-      float upperBoundPressure = values[index][1];
-      float lowerBoundPressure = values[index-1][1];
-      float proportion = (rawValue - lowerBound)/(upperBound - lowerBound);
-      float convertedValue = proportion * (upperBoundPressure - lowerBoundPressure) + lowerBoundPressure;
-        //float convertedValue = lerp(values[index-1][1], values[index][1], proportion);
-
-      return convertedValue;
+    // return std::lerp(0.0, 5000.0, (double)rawValue/64850);
+    float upperBound = values[1][0];
+    float lowerBound = values[0][0];
+    float upperBoundPressure = values[1][1];
+    float lowerBoundPressure = values[0][1];
+    float proportion = (rawValue - lowerBound)/(upperBound - lowerBound);
+    float convertedValue = proportion * (upperBoundPressure - lowerBoundPressure) + lowerBoundPressure;
+    return convertedValue;
   }
 
   float interpolateLow(long rawValue) {
@@ -72,6 +57,7 @@ namespace Ducers {
                 {0, -123.89876445934394},
                 {64901, 1131.40825} // 2^23 - 1
               };
+    // return std::lerp(-123.89876445934394, 1131.40825, (double) rawValue / 64901);
     float upperBound = values[1][0];
     float lowerBound = values[0][0];
     float upperBoundPressure = values[1][1];
@@ -98,8 +84,8 @@ namespace Ducers {
           Serial.println("reading high pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
-        // data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
-        data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
+        data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
+        //data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
         i++;
       }
     }
