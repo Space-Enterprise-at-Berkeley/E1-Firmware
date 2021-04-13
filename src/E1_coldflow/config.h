@@ -4,14 +4,14 @@
 #include "common_fw.h"
 #include <ADS1219.h>
 #include "Automation.h"
-
+#include "realTimeClock.h"
 
 
 #define FLIGHT_BRAIN_ADDR 0x00
 #define DEBUG 1
 
-std::string str_file_name = "E1_coldflow.txt";
-const char * file_name = str_file_name.c_str();
+std::string str_file_name;
+const char * file_name;
 
 const int numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
@@ -51,6 +51,10 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 namespace config {
   void setup() {
+    debug("File Name:");
+    str_file_name = "E1_Coldflow_" + RealTimeClock::getFileTime() + ".txt";
+    file_name = str_file_name.c_str();
+    debug(file_name);
 
     debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {

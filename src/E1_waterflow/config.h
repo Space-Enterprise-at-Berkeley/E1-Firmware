@@ -2,6 +2,7 @@
 #include <Analog_Thermocouple.h>
 #include "common_fw.h"
 #include <ADS1219.h>
+#include <realTimeClock.h>
 
 
 #define FLIGHT_BRAIN_ADDR 0x00
@@ -38,6 +39,11 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 namespace config {
   void setup() {
+    debug("File Name:");
+    str_file_name = "E1_Waterflow_" + RealTimeClock::getFileTime() + ".txt";
+    file_name = str_file_name.c_str();
+    debug(file_name);
+
     debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {
       ads[i].init(adcDataReadyPins[i], ADSAddrs[i], &Wire);

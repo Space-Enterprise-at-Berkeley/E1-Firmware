@@ -1,5 +1,6 @@
 
 #include "common_fw.h"
+#include "realTimeClock.h"
 
 // ============ THIS IS NOT UP TO DATE ==============
 // ============ THIS NEEDS TO BE SPECIFIED ==========
@@ -10,8 +11,8 @@
 const uint8_t DROGUE_PIN = 9;
 const uint8_t MAIN_CHUTE_PIN = 10;
 
-std::string str_file_name = "LAD4_1.txt";
-const char * file_name = str_file_name.c_str();
+std::string str_file_name;
+const char * file_name;
 
 const uint8_t numSensors = 8;
 sensorInfo *sensors;
@@ -32,6 +33,10 @@ bool MECO = false;
 
 namespace config {
   void setup() {
+    debug("File Name:");
+    str_file_name = "LAD4_1_" + RealTimeClock::getFileTime() + ".txt";
+    file_name = str_file_name.c_str();
+    debug(file_name);
 
     //debug("Initializing sensors", DEBUG);
     sensors = new sensorInfo[numSensors];

@@ -8,32 +8,26 @@
 
 #include <TimeLib.h>
 #include <DS1307RTC.h>
-#include <Arduino.h>
+#include <stringPatch.h>
 
 using namespace std;
+using namespace patch;
 
 namespace RealTimeClock {
-
     void init() {
       if(timeStatus() != timeSet) 
         setSyncProvider(RTC.get);
     }
 
-    String getFileTime() {
-      String result = String(month()).concat("-");
-      result.concat(day());
-      result.concat("-");
-      result.concat(year());
-      result.concat("_T");
-      result.concat(hour());
-      result.concat(":");
-      result.concat(minute());
-      result.concat(":");
-      result.concat(second());
-      result.concat("_");
-      result.concat("+8:00");
+    string getFileTime() {
+      string result = to_string(month()) + "-";
+      result += to_string(day()) + "-";
+      result += to_string(year()) + "_T";
+      result += to_string(hour()) + ":";
+      result += to_string(minute()) + ":";
+      result += to_string(second()) + "_" + "+8:00";
       return result;
     }
 }
 
-#endif /* end of include guard: RTC */
+#endif /* end of include guard: REALTIMECLOCK */
