@@ -20,7 +20,7 @@ uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
-const uint8_t numSensors = 6;
+const uint8_t numSensors = 3;
 sensorInfo sensors[numSensors];
 
 const uint8_t numSolenoids = 2;

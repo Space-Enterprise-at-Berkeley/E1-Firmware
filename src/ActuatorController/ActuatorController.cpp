@@ -222,11 +222,18 @@ void sensorReadFunc(int id) {
     case 49:
       ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
       break;
+      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1){
+        sensors[3].clock_freq = 5;
+      } else {
+        sensors[3].clock_freq = 20;
+      }
     case 57:
       LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
 
       if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1){
         sensors[4].clock_freq = 5;
+      } else {
+        sensors[4].clock_freq = 20;
       }
       break;
     default:
