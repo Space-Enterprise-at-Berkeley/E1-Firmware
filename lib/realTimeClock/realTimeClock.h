@@ -8,7 +8,7 @@
 
 #include <TimeLib.h>
 #include <DS1307RTC.h>
-#include <stringPatch.h>
+#include <common_fw.h>
 
 using namespace std;
 using namespace patch;

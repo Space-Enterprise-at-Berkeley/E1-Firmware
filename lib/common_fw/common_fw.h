@@ -9,6 +9,7 @@
 
 #include <string>
 #include <cstring>
+#include <sstream>
 
 // Arduino Libraries
 #include <SPI.h>
@@ -101,6 +102,15 @@ struct valveInfo {
   void (*ackFunc)(float *data);
 };
 
+// namespace defining custom to_string function
+namespace patch {
+  template <typename T> 
+  std::string to_string(const T& n) {
+    std::ostringstream s;
+    s << n;
+    return s.str();
+  }
+}
 
 
 String make_packet (int id, bool error);
