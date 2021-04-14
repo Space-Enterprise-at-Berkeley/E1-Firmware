@@ -34,12 +34,12 @@ uint8_t linActCommandIds[numLinActs] = {50, 51, 52, 53, 54, 55, 56};
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
-// const uint8_t numHeaters = 2;
-// uint8_t heaterPins[numHeaters] = {14, 22};
-// uint8_t heaterCommandIds[numHeaters] = {20, 22};
-//
-// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
-// HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+const uint8_t numHeaters = 2;
+uint8_t heaterPins[numHeaters] = {14, 15};
+uint8_t heaterCommandIds[numHeaters] = {20, 21};
+
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
@@ -48,12 +48,12 @@ uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
-// const uint8_t numHeaters = 2;
-// uint8_t heaterPins[numHeaters] = {14, 22};
-// uint8_t heaterCommandIds[numHeaters] = {20, 22};
-//
-// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
-// HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+const uint8_t numHeaters = 2;
+uint8_t heaterPins[numHeaters] = {14, 15};
+uint8_t heaterCommandIds[numHeaters] = {20, 21};
+
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
 
 const uint8_t numLinActPairs = 2;
 uint8_t linActPairIds[numLinActs] = {1, 0, 2, 3, 5, 4, 6};
@@ -64,12 +64,12 @@ uint8_t linActPairIds[numLinActs] = {1, 0, 2, 3, 5, 4, 6};
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
-// const uint8_t numHeaters = 2;
-// uint8_t heaterPins[numHeaters] = {14, 22};
-// uint8_t heaterCommandIds[numHeaters] = {20, 22};
-//
-// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
-// HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+const uint8_t numHeaters = 2;
+uint8_t heaterPins[numHeaters] = {14, 15};
+uint8_t heaterCommandIds[numHeaters] = {20, 21};
+
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
