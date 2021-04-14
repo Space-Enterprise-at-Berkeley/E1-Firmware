@@ -23,23 +23,57 @@ INA * powSupMonPointers[numPowerSupplyMonitors];
 const uint8_t numSensors = 3;
 sensorInfo sensors[numSensors];
 
-const uint8_t numSolenoids = 2;
-uint8_t solenoidPins[numSolenoids] = {15,  23};
-uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
-
-const uint8_t numHeaters = 2;
-uint8_t heaterPins[numHeaters] = {14, 22};
-uint8_t heaterCommandIds[numHeaters] = {20, 22};
-
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
 
 const uint8_t numLinActs = 7;
-const uint8_t numLinActPairs = 2;
 uint8_t in1Pins[numLinActs] = {2, 4, 6, 11, 24, 28, 37};
 uint8_t in2Pins[numLinActs] = {3, 5, 7, 12, 25, 29, 36};
-uint8_t linActPairIds[numLinActs] = {1, 0, 3, 2, 4, 5, 6};
 uint8_t linActCommandIds[numLinActs] = {50, 51, 52, 53, 54, 55, 56};
+
+#ifdef AC1
+// const uint8_t numSolenoids = 2;
+// uint8_t solenoidPins[numSolenoids] = {15,  23};
+// uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
+//
+// const uint8_t numHeaters = 2;
+// uint8_t heaterPins[numHeaters] = {14, 22};
+// uint8_t heaterCommandIds[numHeaters] = {20, 22};
+//
+// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+// HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+
+const uint8_t numLinActPairs = 0;
+uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
+#elif AC2
+// const uint8_t numSolenoids = 2;
+// uint8_t solenoidPins[numSolenoids] = {15,  23};
+// uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
+//
+// const uint8_t numHeaters = 2;
+// uint8_t heaterPins[numHeaters] = {14, 22};
+// uint8_t heaterCommandIds[numHeaters] = {20, 22};
+//
+// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+// HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+
+const uint8_t numLinActPairs = 2;
+uint8_t linActPairIds[numLinActs] = {1, 0, 2, 3, 5, 4, 6};
+
+
+#elif AC3
+// const uint8_t numSolenoids = 2;
+// uint8_t solenoidPins[numSolenoids] = {15,  23};
+// uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
+//
+// const uint8_t numHeaters = 2;
+// uint8_t heaterPins[numHeaters] = {14, 22};
+// uint8_t heaterCommandIds[numHeaters] = {20, 22};
+//
+// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+// HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+
+const uint8_t numLinActPairs = 0;
+uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
+#endif
 
 uint8_t battMonINAAddr = 0x40;
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -48,8 +82,8 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
-const uint8_t numCommands = 11;
-Command *backingStore[numCommands] = {&ACSolenoids::zero,  &ACSolenoids::one, &heater1, &heater2,
+const uint8_t numCommands = 9;
+Command *backingStore[numCommands] = {&ACSolenoids::zero,  &ACSolenoids::one, //&heater1, &heater2,
                                       &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
                                       &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
                                       &LinearActuators::six};
@@ -70,8 +104,8 @@ namespace config {
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 49, 10};
-    sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 57, 10};
+    // sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 49, 10};
+    // sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 57, 10};
 
 
   }
