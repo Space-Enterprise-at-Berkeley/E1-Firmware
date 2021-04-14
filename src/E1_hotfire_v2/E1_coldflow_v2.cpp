@@ -206,14 +206,15 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
 
-      // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
-      sensors[8].clock_freq = 0;
-      float loxInjector = farrbconvert.sensorReadings[2];
-      float propInjector = farrbconvert.sensorReadings[3];
-
-      Automation::detectPeaks(loxInjector, propInjector);
-    }
+    // After getting new pressure data, check injector pressures to detect end of flow:
+    // Not being used for hotfire
+    // if (sensor->id==1 && Automation::inFlow()){
+    //   sensors[8].clock_freq = 0;
+    //   float loxInjector = farrbconvert.sensorReadings[2];
+    //   float propInjector = farrbconvert.sensorReadings[3];
+    //
+    //   Automation::detectPeaks(loxInjector, propInjector);
+    // }
   }
   delay(10);
 }
