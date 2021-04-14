@@ -63,6 +63,8 @@ CommandArray commands(numCommands, backingStore);
 
 namespace config {
   void setup() {
+    RealTimeClock::init();
+    
     debug("File Name:");
     str_file_name = "E1_Coldflow_" + RealTimeClock::getFileTime() + ".txt";
     file_name = str_file_name.c_str();

@@ -88,8 +88,6 @@ void setup() {
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes);
 
   Automation::init();
-  
-  RealTimeClock::init();
 
   commands.updateIds();
 }

@@ -8,10 +8,10 @@
 
 #include <TimeLib.h>
 #include <DS1307RTC.h>
-#include <common_fw.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace std;
-using namespace patch;
 
 namespace RealTimeClock {
     void init() {
@@ -20,12 +20,14 @@ namespace RealTimeClock {
     }
 
     string getFileTime() {
-      string result = to_string(month()) + "-";
-      result += to_string(day()) + "-";
-      result += to_string(year()) + "_T";
-      result += to_string(hour()) + ":";
-      result += to_string(minute()) + ":";
-      result += to_string(second()) + "_" + "+8:00";
+      char buffer[8];
+
+      string result = std::string(itoa(month(), buffer, 10)) + "-";
+      result += string(itoa(day(), buffer, 10)) + "-";
+      result += string(itoa(year(), buffer, 10)) + "_T";
+      result += string(itoa(hour(), buffer, 10)) + ":";
+      result += string(itoa(minute(), buffer, 10)) + ":";
+      result += string(itoa(second(), buffer, 10)) + "_" + "+8:00";
       return result;
     }
 }

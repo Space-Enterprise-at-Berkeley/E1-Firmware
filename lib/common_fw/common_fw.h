@@ -89,16 +89,6 @@ struct sensorInfo {
   int clock_freq;
 };
 
-// namespace defining custom to_string function
-namespace patch {
-  template <typename T> 
-  std::string to_string(const T& n) {
-    std::ostringstream s;
-    s << n;
-    return s.str();
-  }
-}
-
 String make_packet (int id, bool error);
 uint16_t Fletcher16 (uint8_t *data, int count);
 bool write_to_SD(std::string message, const char * file_name);
