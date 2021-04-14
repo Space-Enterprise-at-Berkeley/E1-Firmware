@@ -10,6 +10,7 @@
 #include <cmath>
 #include "pid.h"
 #include <command.h>
+#include <GpioExpander.h>
 
 using namespace std;
 
@@ -27,6 +28,9 @@ class TempController {
 
     PID *controller = new PID(255, 0, k_p, k_i, k_d);
 
+    GpioExpander *_expander;
+    int8_t _channel;
+
   protected:
     bool humanOverride = false;
     uint16_t humanSpecifiedValue = 300;
@@ -34,6 +38,7 @@ class TempController {
   public:
 
     TempController(int tempSetPoint, int algorithmChoice, int heaterPin);
+    TempController(int tempSetPoint, int algorithmChoice, GpioExpander * expander, int8_t channel);
     int calculateOutput(float currTemp);
     float controlTemp(float currTemp);
 };

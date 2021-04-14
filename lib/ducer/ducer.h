@@ -45,11 +45,11 @@ namespace Ducers {
   */
 
   float loxStaticP(float loxDomeP, float highP) {
-    return -1.158 + 1.029 * domeP - 0.02228 * highP;
+    return -1.158 + 1.029 * loxDomeP - 0.02228 * highP;
   }
 
   float propStaticP(float propDomeP, float highP) {
-    return -20.08 + 1.413 * domeP + 0.02343 * highP;
+    return -20.08 + 1.413 * propDomeP + 0.02343 * highP;
   }
 
   float interpolateHigh(long rawValue) {

@@ -15,6 +15,20 @@ TempController::TempController(int tempSetPoint, int algorithmChoice, int heater
     exit(1);
   }
   pinMode(_heaterPin, OUTPUT);
+  _expander = nullptr;
+  _channel = -1;
+}
+
+TempController::TempController(int tempSetPoint, int algorithmChoice, GpioExpander * expander, int8_t channel):
+  _algorithmChoice(algorithmChoice),
+  _setPointTemp(tempSetPoint),
+  _expander(expander),
+  _channel(channel)
+ {
+  if (algorithmChoice > 2 || algorithmChoice < 0) {
+    exit(1);
+  }
+  _heaterPin = -1;
 }
 
 int TempController::calculateOutput(float currTemp) {
@@ -31,6 +45,16 @@ int TempController::calculateOutput(float currTemp) {
 
 float TempController::controlTemp(float currTemp) {
   _heaterOutput = (humanOverride) ? humanSpecifiedValue : calculateOutput(currTemp);
-  analogWrite(_heaterPin, _heaterOutput);
-  return _heaterOutput / 255.0;
+  if(_heaterPin != -1) {
+    analogWrite(_heaterPin, _heaterOutput);
+    return _heaterOutput / 255.0;
+  } else if (_channel != -1) {
+    if (_heaterOutput / 255.0 > 0.5) {
+      _expander->turnOn(_channel);
+      return 1.0;
+    } else {
+      _expander->turnOff(_channel);
+      return 0.0;
+    }
+  }
 }
