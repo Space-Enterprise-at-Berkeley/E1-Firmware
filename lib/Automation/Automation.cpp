@@ -144,6 +144,13 @@ namespace Automation {
     Solenoids::closePropane();
   }
 
+  int act_depressurize() {
+    Solenoids::disarmLOX();
+    Solenoids::deactivateHighPressureSolenoid();
+    Solenoids::ventLOXGems();
+    Solenoids::ventPropaneGems();
+  }
+
   int beginLoxFlow() {
     autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
@@ -211,6 +218,52 @@ namespace Automation {
     events[3] = {0, &(act_openGems), false};
     //TODO: set shutdown to be false
     for (int i = 0; i < 4; i++) addEvent(&events[i]);
+
+    return -1;
+  }
+
+  int beginHotfire() {
+    /* Check if rocket is in required state for hotfire:
+      Pressure - Closed
+      LOX GEMS & Prop GEMS - Open
+      Arming Valve - Closed
+      LOX Main Valve & Prop Main Valve - Closed
+    */
+    _startup = !Solenoids::getHPS() &&
+        !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
+    if (_startup) {
+      Serial.println("Ignition");
+
+    autoEvent events[6];
+    events[0] = {0, &(act_pressurizeTanks), false};
+    events[1] = {1000, &(Solenoids::armAll), false};
+    events[2] = {1200, &(act_armOpenLox), false};
+    events[3] = {127, &(act_armOpenProp), false};
+    events[4] = {500, &(Solenoids::disarmLOX), false};
+    events[5] = {3000, &(state_setFlowing), false};
+
+    for (int i = 0; i < 6; i++) addEvent(&events[i]);
+    }
+
+    Serial.println("If no fire, PUSH RED BUTTON");
+    return -1;
+  }
+
+  int endHotfire() {
+    _flowing = false;
+    _shutdown = true;
+    Serial.println("Eureka-1 is in Shutdown");
+
+    autoEvent events[3];
+    events[0] = {0, &(act_armCloseProp), false};
+    events[1] = {200, &(act_armCloseLox), false};
+    events[2] = {0, &(act_depressurize), false};
+
+    for (int i = 0; i < 3; i++) addEvent(&events[i]);
+
+    _shutdown = false;
+
+    Serial.println("Eureka-1 is secure");
 
     return -1;
   }

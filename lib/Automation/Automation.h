@@ -101,6 +101,7 @@ extern struct autoEventList* _eventList;
   int act_armCloseLox();
   int act_armCloseProp();
   int act_armCloseBoth();
+  int act_depressurize();
 
   // int beginPropFlow();
   // int endPropFlow();
