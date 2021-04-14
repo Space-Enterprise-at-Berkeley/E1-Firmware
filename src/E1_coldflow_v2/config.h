@@ -43,6 +43,9 @@ const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
 uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1};
+const uint8_t pressurantIdx = 5;
+const uint8_t loxDomeIdx = 6;
+const uint8_t propDomeIdx = 7;
 
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
@@ -56,7 +59,7 @@ uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
-const uint8_t numSensors = 8;
+const uint8_t numSensors = 9;
 sensorInfo sensors[numSensors];
 
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
@@ -125,6 +128,7 @@ namespace config {
     sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
     sensors[6] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
     sensors[7] = {"Prop PT Temp", FLIGHT_BRAIN_ADDR, 16, 4};
+    sensors[8] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
 
   }
 }

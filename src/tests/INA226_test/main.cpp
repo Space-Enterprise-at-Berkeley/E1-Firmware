@@ -13,7 +13,7 @@ void setup() {
   Serial.begin(9600);
   delay(1000);
 
-  batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
+  batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
 }
 
 float data[5];

@@ -208,6 +208,7 @@ void loop() {
 
       // After getting new pressure data, check injector pressures to detect end of flow:
     if (sensor->id==1 && Automation::inFlow()){
+      sensors[8].clock_freq = 0;
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
 
@@ -262,6 +263,11 @@ void sensorReadFunc(int id) {
       debug("propane pt");
       _cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = propPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 17:
+      farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:

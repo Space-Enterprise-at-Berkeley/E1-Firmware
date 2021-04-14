@@ -22,6 +22,8 @@ namespace Ducers {
   uint8_t * _adcChannels;
   uint8_t * _ptTypes;
 
+  float * _latestReads;
+
   const uint8_t strideLength = sizeof(ADS8167);
 
   uint8_t _numSensors; // number of analog thermocouples, not number of adcs
@@ -34,6 +36,20 @@ namespace Ducers {
     _adcChannels = adcChannels;
     _ptTypes = ptTypes;
     _adcs = adcs;
+    _latestReads = (float *)malloc(numSensors);
+  }
+
+  /*
+    lox    : Static Pressure=-1.158+1.029*Dome Pressure-0.02228*High Pressure
+    propane: Static Pressure=-20.08+1.413*Dome Pressure+0.002343*High Pressure
+  */
+
+  float loxStaticP(float loxDomeP, float highP) {
+    return -1.158 + 1.029 * domeP - 0.02228 * highP;
+  }
+
+  float propStaticP(float propDomeP, float highP) {
+    return -20.08 + 1.413 * domeP + 0.02343 * highP;
   }
 
   float interpolateHigh(long rawValue) {
@@ -69,8 +85,7 @@ namespace Ducers {
   // All the following reads are blocking calls.
   // this function takes ~ _numSensors * 15ms given the data rate of 90
   void readAllPressures(float *data) {
-    int i = 0;
-    while (i < _numSensors) {
+    for (int i = 0; i < _numSensors; i++) {
       int type = _ptTypes[i];
       if (type == 1) {
         #ifdef DEBUG
@@ -78,7 +93,6 @@ namespace Ducers {
           Serial.flush();
         #endif
         data[i] = interpolateLow(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
-        i++;
       } else {
         #ifdef DEBUG
           Serial.println("reading high pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
@@ -86,10 +100,11 @@ namespace Ducers {
         #endif
         data[i] = interpolateHigh(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
         //data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
-        i++;
       }
+      _latestReads[i] = data[i];
+      i++;
     }
-    data[i] = -1;
+    data[_numSensors] = -1;
   }
 }
 
