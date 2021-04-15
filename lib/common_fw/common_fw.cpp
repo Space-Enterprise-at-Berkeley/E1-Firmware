@@ -29,10 +29,12 @@ Command *tmpCommand;
 
 /*
  * Constructs packet in the following format:
- * {<sensor_ID>,<data1>,<data2>, ...,<dataN>|checksum}
+ * {<sensor_ID>,<timestamp>,<data1>,<data2>, ...,<dataN>|checksum}
  */
 String make_packet(int id, bool error) {
   String packet_content = (String)id;
+  packet_content += ",";
+  packet_content += String(millis());
   packet_content += ",";
   if (!error) {
     for (int i=0; i<8; i++) {
