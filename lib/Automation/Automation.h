@@ -69,6 +69,19 @@ extern struct autoEventList* _eventList;
 
 //------------------Function Definitions-----------------
 
+typedef enum {
+    LOX_ONLY = 0,
+    BOTH_COLD = 1,
+    BOTH_HOT = 2
+  } flow_type_t;
+
+  typedef enum {
+      ON_PAD = 0,
+      ENGINE_ON_ASCENT = 1,
+      ENGINE_OFF_ASCENT = 2,
+      DESCENT = 3
+    } cold_flow_state_t;
+
   bool init();
 
   // Relating to State of the Rocket

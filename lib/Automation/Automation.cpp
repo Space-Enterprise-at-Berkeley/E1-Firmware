@@ -234,15 +234,16 @@ namespace Automation {
     if (_startup) {
       Serial.println("Ignition");
 
-    autoEvent events[6];
-    events[0] = {0, &(act_pressurizeTanks), false};
-    events[1] = {1000, &(Solenoids::armAll), false};
-    events[2] = {1200, &(act_armOpenLox), false};
-    events[3] = {127, &(act_armOpenProp), false};
-    events[4] = {500, &(Solenoids::disarmLOX), false};
-    events[5] = {3000, &(state_setFlowing), false};
+      autoEvent events[6];
+      events[0] = {0, &(act_pressurizeTanks), false};
+      events[1] = {1000, &(Solenoids::armAll), false};
+      // igniter
+      events[2] = {1200, &(act_armOpenLox), false};
+      events[3] = {127, &(act_armOpenProp), false};
+      events[4] = {500, &(Solenoids::disarmLOX), false};
+      events[5] = {300, &(state_setFlowing), false};
 
-    for (int i = 0; i < 6; i++) addEvent(&events[i]);
+      for (int i = 0; i < 6; i++) addEvent(&events[i]);
     }
 
     Serial.println("If no fire, PUSH RED BUTTON");

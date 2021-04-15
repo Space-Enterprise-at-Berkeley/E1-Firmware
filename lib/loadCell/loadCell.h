@@ -11,8 +11,10 @@
 
 namespace LoadCell {
 
-		HX711 *_loadcells;
+		HX711 _loadcell_1;
+		HX711 _loadcell_2;
 		int _numSensors;
+		HX711 *_loadcells;
 
 		byte  *_dout_pins;
 		byte  *_sck_pins;
@@ -21,7 +23,22 @@ namespace LoadCell {
 		int init(HX711 *loadcells, int numSensors, byte  *dout_pins,
 									byte * sck_pins, float  *calibration_vals) {
 
-      _loadcells = loadcells;
+			_loadcells = loadcells;
+
+			_numSensors = numSensors;
+			_dout_pins = dout_pins;
+			_sck_pins = sck_pins;
+			_calibration_vals = calibration_vals;
+
+		  return 0;
+		}
+
+
+		int init(HX711 loadcell1, HX711 loadcell2, int numSensors, byte  *dout_pins,
+		 							byte * sck_pins, float  *calibration_vals) {
+
+      _loadcell_1 = loadcell1;
+			_loadcell_2 = loadcell2;
 
 			_numSensors = numSensors;
 			_dout_pins = dout_pins;
@@ -49,8 +66,17 @@ namespace LoadCell {
 			for (int i = 0; i < _numSensors; i++) {
 				data[i] = _loadcells[i].get_units() * 0.453592;
 			}
-			data[_numSensors] = -1;
+			data[_numSensors] = data[0] + data[1];
+			data[_numSensors+1] = -1;
 		}
+
+		// void readLoadCells(float *data) {
+		//
+		// 	data[0] = _loadcell_1.get_units() * 0.453592;
+		// 	data[1] = _loadcell_2.get_units() * 0.453592;
+		// 	data[2] = data[0] + data[1];
+		// 	data[3] = -1;
+		// }
 
 }
 

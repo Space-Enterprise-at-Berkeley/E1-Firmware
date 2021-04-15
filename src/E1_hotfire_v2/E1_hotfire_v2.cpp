@@ -32,9 +32,6 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
-//
-// TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
-// TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
@@ -207,7 +204,7 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
+    if (sensor->id==1 && Automation::inFlow()) {
       sensors[8].clock_freq = 0;
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
