@@ -271,7 +271,7 @@ namespace Automation {
 
     _shutdown = false;
 
-    return -1
+    return -1;
   }
 
   // Responds to initial command to begin/end flow
