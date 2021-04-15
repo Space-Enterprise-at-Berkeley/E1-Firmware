@@ -104,11 +104,14 @@ void loop() {
         Serial.print(".");
       }
     }
-    if(Udp.remoteIP() == groundIP) {
-      debug("received packet came from groundIP");
-      receivedCommand = true;
-      Udp.read(command, 75);
-      debug(String(command));
+    for (uint8_t i = 0; i < numGrounds; i++) {
+      if(Udp.remoteIP() == groundIP[i]) {
+        debug("received packet came from groundIP");
+        receivedCommand = true;
+        Udp.read(command, 75);
+        debug(String(command));
+        break;
+      }
     }
   }
   #endif
