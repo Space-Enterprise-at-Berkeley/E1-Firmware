@@ -20,6 +20,9 @@ namespace Automation {
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
 
+  flow_type_t flowtype;
+  flow_state_t flowstate;
+
  struct autoEventList* _eventList;
 
   /* Delays during startup sequence:
@@ -102,9 +105,10 @@ namespace Automation {
   }
 
   int act_pressurizeTanks() {
+    flowstate = PRESS;
     Solenoids::closeLOXGems();
     Solenoids::closePropaneGems();
-    Solenoids::activateHighPressureSolenoid();
+    Solenoids::openHighPressureSolenoid();
   }
 
   int act_openGems() {
@@ -113,45 +117,53 @@ namespace Automation {
   }
 
   int act_armOpenLox() {
+    flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
     Solenoids::armLOX();
     Solenoids::openLOX();
   }
 
   int act_armOpenProp() {
+    flowstate = (flowstate == LOX_FLOWING)? BOTH_FLOWING : PROP_FLOWING;
     Solenoids::armLOX();
     Solenoids::openPropane();
   }
 
   int act_armOpenBoth() {
+    flowstate = BOTH_FLOWING;
     Solenoids::armLOX();
     Solenoids::openLOX();
     Solenoids::openPropane();
   }
 
   int act_armCloseProp() {
+    flowstate = (flowstate == BOTH_FLOWING)? LOX_FLOWING : SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closePropane();
   }
 
   int act_armCloseLox() {
+    flowstate = (flowstate == BOTH_FLOWING)? PROP_FLOWING : SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closeLOX();
   }
 
   int act_armCloseBoth() {
+    flowstate = SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closeLOX();
     Solenoids::closePropane();
   }
 
   int act_depressurize() {
+    flowstate = DEPRESSURIZE;
     Solenoids::disarmLOX();
-    Solenoids::deactivateHighPressureSolenoid();
+    Solenoids::closeHighPressureSolenoid();
     Solenoids::ventLOXGems();
     Solenoids::ventPropaneGems();
   }
 
   int beginLoxFlow() {
+    flowtype = LOX_ONLY;
     autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
     events[1] = {1000, &(act_armOpenLox), false};
@@ -163,7 +175,7 @@ namespace Automation {
   int endLoxFlow() {
     autoEvent events[4];
     events[0] = {0, &(act_armCloseLox), false};
-    events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+    events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
     events[3] = {0, &(act_openGems), false};
     for (int i = 0; i < 4; i++) addEvent(&events[i]);
@@ -190,6 +202,7 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
+    flowtype = BOTH_COLD;
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
@@ -213,7 +226,7 @@ namespace Automation {
 
     autoEvent events[4];
     events[0] = {0, &(act_armCloseBoth), false};
-    events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+    events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
     events[3] = {0, &(act_openGems), false};
     //TODO: set shutdown to be false
@@ -229,6 +242,7 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
+    flowtype = HOT;
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
@@ -244,6 +258,8 @@ namespace Automation {
       events[5] = {300, &(state_setFlowing), false};
 
       for (int i = 0; i < 6; i++) addEvent(&events[i]);
+    } else {
+      flowstate = ERROR;
     }
 
     Serial.println("If no fire, PUSH RED BUTTON");
@@ -276,6 +292,12 @@ namespace Automation {
     data[2] = -1;
   }
 
+  void flowStatus(float *data) {
+    data[0] = flowtype;
+    data[1] = flowstate;
+    data[2] = -1;
+  }
+
   float findAverage(int index) {
     float sum = 0;
     float avg;
@@ -305,7 +327,7 @@ namespace Automation {
         _flowing = false;
         autoEvent events[4];
         events[0] = {0, &(act_armCloseLox), false};
-        events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+        events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
         events[2] = {750, &(Solenoids::disarmLOX), false};
         events[3] = {0, &(act_openGems), false};
         for (int i = 0; i < 4; i++) addEvent(&events[i]);
@@ -321,7 +343,7 @@ namespace Automation {
         _flowing = false;
         autoEvent events[4];
         events[0] = {0, &(act_armCloseProp), false};
-        events[1] = {0, &(Solenoids::deactivateHighPressureSolenoid), false};
+        events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
         events[2] = {750, &(Solenoids::disarmLOX), false};
         events[3] = {0, &(act_openGems), false};
         for (int i = 0; i < 4; i++) addEvent(&events[i]);

@@ -38,8 +38,8 @@ namespace Solenoids {
   int toggleProp2Way();
   int toggleProp5Way();
   int togglePropGems();
-  int activateHighPressureSolenoid();
-  int deactivateHighPressureSolenoid();
+  int openHighPressureSolenoid();
+  int closeHighPressureSolenoid();
   int enableHighPressureSolenoid();
   int disableHighPressureSolenoid();
   int ventLOXGems();

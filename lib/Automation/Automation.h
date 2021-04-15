@@ -16,6 +16,35 @@ using namespace std;
 namespace Automation {
 //-----------------------Variables-----------------------
 
+
+typedef enum {
+    LOX_ONLY = 0,
+    BOTH_COLD = 1,
+    HOT = 2
+  } flow_type_t;
+
+// typedef enum {
+//     ERROR = -1,
+//     PRESS = 0,
+//     FLOWING = 1,
+//     SHUTOFF = 2,
+//     DEPRESSURIZE = 3
+//   } cold_flow_state_t;
+
+typedef enum {
+    ERROR = -1,
+    PRESS = 0,
+    IGNITED = 1,
+    LOX_FLOWING = 2,
+    PROP_FLOWING = 3,
+    BOTH_FLOWING = 4,
+    SHUTOFF = 5,
+    DEPRESSURIZE = 6
+  } flow_state_t;
+
+  extern flow_type_t flowtype;
+  extern flow_state_t flowstate;
+
   extern bool _startup;
   extern int _startupPhase;
   extern uint32_t _startupTimer;
@@ -69,18 +98,6 @@ extern struct autoEventList* _eventList;
 
 //------------------Function Definitions-----------------
 
-typedef enum {
-    LOX_ONLY = 0,
-    BOTH_COLD = 1,
-    BOTH_HOT = 2
-  } flow_type_t;
-
-  typedef enum {
-      ON_PAD = 0,
-      ENGINE_ON_ASCENT = 1,
-      ENGINE_OFF_ASCENT = 2,
-      DESCENT = 3
-    } cold_flow_state_t;
 
   bool init();
 
@@ -122,6 +139,7 @@ typedef enum {
   // int closeProp();
 
   void flowConfirmation(float *data);
+  void flowStatus(float *data);
 
   // Automatic Detection
   float findAverage(int index);

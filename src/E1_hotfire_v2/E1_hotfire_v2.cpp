@@ -167,12 +167,22 @@ void loop() {
 
       //Update valve states after each action
       Solenoids::getAllStates(farrbconvert.sensorReadings);
-      packet = make_packet(29, false);
+      packet = make_packet(20, false);
       Serial.println(packet);
       RFSerial.println(packet);
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
+      write_to_SD(packet.c_str(), file_name);
+
+      Automation::flowStatus(farrbconvert.sensorReadings);
+      packet = make_packet(18, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+      write_to_SD(packet.c_str(), file_name);
 
       Automation::removeEvent();
       //reset timer

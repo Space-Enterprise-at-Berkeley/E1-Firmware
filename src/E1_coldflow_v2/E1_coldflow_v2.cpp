@@ -176,6 +176,16 @@ void loop() {
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
+      write_to_SD(packet.c_str(), file_name);
+
+      Automation::flowStatus(farrbconvert.sensorReadings);
+      packet = make_packet(18, false);
+      Serial.println(packet);
+      RFSerial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+      write_to_SD(packet.c_str(), file_name);
 
       Automation::removeEvent();
       //reset timer
