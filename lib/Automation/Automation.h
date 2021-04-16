@@ -17,12 +17,6 @@ namespace Automation {
 //-----------------------Variables-----------------------
 
 
-typedef enum {
-    LOX_ONLY = 0,
-    BOTH_COLD = 1,
-    HOT = 2
-  } flow_type_t;
-
 // typedef enum {
 //     ERROR = -1,
 //     PRESS = 0,
@@ -32,14 +26,22 @@ typedef enum {
 //   } cold_flow_state_t;
 
 typedef enum {
+    LOX_ONLY = 0,
+    BOTH_COLD = 1,
+    HOT = 2
+  } flow_type_t;
+
+typedef enum {
+    ABORT = -2,
     ERROR = -1,
-    PRESS = 0,
-    IGNITED = 1,
-    LOX_FLOWING = 2,
-    PROP_FLOWING = 3,
-    BOTH_FLOWING = 4,
-    SHUTOFF = 5,
-    DEPRESSURIZE = 6
+    ON_PAD = 0,
+    PRESS = 1,
+    IGNITED = 2,
+    LOX_FLOWING = 3,
+    PROP_FLOWING = 4,
+    BOTH_FLOWING = 5,
+    SHUTOFF = 6,
+    DEPRESSURIZE = 7
   } flow_state_t;
 
   extern flow_type_t flowtype;

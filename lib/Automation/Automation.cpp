@@ -21,7 +21,7 @@ namespace Automation {
   uint32_t _shutdownTimer;
 
   flow_type_t flowtype;
-  flow_state_t flowstate;
+  flow_state_t flowstate = ON_PAD;
 
  struct autoEventList* _eventList;
 
