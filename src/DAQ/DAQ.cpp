@@ -69,18 +69,18 @@ void setup() {
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
+  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+  //   packet = make_packet(101, true);
+  //   RFSerial.println(packet);
+  //   #ifdef ETH
+  //   sendEthPacket(packet.c_str());
+  //   #endif
+  // }
 
   debug("Initializing Libraries");
 
   debug("Initializing battery monitor");
-  batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
+  //batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire1);
 
@@ -168,7 +168,7 @@ void loop() {
     #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
-    write_to_SD(packet.c_str(), file_name);
+    //write_to_SD(packet.c_str(), file_name);
   }
   delay(10);
 }
@@ -185,7 +185,7 @@ void sensorReadFunc(int id) {
       break;
     case 2:
       debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 3:
       debug("Load Cells");
@@ -193,7 +193,9 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("Cryo all");
+      Serial.println("testing");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      Serial.println("testing90909");
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);

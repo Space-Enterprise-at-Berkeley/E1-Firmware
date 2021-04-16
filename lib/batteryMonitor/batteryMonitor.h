@@ -45,7 +45,9 @@ namespace batteryMonitor {
       Serial.println("read battery stats");
       Serial.flush();
     #endif
+    Serial.print("testing2");
     readPowerConsumption(data);
+    Serial.print("testing90909");
     data[1] = data[0];
     data[0] = ina.readBusVoltage();
     data[2] = ina.readShuntCurrent(); //wiring is flipped on pcb
