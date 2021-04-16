@@ -200,6 +200,9 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 6:
+      powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
     case 19:
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       break;

@@ -56,7 +56,7 @@ HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 6;
+const uint8_t numSensors = 7;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -125,5 +125,7 @@ namespace config {
     sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[5] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
+
   }
 }
