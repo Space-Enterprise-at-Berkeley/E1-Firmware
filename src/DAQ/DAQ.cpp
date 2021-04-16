@@ -91,7 +91,7 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
   _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire);
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);

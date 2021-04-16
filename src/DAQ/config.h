@@ -24,6 +24,7 @@ const uint8_t numCryoTherms = 4;
 uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
+float cryoReadsBackingStore[numCryoTherms];
 
 const uint8_t numADCSensors = 1;
 uint8_t adcCSPins[numADCSensors] = {37};
