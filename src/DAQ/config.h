@@ -39,7 +39,7 @@ uint8_t thermAdcChannels[numAnalogThermocouples] = {4, 5, 6, 7};
 const uint8_t numPressureTransducers = 4;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3};
-uint8_t ptTypes[numPressureTransducers] = {2, 2, 2, 2};
+uint8_t ptTypes[numPressureTransducers] = {100, 300, 1000, 5000};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
@@ -123,5 +123,6 @@ namespace config {
     sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
     sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[5] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
   }
 }

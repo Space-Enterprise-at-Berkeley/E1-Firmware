@@ -198,6 +198,9 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 19:
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      break;
     default:
       Serial.println("some other sensor");
       break;
