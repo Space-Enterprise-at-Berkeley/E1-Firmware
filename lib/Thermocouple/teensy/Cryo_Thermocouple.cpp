@@ -30,6 +30,14 @@ namespace Thermocouple {
         _cryo_amp_boards[i].enable(true);
       }
 
+      for (int i = 0; i < _numSensors; i++){
+        Serial.println(i);
+        Serial.println(_latestReads[i]);
+        _latestReads[i] = -1;
+        Serial.println(_latestReads[i]);
+      }
+
+
       return 0;
     }
 
