@@ -50,7 +50,8 @@ const uint8_t numLoadCells = 2;
 byte lcSckPins[numLoadCells] = {38, 10};
 byte lcDoutPins[numLoadCells] = {39, 9};
 float lcCalVals[numLoadCells] = {4000, -4000};
-HX711 loadcells[numLoadCells];
+// HX711 loadcells[numLoadCells];
+HX711 loadcell1, loadcell2;
 
 uint8_t battMonINAAddr = 0x40;
 
@@ -72,6 +73,8 @@ namespace config {
       debug(String(adcCSPins[i]));
       debug(String(adcDataReadyPins[i]));
       debug(String(adcAlertPins[i]));
+      Serial.print("test");
+      Serial.flush();
       ads[i].init(&SPI, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
       ads[i].setManualMode();
       ads[i].setAllInputsSeparate();
@@ -89,15 +92,29 @@ namespace config {
     }
 
     debug("Initializing the Load Cells");
-    for (int i = 0; i < numLoadCells; i++) {
-     debug("before begin");
-     loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
-     debug("after begin");
-     loadcells[i].set_scale(lcCalVals[i]);
-     debug("after set scale");
-     loadcells[i].tare();
-     debug("after tare");
-    }
+    // for (int i = 0; i < numLoadCells; i++) {
+    //  debug("before begin");
+    //  loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
+    //  debug("after begin");
+    //  loadcells[i].set_scale(lcCalVals[i]);
+    //  debug("after set scale");
+    //  loadcells[i].tare();
+    //  debug("after tare");
+    // }
+    debug("before begin");
+    loadcell1.begin(lcDoutPins[0], lcSckPins[0]);
+    debug("after begin");
+    loadcell1.set_scale(lcCalVals[0]);
+    debug("after set scale");
+    loadcell1.tare();
+    debug("after tare");
+    debug("before begin");
+    loadcell2.begin(lcDoutPins[1], lcSckPins[1]);
+    debug("after begin");
+    loadcell2.set_scale(lcCalVals[1]);
+    debug("after set scale");
+    loadcell2.tare();
+    debug("after tare");
 
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
