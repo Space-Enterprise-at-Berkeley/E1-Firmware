@@ -140,7 +140,7 @@ void loop() {
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
-      // write_to_SD(packet.c_str(), file_name);
+      //write_to_SD(packet.c_str(), file_name);
     }
     receivedCommand = false;
   }
@@ -194,18 +194,18 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     debug("finished sensor read");
-    for (int i = 0; i < maxReadings; i++) {
-      Serial.print(farrbconvert.sensorReadings[i]);
-      Serial.print(", ");
-    }
-    Serial.println("");
+    // for (int i = 0; i < maxReadings; i++) {
+    //   Serial.print(farrbconvert.sensorReadings[i]);
+    //   Serial.print(", ");
+    // }
+    // Serial.println("");
     packet = make_packet(sensor->id, false);
 
     Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
-    // write_to_SD(packet.c_str(), file_name);
+    //write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
     // if (sensor->id==1 && Automation::inFlow()){
@@ -241,16 +241,16 @@ void sensorReadFunc(int id) {
 
     case 2:
       debug("battery stats");
-      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 3:
       debug("lin act current draw");
       LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
 
       if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1) {
-        sensors[4].clock_freq = 1;
+        sensors[3].clock_freq = 1;
       } else {
-        sensors[4].clock_freq = 200;
+        sensors[3].clock_freq = 20;
       }
       break;
     case 4:
@@ -261,9 +261,6 @@ void sensorReadFunc(int id) {
       debug("packet count");
       readPacketCounter(farrbconvert.sensorReadings);
       break;
-
-
-
     default:
       Serial.println("some other sensor");
       break;
