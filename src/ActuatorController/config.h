@@ -20,6 +20,9 @@ uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
+const float powerSupplyMonitorShuntR = 0.010; // ohms
+const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
 const uint8_t numSensors = 3;
 sensorInfo sensors[numSensors];
 
@@ -27,6 +30,7 @@ const uint8_t numLinActs = 7;
 uint8_t in1Pins[numLinActs] = {2, 4, 6, 11, 24, 28, 37};
 uint8_t in2Pins[numLinActs] = {3, 5, 7, 12, 25, 29, 36};
 uint8_t linActCommandIds[numLinActs] = {14, 15, 16, 17, 18, 19, 20};
+uint8_t linActINAAddrs[numLinActs] = {0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A};
 
 #ifdef AC1
 // const uint8_t numSolenoids = 2;
@@ -36,11 +40,16 @@ uint8_t linActCommandIds[numLinActs] = {14, 15, 16, 17, 18, 19, 20};
 const uint8_t numHeaters = 4;
 uint8_t heaterPins[numHeaters] = {14, 15, 22, 23};
 uint8_t heaterCommandIds[numHeaters] = {10, 11, 12, 13};
+uint8_t heaterINAAddr[numHeaters] = {0x40, 0x41, 0x42, 0x43};
 
 HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+// heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+// heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 HeaterCommand heater3("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2]); // setPoint = 10C, alg = PID
+// heater3.initINA219(&Wire, heaterINAAddr[2], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 HeaterCommand heater4("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3]); // setPoint = 10C, alg = PID
+// heater4.initINA219(&Wire, heaterINAAddr[3], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
@@ -79,9 +88,6 @@ uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
 uint8_t battMonINAAddr = 0x40;
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
-
-const float powerSupplyMonitorShuntR = 0.010; // ohms
-const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
 const uint8_t numCommands = 11;
 Command *backingStore[numCommands] = {&heater1, &heater2, &heater3, &heater4, //&ACSolenoids::zero,  &ACSolenoids::one,

@@ -84,7 +84,7 @@ void setup() {
 
   debug("Initializing Solenoids");
   // ACSolenoids::init(numSolenoids, solenoidPins, solenoidCommandIds);
-  LinearActuators::init(numLinActs, numLinActPairs, in1Pins, in2Pins, linActPairIds, linActCommandIds);
+  LinearActuators::init(numLinActs, numLinActPairs, in1Pins, in2Pins, linActPairIds, linActCommandIds, &Wire, linActINAAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
   debug("Initializing battery monitor");
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
@@ -231,19 +231,21 @@ void sensorReadFunc(int id) {
       // } else {
       //   sensors[3].clock_freq = 20;
       // }
-      heater1.readCurrentDraw(farrbconvert.sensorReadings);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
-      heater3.readCurrentDraw(farrbconvert.sensorReadings + 2);
-      heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
+      debug("heater current draw");
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
+      // heater3.readCurrentDraw(farrbconvert.sensorReadings + 2);
+      // heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
       farrbconvert.sensorReadings[4] = -1;
 
     case 3:
+      debug("lin act current draw");
       LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
 
       if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1) {
         sensors[4].clock_freq = 5;
       } else {
-        sensors[4].clock_freq = 20;
+        sensors[4].clock_freq = 200;
       }
       break;
     case 4:
