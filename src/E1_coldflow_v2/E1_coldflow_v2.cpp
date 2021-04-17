@@ -35,7 +35,7 @@ String packet;
 
 void sensorReadFunc(int id);
 
-Thermocouple::Cryo _cryoTherms;
+// Thermocouple::Cryo _cryoTherms;
 
 void setup() {
   Wire.begin();
@@ -102,8 +102,8 @@ void setup() {
   debug("Initializing Thermocouples");
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
+  // _cryoTherms = Thermocouple::Cryo();
+  // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   Automation::init();
 
@@ -248,11 +248,14 @@ void sensorReadFunc(int id) {
       break;
     case 2:
       debug("battery stats");
-      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      for (int i = 0; i < numCryoTherms; i++) {
+        farrbconvert.sensorReadings[i] = _cryo_boards[i].readThermocouple();
+      }
+      farrbconvert.sensorReadings[numCryoTherms] = -1;
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
@@ -278,9 +281,9 @@ void sensorReadFunc(int id) {
       // farrbconvert.sensorReadings[2] = -1;
       break;
     case 17:
-      // farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
-      // farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
-      // farrbconvert.sensorReadings[2] = -1;
+      farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[2] = -1;
       break;
     default:
       Serial.println("some other sensor");
