@@ -68,26 +68,26 @@ namespace LinearActuators {
           Serial.println("lin act, parse command");
           Serial.flush();
         #endif
-        if (data[0] == 0) { // off
+       
+         if (data[0] == 0) { // off
           _off();
         } else if (data[0] == 1)  { // forward
           _forward();
-          if (data[1] == -1) {
-            endtime = -1;
-          } else {
-            endtime = millis() + data[1];
-          }
-        }  else if (data[0] == 2)  { // backward
+          endtime = -1;
+        } else if (data[0] == -1)  { // backward
           _backward();
-          if (data[1] == -1) {
-            endtime = -1;
-          } else {
-            endtime = millis() + data[1];
+          endtime = -1;
+        } else { // timed
+          Serial.println("TIMED COMMAND");
+          if (data[0] > 1) { // forward, timed
+            _forward();
+            endtime = millis() + data[0];
+          } else if(data[0] < -1) { // backward, timed
+            _backward();
+            endtime = millis() - data[0];
           }
-        } else if (data[0] == 3)  { // brake
-          _brake();
-          endtime = millis() + data[1];
         }
+
       }
 
       void confirmation(float *data) {
