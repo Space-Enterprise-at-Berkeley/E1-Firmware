@@ -88,11 +88,11 @@ AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFl
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 AutomationSequenceCommand hotFire("Perform Hotfire", 32, &(Automation::beginHotfire), &(Automation::endHotfire));
 
-const uint8_t numCommands = 14;
+const uint8_t numCommands = 16;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::high_p_enable, &Solenoids::arm_rocket, &Solenoids::launch,
-                                        &fullFlow, &loxFlow, &loxPTHeater, &loxGemsHeater};
+                                        &fullFlow, &loxFlow, &loxPTHeater, &loxGemsHeater, &propPTHeater, &propGemsHeater};
 CommandArray commands(numCommands, backingStore);
 
 namespace config {
