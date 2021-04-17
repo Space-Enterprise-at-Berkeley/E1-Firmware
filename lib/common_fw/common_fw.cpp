@@ -23,7 +23,7 @@ byte mac[] = {
 };
 unsigned int port = 42069; // try to find something that can be the same on gs
 const uint8_t numGrounds = 2;
-IPAddress groundIP[numGrounds] = {IPAddress(10, 0, 0, 69), IPAddress(10, 0, 0, 72)};
+IPAddress groundIP[numGrounds] = {IPAddress(10, 0, 0, 69), IPAddress(10, 0, 0, 70)};
 #endif
 
 Command *tmpCommand;

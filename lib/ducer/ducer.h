@@ -22,7 +22,7 @@ namespace Ducers {
 
   uint8_t * _adcIndices; // array of size _numSensors
   uint8_t * _adcChannels;
-  uint8_t * _ptTypes;
+  uint32_t * _ptTypes;
 
   float * _latestReads;
 
@@ -32,13 +32,17 @@ namespace Ducers {
 
   uint8_t buffer[4];
 
-  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint8_t * ptTypes, ADC ** adcs) {
+  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint32_t * ptTypes, ADC ** adcs) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
     _ptTypes = ptTypes;
     _adcs = adcs;
     _latestReads = (float *)malloc(numSensors);
+
+    for (int i = 0; i < _numSensors; i ++){
+      Serial.println(_ptTypes[i]);
+    }
   }
 
   /*
@@ -148,7 +152,6 @@ namespace Ducers {
         data[i] = interpolate300(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
       }
       _latestReads[i] = data[i];
-      i++;
     }
     data[_numSensors] = -1;
   }
