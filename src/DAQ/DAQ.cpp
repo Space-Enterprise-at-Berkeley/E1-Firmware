@@ -193,9 +193,7 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("Cryo all");
-      Serial.println("testing");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
-      Serial.println("testing90909");
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
