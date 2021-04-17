@@ -95,7 +95,7 @@ void setup() {
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
+  Thermocouple::Analog::init(numAnalogTempSens, tempSensAdcIndices, tempSensAdcChannels, adsPointers);
 
   // _cryoTherms = Thermocouple::Cryo();
   // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);

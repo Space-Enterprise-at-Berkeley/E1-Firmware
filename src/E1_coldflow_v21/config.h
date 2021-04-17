@@ -34,9 +34,9 @@ uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
-const int numAnalogThermocouples = 6;
-uint8_t thermAdcIndices[numAnalogThermocouples] = {0, 0, 0, 0, 1, 1};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {4, 5, 6, 7, 2, 3};
+const int numAnalogTempSens = 6;
+uint8_t tempSensAdcIndices[numAnalogTempSens] = {0, 0, 0, 0, 1, 1};
+uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7, 2, 3};
 
 const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
@@ -58,7 +58,7 @@ uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
-const uint8_t numSensors = 6;
+const uint8_t numSensors = 11;
 sensorInfo sensors[numSensors];
 
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
