@@ -11,12 +11,9 @@
 #include <ADS8167.h>
 #include <cmath>
 
-
 using namespace std;
 
 namespace Ducers {
-
-
 
   ADC ** _adcs;
 
@@ -94,7 +91,7 @@ namespace Ducers {
     double values[2][2] = { // [x, y] pairs
       {6553,  0},
       {58982, 300}
-              };
+    };
     // return std::lerp(-123.89876445934394, 1131.40825, (double) rawValue / 64901);
     float upperBound = values[1][0];
     float lowerBound = values[0][0];

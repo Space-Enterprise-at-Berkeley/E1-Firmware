@@ -11,7 +11,6 @@
 #include <command.h>
 #include <tempController.h>
 
-
 #define FLIGHT_BRAIN_ADDR 0x00
 
 std::string str_file_name = "E1_coldflow_v2.txt";
@@ -40,10 +39,10 @@ const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
 uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
 
-const uint8_t numPressureTransducers = 8;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
-uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
-uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
+const uint8_t numPressureTransducers = 4;
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0}; //, 1, 1, 1, 1};
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3}; //, 4, 5, 6, 7};
+uint32_t ptTypes[numPressureTransducers] = {1000, 100, 300, 5000}; //, 5000, 1000, 1000, 1000};
 const uint8_t pressurantIdx = 5;
 const uint8_t loxDomeIdx = 6;
 const uint8_t propDomeIdx = 7;
@@ -52,6 +51,7 @@ const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
+float powMonenergyConsumed[numPowerSupplyMonitors];
 
 uint8_t battMonINAAddr = 0x43;
 
