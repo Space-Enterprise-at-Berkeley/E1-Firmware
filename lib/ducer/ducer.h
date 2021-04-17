@@ -124,6 +124,7 @@ namespace Ducers {
   // All the following reads are blocking calls.
   void readAllPressures(float *data) {
     for (int i = 0; i < _numSensors; i++) {
+      debug("index: " + String(i));
       int type = _ptTypes[i];
       if (type == 1000) {
         #ifdef DEBUG
