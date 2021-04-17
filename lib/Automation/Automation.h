@@ -115,6 +115,9 @@ extern struct autoEventList* _eventList;
   int beginBothFlow();
   int endBothFlow();
 
+  int beginHotfire();
+  int endHotfire();
+
   //event scheduling functions
   int openLox();
   int closeLox();

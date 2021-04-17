@@ -194,12 +194,13 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     debug("finished sensor read");
-    packet = make_packet(sensor->id, false);
     for (int i = 0; i < maxReadings; i++) {
       Serial.print(farrbconvert.sensorReadings[i]);
       Serial.print(", ");
     }
     Serial.println("");
+    packet = make_packet(sensor->id, false);
+
     Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
