@@ -351,7 +351,7 @@ namespace Solenoids {
     return 1;
   }
 
-   int getHPS() {
+  int getHPS() {
     return high_sol_state;
   }
 

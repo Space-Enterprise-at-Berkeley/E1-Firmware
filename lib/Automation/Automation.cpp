@@ -202,7 +202,12 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
+    #if DEBUG
+      Serial.println("begin both flow");
+      Serial.flush();
+    #endif
     flowtype = BOTH_COLD;
+
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
@@ -215,7 +220,12 @@ namespace Automation {
       events[3] = {1000, &(state_setFlowing), false};
       //TODO @Ben: after ~1sec delay change startup to false & shutdown to true so shutdownDetection can start
       for (int i = 0; i < 4; i++) addEvent(&events[i]);
-    }
+    } else {
+    #if DEBUG
+      Serial.println("checks didn't pass in begin both flow);
+      Serial.flush();
+    #endif
+  }
     return -1;
   }
 

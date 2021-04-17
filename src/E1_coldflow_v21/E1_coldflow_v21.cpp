@@ -202,16 +202,6 @@ void loop() {
       continue;
     }
 
-    // if (j < 8) {
-    //   if(!states[j]) {
-    //     states[j] = true;
-    //     heaterCtl.turnOn(j);
-    //   } else if (states[j]) {
-    //     states[j] = false;
-    //     heaterCtl.turnOff(j);
-    //   }
-    // }
-
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);

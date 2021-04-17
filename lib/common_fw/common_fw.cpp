@@ -116,7 +116,7 @@ int8_t processCommand(String packet) {
     debug("Checksum correct, taking action");
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
     if (tmpCommand != nullptr) {
-
+      debug("valid command");
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
       if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
@@ -124,6 +124,7 @@ int8_t processCommand(String packet) {
       }
       return tmpCommand->ID();
     } else {
+      debug("couldn't find valid command.");
       return -1;
     }
   } else {
