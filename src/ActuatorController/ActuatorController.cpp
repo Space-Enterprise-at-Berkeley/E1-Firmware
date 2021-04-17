@@ -174,7 +174,7 @@ void loop() {
   LinearActuators::getAllStates(farrbconvert.sensorReadings);
   for (int i = 0; i < numLinActs; i++) {
     if(farrbconvert.sensorReadings[i] > 0) {
-      if(LinearActuators::_linActCommands[i]->outputMonitor.readShuntCurrent() < 0.1){
+      if(LinearActuators::_linActCommands[i]->endtime == -1 && LinearActuators::_linActCommands[i]->outputMonitor.readShuntCurrent() < 0.1){
         LinearActuators::_linActCommands[i]->_off();
         LinearActuators::_linActCommands[i]->endtime = -1;
       } else if(LinearActuators::_linActCommands[i]->endtime != -1 && millis() > LinearActuators::_linActCommands[i]->endtime) {
