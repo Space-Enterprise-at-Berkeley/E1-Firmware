@@ -207,25 +207,31 @@ namespace Automation {
       Serial.flush();
     #endif
     flowtype = BOTH_COLD;
-    #if DEBUG
-      Serial.println("set flow type");
-      Serial.flush();
-    #endif
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
+    Serial.println("startup: " + String(_startup));
     if (_startup) {
       Serial.println("Eureka-1 is in Startup");
+      Serial.flush();
 
       autoEvent events[4];
       events[0] = {0, &(act_pressurizeTanks), false};
+      Serial.println("add press to list");
+      Serial.flush();
       events[1] = {1000, &(act_armOpenBoth), false};
+      Serial.println("add arm to list");
+      Serial.flush();
       events[2] = {750, &(Solenoids::disarmLOX), false};
+      Serial.println("add disarm to list");
+      Serial.flush();
       events[3] = {1000, &(state_setFlowing), false};
+      Serial.println("add set state flowing");
+      Serial.flush();
       //TODO @Ben: after ~1sec delay change startup to false & shutdown to true so shutdownDetection can start
       for (int i = 0; i < 4; i++) addEvent(&events[i]);
     } else {
     #if DEBUG
-      Serial.println("checks didn't pass in begin both flow");
+      Serial.println("not startup");
       Serial.flush();
     #endif
   }
