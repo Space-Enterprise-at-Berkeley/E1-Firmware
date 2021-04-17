@@ -205,7 +205,7 @@ void loop() {
     // Serial.println("");
     packet = make_packet(sensor->id, false);
 
-    //Serial.println(packet);
+    Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
