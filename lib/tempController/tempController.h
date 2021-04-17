@@ -36,6 +36,7 @@ class TempController {
     bool humanOverride = false;
     uint16_t humanSpecifiedValue = 300;
     INA219 outputMonitor;
+    bool inaExists = false;
 
   public:
 
@@ -55,29 +56,37 @@ class HeaterCommand : public Command, public TempController {
       TempController(tempSetPoint, algorithmChoice, heaterPin)
     {
       initINA219(wire, inaAddr, shuntR, maxExpectedCurrent);
+      inaExists = true;
     }
 
     HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, int heaterPin):
       Command(name, id),
       TempController(tempSetPoint, algorithmChoice, heaterPin)
-    {}
+    {
+      inaExists = false;
+    }
 
     HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, GpioExpander * expander, int8_t channel):
       Command(name, id),
       TempController(tempSetPoint, algorithmChoice, expander, channel)
-    {}
+    {
+      inaExists = false;
+    }
 
     HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin, TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent):
       Command(name),
       TempController(tempSetPoint, algorithmChoice, heaterPin)
     {
       initINA219(wire, inaAddr, shuntR, maxExpectedCurrent);
+      inaExists = true;
     }
 
     HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin):
       Command(name),
       TempController(tempSetPoint, algorithmChoice, heaterPin)
-    {}
+    {
+      inaExists = false;
+    }
 
     void parseCommand(float *data) {
       if (data[0] == 300)
@@ -92,7 +101,11 @@ class HeaterCommand : public Command, public TempController {
     void confirmation(float *data) {
       data[0] = humanOverride;
       data[1] = (humanOverride)? humanSpecifiedValue : -1;
-      data[2] = outputMonitor.readShuntCurrent();
+      if(inaExists){
+        data[2] = outputMonitor.readShuntCurrent();
+      } else {
+        data[2] = -1;
+      }
       data[3] = -1;
     }
 
