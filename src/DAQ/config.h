@@ -56,7 +56,7 @@ HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 7;
+const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms

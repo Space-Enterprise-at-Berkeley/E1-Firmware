@@ -43,15 +43,11 @@ namespace Thermocouple {
     }
 
     void Cryo::readCryoTemps(float *data) {
-      debug("inside");
       for (int i = 0; i < _numSensors; i++) {
-        debug("testing"+ String(i));
         data[i] = _cryo_amp_boards[i].readThermocouple();
         debug(data[i]);
         _latestReads[i] = data[i];
-        debug("copied");
       }
-      debug("testing5");
       data[_numSensors] = -1;
     }
 
