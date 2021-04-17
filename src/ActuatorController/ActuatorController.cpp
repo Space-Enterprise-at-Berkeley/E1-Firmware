@@ -223,14 +223,14 @@ void sensorReadFunc(int id) {
       readPacketCounter(farrbconvert.sensorReadings);
       break;
     case 1:
-      ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
-      break;
-      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1) {
-        sensors[3].clock_freq = 5;
-      } else {
-        sensors[3].clock_freq = 20;
-      }
-      
+      // ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
+      // break;
+      // if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1) {
+      //   sensors[3].clock_freq = 5;
+      // } else {
+      //   sensors[3].clock_freq = 20;
+      // }
+
     case 3:
       LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
 
