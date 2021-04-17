@@ -11,10 +11,6 @@
 std::string str_file_name = "Actuator_Controller.txt";
 const char * file_name = str_file_name.c_str();
 
-#ifdef ETH
-IPAddress ip(10, 0, 0, 21); // dependent on local network
-#endif
-
 const uint8_t numPowerSupplyMonitors = 1;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
@@ -33,6 +29,9 @@ uint8_t linActCommandIds[numLinActs] = {14, 15, 16, 17, 18, 19, 20};
 uint8_t linActINAAddrs[numLinActs] = {0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A};
 
 #ifdef AC1
+#ifdef ETH
+IPAddress ip(10, 0, 0, 21); // dependent on local network
+#endif
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
@@ -54,6 +53,9 @@ HeaterCommand heater4("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3], &Wi
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
 #elif AC2
+#ifdef ETH
+IPAddress ip(10, 0, 0, 22); // dependent on local network
+#endif
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
@@ -70,6 +72,9 @@ uint8_t linActPairIds[numLinActs] = {1, 0, 2, 3, 5, 4, 6};
 
 
 #elif AC3
+#ifdef ETH
+IPAddress ip(10, 0, 0, 23); // dependent on local network
+#endif
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
