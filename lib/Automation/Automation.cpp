@@ -69,6 +69,8 @@ namespace Automation {
    * overhead, but avoids dealing with allocating & deallocation memory for each event
    */
   bool addEvent(autoEvent* e) {
+    Serial.println("add Event; len: " + String(_eventList->length));
+    Serial.flush();
     if (_eventList->length < 10) {
       (_eventList->events)[_eventList->length] = *e;
       _eventList->length++;
