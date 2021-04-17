@@ -247,7 +247,7 @@ void sensorReadFunc(int id) {
       break;
     case 2:
       debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");

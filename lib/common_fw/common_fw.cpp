@@ -35,6 +35,8 @@ Command *tmpCommand;
 String make_packet(int id, bool error) {
   String packet_content = (String)id;
   packet_content += ",";
+  // packet_content += String(millis());
+  // packet_content += ",";
   if (!error) {
     for (int i=0; i<8; i++) {
       float reading = farrbconvert.sensorReadings[i];
@@ -206,5 +208,8 @@ void debug(String str) {
   #ifdef DEBUG
     Serial.println(str);
     Serial.flush();
+    #ifdef ETH
+      sendEthPacket(std::string(str.c_str()));
+    #endif
   #endif
 }
