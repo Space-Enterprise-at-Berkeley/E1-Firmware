@@ -23,7 +23,9 @@ namespace Automation {
   // flow_type_t flowtype;
   // flow_state_t flowstate = ON_PAD;
 
+ const uint8_t maxNumEvents = 15;
  struct autoEventList _eventList;
+ autoEvent events[maxNumEvents];
 
   /* Delays during startup sequence:
     1 - Between open pressure and open LOX Main
@@ -45,8 +47,8 @@ namespace Automation {
 
   bool init() {
     //_eventList = new autoEventList;
-    _eventList.maxEvents = 15; //arbitrary max of 10 events right now.
-    _eventList.events = new autoEvent[_eventList.maxEvents];
+    _eventList.maxEvents = maxNumEvents; //arbitrary max of 10 events right now.
+    _eventList.events = events;
 
     _eventList.length = 0;
     Serial.println(_eventList.length);
@@ -73,8 +75,9 @@ namespace Automation {
   bool addEvent(autoEvent* e) {
     Serial.println("add Event; len: " + String(_eventList.length));
     Serial.flush();
-    if (_eventList.length < 10) {
-      (_eventList.events)[_eventList.length] = *e;
+    if (_eventList.length < maxNumEvents) {
+      _eventList.events[_eventList.length] = *e;
+      // memcpy(_eventList.events[_eventList.length], e, sizeof(autoEvent));
       _eventList.length++;
       Serial.println("eventList len!");
       Serial.println(_eventList.length);
