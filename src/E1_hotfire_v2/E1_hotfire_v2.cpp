@@ -277,6 +277,7 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 17:
+      debug("static P");
       farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[2] = -1;
