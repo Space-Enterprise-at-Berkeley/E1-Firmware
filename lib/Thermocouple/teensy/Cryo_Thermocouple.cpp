@@ -52,7 +52,9 @@ namespace Thermocouple {
         Serial.print(i);
         Serial.flush();
         #endif
-        data[i] = _cryo_amp_boards[i].readThermocouple();
+        // data[i] = _cryo_amp_boards[i].readThermocouple();
+        data[i] = _cryo_amp_boards[i].readAmbient();
+        // data[i] = _cryo_amp_boards[i].readADC();
         #ifdef DEBUG
         Serial.print(data[i]);
         Serial.flush();
