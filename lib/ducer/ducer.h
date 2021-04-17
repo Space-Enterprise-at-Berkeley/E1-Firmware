@@ -22,7 +22,7 @@ namespace Ducers {
 
   uint8_t * _adcIndices; // array of size _numSensors
   uint8_t * _adcChannels;
-  uint8_t * _ptTypes;
+  uint32_t * _ptTypes;
 
   float * _latestReads;
 
