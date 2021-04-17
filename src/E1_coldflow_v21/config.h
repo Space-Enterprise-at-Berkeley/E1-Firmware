@@ -58,12 +58,17 @@ uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 uint8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
-// const uint8_t numHeaters = 2;
-// uint8_t heaterPins[numHeaters] = {22, 23};
-// uint8_t heaterCommandIds[numHeaters] = {12, 13};
+const uint8_t numHeaters = 6;
+uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
+uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
 // uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
-//
-// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+
+HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0]);
+HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1]);
+HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2]);
+HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3]);
+HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4]);
+HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5]);
 
 const uint8_t numSensors = 11;
 sensorInfo sensors[numSensors];
