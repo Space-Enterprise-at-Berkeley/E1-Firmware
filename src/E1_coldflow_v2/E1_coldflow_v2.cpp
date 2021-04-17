@@ -100,8 +100,8 @@ void setup() {
   debug("Initializing Thermocouples");
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
-  // _cryoTherms = Thermocouple::Cryo();
-  // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
+  _cryoTherms = Thermocouple::Cryo();
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   Automation::init();
 
@@ -237,7 +237,7 @@ void sensorReadFunc(int id) {
   switch (id) {
     case 0:
       debug("cryo specific read");
-      //_cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
+      _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
@@ -251,7 +251,7 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("Cryo all");
-      //_cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
@@ -259,20 +259,20 @@ void sensorReadFunc(int id) {
     case 6:
       // this hardcoded 3 is kinda sus.
       debug("cryo specific read");
-      //_cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
+      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 8:
       // this hardcoded 3 is kinda sus.
       debug("propane gems");
-      //_cryoTherms.readSpecificCryoTemp(0, farrbconvert.sensorReadings);
+      _cryoTherms.readSpecificCryoTemp(0, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 16:
       debug("propane pt");
-      //_cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
+      _cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = propPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
       farrbconvert.sensorReadings[2] = -1;
       break;
