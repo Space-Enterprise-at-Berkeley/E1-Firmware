@@ -69,13 +69,13 @@ void setup() {
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-  //   packet = make_packet(101, true);
-  //   RFSerial.println(packet);
-  //   #ifdef ETH
-  //   sendEthPacket(packet.c_str());
-  //   #endif
-  // }
+  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+    packet = make_packet(101, true);
+    RFSerial.println(packet);
+    #ifdef ETH
+    sendEthPacket(packet.c_str());
+    #endif
+  }
 
   debug("Initializing Libraries");
 
@@ -94,7 +94,7 @@ void setup() {
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   debug("Initializing Load Cell");
-  LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  // LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
 }
 
 void loop() {
@@ -189,7 +189,7 @@ void sensorReadFunc(int id) {
     //   break;
     case 3:
       debug("Load Cells");
-      LoadCell::readLoadCells(farrbconvert.sensorReadings);
+      // LoadCell::readLoadCells(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
