@@ -9,6 +9,7 @@
 #include <LTC4151.h>
 #include <Automation.h>
 #include <command.h>
+#include <tempController.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -87,11 +88,12 @@ const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
-const uint8_t numCommands = 12;
+const uint8_t numCommands = 18;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::high_p_enable, &Solenoids::arm_rocket, &Solenoids::launch,
-                                        &fullFlow, &loxFlow};
+                                        &fullFlow, &loxFlow, &loxTankPTHeater, &loxGemsHeater, &loxInjectorPTHeater, &propTankPTHeater,
+                                        &propGemsHeater, &propInjectorPTHeater};
 CommandArray commands(numCommands, backingStore);
 
 namespace config {
