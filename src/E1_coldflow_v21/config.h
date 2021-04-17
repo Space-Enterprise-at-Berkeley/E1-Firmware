@@ -1,5 +1,6 @@
 #include <solenoids.h>
 #include <Analog_Thermocouple.h>
+#include <Cryo_Thermocouple.h>
 #include "common_fw.h"
 #include <ADS8167.h>
 #include <INA219.h>
@@ -10,12 +11,20 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
-std::string str_file_name = "E1_waterflow_v2.txt";
+std::string str_file_name = "E1_coldflow_v21.txt";
 const char * file_name = str_file_name.c_str();
 
 #ifdef ETH
 IPAddress ip(10, 0, 0, 42); // dependent on local network
 #endif
+
+const uint8_t numCryoTherms = 4;
+// therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
+// ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
+uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
+_themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
+Adafruit_MCP9600 _cryo_boards[numCryoTherms];
+float cryoReadsBackingStore[numCryoTherms];
 
 const uint8_t numADCSensors = 2;
 uint8_t adcCSPins[numADCSensors] = {37, 36};
@@ -48,7 +57,7 @@ uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
-const uint8_t numSensors = 4;
+const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];
 
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
@@ -98,6 +107,7 @@ namespace config {
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[4] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
+    sensors[5] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
 
     // debug("Initializing valves");
     // valves = new valveInfo[numValves];

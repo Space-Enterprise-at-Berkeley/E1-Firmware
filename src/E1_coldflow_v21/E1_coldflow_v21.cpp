@@ -38,6 +38,8 @@ int packet_count = 0;
 
 void sensorReadFunc(int id);
 
+Thermocouple::Cryo _cryoTherms;
+
 void setup() {
   Wire.begin();
   Serial.begin(57600);
@@ -59,9 +61,6 @@ void setup() {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-
-  debug("Sensor IDs:");
-  debug(String(sensors[0].name));
 
   debug("Starting SD");
 
@@ -98,6 +97,9 @@ void setup() {
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
+
+  _cryoTherms = Thermocouple::Cryo();
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   Automation::init();
 
@@ -241,6 +243,10 @@ void sensorReadFunc(int id) {
     case 2:
       debug("Batt");
       batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
+    case 4:
+      debug("Cryo all");
+      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
