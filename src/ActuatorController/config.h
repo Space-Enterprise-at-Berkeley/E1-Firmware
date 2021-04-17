@@ -20,7 +20,7 @@ uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
-const float powerSupplyMonitorShuntR = 0.010; // ohms
+const float powerSupplyMonitorShuntR = 0.033; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
 const uint8_t numSensors = 5;

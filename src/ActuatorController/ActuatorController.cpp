@@ -178,6 +178,7 @@ void loop() {
         LinearActuators::_linActCommands[i]->_off();
         LinearActuators::_linActCommands[i]->endtime = -1;
       }
+      sensors[3].clock_freq = 20;
     }
   }
 
