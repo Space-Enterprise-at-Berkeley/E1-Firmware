@@ -7,7 +7,6 @@
 
 
 #include <Cryo_Thermocouple.h>
-#include <common_fw.h>
 
 namespace Thermocouple {
 
@@ -31,26 +30,29 @@ namespace Thermocouple {
         _cryo_amp_boards[i].enable(true);
       }
 
-      for (int i = 0; i < _numSensors; i++){
+      for (int i = 0; i < _numSensors; i++) {
         Serial.println(i);
         Serial.println(_latestReads[i]);
         _latestReads[i] = -1;
         Serial.println(_latestReads[i]);
       }
 
-
       return 0;
     }
 
     void Cryo::readCryoTemps(float *data) {
+      #ifdef DEBUG
+      Serial.println("read Cryo temps");
+      #endif
       for (int i = 0; i < _numSensors; i++) {
         data[i] = _cryo_amp_boards[i].readThermocouple();
-        debug(data[i]);
+        #ifdef DEBUG
+        Serial.print(data[i]);
+        #endif
         _latestReads[i] = data[i];
       }
       data[_numSensors] = -1;
     }
-
 
     void Cryo::readSpecificCryoTemp(uint8_t index, float *data) {
       data[0] = _latestReads[index];

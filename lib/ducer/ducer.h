@@ -124,7 +124,6 @@ namespace Ducers {
   // All the following reads are blocking calls.
   void readAllPressures(float *data) {
     for (int i = 0; i < _numSensors; i++) {
-      Serial.println("index: " + String(i));
       int type = _ptTypes[i];
       if (type == 1000) {
         #ifdef DEBUG
@@ -151,8 +150,6 @@ namespace Ducers {
           Serial.flush();
         #endif
         data[i] = interpolate300(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
-      } else {
-        Serial.println("didn't catch a type for ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
       }
       _latestReads[i] = data[i];
     }
