@@ -222,7 +222,7 @@ namespace Automation {
       for (int i = 0; i < 4; i++) addEvent(&events[i]);
     } else {
     #if DEBUG
-      Serial.println("checks didn't pass in begin both flow);
+      Serial.println("checks didn't pass in begin both flow");
       Serial.flush();
     #endif
   }
