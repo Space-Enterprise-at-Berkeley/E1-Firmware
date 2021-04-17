@@ -86,7 +86,7 @@ void setup() {
   // ACSolenoids::init(numSolenoids, solenoidPins, solenoidCommandIds);
   LinearActuators::init(numLinActs, numLinActPairs, in1Pins, in2Pins, linActPairIds, linActCommandIds, &Wire, linActINAAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
   debug("Initializing battery monitor");
-  batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
+  batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
   debug("passed");

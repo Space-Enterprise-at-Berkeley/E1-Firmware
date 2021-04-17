@@ -101,7 +101,7 @@ namespace config {
 
     debug("Initializing Power Supply monitors");
     for (int i = 0; i < numPowerSupplyMonitors; i++) {
-        powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
+        powerSupplyMonitors[i].begin(&Wire1, powSupMonAddrs[i]);
         powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
         powSupMonPointers[i] = &powerSupplyMonitors[i];
