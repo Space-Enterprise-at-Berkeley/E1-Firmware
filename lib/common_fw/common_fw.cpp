@@ -208,8 +208,8 @@ void debug(String str) {
   #ifdef DEBUG
     Serial.println(str);
     Serial.flush();
-    #ifdef ETH
-      sendEthPacket(std::string(str.c_str()));
-    #endif
+    // #ifdef ETH
+    //   sendEthPacket(std::string(str.c_str()));
+    // #endif
   #endif
 }
