@@ -35,6 +35,8 @@ namespace Thermocouple {
         Serial.println(_latestReads[i]);
         _latestReads[i] = -1;
         Serial.println(_latestReads[i]);
+        _latestReads[i] = _cryo_amp_boards[i].readThermocouple();
+        Serial.println(_latestReads[i]);
       }
 
       return 0;
