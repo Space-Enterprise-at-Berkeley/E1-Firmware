@@ -39,6 +39,9 @@ void setup() {
 
   delay(3000);
 
+  // pinMode(23, OUTPUT);
+  // analogWrite(23, 255);
+
   #ifdef ETH
   debug("Setup Ethernet");
   setupEthernetComms(mac, ip);
@@ -202,7 +205,7 @@ void loop() {
     // Serial.println("");
     packet = make_packet(sensor->id, false);
 
-    Serial.println(packet);
+    //Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
@@ -234,11 +237,32 @@ void sensorReadFunc(int id) {
       //   sensors[3].clock_freq = 20;
       // }
       debug("heater current draw");
+      #ifdef AC1
+
       heater1.readCurrentDraw(farrbconvert.sensorReadings);
       heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
-      heater3.readCurrentDraw(farrbconvert.sensorReadings + 2);
-      heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
+      farrbconvert.sensorReadings[2] = 0;
+      farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
+
+      #elif AC2
+
+      heater1.readCurrentDraw(farrbconvert.sensorReadings);
+      heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
+      farrbconvert.sensorReadings[2] = 0;
+      farrbconvert.sensorReadings[3] = 0;
+      farrbconvert.sensorReadings[4] = -1;
+
+      #elif AC3
+
+      heater1.readCurrentDraw(farrbconvert.sensorReadings);
+      heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
+      farrbconvert.sensorReadings[2] = 0;
+      farrbconvert.sensorReadings[3] = 0;
+      farrbconvert.sensorReadings[4] = -1;
+
+      #endif
+
 
     case 2:
       debug("battery stats");
