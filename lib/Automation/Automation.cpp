@@ -228,23 +228,23 @@ namespace Automation {
       events[0] = {0, &(act_pressurizeTanks), false};
       Serial.println("add press to list");
       Serial.flush();
-      addEvent(&events[0]);
+      // addEvent(&events[0]);
       Serial.println("add event press");
       Serial.flush();
       events[1] = {1000, &(act_armOpenBoth), false};
       Serial.println("add arm to list");
       Serial.flush();
-      addEvent(&events[1]);
+      // addEvent(&events[1]);
 
       events[2] = {750, &(Solenoids::disarmLOX), false};
       Serial.println("add disarm to list");
       Serial.flush();
-      addEvent(&events[2]);
+      // addEvent(&events[2]);
 
       events[3] = {1000, &(state_setFlowing), false};
       Serial.println("add set state flowing");
       Serial.flush();
-      addEvent(&events[3]);
+      // addEvent(&events[3]);
 
       //TODO @Ben: after ~1sec delay change startup to false & shutdown to true so shutdownDetection can start
       for (int i = 0; i < 4; i++) addEvent(&events[i]);
