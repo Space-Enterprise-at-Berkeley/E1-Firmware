@@ -11,6 +11,7 @@
 #include "pid.h"
 #include <command.h>
 #include <GpioExpander.h>
+#include <INA219.h>
 
 using namespace std;
 
@@ -34,6 +35,7 @@ class TempController {
   protected:
     bool humanOverride = false;
     uint16_t humanSpecifiedValue = 300;
+    INA219 outputMonitor;
 
   public:
 
@@ -41,6 +43,7 @@ class TempController {
     TempController(int tempSetPoint, int algorithmChoice, GpioExpander * expander, int8_t channel);
     int calculateOutput(float currTemp);
     float controlTemp(float currTemp);
+
 };
 
 
@@ -69,7 +72,19 @@ class HeaterCommand : public Command, public TempController {
     void confirmation(float *data) {
       data[0] = humanOverride;
       data[1] = (humanOverride)? humanSpecifiedValue : -1;
-      data[2] = -1;
+      data[2] = outputMonitor.readShuntCurrent();
+      data[3] = -1;
+    }
+
+    void readCurrentDraw(float *data) {
+      data[0] = outputMonitor.readShuntCurrent();
+      data[1] = -1;
+    }
+
+    void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
+      outputMonitor.begin(wire, inaAddr);
+      outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+      outputMonitor.calibrate(shuntR, maxExpectedCurrent);
     }
 };
 #endif

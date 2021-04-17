@@ -39,8 +39,8 @@ uint8_t heaterCommandIds[numHeaters] = {10, 11, 12, 13};
 
 HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
 HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
-HeaterCommand heater2("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2]); // setPoint = 10C, alg = PID
-HeaterCommand heater2("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3]); // setPoint = 10C, alg = PID
+HeaterCommand heater3("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2]); // setPoint = 10C, alg = PID
+HeaterCommand heater4("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3]); // setPoint = 10C, alg = PID
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};

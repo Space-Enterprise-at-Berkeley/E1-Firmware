@@ -43,6 +43,7 @@ int TempController::calculateOutput(float currTemp) {
   }
 }
 
+
 float TempController::controlTemp(float currTemp) {
   _heaterOutput = (humanOverride) ? humanSpecifiedValue : calculateOutput(currTemp);
   if(_heaterPin != -1) {
