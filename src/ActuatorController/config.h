@@ -83,7 +83,7 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
-const uint8_t numCommands = 9;
+const uint8_t numCommands = 11;
 Command *backingStore[numCommands] = {&heater1, &heater2, &heater3, &heater4, //&ACSolenoids::zero,  &ACSolenoids::one,
                                       &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
                                       &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
