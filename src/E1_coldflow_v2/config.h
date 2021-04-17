@@ -36,7 +36,7 @@ uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
-const uint8_t numAnalogThermocouples = 1;
+const uint8_t numAnalogThermocouples = 4;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
 uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
 

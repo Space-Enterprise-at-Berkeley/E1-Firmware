@@ -12,7 +12,6 @@
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
 
-
 #ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
@@ -230,8 +229,9 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("Heater");
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      debug("lox tank pt");
+      // these hardcode ids are going to royally fuck us soon
+      Thermocouple::Analog::readSpecificTemperatureData(1, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
@@ -254,10 +254,40 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 6:
+      debug("lox gems");
+      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 8:
+      debug("prop gems");
+      Thermocouple::Analog::readSpecificTemperatureData(5, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 16:
+      debug("prop tank pt");
+      Thermocouple::Analog::readSpecificTemperatureData(4, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
     case 17:
       debug("static P");
       farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 19:
+      debug("lox injector");
+      Thermocouple::Analog::readSpecificTemperatureData(2, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 60:
+      debug("Prop Injector");
+      Thermocouple::Analog::readSpecificTemperatureData(3, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:

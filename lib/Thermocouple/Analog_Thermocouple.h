@@ -39,11 +39,18 @@ namespace Thermocouple {
       int i = 0;
       while (i < _numSensors) {
         rawRead = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
-        voltageRead = (float) rawRead * (5.0 / pow(2,23));
+        voltageRead = (float) rawRead * (5.0 / pow(2,15));
         data[i] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
         i++;
       }
       data[i] = -1;
+    }
+
+    void readSpecificTemperatureData(int idx, float *data) {
+      rawRead = _adcs[_adcIndices[idx]]->readData(_adcChannels[idx]);
+      voltageRead = (float) rawRead * (5.0 / pow(2,15));
+      data[0] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
+      data[1] = -1;
     }
 
   }

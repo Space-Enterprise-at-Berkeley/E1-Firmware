@@ -34,9 +34,9 @@ uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
-const int numAnalogThermocouples = 1;
-uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
+const int numAnalogThermocouples = 6;
+uint8_t thermAdcIndices[numAnalogThermocouples] = {0, 0, 0, 0, 1, 1};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {4, 5, 6, 7, 2, 3};
 
 const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
@@ -117,26 +117,16 @@ namespace config {
     }
 
     debug("Initializing sensors");
-    sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[4] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-    sensors[5] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-
-    // debug("Initializing valves");
-    // valves = new valveInfo[numValves];
-    // valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
-    // valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
-    // valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
-    // valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
-    // valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
-    // valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
-    // valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    // valves[7] = {"High Pressure Solenoid Enable", 31, &(Solenoids::enableHighPressureSolenoid), &(Solenoids::disableHighPressureSolenoid), &(Solenoids::getAllStates)};
-    // valves[8] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    // valves[9] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-    // valves[10] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
-    // valves[11] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
+    sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
+    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
+    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 4};
+    sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
+    sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 4};
+    sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 4};
+    sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
+    sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 4};
   }
 }
