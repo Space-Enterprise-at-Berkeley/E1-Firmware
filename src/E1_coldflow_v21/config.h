@@ -108,6 +108,8 @@ namespace config {
       // ads[i]->calibrate();
     }
 
+    heaterCtl.init();
+
     debug("Initializing Power Supply monitors");
     for (int i = 0; i < numPowerSupplyMonitors; i++) {
         powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
