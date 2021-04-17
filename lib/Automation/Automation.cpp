@@ -74,10 +74,12 @@ namespace Automation {
       _eventList->length++;
       Serial.println("eventList len!");
       Serial.println(_eventList->length);
+      Serial.flush();
       // if first event is being added then need to restart timer.
       if (_eventList->length == 1) {
         _eventList->timer = millis();
       }
+
       return true;
     } else {
       return false;

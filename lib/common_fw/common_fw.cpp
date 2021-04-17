@@ -119,9 +119,12 @@ int8_t processCommand(String packet) {
       debug("valid command");
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
+      Serial.println("got valid conf");
       if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
         return 20;
       }
+      Serial.println("returning: " + String(tmpCommand->ID()));
+      Serial.flush();
       return tmpCommand->ID();
     } else {
       debug("couldn't find valid command.");

@@ -147,6 +147,7 @@ void loop() {
     if (id != -1) {
       packet = make_packet(id, false);
       Serial.println(packet);
+      Serial.flush();
       #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
