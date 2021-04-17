@@ -39,6 +39,10 @@ namespace Ducers {
     _ptTypes = ptTypes;
     _adcs = adcs;
     _latestReads = (float *)malloc(numSensors);
+
+    for (int i = 0; i < _numSensors; i ++){
+      Serial.println(_ptTypes[i]);
+    }
   }
 
   /*
