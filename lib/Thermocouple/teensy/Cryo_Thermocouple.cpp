@@ -43,11 +43,13 @@ namespace Thermocouple {
     void Cryo::readCryoTemps(float *data) {
       #ifdef DEBUG
       Serial.println("read Cryo temps");
+      Serial.flush();
       #endif
       for (int i = 0; i < _numSensors; i++) {
         data[i] = _cryo_amp_boards[i].readThermocouple();
         #ifdef DEBUG
         Serial.print(data[i]);
+        Serial.flush();
         #endif
         _latestReads[i] = data[i];
       }
