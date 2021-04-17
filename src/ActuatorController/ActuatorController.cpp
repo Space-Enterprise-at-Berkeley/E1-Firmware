@@ -193,6 +193,7 @@ void loop() {
     }
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
+    debug("finished sensor read");
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
     #ifdef ETH
@@ -217,13 +218,6 @@ void loop() {
  */
 void sensorReadFunc(int id) {
   switch (id) {
-    case 2:
-      debug("battery stats");
-      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
-    case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
-      break;
     case 1:
       // ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
       // break;
@@ -239,6 +233,10 @@ void sensorReadFunc(int id) {
       heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
       farrbconvert.sensorReadings[4] = -1;
 
+    case 2:
+      debug("battery stats");
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      break;
     case 3:
       debug("lin act current draw");
       LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
@@ -250,8 +248,16 @@ void sensorReadFunc(int id) {
       }
       break;
     case 4:
+      debug("lin act all states");
       LinearActuators::getAllStates(farrbconvert.sensorReadings);
       break;
+    case 5:
+      debug("packet count");
+      readPacketCounter(farrbconvert.sensorReadings);
+      break;
+
+
+
     default:
       Serial.println("some other sensor");
       break;

@@ -111,9 +111,9 @@ namespace config {
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 1, 10};
+    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 1, 5};
     sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 3, 10};
-    sensors[4] = {"LinAct States", FLIGHT_BRAIN_ADDR, 4, 10};
+    sensors[4] = {"LinAct States", FLIGHT_BRAIN_ADDR, 4, 1};
 
   }
 }
