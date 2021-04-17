@@ -81,6 +81,7 @@ class HeaterCommand : public Command, public TempController {
         humanOverride = true;
         humanSpecifiedValue = max(0, min(255, data[0]));
       }
+      controlTemp(0);
     }
 
     void confirmation(float *data) {

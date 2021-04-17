@@ -28,10 +28,13 @@ const int numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
 uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
 
-const uint8_t numPressureTransducers = 9;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1, 1};
-uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7, 0};
-uint8_t ptTypes[numPressureTransducers] = {1, 1, 1, 1, 2, 1, 1, 1, 1};
+const uint8_t numPressureTransducers = 8;
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
+uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
+const uint8_t pressurantIdx = 5;
+const uint8_t loxDomeIdx = 6;
+const uint8_t propDomeIdx = 7;
 
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
@@ -94,6 +97,7 @@ namespace config {
     sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[4] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
 
     // debug("Initializing valves");
     // valves = new valveInfo[numValves];

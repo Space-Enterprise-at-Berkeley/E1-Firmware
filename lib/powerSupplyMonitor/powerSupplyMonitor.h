@@ -19,7 +19,7 @@ namespace powerSupplyMonitor {
 
   TwoWire * _localWire;
 
-  float * energyConsumed;
+  float * _energyConsumed;
   long last_checked;
 
   void init(uint8_t numSupplies, INA ** supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
@@ -28,7 +28,7 @@ namespace powerSupplyMonitor {
     _addrs = addrs;
     _supplyMonitors = supplyMons;
 
-    energyConsumed = (float *)malloc(_numSupplies * sizeof(float));
+    _energyConsumed = (float *) malloc(numSupplies * sizeof(float));
 
     for (int i = 0; i < _numSupplies; i++) {
       // _supplyMonitors[i]->begin(localWire, addrs[i]);
@@ -36,7 +36,7 @@ namespace powerSupplyMonitor {
       // _supplyMonitors[i]->calibrate(rShunt, maxExpectedCurrent);
       debug("started INA219");
       debug("testinh");
-      energyConsumed[i] = 0;
+      _energyConsumed[i] = 0;
       debug("testing2");
     }
   }
@@ -58,7 +58,7 @@ namespace powerSupplyMonitor {
   void readPowerConsumption(float *data) {
     for (int i = 0; i < _numSupplies; i++) {
       data[i] = _supplyMonitors[i]->readBusPower();
-      energyConsumed[i] += data[i] * (millis() - last_checked) / 1000;
+      _energyConsumed[i] += data[i] * (millis() - last_checked) / 1000;
     }
     last_checked = millis();
   }
@@ -66,7 +66,7 @@ namespace powerSupplyMonitor {
   void getEnergyConsumption(float *data) {
     readPowerConsumption(data);
     for (int i = 0; i < _numSupplies; i++) {
-      data[i + _numSupplies] = energyConsumed[i];
+      data[i + _numSupplies] = _energyConsumed[i];
     }
     data[_numSupplies * 2] = -1;
   }

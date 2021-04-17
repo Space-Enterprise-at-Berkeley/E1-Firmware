@@ -115,9 +115,13 @@ int8_t processCommand(String packet) {
   if (_check == checksum) {
     debug("Checksum correct, taking action");
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
-    if (tmpCommand != nullptr){
+    if (tmpCommand != nullptr) {
+
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
+      if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
+        return 20;
+      }
       return tmpCommand->ID();
     } else {
       return -1;
@@ -195,7 +199,7 @@ bool setupEthernetComms(byte * mac, IPAddress ip){
   return true;
 }
 
-void sendEthPacket(std::string packet){
+void sendEthPacket(std::string packet) {
   for (uint8_t i = 0; i < numGrounds; i++){
     Udp.beginPacket(groundIP[i], port);
     Udp.write(packet.c_str());

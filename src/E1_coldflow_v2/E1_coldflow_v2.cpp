@@ -32,18 +32,17 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
-//
-// TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
-// TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
-Thermocouple::Cryo _cryoTherms;
+// Thermocouple::Cryo _cryoTherms;
 
 void setup() {
   Wire.begin();
   Serial.begin(57600);
+  #ifndef SERIAL_INPUT_DEBUG
   RFSerial.begin(57600);
+  #endif
 
   delay(3000);
 
@@ -93,7 +92,7 @@ void setup() {
   debug("Initializing Solenoids");
   Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   debug("Initializing battery monitor");
-  batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
+  // batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
@@ -103,8 +102,8 @@ void setup() {
   debug("Initializing Thermocouples");
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
+  // _cryoTherms = Thermocouple::Cryo();
+  // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   Automation::init();
 
@@ -208,6 +207,7 @@ void loop() {
     }
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
+    debug("finished reading sensor func");
     packet = make_packet(sensor->id, false);
     Serial.println(packet);
     #ifdef ETH
@@ -220,7 +220,7 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
+    if (sensor->id==1 && Automation::inFlow()) {
       sensors[8].clock_freq = 0;
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
@@ -228,7 +228,6 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
-  delay(10);
 }
 
 
@@ -239,9 +238,9 @@ void sensorReadFunc(int id) {
   switch (id) {
     case 0:
       debug("cryo specific read");
-      _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      // _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
+      // farrbconvert.sensorReadings[1] = loxPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      // farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
       debug("pressures all");
@@ -253,7 +252,10 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("Cryo all");
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      for (int i = 0; i < numCryoTherms; i++) {
+        farrbconvert.sensorReadings[i] = _cryo_boards[i].readThermocouple();
+      }
+      farrbconvert.sensorReadings[numCryoTherms] = -1;
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
@@ -261,22 +263,22 @@ void sensorReadFunc(int id) {
     case 6:
       // this hardcoded 3 is kinda sus.
       debug("cryo specific read");
-      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      // _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
+      // farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      // farrbconvert.sensorReadings[2] = -1;
       break;
     case 8:
       // this hardcoded 3 is kinda sus.
       debug("propane gems");
-      _cryoTherms.readSpecificCryoTemp(0, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      // _cryoTherms.readSpecificCryoTemp(0, farrbconvert.sensorReadings);
+      // farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      // farrbconvert.sensorReadings[2] = -1;
       break;
     case 16:
       debug("propane pt");
-      _cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = propPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
-      farrbconvert.sensorReadings[2] = -1;
+      // _cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
+      // farrbconvert.sensorReadings[1] = propPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      // farrbconvert.sensorReadings[2] = -1;
       break;
     case 17:
       farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);

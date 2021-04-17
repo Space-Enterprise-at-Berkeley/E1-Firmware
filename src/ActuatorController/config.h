@@ -16,8 +16,11 @@ uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
-const float powerSupplyMonitorShuntR = 0.033; // ohms
+const float powerSupplyMonitorShuntR = 0.01; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
+const float actuatorMonitorShuntR = 0.033; // ohms
+
 
 const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
@@ -36,22 +39,26 @@ IPAddress ip(10, 0, 0, 21); // dependent on local network
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
-const uint8_t numHeaters = 4;
-uint8_t heaterPins[numHeaters] = {14, 15, 22, 23};
-uint8_t heaterCommandIds[numHeaters] = {10, 11, 12, 13};
-uint8_t heaterINAAddr[numHeaters] = {0x40, 0x41, 0x42, 0x43};
+const uint8_t numHeaters = 2;
+uint8_t heaterPins[numHeaters] = {22, 23};
+uint8_t heaterCommandIds[numHeaters] = {12, 13};
+uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
 // heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater3("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
-// heater3.initINA219(&Wire, heaterINAAddr[2], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater4("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
-// heater4.initINA219(&Wire, heaterINAAddr[3], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
+
+const uint8_t numCommands = 9;
+Command *backingStore[numCommands] = {&heater1, &heater2, //&ACSolenoids::zero,  &ACSolenoids::one,
+                                      &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
+                                      &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
+                                      &LinearActuators::six};
+CommandArray commands(numCommands, backingStore);
+
 #elif AC2
 #ifdef ETH
 IPAddress ip(10, 0, 0, 22); // dependent on local network
@@ -61,14 +68,24 @@ IPAddress ip(10, 0, 0, 22); // dependent on local network
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
 const uint8_t numHeaters = 2;
-uint8_t heaterPins[numHeaters] = {14, 15};
-uint8_t heaterCommandIds[numHeaters] = {20, 21};
+uint8_t heaterPins[numHeaters] = {22, 23};
+uint8_t heaterCommandIds[numHeaters] = {12, 13};
+uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
+// heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
+// heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 2;
 uint8_t linActPairIds[numLinActs] = {1, 0, 2, 3, 5, 4, 6};
+
+const uint8_t numCommands = 9;
+Command *backingStore[numCommands] = {&heater1, &heater2, //&ACSolenoids::zero,  &ACSolenoids::one,
+                                      &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
+                                      &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
+                                      &LinearActuators::six};
+CommandArray commands(numCommands, backingStore);
 
 
 #elif AC3
@@ -79,27 +96,30 @@ IPAddress ip(10, 0, 0, 23); // dependent on local network
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
-const uint8_t numHeaters = 2;
-uint8_t heaterPins[numHeaters] = {14, 15};
-uint8_t heaterCommandIds[numHeaters] = {20, 21};
+uint8_t heaterPins[numHeaters] = {22, 23};
+uint8_t heaterCommandIds[numHeaters] = {12, 13};
+uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
+// heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
+// heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
+
+const uint8_t numCommands = 9;
+Command *backingStore[numCommands] = {&heater1, &heater2, //&ACSolenoids::zero,  &ACSolenoids::one,
+                                      &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
+                                      &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
+                                      &LinearActuators::six};
+CommandArray commands(numCommands, backingStore);
+
 #endif
 
 uint8_t battMonINAAddr = 0x40;
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
-
-const uint8_t numCommands = 11;
-Command *backingStore[numCommands] = {&heater1, &heater2, &heater3, &heater4, //&ACSolenoids::zero,  &ACSolenoids::one,
-                                      &LinearActuators::zero, &LinearActuators::one, &LinearActuators::two,
-                                      &LinearActuators::three, &LinearActuators::four, &LinearActuators::five,
-                                      &LinearActuators::six};
-CommandArray commands(numCommands, backingStore);
 
 namespace config {
   void setup() {
