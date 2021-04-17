@@ -183,10 +183,10 @@ void sensorReadFunc(int id) {
       debug("pressures all");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
-    case 2:
-      debug("battery stats");
-      //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
+    // case 2:
+    //   debug("battery stats");
+    //   //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+    //   break;
     case 3:
       debug("Load Cells");
       LoadCell::readLoadCells(farrbconvert.sensorReadings);
@@ -198,6 +198,9 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    // case 6:
+    //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+    //   break;
     case 19:
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       break;

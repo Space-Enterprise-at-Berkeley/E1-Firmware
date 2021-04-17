@@ -222,23 +222,27 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
-    // case 49:
-    //   ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
-    //   break;
-    //   if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1){
-    //     sensors[3].clock_freq = 5;
-    //   } else {
-    //     sensors[3].clock_freq = 20;
-    //   }
-    // case 57:
-    //   LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
-    //
-    //   if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1){
-    //     sensors[4].clock_freq = 5;
-    //   } else {
-    //     sensors[4].clock_freq = 20;
-    //   }
-    //   break;
+    case 1:
+      ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
+      break;
+      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1) {
+        sensors[3].clock_freq = 5;
+      } else {
+        sensors[3].clock_freq = 20;
+      }
+      
+    case 3:
+      LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
+
+      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1) {
+        sensors[4].clock_freq = 5;
+      } else {
+        sensors[4].clock_freq = 20;
+      }
+      break;
+    case 4:
+      LinearActuators::getAllStates(farrbconvert.sensorReadings);
+      break;
     default:
       Serial.println("some other sensor");
       break;

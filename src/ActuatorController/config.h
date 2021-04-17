@@ -23,23 +23,24 @@ INA * powSupMonPointers[numPowerSupplyMonitors];
 const uint8_t numSensors = 3;
 sensorInfo sensors[numSensors];
 
-
 const uint8_t numLinActs = 7;
 uint8_t in1Pins[numLinActs] = {2, 4, 6, 11, 24, 28, 37};
 uint8_t in2Pins[numLinActs] = {3, 5, 7, 12, 25, 29, 36};
-uint8_t linActCommandIds[numLinActs] = {50, 51, 52, 53, 54, 55, 56};
+uint8_t linActCommandIds[numLinActs] = {14, 15, 16, 17, 18, 19, 20};
 
 #ifdef AC1
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
-const uint8_t numHeaters = 2;
-uint8_t heaterPins[numHeaters] = {14, 15};
-uint8_t heaterCommandIds[numHeaters] = {20, 21};
+const uint8_t numHeaters = 4;
+uint8_t heaterPins[numHeaters] = {14, 15, 22, 23};
+uint8_t heaterCommandIds[numHeaters] = {10, 11, 12, 13};
 
 HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
 HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2]); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3]); // setPoint = 10C, alg = PID
 
 const uint8_t numLinActPairs = 0;
 uint8_t linActPairIds[numLinActs] = {0, 1, 2, 3, 4, 5, 6};
@@ -104,9 +105,9 @@ namespace config {
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    // sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 49, 10};
-    // sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 57, 10};
-
+    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 1, 10};
+    sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 3, 10};
+    sensors[4] = {"LinAct States", FLIGHT_BRAIN_ADDR, 4, 10};
 
   }
 }
