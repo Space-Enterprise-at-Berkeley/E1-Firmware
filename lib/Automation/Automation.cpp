@@ -20,8 +20,8 @@ namespace Automation {
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
 
-  flow_type_t flowtype;
-  flow_state_t flowstate = ON_PAD;
+  // flow_type_t flowtype;
+  // flow_state_t flowstate = ON_PAD;
 
  struct autoEventList* _eventList;
 
@@ -109,7 +109,7 @@ namespace Automation {
   }
 
   int act_pressurizeTanks() {
-    flowstate = PRESS;
+    // flowstate = PRESS;
     Solenoids::closeLOXGems();
     Solenoids::closePropaneGems();
     Solenoids::openHighPressureSolenoid();
@@ -121,45 +121,45 @@ namespace Automation {
   }
 
   int act_armOpenLox() {
-    flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
+    // flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
     Solenoids::armLOX();
     Solenoids::openLOX();
   }
 
   int act_armOpenProp() {
-    flowstate = (flowstate == LOX_FLOWING)? BOTH_FLOWING : PROP_FLOWING;
+    // flowstate = (flowstate == LOX_FLOWING)? BOTH_FLOWING : PROP_FLOWING;
     Solenoids::armLOX();
     Solenoids::openPropane();
   }
 
   int act_armOpenBoth() {
-    flowstate = BOTH_FLOWING;
+    // flowstate = BOTH_FLOWING;
     Solenoids::armLOX();
     Solenoids::openLOX();
     Solenoids::openPropane();
   }
 
   int act_armCloseProp() {
-    flowstate = (flowstate == BOTH_FLOWING)? LOX_FLOWING : SHUTOFF;
+    // flowstate = (flowstate == BOTH_FLOWING)? LOX_FLOWING : SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closePropane();
   }
 
   int act_armCloseLox() {
-    flowstate = (flowstate == BOTH_FLOWING)? PROP_FLOWING : SHUTOFF;
+    // flowstate = (flowstate == BOTH_FLOWING)? PROP_FLOWING : SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closeLOX();
   }
 
   int act_armCloseBoth() {
-    flowstate = SHUTOFF;
+    // flowstate = SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closeLOX();
     Solenoids::closePropane();
   }
 
   int act_depressurize() {
-    flowstate = DEPRESSURIZE;
+    // flowstate = DEPRESSURIZE;
     Solenoids::disarmLOX();
     Solenoids::closeHighPressureSolenoid();
     Solenoids::ventLOXGems();
@@ -167,7 +167,7 @@ namespace Automation {
   }
 
   int beginLoxFlow() {
-    flowtype = LOX_ONLY;
+    // flowtype = LOX_ONLY;
     autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
     events[1] = {1000, &(act_armOpenLox), false};
@@ -210,8 +210,8 @@ namespace Automation {
       Serial.println("begin both flow");
       Serial.flush();
     #endif
-    flowtype = BOTH_COLD;
-    Serial.println("flowtype: " + String(flowtype));
+    // flowtype = BOTH_COLD;
+    // Serial.println("flowtype: " + String(flowtype));
     Serial.flush();
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
@@ -276,7 +276,7 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
-    flowtype = HOT;
+    // flowtype = HOT;
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
@@ -293,7 +293,7 @@ namespace Automation {
 
       for (int i = 0; i < 6; i++) addEvent(&events[i]);
     } else {
-      flowstate = ERROR;
+      // flowstate = ERROR;
     }
 
     Serial.println("If no fire, PUSH RED BUTTON");
@@ -327,8 +327,8 @@ namespace Automation {
   }
 
   void flowStatus(float *data) {
-    data[0] = flowtype;
-    data[1] = flowstate;
+    data[0] = 0;//flowtype;
+    data[1] = 0;//flowstate;
     data[2] = -1;
   }
 
