@@ -219,7 +219,7 @@ void sensorReadFunc(int id) {
   switch (id) {
     case 2:
       debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
