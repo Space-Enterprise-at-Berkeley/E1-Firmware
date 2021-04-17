@@ -49,6 +49,8 @@ namespace Automation {
     _eventList->events = new autoEvent[_eventList->maxEvents];
 
     _eventList->length = 0;
+    Serial.println(_eventList->length);
+    Serial.flush();
     return true;
   }
 
@@ -89,6 +91,8 @@ namespace Automation {
   }
 
   bool removeEvent() {
+    Serial.println("remvoe Event");
+    Serial.flush();
     if (_eventList->length > 0) {
       //move events 1 - 9 & move to slots 0 - 8, effectively "popping" first event
       memmove(_eventList->events, _eventList->events + 1, sizeof(autoEvent)*(_eventList->maxEvents - 1));
@@ -211,7 +215,7 @@ namespace Automation {
       Serial.flush();
     #endif
     // flowtype = BOTH_COLD;
-    // Serial.println("flowtype: " + String(flowtype));
+    Serial.println("eventlist len: " + String(_eventList->length));
     Serial.flush();
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
