@@ -65,20 +65,20 @@ void setup() {
     #endif
   }
 
-  debug("Opening File");
-  file.open(file_name, O_RDWR | O_CREAT);
-
-  debug("Writing Dummy Data");
-  sdBuffer = new Queue();
+  // debug("Opening File");
+  // file.open(file_name, O_RDWR | O_CREAT);
+  //
+  // debug("Writing Dummy Data");
+  // sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    Serial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
+  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+  //   packet = make_packet(101, true);
+  //   Serial.println(packet);
+  //   #ifdef ETH
+  //   sendEthPacket(packet.c_str());
+  //   #endif
+  // }
 
   debug("Initializing Libraries");
 
@@ -89,10 +89,11 @@ void setup() {
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
-
+  debug("passed");
   Automation::init();
-
+  debug("passed2");
   commands.updateIds();
+  debug("passed4");
 }
 
 void loop() {
@@ -199,12 +200,12 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
-      float loxInjector = farrbconvert.sensorReadings[2];
-      float propInjector = farrbconvert.sensorReadings[3];
-
-      Automation::detectPeaks(loxInjector, propInjector);
-    }
+    // if (sensor->id==1 && Automation::inFlow()){
+    //   float loxInjector = farrbconvert.sensorReadings[2];
+    //   float propInjector = farrbconvert.sensorReadings[3];
+    //
+    //   Automation::detectPeaks(loxInjector, propInjector);
+    // }
   }
   delay(10);
 }
