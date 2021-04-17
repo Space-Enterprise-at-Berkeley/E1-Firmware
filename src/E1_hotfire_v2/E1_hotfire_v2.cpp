@@ -32,9 +32,6 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
-//
-// TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
-// TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
@@ -173,7 +170,7 @@ void loop() {
 
       //Update valve states after each action
       Solenoids::getAllStates(farrbconvert.sensorReadings);
-      packet = make_packet(29, false);
+      packet = make_packet(20, false);
       Serial.println(packet);
       RFSerial.println(packet);
       #ifdef ETH
@@ -219,14 +216,15 @@ void loop() {
     #endif
     write_to_SD(packet.c_str(), file_name);
 
-      // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
-      sensors[8].clock_freq = 0;
-      float loxInjector = farrbconvert.sensorReadings[2];
-      float propInjector = farrbconvert.sensorReadings[3];
-
-      Automation::detectPeaks(loxInjector, propInjector);
-    }
+    // After getting new pressure data, check injector pressures to detect end of flow:
+    // Not being used for hotfire
+    // if (sensor->id==1 && Automation::inFlow()){
+    //   sensors[8].clock_freq = 0;
+    //   float loxInjector = farrbconvert.sensorReadings[2];
+    //   float propInjector = farrbconvert.sensorReadings[3];
+    //
+    //   Automation::detectPeaks(loxInjector, propInjector);
+    // }
   }
   delay(10);
 }
@@ -249,7 +247,7 @@ void sensorReadFunc(int id) {
       break;
     case 2:
       debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
@@ -279,6 +277,7 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 17:
+      debug("static P");
       farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[2] = -1;

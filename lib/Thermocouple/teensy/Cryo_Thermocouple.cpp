@@ -7,12 +7,13 @@
 
 
 #include <Cryo_Thermocouple.h>
+#include <common_fw.h>
 
 namespace Thermocouple {
 
-    int Cryo::init(uint8_t numSensors, Adafruit_MCP9600 *cryo_boards, uint8_t * addrs, _themotype * types, TwoWire *theWire) { // assume that numSensors is < max Size of packet. Add some error checking here
+    int Cryo::init(uint8_t numSensors, Adafruit_MCP9600 *cryo_boards, uint8_t * addrs, _themotype * types, TwoWire *theWire, float *latestReads) { // assume that numSensors is < max Size of packet. Add some error checking here
       _addrs = addrs;
-      _latestReads = (float *)malloc(numSensors);
+      _latestReads = latestReads;
       _cryo_amp_boards = cryo_boards;
 
       _numSensors = numSensors;
@@ -30,12 +31,21 @@ namespace Thermocouple {
         _cryo_amp_boards[i].enable(true);
       }
 
+      for (int i = 0; i < _numSensors; i++){
+        Serial.println(i);
+        Serial.println(_latestReads[i]);
+        _latestReads[i] = -1;
+        Serial.println(_latestReads[i]);
+      }
+
+
       return 0;
     }
 
     void Cryo::readCryoTemps(float *data) {
       for (int i = 0; i < _numSensors; i++) {
         data[i] = _cryo_amp_boards[i].readThermocouple();
+        debug(data[i]);
         _latestReads[i] = data[i];
       }
       data[_numSensors] = -1;

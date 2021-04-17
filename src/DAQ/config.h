@@ -24,6 +24,7 @@ const uint8_t numCryoTherms = 4;
 uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
+float cryoReadsBackingStore[numCryoTherms];
 
 const uint8_t numADCSensors = 1;
 uint8_t adcCSPins[numADCSensors] = {37};
@@ -39,7 +40,7 @@ uint8_t thermAdcChannels[numAnalogThermocouples] = {4, 5, 6, 7};
 const uint8_t numPressureTransducers = 4;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3};
-uint8_t ptTypes[numPressureTransducers] = {2, 2, 2, 2};
+uint8_t ptTypes[numPressureTransducers] = {100, 300, 1000, 5000};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
@@ -51,10 +52,11 @@ byte lcSckPins[numLoadCells] = {38, 10};
 byte lcDoutPins[numLoadCells] = {39, 9};
 float lcCalVals[numLoadCells] = {4000, -4000};
 HX711 loadcells[numLoadCells];
+// HX711 loadcell1, loadcell2;
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 4;
+const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -72,6 +74,8 @@ namespace config {
       debug(String(adcCSPins[i]));
       debug(String(adcDataReadyPins[i]));
       debug(String(adcAlertPins[i]));
+      Serial.print("test");
+      Serial.flush();
       ads[i].init(&SPI, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
       ads[i].setManualMode();
       ads[i].setAllInputsSeparate();
@@ -98,13 +102,30 @@ namespace config {
      loadcells[i].tare();
      debug("after tare");
     }
+    // debug("before begin");
+    // loadcell1.begin(lcDoutPins[0], lcSckPins[0]);
+    // debug("after begin");
+    // loadcell1.set_scale(lcCalVals[0]);
+    // debug("after set scale");
+    // loadcell1.tare();
+    // debug("after tare");
+    // debug("before begin");
+    // loadcell2.begin(lcDoutPins[1], lcSckPins[1]);
+    // debug("after begin");
+    // loadcell2.set_scale(lcCalVals[1]);
+    // debug("after set scale");
+    // loadcell2.tare();
+    // debug("after tare");
 
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
-    sensors[0] = {"All Analog",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
+    // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
     sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[5] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
+
   }
 }

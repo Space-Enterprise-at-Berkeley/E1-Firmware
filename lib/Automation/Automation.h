@@ -16,6 +16,37 @@ using namespace std;
 namespace Automation {
 //-----------------------Variables-----------------------
 
+
+// typedef enum {
+//     ERROR = -1,
+//     PRESS = 0,
+//     FLOWING = 1,
+//     SHUTOFF = 2,
+//     DEPRESSURIZE = 3
+//   } cold_flow_state_t;
+
+typedef enum {
+    LOX_ONLY = 0,
+    BOTH_COLD = 1,
+    HOT = 2
+  } flow_type_t;
+
+typedef enum {
+    ABORT = -2,
+    ERROR = -1,
+    ON_PAD = 0,
+    PRESS = 1,
+    IGNITED = 2,
+    LOX_FLOWING = 3,
+    PROP_FLOWING = 4,
+    BOTH_FLOWING = 5,
+    SHUTOFF = 6,
+    DEPRESSURIZE = 7
+  } flow_state_t;
+
+  extern flow_type_t flowtype;
+  extern flow_state_t flowstate;
+
   extern bool _startup;
   extern int _startupPhase;
   extern uint32_t _startupTimer;
@@ -69,6 +100,7 @@ extern struct autoEventList* _eventList;
 
 //------------------Function Definitions-----------------
 
+
   bool init();
 
   // Relating to State of the Rocket
@@ -82,6 +114,9 @@ extern struct autoEventList* _eventList;
   // Actions that can be taken/combined as desired
   int beginBothFlow();
   int endBothFlow();
+
+  int beginHotfire();
+  int endHotfire();
 
   //event scheduling functions
   int openLox();
@@ -101,6 +136,7 @@ extern struct autoEventList* _eventList;
   int act_armCloseLox();
   int act_armCloseProp();
   int act_armCloseBoth();
+  int act_depressurize();
 
   // int beginPropFlow();
   // int endPropFlow();
@@ -108,6 +144,7 @@ extern struct autoEventList* _eventList;
   // int closeProp();
 
   void flowConfirmation(float *data);
+  void flowStatus(float *data);
 
   // Automatic Detection
   float findAverage(int index);

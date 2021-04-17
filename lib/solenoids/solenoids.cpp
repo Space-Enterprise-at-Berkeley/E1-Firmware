@@ -193,7 +193,7 @@ namespace Solenoids {
     return prop_gems_state;
   }
 
-  int activateHighPressureSolenoid() {
+  int openHighPressureSolenoid() {
     if(high_sol_state == 0){
       toggleHighPressureSolenoid();
     } else {
@@ -202,7 +202,7 @@ namespace Solenoids {
     return high_sol_state;
   }
 
-  int deactivateHighPressureSolenoid() {
+  int closeHighPressureSolenoid() {
     if(high_sol_state == 1){
       toggleHighPressureSolenoid();
     } else {
@@ -387,7 +387,7 @@ namespace Solenoids {
   SolenoidCommand prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
 
   SolenoidCommand high_p_enable("Enable High Pressure Solenoid", &enableHighPressureSolenoid, &disableHighPressureSolenoid);
-  SolenoidCommand high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
+  SolenoidCommand high_p("High Pressure Solenoid", &openHighPressureSolenoid, &closeHighPressureSolenoid);
 
   SolenoidCommand arm_rocket("Arm Rocket", &armAll, &disarmAll);
   SolenoidCommand launch("Launch Rocket", &LAUNCH, &endBurn);

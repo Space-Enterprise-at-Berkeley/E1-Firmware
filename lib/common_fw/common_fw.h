@@ -123,6 +123,7 @@ extern bool receivedCommand;
 extern EthernetUDP Udp;
 extern byte mac[];
 extern unsigned int port;
-extern IPAddress groundIP;
+extern const uint8_t numGrounds;
+extern IPAddress groundIP[];
 
 #endif // _COMMON_H_

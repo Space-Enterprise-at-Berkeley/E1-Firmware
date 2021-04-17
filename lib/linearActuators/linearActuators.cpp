@@ -23,7 +23,6 @@ namespace LinearActuators {
   uint8_t * _pairIds;
   uint8_t * _commandIds;
 
-
   LinActCommand zero("0", [&] () { return driveForward(0); }, [&] () { return driveBackward(0); }, [&] () { return switchOff(0); }, [&] () { return brake(0); });
   LinActCommand one("1", [&] () { return driveForward(1); }, [&] () { return driveBackward(1); }, [&] () { return switchOff(1); }, [&] () { return brake(1); });
   LinActCommand two("2", [&] () { return driveForward(2); }, [&] () { return driveBackward(2); }, [&] () { return switchOff(2); }, [&] () { return brake(2); });

@@ -1,6 +1,9 @@
 /**
  * Device driver for TCA6408ARGTR
  */
+ #ifndef __TCA6408A__
+ #define __TCA6408A__
+
 #include <Wire.h>
 
 const uint8_t TCA6408A_ADDR1 = 0x20;
@@ -30,3 +33,5 @@ private:
   TwoWire *_wire;
   uint8_t currOutputStatus = 0;
 };
+
+#endif

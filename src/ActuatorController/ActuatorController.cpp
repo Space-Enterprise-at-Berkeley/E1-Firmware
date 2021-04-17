@@ -65,38 +65,40 @@ void setup() {
     #endif
   }
 
-  debug("Opening File");
-  file.open(file_name, O_RDWR | O_CREAT);
-
-  debug("Writing Dummy Data");
-  sdBuffer = new Queue();
+  // debug("Opening File");
+  // file.open(file_name, O_RDWR | O_CREAT);
+  //
+  // debug("Writing Dummy Data");
+  // sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    Serial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
+  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+  //   packet = make_packet(101, true);
+  //   Serial.println(packet);
+  //   #ifdef ETH
+  //   sendEthPacket(packet.c_str());
+  //   #endif
+  // }
 
   debug("Initializing Libraries");
 
   debug("Initializing Solenoids");
-  ACSolenoids::init(numSolenoids, solenoidPins, solenoidCommandIds);
-  LinearActuators::init(numLinActs, numLinActPairs, in1Pins, in2Pins, linActPairIds, linActCommandIds);
+  // ACSolenoids::init(numSolenoids, solenoidPins, solenoidCommandIds);
+  LinearActuators::init(numLinActs, numLinActPairs, in1Pins, in2Pins, linActPairIds, linActCommandIds, &Wire, linActINAAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
   debug("Initializing battery monitor");
-  batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
+  batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
-
+  debug("passed");
   Automation::init();
-
+  debug("passed2");
   commands.updateIds();
+  debug("passed4");
 }
 
 void loop() {
   // process command
+  debug("top of loop");
   #ifdef ETH
   if (Udp.parsePacket()) {
     debug("received udp packet");
@@ -107,11 +109,14 @@ void loop() {
         Serial.print(".");
       }
     }
-    if(Udp.remoteIP() == groundIP) {
-      debug("received packet came from groundIP");
-      receivedCommand = true;
-      Udp.read(command, 75);
-      debug(String(command));
+    for (uint8_t i = 0; i < numGrounds; i++) {
+      if(Udp.remoteIP() == groundIP[i]) {
+        debug("received packet came from groundIP");
+        receivedCommand = true;
+        Udp.read(command, 75);
+        debug(String(command));
+        break;
+      }
     }
   }
   #endif
@@ -135,7 +140,7 @@ void loop() {
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
-      write_to_SD(packet.c_str(), file_name);
+      //write_to_SD(packet.c_str(), file_name);
     }
     receivedCommand = false;
   }
@@ -173,6 +178,7 @@ void loop() {
         LinearActuators::_linActCommands[i]->_off();
         LinearActuators::_linActCommands[i]->endtime = -1;
       }
+      sensors[3].clock_freq = 20;
     }
   }
 
@@ -188,20 +194,27 @@ void loop() {
     }
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
+    debug("finished sensor read");
+    // for (int i = 0; i < maxReadings; i++) {
+    //   Serial.print(farrbconvert.sensorReadings[i]);
+    //   Serial.print(", ");
+    // }
+    // Serial.println("");
     packet = make_packet(sensor->id, false);
+
     Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
-    write_to_SD(packet.c_str(), file_name);
+    //write_to_SD(packet.c_str(), file_name);
 
       // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
-      float loxInjector = farrbconvert.sensorReadings[2];
-      float propInjector = farrbconvert.sensorReadings[3];
-
-      Automation::detectPeaks(loxInjector, propInjector);
-    }
+    // if (sensor->id==1 && Automation::inFlow()){
+    //   float loxInjector = farrbconvert.sensorReadings[2];
+    //   float propInjector = farrbconvert.sensorReadings[3];
+    //
+    //   Automation::detectPeaks(loxInjector, propInjector);
+    // }
   }
   delay(10);
 }
@@ -212,29 +225,42 @@ void loop() {
  */
 void sensorReadFunc(int id) {
   switch (id) {
+    case 1:
+      // ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
+      // break;
+      // if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1) {
+      //   sensors[3].clock_freq = 5;
+      // } else {
+      //   sensors[3].clock_freq = 20;
+      // }
+      debug("heater current draw");
+      heater1.readCurrentDraw(farrbconvert.sensorReadings);
+      heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
+      heater3.readCurrentDraw(farrbconvert.sensorReadings + 2);
+      heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
+      farrbconvert.sensorReadings[4] = -1;
+
     case 2:
       debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
-    case 5:
-      readPacketCounter(farrbconvert.sensorReadings);
-      break;
-    case 49:
-      ACSolenoids::getAllCurrentDraw(farrbconvert.sensorReadings);
-      break;
-      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numSolenoids, 0) > 1){
-        sensors[3].clock_freq = 5;
+    case 3:
+      debug("lin act current draw");
+      LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
+
+      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1) {
+        sensors[3].clock_freq = 1;
       } else {
         sensors[3].clock_freq = 20;
       }
-    case 57:
-      LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
-
-      if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1){
-        sensors[4].clock_freq = 5;
-      } else {
-        sensors[4].clock_freq = 20;
-      }
+      break;
+    case 4:
+      debug("lin act all states");
+      LinearActuators::getAllStates(farrbconvert.sensorReadings);
+      break;
+    case 5:
+      debug("packet count");
+      readPacketCounter(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

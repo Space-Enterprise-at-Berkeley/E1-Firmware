@@ -69,18 +69,18 @@ void setup() {
   sdBuffer = new Queue();
 
   std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
+  // if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
+  //   packet = make_packet(101, true);
+  //   RFSerial.println(packet);
+  //   #ifdef ETH
+  //   sendEthPacket(packet.c_str());
+  //   #endif
+  // }
 
   debug("Initializing Libraries");
 
   debug("Initializing battery monitor");
-  batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
+  //batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire1);
 
@@ -91,7 +91,7 @@ void setup() {
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
   _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire);
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
@@ -109,12 +109,15 @@ void loop() {
   //       Serial.print(".");
   //     }
   //   }
-  //   if(Udp.remoteIP() == groundIP) {
-  //     debug("received packet came from groundIP");
-  //     receivedCommand = true;
-  //     Udp.read(command, 75);
-  //     debug(String(command));
-  //   }
+  //   for (uint8_t i = 0; i < numGrounds; i++) {
+    // if(Udp.remoteIP() == groundIP[i]) {
+      // debug("received packet came from groundIP");
+      // receivedCommand = true;
+      // Udp.read(command, 75);
+      // debug(String(command));
+      // break;
+    // }
+  // }
   // }
   // #endif
   // if (RFSerial.available() > 0) {
@@ -165,7 +168,7 @@ void loop() {
     #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
-    write_to_SD(packet.c_str(), file_name);
+    //write_to_SD(packet.c_str(), file_name);
   }
   delay(10);
 }
@@ -180,10 +183,10 @@ void sensorReadFunc(int id) {
       debug("pressures all");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
-    case 2:
-      debug("battery stats");
-      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-      break;
+    // case 2:
+    //   debug("battery stats");
+    //   //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+    //   break;
     case 3:
       debug("Load Cells");
       LoadCell::readLoadCells(farrbconvert.sensorReadings);
@@ -194,6 +197,12 @@ void sensorReadFunc(int id) {
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
+      break;
+    // case 6:
+    //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+    //   break;
+    case 19:
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

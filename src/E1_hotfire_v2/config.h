@@ -68,9 +68,9 @@ uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
 
-const uint8_t loxAdapterPTHeaterPin = 9;
+const uint8_t loxAdapterPTHeaterPin = 7;
 const uint8_t loxGemsHeaterPin = 7;
-const uint8_t propAdapterPTHeaterPin = 9;
+const uint8_t propAdapterPTHeaterPin = 7;
 const uint8_t propGemsHeaterPin = 7;
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -86,12 +86,13 @@ HeaterCommand propGemsHeater("Prop Gems Heater", 43, 10, 2, propGemsHeaterPin); 
 
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
+AutomationSequenceCommand hotFire("Perform Hotfire", 32, &(Automation::beginHotfire), &(Automation::endHotfire));
 
-const uint8_t numCommands = 14;
+const uint8_t numCommands = 16;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::high_p_enable, &Solenoids::arm_rocket, &Solenoids::launch,
-                                        &fullFlow, &loxFlow, &loxPTHeater, &loxGemsHeater};
+                                        &fullFlow, &loxFlow, &loxPTHeater, &loxGemsHeater, &propPTHeater, &propGemsHeater};
 CommandArray commands(numCommands, backingStore);
 
 namespace config {
@@ -124,12 +125,11 @@ namespace config {
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[3] = {"Lox PT Temperature",   FLIGHT_BRAIN_ADDR, 0, 4}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
+    sensors[3] = {"Lox PT Temperature",   FLIGHT_BRAIN_ADDR, 0, 10}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
-    sensors[6] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
-    sensors[7] = {"Prop PT Temp", FLIGHT_BRAIN_ADDR, 16, 4};
+    sensors[5] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 10};
+    sensors[6] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 10};
+    sensors[7] = {"Prop PT Temp", FLIGHT_BRAIN_ADDR, 16, 10};
     sensors[8] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-
   }
 }
