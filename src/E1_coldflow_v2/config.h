@@ -79,6 +79,9 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
+const float actuatorMonitorShuntR = 0.033;
+const float actuatorMonitorMaxExpectedCurrent = 5;
+
 HeaterCommand loxPTHeater("LOX PT Heater", 40, 10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID
 HeaterCommand loxGemsHeater("LOX Gems Heater", 41, 10, 2, loxGemsHeaterPin); // setPoint = 10C, alg = PID
 HeaterCommand propPTHeater("Prop PT Heater", 42, 10, 2, propAdapterPTHeaterPin); // setPoint = 10 C, alg = PID
@@ -130,6 +133,5 @@ namespace config {
     sensors[6] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
     sensors[7] = {"Prop PT Temp", FLIGHT_BRAIN_ADDR, 16, 4};
     sensors[8] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-
   }
 }

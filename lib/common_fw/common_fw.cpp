@@ -119,7 +119,7 @@ int8_t processCommand(String packet) {
 
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
-      if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28) {
+      if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
         return 20;
       }
       return tmpCommand->ID();

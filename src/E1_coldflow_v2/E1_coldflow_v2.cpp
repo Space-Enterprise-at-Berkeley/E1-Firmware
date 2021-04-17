@@ -32,9 +32,6 @@ sensorInfo *sensor;
 
 long startTime;
 String packet;
-//
-// TempController loxPTHeater(10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID, heaterPin = 7
-// TempController loxGemsHeater(10, 2, loxGemsHeaterPin); // setPoint = 10 C, alg = PID
 
 void sensorReadFunc(int id);
 
