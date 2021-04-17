@@ -23,7 +23,7 @@ namespace Automation {
   // flow_type_t flowtype;
   // flow_state_t flowstate = ON_PAD;
 
- struct autoEventList* _eventList;
+ struct autoEventList _eventList;
 
   /* Delays during startup sequence:
     1 - Between open pressure and open LOX Main
@@ -44,12 +44,12 @@ namespace Automation {
 //-----------------------Functions-----------------------
 
   bool init() {
-    _eventList = new autoEventList;
-    _eventList->maxEvents = 15; //arbitrary max of 10 events right now.
-    _eventList->events = new autoEvent[_eventList->maxEvents];
+    //_eventList = new autoEventList;
+    _eventList.maxEvents = 15; //arbitrary max of 10 events right now.
+    _eventList.events = new autoEvent[_eventList.maxEvents];
 
-    _eventList->length = 0;
-    Serial.println(_eventList->length);
+    _eventList.length = 0;
+    Serial.println(_eventList.length);
     Serial.flush();
     return true;
   }
@@ -71,17 +71,17 @@ namespace Automation {
    * overhead, but avoids dealing with allocating & deallocation memory for each event
    */
   bool addEvent(autoEvent* e) {
-    Serial.println("add Event; len: " + String(_eventList->length));
+    Serial.println("add Event; len: " + String(_eventList.length));
     Serial.flush();
-    if (_eventList->length < 10) {
-      (_eventList->events)[_eventList->length] = *e;
-      _eventList->length++;
+    if (_eventList.length < 10) {
+      (_eventList.events)[_eventList.length] = *e;
+      _eventList.length++;
       Serial.println("eventList len!");
-      Serial.println(_eventList->length);
+      Serial.println(_eventList.length);
       Serial.flush();
       // if first event is being added then need to restart timer.
-      if (_eventList->length == 1) {
-        _eventList->timer = millis();
+      if (_eventList.length == 1) {
+        _eventList.timer = millis();
       }
 
       return true;
@@ -93,11 +93,11 @@ namespace Automation {
   bool removeEvent() {
     Serial.println("remvoe Event");
     Serial.flush();
-    if (_eventList->length > 0) {
+    if (_eventList.length > 0) {
       //move events 1 - 9 & move to slots 0 - 8, effectively "popping" first event
-      memmove(_eventList->events, _eventList->events + 1, sizeof(autoEvent)*(_eventList->maxEvents - 1));
+      memmove(_eventList.events, _eventList.events + 1, sizeof(autoEvent)*(_eventList.maxEvents - 1));
 
-      Automation::_eventList->length--;
+      Automation::_eventList.length--;
     }
   }
 
@@ -215,7 +215,7 @@ namespace Automation {
       Serial.flush();
     #endif
     // flowtype = BOTH_COLD;
-    Serial.println("eventlist len: " + String(_eventList->length));
+    Serial.println("eventlist len: " + String(_eventList.length));
     Serial.flush();
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();

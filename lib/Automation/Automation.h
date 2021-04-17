@@ -95,7 +95,7 @@ struct autoEventList {
   int timer;
 };
 
-extern struct autoEventList* _eventList;
+extern struct autoEventList _eventList;
 
 
 //------------------Function Definitions-----------------
