@@ -199,7 +199,7 @@ bool setupEthernetComms(byte * mac, IPAddress ip){
   return true;
 }
 
-void sendEthPacket(std::string packet){
+void sendEthPacket(std::string packet) {
   for (uint8_t i = 0; i < numGrounds; i++){
     Udp.beginPacket(groundIP[i], port);
     Udp.write(packet.c_str());
