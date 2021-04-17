@@ -32,7 +32,7 @@ namespace Ducers {
 
   uint8_t buffer[4];
 
-  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint8_t * ptTypes, ADC ** adcs) {
+  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint32_t * ptTypes, ADC ** adcs) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
