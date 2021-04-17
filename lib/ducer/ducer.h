@@ -155,7 +155,6 @@ namespace Ducers {
         Serial.println("didn't catch a type for ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
       }
       _latestReads[i] = data[i];
-      i++;
     }
     data[_numSensors] = -1;
   }
