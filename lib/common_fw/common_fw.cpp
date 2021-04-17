@@ -21,7 +21,7 @@ EthernetUDP Udp;
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
-unsigned int port = 6969; // try to find something that can be the same on gs
+unsigned int port = 42069; // try to find something that can be the same on gs
 const uint8_t numGrounds = 2;
 IPAddress groundIP[numGrounds] = {IPAddress(10, 0, 0, 69), IPAddress(10, 0, 0, 72)};
 #endif
@@ -34,8 +34,6 @@ Command *tmpCommand;
  */
 String make_packet(int id, bool error) {
   String packet_content = (String)id;
-  packet_content += ",";
-  packet_content += String(millis());
   packet_content += ",";
   if (!error) {
     for (int i=0; i<8; i++) {
