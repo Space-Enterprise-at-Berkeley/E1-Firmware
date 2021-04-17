@@ -207,7 +207,10 @@ namespace Automation {
       Serial.flush();
     #endif
     flowtype = BOTH_COLD;
-
+    #if DEBUG
+      Serial.println("set flow type");
+      Serial.flush();
+    #endif
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
