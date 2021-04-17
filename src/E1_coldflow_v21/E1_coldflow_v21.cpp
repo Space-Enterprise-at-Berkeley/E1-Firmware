@@ -165,6 +165,8 @@ void loop() {
     Serial.print(Automation::_eventList.length);
     Serial.println(" events remain");
     Automation::autoEvent* e = &(Automation::_eventList.events[0]);
+    Serial.println("duration: " + String(e->duration));
+    Serial.println("report: " + String(e->report));
     if (millis() - Automation::_eventList.timer > e->duration) {
       Serial.println(" taking action");
 
