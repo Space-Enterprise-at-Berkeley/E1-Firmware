@@ -55,7 +55,7 @@ uint8_t battMonINAAddr = 0x43;
 
 const uint8_t numGPIOExpanders = 1;
 uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
-int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
+uint8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
 // const uint8_t numHeaters = 2;

@@ -105,6 +105,8 @@ void setup() {
   commands.updateIds();
 }
 
+bool states[8] = {0,0,0,0,0,0,0,0};
+
 void loop() {
   // process command
   #ifdef ETH
@@ -201,9 +203,13 @@ void loop() {
     }
 
     if (j < 8) {
-      heaterCtl.turnOn(j);
-      delay(1000);
-      heaterCtl.turnOff(j);
+      if(!states[j]) {
+        states[j] = true;
+        heaterCtl.turnOn(j);
+      } else if (states[j]) {
+        states[j] = false;
+        heaterCtl.turnOff(j);
+      }
     }
 
     sensor = &sensors[j];
