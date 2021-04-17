@@ -22,13 +22,13 @@ namespace powerSupplyMonitor {
   float * _energyConsumed;
   long last_checked;
 
-  void init(uint8_t numSupplies, INA ** supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, float * energyConsumed, TwoWire *localWire) {
+  void init(uint8_t numSupplies, INA ** supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
     _numSupplies = numSupplies;
     _localWire = localWire;
     _addrs = addrs;
     _supplyMonitors = supplyMons;
 
-    _energyConsumed = energyConsumed;
+    _energyConsumed = (float *) malloc(numSupplies * sizeof(float));
 
     for (int i = 0; i < _numSupplies; i++) {
       // _supplyMonitors[i]->begin(localWire, addrs[i]);
@@ -36,7 +36,7 @@ namespace powerSupplyMonitor {
       // _supplyMonitors[i]->calibrate(rShunt, maxExpectedCurrent);
       debug("started INA219");
       debug("testinh");
-      energyConsumed[i] = 0;
+      _energyConsumed[i] = 0;
       debug("testing2");
     }
   }

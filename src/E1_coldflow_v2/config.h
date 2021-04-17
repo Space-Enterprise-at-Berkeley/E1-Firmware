@@ -51,7 +51,6 @@ const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
-float powMonenergyConsumed[numPowerSupplyMonitors];
 
 uint8_t battMonINAAddr = 0x43;
 
