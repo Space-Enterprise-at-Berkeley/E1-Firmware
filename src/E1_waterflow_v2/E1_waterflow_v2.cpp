@@ -16,7 +16,7 @@
 #ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
-  #define RFSerial Serial7
+  #define RFSerial Serial6
 #endif
 
 // within loop state variables
@@ -218,8 +218,6 @@ void loop() {
 
       Automation::detectPeaks(loxInjector, propInjector);
     }
-
-
   }
   delay(10);
 }
@@ -246,6 +244,12 @@ void sensorReadFunc(int id) {
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
+      break;
+    case 17:
+      debug("static P");
+      farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[2] = -1;
       break;
     default:
       Serial.println("some other sensor");
