@@ -131,6 +131,5 @@ namespace config {
     sensors[6] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 10};
     sensors[7] = {"Prop PT Temp", FLIGHT_BRAIN_ADDR, 16, 10};
     sensors[8] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-
   }
 }

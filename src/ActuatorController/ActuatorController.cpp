@@ -248,7 +248,7 @@ void sensorReadFunc(int id) {
       LinearActuators::getAllCurrentDraw(farrbconvert.sensorReadings);
 
       if (std::accumulate(farrbconvert.sensorReadings, farrbconvert.sensorReadings + numLinActs, 0) > 1) {
-        sensors[4].clock_freq = 5;
+        sensors[4].clock_freq = 1;
       } else {
         sensors[4].clock_freq = 200;
       }

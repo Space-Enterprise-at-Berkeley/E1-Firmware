@@ -23,7 +23,7 @@ INA * powSupMonPointers[numPowerSupplyMonitors];
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
-const uint8_t numSensors = 3;
+const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
 
 const uint8_t numLinActs = 7;
@@ -110,9 +110,9 @@ namespace config {
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 1, 5};
-    sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 3, 10};
+    sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 1};
+    sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 1, 1};
+    sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 3, 1};
     sensors[4] = {"LinAct States", FLIGHT_BRAIN_ADDR, 4, 1};
 
   }
