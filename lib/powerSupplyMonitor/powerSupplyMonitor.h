@@ -6,6 +6,7 @@
 #define __PS_MON__
 
 #include <INA219.h> //https://github.com/jarzebski/Arduino-INA219
+#include <common_fw.h>
 
 using namespace std;
 
@@ -34,7 +35,9 @@ namespace powerSupplyMonitor {
       // _supplyMonitors[i]->configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
       // _supplyMonitors[i]->calibrate(rShunt, maxExpectedCurrent);
       debug("started INA219");
+      debug("testinh");
       energyConsumed[i] = 0;
+      debug("testing2");
     }
   }
 
