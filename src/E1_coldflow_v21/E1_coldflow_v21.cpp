@@ -199,6 +199,13 @@ void loop() {
       sensor_checks[j][1] += 1;
       continue;
     }
+
+    if (j < 8) {
+      heaterCtl.turnOn(j);
+      delay(1000);
+      heaterCtl.turnOff(j);
+    }
+
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);

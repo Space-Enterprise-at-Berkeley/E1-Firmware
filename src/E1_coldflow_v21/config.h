@@ -58,6 +58,13 @@ uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
+// const uint8_t numHeaters = 2;
+// uint8_t heaterPins[numHeaters] = {22, 23};
+// uint8_t heaterCommandIds[numHeaters] = {12, 13};
+// uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
+//
+// HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+
 const uint8_t numSensors = 11;
 sensorInfo sensors[numSensors];
 
