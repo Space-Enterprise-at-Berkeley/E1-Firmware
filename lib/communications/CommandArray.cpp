@@ -47,6 +47,9 @@ void CommandArray::insert(Command * toInsert) {
 void CommandArray::updateIds() {
   for(int i = 0; i < _size; i++){
     _ids[i] = _backingStore[i]->ID();
+    Serial.println(i);
+    Serial.println(_ids[i]);
+    Serial.flush();
   }
 }
 

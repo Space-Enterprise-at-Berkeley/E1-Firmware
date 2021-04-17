@@ -42,13 +42,13 @@ uint8_t heaterPins[numHeaters] = {14, 15, 22, 23};
 uint8_t heaterCommandIds[numHeaters] = {10, 11, 12, 13};
 uint8_t heaterINAAddr[numHeaters] = {0x40, 0x41, 0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0]); // setPoint = 10 C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
 // heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1]); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater3("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2]); // setPoint = 10C, alg = PID
+HeaterCommand heater3("heater 3", heaterCommandIds[2], 10, 2, heaterPins[2], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater3.initINA219(&Wire, heaterINAAddr[2], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater4("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3]); // setPoint = 10C, alg = PID
+HeaterCommand heater4("heater 4", heaterCommandIds[3], 10, 2, heaterPins[3], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater4.initINA219(&Wire, heaterINAAddr[3], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 0;

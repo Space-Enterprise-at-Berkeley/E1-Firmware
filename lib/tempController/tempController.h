@@ -50,10 +50,24 @@ class TempController {
 class HeaterCommand : public Command, public TempController {
 
   public:
+    HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, int heaterPin, TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent):
+      Command(name, id),
+      TempController(tempSetPoint, algorithmChoice, heaterPin)
+    {
+      initINA219(wire, inaAddr, shuntR, maxExpectedCurrent);
+    }
+
     HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, int heaterPin):
       Command(name, id),
       TempController(tempSetPoint, algorithmChoice, heaterPin)
     {}
+
+    HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin, TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent):
+      Command(name),
+      TempController(tempSetPoint, algorithmChoice, heaterPin)
+    {
+      initINA219(wire, inaAddr, shuntR, maxExpectedCurrent);
+    }
 
     HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin):
       Command(name),

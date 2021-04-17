@@ -232,10 +232,10 @@ void sensorReadFunc(int id) {
       //   sensors[3].clock_freq = 20;
       // }
       debug("heater current draw");
-      // heater1.readCurrentDraw(farrbconvert.sensorReadings);
-      // heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
-      // heater3.readCurrentDraw(farrbconvert.sensorReadings + 2);
-      // heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
+      heater1.readCurrentDraw(farrbconvert.sensorReadings);
+      heater2.readCurrentDraw(farrbconvert.sensorReadings + 1);
+      heater3.readCurrentDraw(farrbconvert.sensorReadings + 2);
+      heater4.readCurrentDraw(farrbconvert.sensorReadings + 3);
       farrbconvert.sensorReadings[4] = -1;
 
     case 3:
