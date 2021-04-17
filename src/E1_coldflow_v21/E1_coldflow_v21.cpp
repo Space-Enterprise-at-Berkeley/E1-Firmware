@@ -159,6 +159,8 @@ void loop() {
     receivedCommand = false;
   }
 
+  Serial.println("eventlist length: " + String(Automation::_eventList.length));
+
   if (Automation::_eventList.length > 0) {
     Serial.print(Automation::_eventList.length);
     Serial.println(" events remain");
