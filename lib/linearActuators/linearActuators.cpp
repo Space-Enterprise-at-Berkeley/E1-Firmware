@@ -69,7 +69,7 @@ namespace LinearActuators {
 
       digitalWrite(_in1Pins[i], _in1PinState[i]);
       digitalWrite(_in2Pins[i], _in2PinState[i]);
-      _linActCommands[i]->setId(_commandIds[0]);
+      _linActCommands[i]->setId(_commandIds[i]);
     }
   }
 

@@ -48,6 +48,10 @@ namespace Thermocouple {
       Serial.flush();
       #endif
       for (int i = 0; i < _numSensors; i++) {
+        #ifdef DEBUG
+        Serial.print(i);
+        Serial.flush();
+        #endif
         data[i] = _cryo_amp_boards[i].readThermocouple();
         #ifdef DEBUG
         Serial.print(data[i]);
