@@ -120,12 +120,12 @@ namespace config {
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
     sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
     sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[5] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
-    sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
+    // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 
   }
 }

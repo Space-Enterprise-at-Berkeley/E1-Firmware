@@ -106,7 +106,5 @@ namespace config {
     sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     // sensors[2] = {"Mosfet Current Draw", FLIGHT_BRAIN_ADDR, 49, 10};
     // sensors[3] = {"LinAct Current Draw", FLIGHT_BRAIN_ADDR, 57, 10};
-
-
   }
 }
