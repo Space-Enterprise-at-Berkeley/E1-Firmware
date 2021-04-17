@@ -38,7 +38,7 @@ int packet_count = 0;
 
 void sensorReadFunc(int id);
 
-Thermocouple::Cryo _cryoTherms;
+// Thermocouple::Cryo _cryoTherms;
 
 void setup() {
   Wire.begin();
@@ -98,8 +98,8 @@ void setup() {
 
   Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
+  // _cryoTherms = Thermocouple::Cryo();
+  // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   Automation::init();
 
@@ -213,7 +213,7 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
     // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()){
+    if (sensor->id==1 && Automation::inFlow()) {
 
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
@@ -221,7 +221,6 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
-  delay(10);
 }
 
 
@@ -246,7 +245,11 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("Cryo all");
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      // _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      for (int i = 0; i < numCryoTherms; i++) {
+        farrbconvert.sensorReadings[i] = _cryo_boards[i].readThermocouple();
+      }
+      farrbconvert.sensorReadings[numCryoTherms] = -1;
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);

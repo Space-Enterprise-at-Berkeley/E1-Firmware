@@ -1,6 +1,7 @@
 #include <solenoids.h>
 #include <Analog_Thermocouple.h>
-#include <Cryo_Thermocouple.h>
+// #include <Cryo_Thermocouple.h>
+#include <Adafruit_MCP9600.h>
 #include "common_fw.h"
 #include <ADS8167.h>
 #include <INA219.h>
@@ -99,6 +100,20 @@ namespace config {
         powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
         powSupMonPointers[i] = &powerSupplyMonitors[i];
+    }
+
+    debug("initializing cryo therms");
+    for (int i = 0; i < numCryoTherms; i++) {
+
+      if (!_cryo_boards[i].begin(cryoThermAddrs[i], &Wire)) {
+        Serial.println("Error initializing cryo board at Addr 0x" + String(cryoThermAddrs[i], HEX));
+        return -1;
+      }
+
+      _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_12);
+      _cryo_boards[i].setThermocoupleType(cryoTypes[i]);
+      _cryo_boards[i].setFilterCoefficient(3);
+      _cryo_boards[i].enable(true);
     }
 
     debug("Initializing sensors");
