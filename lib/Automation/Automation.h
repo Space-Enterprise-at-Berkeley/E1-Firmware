@@ -109,6 +109,7 @@ extern struct autoEventList _eventList;
   bool inShutdown();
 
   bool addEvent(autoEvent* e);
+  bool addEvent(int duration, int (*action)(), bool report);
   bool removeEvent();
 
   // Actions that can be taken/combined as desired

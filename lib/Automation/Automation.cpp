@@ -95,6 +95,30 @@ namespace Automation {
     }
   }
 
+  bool addEvent(int duration, int (*action)(), bool report) {
+    Serial.println("add Event; len: " + String(_eventList.length));
+    Serial.flush();
+    if (_eventList.length < maxNumEvents) {
+      Serial.println("duration: " + duration);
+      Serial.println("report: " + report);
+      _eventList.events[_eventList.length] = {duration, action, report};
+      //memmove(&_eventList.events[_eventList.length], e, sizeof(autoEvent));
+
+      _eventList.length++;
+      Serial.println("eventList len!");
+      Serial.println(_eventList.length);
+      Serial.flush();
+      // if first event is being added then need to restart timer.
+      if (_eventList.length == 1) {
+        _eventList.timer = millis();
+      }
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   bool removeEvent() {
     Serial.println("remvoe Event");
     Serial.flush();
@@ -230,29 +254,33 @@ namespace Automation {
       Serial.flush();
 
       // autoEvent events[4];
-      events[0] = {0, &(act_pressurizeTanks), false};
+      // events[0] = {0, &(act_pressurizeTanks), false};
+      addEvent(0, &(act_pressurizeTanks), false);
       Serial.println("add press to list");
       Serial.flush();
       // addEvent(&events[0]);
       Serial.println("add event press");
       Serial.flush();
-      events[1] = {1000, &(act_armOpenBoth), false};
+      // events[1] = {1000, &(act_armOpenBoth), false};
+      addEvent(1000, &(act_armOpenBoth), false);
       Serial.println("add arm to list");
       Serial.flush();
       // addEvent(&events[1]);
 
-      events[2] = {750, &(Solenoids::disarmLOX), false};
+      // events[2] = {750, &(Solenoids::disarmLOX), false};
+      addEvent(750, &(Solenoids::disarmLOX), false);
       Serial.println("add disarm to list");
       Serial.flush();
       // addEvent(&events[2]);
 
-      events[3] = {1000, &(state_setFlowing), false};
+      // events[3] = {1000, &(state_setFlowing), false};
+      addEvent(1000, &(state_setFlowing), false);
       Serial.println("add set state flowing");
       Serial.flush();
       // addEvent(&events[3]);
 
       //TODO @Ben: after ~1sec delay change startup to false & shutdown to true so shutdownDetection can start
-      for (int i = 0; i < 4; i++) addEvent(&events[i]);
+      // for (int i = 0; i < 4; i++) addEvent(&events[i]);
     } else {
     #if DEBUG
       Serial.println("not startup");

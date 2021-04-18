@@ -50,7 +50,6 @@ float TempController::controlTemp(float currTemp) {
     analogWrite(_heaterPin, _heaterOutput);
     return _heaterOutput / 255.0;
   } else if (_channel != -1) {
-    Serial.println("gpioexpander");
     if (_heaterOutput / 255.0 > 0.5) {
       _expander->turnOn(_channel);
       return 1.0;
