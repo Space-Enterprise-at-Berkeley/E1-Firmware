@@ -47,6 +47,8 @@ namespace Automation {
 //   extern flow_type_t flowtype;
 //   extern flow_state_t flowstate;
 
+  extern int _autoEventTracker;
+
   extern bool _startup;
   extern int _startupPhase;
   extern uint32_t _startupTimer;

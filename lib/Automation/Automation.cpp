@@ -11,6 +11,8 @@ namespace Automation {
 
 //-----------------------Variables-----------------------
 
+  int _autoEventTracker = 0;
+
   bool _startup = false;
   int _startupPhase = 0;
   uint32_t _startupTimer;
@@ -261,6 +263,8 @@ namespace Automation {
       Serial.println("Eureka-1 is in Startup");
       Serial.flush();
 
+      _autoEventTracker = 0;
+
       _startupTimer = millis();
 
       // autoEvent events[4];
@@ -301,17 +305,21 @@ namespace Automation {
   }
 
   int endBothFlow() {
+    _startup = false;
     _flowing = false;
     _shutdown = true;
+
+    _autoEventTracker = 8;
+
     Serial.println("Eureka-1 is in Shutdown");
 
-    autoEvent events[4];
-    events[0] = {0, &(act_armCloseBoth), false};
-    events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
-    events[2] = {750, &(Solenoids::disarmLOX), false};
-    events[3] = {0, &(act_openGems), false};
-    //TODO: set shutdown to be false
-    for (int i = 0; i < 4; i++) addEvent(&events[i]);
+    // autoEvent events[4];
+    // events[0] = {0, &(act_armCloseBoth), false};
+    // events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
+    // events[2] = {750, &(Solenoids::disarmLOX), false};
+    // events[3] = {0, &(act_openGems), false};
+    // //TODO: set shutdown to be false
+    // for (int i = 0; i < 4; i++) addEvent(&events[i]);
 
     return -1;
   }

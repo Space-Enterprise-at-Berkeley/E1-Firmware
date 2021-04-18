@@ -37,7 +37,7 @@ int packet_count = 0;
 
 void sensorReadFunc(int id);
 
-int autoEventTracker = 0;
+// int autoEventTracker = 0;
 
 // Thermocouple::Cryo _cryoTherms;
 
@@ -163,22 +163,25 @@ void loop() {
     receivedCommand = false;
   }
 
-  if (Automation::inStartup()) {
+  if (Automation::inStartup() || Automation::inShutdown()) {
 
-    Serial.println("waiting for: " + String(autoEvents[autoEventTracker].duration));
+    Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
 
-    if (millis() - Automation::_startupTimer > autoEvents[autoEventTracker].duration) {
+    if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
       Serial.println("executing event");
-      autoEvents[autoEventTracker].action();
+      autoEvents[Automation::_autoEventTracker].action();
       Automation::_startupTimer = millis();
 
-      autoEventTracker++;
+      Automation::_autoEventTracker++;
     }
 
-    if (autoEventTracker == 6) {
+    if (Automation::_autoEventTracker == 8) {
       Automation::_startup = false;
     }
-    
+    if (Automation::_autoEventTracker == 13) {
+      Automation::_shutdown = false;
+      Automation::_autoEventTracker = 0;
+    }
   }
 
   // Serial.println("eventlist length: " + String(Automation::_eventList.length));
@@ -253,8 +256,6 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
-
-  delay(50);
 
 }
 
