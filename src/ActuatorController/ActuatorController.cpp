@@ -171,10 +171,11 @@ void loop() {
     }
   }
 
-  LinearActuators::getAllStates(farrbconvert.sensorReadings);
+  LinearActuators::getAllStates(farrbconvert.sensorReadings); // any given index will be a non-zero value if the actuator is not off.
   for (int i = 0; i < numLinActs; i++) {
-    if(farrbconvert.sensorReadings[i] > 0) {
-      if(LinearActuators::_linActCommands[i]->outputMonitor.readShuntCurrent() < 0.1){
+    if(farrbconvert.sensorReadings[i] > 0) { // if actuator is not off
+      // Only autoshutoff if not time-based command
+      if(LinearActuators::_linActCommands[i]->endtime == -1 && LinearActuators::_linActCommands[i]->outputMonitor.readShuntCurrent() < 0.1){ //below threshold, turning off
         LinearActuators::_linActCommands[i]->_off();
         LinearActuators::_linActCommands[i]->endtime = -1;
       } else if(LinearActuators::_linActCommands[i]->endtime != -1 && millis() > LinearActuators::_linActCommands[i]->endtime) {
