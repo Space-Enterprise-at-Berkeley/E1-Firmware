@@ -173,6 +173,13 @@ void loop() {
       Automation::_startupTimer = millis();
 
       Automation::_autoEventTracker++;
+
+      Solenoids::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(20, false);
+      Serial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
     }
 
     if (Automation::_autoEventTracker == 8) {
