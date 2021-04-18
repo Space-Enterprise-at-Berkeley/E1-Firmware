@@ -13,6 +13,10 @@ void GpioExpander::init() {
   _wire->write(REG_CONFIG);
   _wire->write(CONFIG_ALL_OUTPUT);
   _wire->endTransmission();
+
+  for (int i = 0; i <8; i++){
+    turnOff(i);
+  }
 }
 
 void GpioExpander::turnOn(uint8_t channel) {

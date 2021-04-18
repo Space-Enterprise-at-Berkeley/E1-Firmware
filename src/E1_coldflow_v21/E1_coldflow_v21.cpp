@@ -12,7 +12,6 @@
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
 
-
 #ifdef SERIAL_INPUT_DEBUG
   #define RFSerial Serial
 #else
@@ -96,7 +95,7 @@ void setup() {
 
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
+  Thermocouple::Analog::init(numAnalogTempSens, tempSensAdcIndices, tempSensAdcChannels, adsPointers);
 
   // _cryoTherms = Thermocouple::Cryo();
   // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
@@ -105,6 +104,8 @@ void setup() {
 
   commands.updateIds();
 }
+
+// bool states[8] = {0,0,0,0,0,0,0,0};
 
 void loop() {
   // process command
@@ -146,6 +147,7 @@ void loop() {
     if (id != -1) {
       packet = make_packet(id, false);
       Serial.println(packet);
+      Serial.flush();
       #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
@@ -157,11 +159,16 @@ void loop() {
     receivedCommand = false;
   }
 
-  if (Automation::_eventList->length > 0) {
-    Serial.print(Automation::_eventList->length);
+  Serial.println("eventlist length: " + String(Automation::_eventList.length));
+
+  if (Automation::_eventList.length > 0) {
+    Serial.print(Automation::_eventList.length);
     Serial.println(" events remain");
-    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
-    if (millis() - Automation::_eventList->timer > e->duration) {
+    Automation::autoEvent* e = &(Automation::_eventList.events[0]);
+    Serial.println("duration: " + String(e->duration));
+    Serial.println("report: " + String(e->report));
+    if (millis() - Automation::_eventList.timer > e->duration) {
+      Serial.println(" taking action");
 
       e->action();
 
@@ -186,7 +193,7 @@ void loop() {
 
       Automation::removeEvent();
       //reset timer
-      Automation::_eventList->timer = millis();
+      Automation::_eventList.timer = millis();
     }
   }
 
@@ -200,6 +207,7 @@ void loop() {
       sensor_checks[j][1] += 1;
       continue;
     }
+
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
@@ -230,9 +238,10 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("Heater");
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = 99; // heater is not used for waterflows.
+      debug("lox tank pt");
+      // these hardcode ids are going to royally fuck us soon
+      Thermocouple::Analog::readSpecificTemperatureData(1, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
@@ -254,10 +263,40 @@ void sensorReadFunc(int id) {
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
+    case 6:
+      debug("lox gems");
+      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 8:
+      debug("prop gems");
+      Thermocouple::Analog::readSpecificTemperatureData(5, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 16:
+      debug("prop tank pt");
+      Thermocouple::Analog::readSpecificTemperatureData(4, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
     case 17:
       debug("static P");
       farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 19:
+      debug("lox injector");
+      Thermocouple::Analog::readSpecificTemperatureData(2, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 60:
+      debug("Prop Injector");
+      Thermocouple::Analog::readSpecificTemperatureData(3, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:

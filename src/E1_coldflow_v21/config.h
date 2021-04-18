@@ -9,6 +9,7 @@
 #include <LTC4151.h>
 #include <Automation.h>
 #include <command.h>
+#include <tempController.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -34,9 +35,9 @@ uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
-const int numAnalogThermocouples = 1;
-uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
+const int numAnalogTempSens = 6;
+uint8_t tempSensAdcIndices[numAnalogTempSens] = {0, 0, 0, 0, 1, 1};
+uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7, 2, 3};
 
 const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
@@ -55,10 +56,22 @@ uint8_t battMonINAAddr = 0x43;
 
 const uint8_t numGPIOExpanders = 1;
 uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
-int8_t gpioExpIntPin[numGPIOExpanders] = {-1};
+uint8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
-const uint8_t numSensors = 6;
+const uint8_t numHeaters = 6;
+uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
+uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
+// uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
+
+HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0]);
+HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1]);
+HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2]);
+HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3]);
+HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4]);
+HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5]);
+
+const uint8_t numSensors = 11;
 sensorInfo sensors[numSensors];
 
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
@@ -75,11 +88,12 @@ const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
-const uint8_t numCommands = 12;
+const uint8_t numCommands = 18;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::high_p_enable, &Solenoids::arm_rocket, &Solenoids::launch,
-                                        &fullFlow, &loxFlow};
+                                        &fullFlow, &loxFlow, &loxTankPTHeater, &loxGemsHeater, &loxInjectorPTHeater, &propTankPTHeater,
+                                        &propGemsHeater, &propInjectorPTHeater};
 CommandArray commands(numCommands, backingStore);
 
 namespace config {
@@ -93,6 +107,8 @@ namespace config {
       adsPointers[i] = &ads[i];
       // ads[i]->calibrate();
     }
+
+    heaterCtl.init();
 
     debug("Initializing Power Supply monitors");
     for (int i = 0; i < numPowerSupplyMonitors; i++) {
@@ -117,26 +133,16 @@ namespace config {
     }
 
     debug("Initializing sensors");
-    sensors[0] = {"Temperature",   FLIGHT_BRAIN_ADDR, 0, 3}; //&(testTempRead)}, //&(Thermocouple::readTemperatureData)},
-    sensors[1] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[2] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[4] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-    sensors[5] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-
-    // debug("Initializing valves");
-    // valves = new valveInfo[numValves];
-    // valves[0] = {"LOX 2 Way", 20, &(Solenoids::armLOX), &(Solenoids::disarmLOX), &(Solenoids::getAllStates)};
-    // valves[1] = {"LOX 5 Way", 21, &(Solenoids::openLOX), &(Solenoids::closeLOX), &(Solenoids::getAllStates)};
-    // valves[2] = {"LOX GEMS", 22, &(Solenoids::ventLOXGems), &(Solenoids::closeLOXGems), &(Solenoids::getAllStates)};
-    // valves[3] = {"Propane 2 Way", 23, &(Solenoids::armPropane), &(Solenoids::disarmPropane), &(Solenoids::getAllStates)};
-    // valves[4] = {"Propane 5 Way", 24, &(Solenoids::openPropane), &(Solenoids::closePropane), &(Solenoids::getAllStates)};
-    // valves[5] = {"Propane GEMS", 25, &(Solenoids::ventPropaneGems), &(Solenoids::closePropaneGems), &(Solenoids::getAllStates)};
-    // valves[6] = {"High Pressure Solenoid", 26, &(Solenoids::activateHighPressureSolenoid), &(Solenoids::deactivateHighPressureSolenoid), &(Solenoids::getAllStates)};
-    // valves[7] = {"High Pressure Solenoid Enable", 31, &(Solenoids::enableHighPressureSolenoid), &(Solenoids::disableHighPressureSolenoid), &(Solenoids::getAllStates)};
-    // valves[8] = {"Arm Rocket", 27, &(Solenoids::armAll), &(Solenoids::disarmAll), &(Solenoids::getAllStates)};
-    // valves[9] = {"Launch Rocket", 28, &(Solenoids::LAUNCH), &(Solenoids::endBurn), &(Solenoids::getAllStates)};
-    // valves[10] = {"Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow), &(Automation::flowConfirmation)};
-    // valves[11] = {"Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow), &(Automation::flowConfirmation)};
+    sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
+    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
+    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 4};
+    sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
+    sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 4};
+    sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 4};
+    sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
+    sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 4};
   }
 }
