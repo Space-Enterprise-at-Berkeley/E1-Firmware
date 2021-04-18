@@ -15,7 +15,7 @@ std::string str_file_name = "DAQ.txt";
 const char * file_name = str_file_name.c_str();
 
 #ifdef ETH
-IPAddress ip(10, 0, 0, 177); // dependent on local network
+IPAddress ip(10, 0, 0, 11); // dependent on local network
 #endif
 
 const uint8_t numCryoTherms = 4;
