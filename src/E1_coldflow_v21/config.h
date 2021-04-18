@@ -37,7 +37,7 @@ ADC * adsPointers[numADCSensors];
 
 const int numAnalogTempSens = 6;
 uint8_t tempSensAdcIndices[numAnalogTempSens] = {0, 0, 0, 0, 1, 1};
-uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7, 2, 3};
+uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7, 3, 2};
 
 const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
