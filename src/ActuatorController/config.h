@@ -11,10 +11,6 @@
 std::string str_file_name = "Actuator_Controller.txt";
 const char * file_name = str_file_name.c_str();
 
-#ifdef ETH
-IPAddress ip(10, 0, 0, 21); // dependent on local network
-#endif
-
 const uint8_t numPowerSupplyMonitors = 1;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
@@ -36,6 +32,9 @@ uint8_t linActCommandIds[numLinActs] = {14, 15, 16, 17, 18, 19, 20};
 uint8_t linActINAAddrs[numLinActs] = {0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A};
 
 #ifdef AC1
+#ifdef ETH
+IPAddress ip(10, 0, 0, 21); // dependent on local network
+#endif
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
@@ -61,6 +60,9 @@ Command *backingStore[numCommands] = {&heater1, &heater2, //&ACSolenoids::zero, 
 CommandArray commands(numCommands, backingStore);
 
 #elif AC2
+#ifdef ETH
+IPAddress ip(10, 0, 0, 22); // dependent on local network
+#endif
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
@@ -87,6 +89,9 @@ CommandArray commands(numCommands, backingStore);
 
 
 #elif AC3
+#ifdef ETH
+IPAddress ip(10, 0, 0, 23); // dependent on local network
+#endif
 // const uint8_t numSolenoids = 2;
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
