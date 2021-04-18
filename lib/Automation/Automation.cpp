@@ -99,10 +99,12 @@ namespace Automation {
     Serial.println("add Event; len: " + String(_eventList.length));
     Serial.flush();
     if (_eventList.length < maxNumEvents) {
-      Serial.println("duration: " + duration);
-      Serial.println("report: " + report);
-      _eventList.events[_eventList.length] = {duration, action, report};
-      //memmove(&_eventList.events[_eventList.length], e, sizeof(autoEvent));
+      Serial.println("duration: " + String(duration));
+      Serial.println("report: " + String(report));
+      autoEvent *tmpE = new autoEvent{duration, action, report};
+      //_eventList.events[_eventList.length] = new autoEvent{duration, action, report};
+      memmove(&_eventList.events[_eventList.length], tmpE, sizeof(autoEvent));
+      free(tmpE);
 
       _eventList.length++;
       Serial.println("eventList len!");
