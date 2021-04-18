@@ -48,7 +48,7 @@ namespace Automation {
   bool init() {
     //_eventList = new autoEventList;
     _eventList.maxEvents = maxNumEvents; //arbitrary max of 10 events right now.
-    _eventList.events = events;
+    _eventList.events = new autoEvent[maxNumEvents];
 
     _eventList.length = 0;
     Serial.println(_eventList.length);
@@ -175,7 +175,7 @@ namespace Automation {
 
   int beginLoxFlow() {
     // flowtype = LOX_ONLY;
-    autoEvent events[4];
+    // autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
     events[1] = {1000, &(act_armOpenLox), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
@@ -184,7 +184,7 @@ namespace Automation {
   }
 
   int endLoxFlow() {
-    autoEvent events[4];
+    // autoEvent events[4];
     events[0] = {0, &(act_armCloseLox), false};
     events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
@@ -193,7 +193,7 @@ namespace Automation {
   }
 
   int openLox() {
-    autoEvent events[3];
+    // autoEvent events[3];
     events[0] = {0, &(act_armOpenLox), false};
     events[1] = {750, &(Solenoids::disarmLOX), false};
     events[2] = {1000, &(state_setFlowing), false};
@@ -227,7 +227,7 @@ namespace Automation {
       Serial.println("Eureka-1 is in Startup");
       Serial.flush();
 
-      autoEvent events[4];
+      // autoEvent events[4];
       events[0] = {0, &(act_pressurizeTanks), false};
       Serial.println("add press to list");
       Serial.flush();
