@@ -20,6 +20,7 @@ const char * file_name = str_file_name.c_str();
 IPAddress ip(10, 0, 0, 42); // dependent on local network
 #endif
 
+// Cryo Thermocouple
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
@@ -28,6 +29,7 @@ _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_T
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
 float cryoReadsBackingStore[numCryoTherms];
 
+// ADC
 const uint8_t numADCSensors = 2;
 uint8_t adcCSPins[numADCSensors] = {37, 36};
 uint8_t adcDataReadyPins[numADCSensors] = {26, 27};
@@ -35,10 +37,12 @@ uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
+// Analog Temperature Sensors
 const int numAnalogTempSens = 6;
 uint8_t tempSensAdcIndices[numAnalogTempSens] = {0, 0, 0, 0, 1, 1};
 uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7, 3, 2};
 
+// Pressure Transducers
 const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
@@ -47,18 +51,22 @@ const uint8_t pressurantIdx = 5;
 const uint8_t loxDomeIdx = 6;
 const uint8_t propDomeIdx = 7;
 
+// Power Supply Monitors
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x44, 0x45};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
+// Battery Monitor
 uint8_t battMonINAAddr = 0x43;
 
+// GPIO Expander
 const uint8_t numGPIOExpanders = 1;
 uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
 uint8_t gpioExpIntPin[numGPIOExpanders] = {-1};
 GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
+// Heaters
 const uint8_t numHeaters = 6;
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
@@ -96,7 +104,9 @@ Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &S
                                         &propGemsHeater, &propInjectorPTHeater};
 CommandArray commands(numCommands, backingStore);
 
+// Automation
 Automation::autoEvent autoEvents[13];
+const int burnTime = 3000;
 
 namespace config {
   void setup() {
@@ -153,9 +163,9 @@ namespace config {
     autoEvents[0] = {0, &(Automation::act_pressurizeTanks), false};
     autoEvents[1] = {1000, &(Solenoids::armAll), false}; // igniter
     autoEvents[2] = {1200, &(Automation::act_armOpenLox), false};
-    autoEvents[3] = {127, &(Automation::act_armOpenProp), false};
+    autoEvents[3] = {127, &(Automation::act_armOpenProp), false}; // T-0
     autoEvents[4] = {500, &(Solenoids::disarmLOX), false};
-    autoEvents[5] = {2500, &(Automation::act_armCloseProp), false};
+    autoEvents[5] = {burnTime - 500, &(Automation::act_armCloseProp), false};
     autoEvents[6] = {200, &(Solenoids::closeLOX), false};
     autoEvents[7] = {420, &(Automation::act_depressurize), false};
 
