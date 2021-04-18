@@ -96,6 +96,8 @@ Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &S
                                         &propGemsHeater, &propInjectorPTHeater};
 CommandArray commands(numCommands, backingStore);
 
+Automation::autoEvent autoEvents[6];
+
 namespace config {
   void setup() {
     debug("Initializing ADCs");
@@ -144,5 +146,22 @@ namespace config {
     sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 4};
     sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
     sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 4};
+
+    debug("Initializing Ignition Sequence");
+    autoEvents[0] = {0, &(Automation::act_pressurizeTanks), false};
+    autoEvents[1] = {1000, &(Solenoids::armAll), false};
+    // igniter
+    autoEvents[2] = {1200, &(Automation::act_armOpenLox), false};
+    autoEvents[3] = {127, &(Automation::act_armOpenProp), false};
+    autoEvents[4] = {500, &(Solenoids::disarmLOX), false};
+    autoEvents[5] = {300, &(Automation::state_setFlowing), false};
+    //  autoEvents[0] = {0, &(Automation::act_pressurizeTanks), false};
+    // autoEvents[1] = {2000, &(Solenoids::armAll), false};
+    // // igniter
+    // autoEvents[2] = {2000, &(Automation::act_armOpenLox), false};
+    // autoEvents[3] = {2000, &(Automation::act_armOpenProp), false};
+    // autoEvents[4] = {2000, &(Solenoids::disarmLOX), false};
+    // autoEvents[5] = {2000, &(Automation::state_setFlowing), false};
+
   }
 }

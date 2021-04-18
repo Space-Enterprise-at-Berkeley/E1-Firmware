@@ -37,6 +37,8 @@ int packet_count = 0;
 
 void sensorReadFunc(int id);
 
+int autoEventTracker = 0;
+
 // Thermocouple::Cryo _cryoTherms;
 
 void setup() {
@@ -103,6 +105,8 @@ void setup() {
   Automation::init();
 
   commands.updateIds();
+
+  Automation::_eventList.length = 2;
 }
 
 // bool states[8] = {0,0,0,0,0,0,0,0};
@@ -159,43 +163,63 @@ void loop() {
     receivedCommand = false;
   }
 
-  Serial.println("eventlist length: " + String(Automation::_eventList.length));
+  if (Automation::inStartup()) {
 
-  if (Automation::_eventList.length > 0) {
-    Serial.print(Automation::_eventList.length);
-    Serial.println(" events remain");
-    Automation::autoEvent* e = &(Automation::_eventList.events[0]);
-    Serial.println("duration: " + String(e->duration));
-    Serial.println("report: " + String(e->report));
-    if (millis() - Automation::_eventList.timer > e->duration) {
-      Serial.println(" taking action");
+    Serial.println("waiting for: " + String(autoEvents[autoEventTracker].duration));
 
-      e->action();
+    if (millis() - Automation::_startupTimer > autoEvents[autoEventTracker].duration) {
+      Serial.println("executing event");
+      autoEvents[autoEventTracker].action();
+      Automation::_startupTimer = millis();
 
-      //Update valve states after each action
-      Solenoids::getAllStates(farrbconvert.sensorReadings);
-      packet = make_packet(29, false);
-      // Serial.println(packet);
-      // RFSerial.println(packet);
-      #ifdef ETH
-      sendEthPacket(packet.c_str());
-      #endif
-      write_to_SD(packet.c_str(), file_name);
-
-      Automation::flowStatus(farrbconvert.sensorReadings);
-      packet = make_packet(18, false);
-      // Serial.println(packet);
-      // RFSerial.println(packet);
-      #ifdef ETH
-      sendEthPacket(packet.c_str());
-      #endif
-      write_to_SD(packet.c_str(), file_name);
-
-      Automation::removeEvent();
-      //reset timer
-      Automation::_eventList.timer = millis();
+      autoEventTracker++;
     }
+
+    if (autoEventTracker == 6) {
+      Automation::_startup = false;
+    }
+    
   }
+
+  // Serial.println("eventlist length: " + String(Automation::_eventList.length));
+
+  // if (Automation::_eventList.length > 0) {
+  //   Serial.print(Automation::_eventList.length);
+  //   Serial.println(" events remain");
+  //   Automation::autoEvent* e = &(Automation::_eventList.events[0]);
+  //   Serial.println("duration: " + String(e->duration));
+  //   Serial.println("report: " + String(e->report));
+  //   if (false && millis() - Automation::_eventList.timer > e->duration) {
+  //     Serial.println(" taking action");
+
+  //     e->action();
+
+  //     //Update valve states after each action
+  //     Solenoids::getAllStates(farrbconvert.sensorReadings);
+  //     packet = make_packet(29, false);
+  //     // Serial.println(packet);
+  //     // RFSerial.println(packet);
+  //     #ifdef ETH
+  //     sendEthPacket(packet.c_str());
+  //     #endif
+  //     write_to_SD(packet.c_str(), file_name);
+
+  //     Automation::flowStatus(farrbconvert.sensorReadings);
+  //     packet = make_packet(18, false);
+  //     // Serial.println(packet);
+  //     // RFSerial.println(packet);
+  //     #ifdef ETH
+  //     sendEthPacket(packet.c_str());
+  //     #endif
+  //     write_to_SD(packet.c_str(), file_name);
+
+  //     Automation::removeEvent();
+  //     //reset timer
+  //     Automation::_eventList.timer = millis();
+  //   }
+  // }
+
+
 
   /*
      Code for requesting data and relaying back to ground station
@@ -221,7 +245,7 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
     // After getting new pressure data, check injector pressures to detect end of flow:
-    if (sensor->id==1 && Automation::inFlow()) {
+    if (false && sensor->id==1 && Automation::inFlow()) {
 
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
@@ -229,6 +253,9 @@ void loop() {
       Automation::detectPeaks(loxInjector, propInjector);
     }
   }
+
+  delay(50);
+
 }
 
 
