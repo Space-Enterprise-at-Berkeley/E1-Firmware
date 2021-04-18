@@ -175,8 +175,8 @@ void loop() {
       //Update valve states after each action
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(29, false);
-      Serial.println(packet);
-      RFSerial.println(packet);
+      // Serial.println(packet);
+      // RFSerial.println(packet);
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
@@ -184,8 +184,8 @@ void loop() {
 
       Automation::flowStatus(farrbconvert.sensorReadings);
       packet = make_packet(18, false);
-      Serial.println(packet);
-      RFSerial.println(packet);
+      // Serial.println(packet);
+      // RFSerial.println(packet);
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
@@ -211,12 +211,12 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
-    Serial.println(packet);
+    // Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
     #ifndef SERIAL_INPUT_DEBUG
-        RFSerial.println(packet);
+        // RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);
 
