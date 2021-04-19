@@ -33,14 +33,14 @@ uint8_t adcAlertPins[numADCSensors] = {15};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
-const uint8_t numAnalogThermocouples = 4;
-uint8_t thermAdcIndices[numAnalogThermocouples] = {0, 0, 0, 0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {4, 5, 6, 7};
+const uint8_t numAnalogThermocouples = 1;
+uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
 
-const uint8_t numPressureTransducers = 4;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0};
-uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3};
-uint32_t ptTypes[numPressureTransducers] = {100, 300, 1000, 5000};
+const uint8_t numPressureTransducers = 1;
+uint8_t ptAdcIndices[numPressureTransducers] = {0};
+uint8_t ptAdcChannels[numPressureTransducers] = {3};
+uint32_t ptTypes[numPressureTransducers] = {30};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
@@ -56,7 +56,7 @@ HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 6;
+const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -121,10 +121,10 @@ namespace config {
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
     // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
-    sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[5] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    sensors[1] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
+    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 
   }

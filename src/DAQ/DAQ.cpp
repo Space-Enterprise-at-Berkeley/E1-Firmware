@@ -202,7 +202,7 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 19:
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
