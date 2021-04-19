@@ -91,9 +91,9 @@ class HeaterCommand : public Command, public TempController {
       data[3] = -1;
     }
 
-    void readCurrentDraw(float *data) {
-      data[0] = outputMonitor.readShuntCurrent();
-      data[1] = -1;
+    void readCurrentDraw(float *data, int ch) {
+      data[ch] = outputMonitor.readShuntCurrent();
+      data[ch+1] = -1;
     }
 
     void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
