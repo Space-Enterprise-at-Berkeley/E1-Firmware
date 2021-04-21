@@ -37,7 +37,7 @@ uint8_t thermAdcChannels[numAnalogThermocouples] = {2};
 const uint8_t numPressureTransducers = 7;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1}; //not using 1-0 or 1-3
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 2, 1, 3};
-uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
+uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000};
 
 const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];

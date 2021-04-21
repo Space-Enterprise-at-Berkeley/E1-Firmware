@@ -16,8 +16,11 @@ uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41};
 INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
-const float powerSupplyMonitorShuntR = 0.033; // ohms
+const float powerSupplyMonitorShuntR = 0.01; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
+const float actuatorMonitorShuntR = 0.033; // ohms
+
 
 const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
@@ -41,9 +44,9 @@ uint8_t heaterPins[numHeaters] = {22, 23};
 uint8_t heaterCommandIds[numHeaters] = {12, 13};
 uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
 // heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 0;
@@ -69,9 +72,9 @@ uint8_t heaterPins[numHeaters] = {22, 23};
 uint8_t heaterCommandIds[numHeaters] = {12, 13};
 uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
 // heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 2;
@@ -98,9 +101,9 @@ uint8_t heaterPins[numHeaters] = {22, 23};
 uint8_t heaterCommandIds[numHeaters] = {12, 13};
 uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
+HeaterCommand heater1("heater 1", heaterCommandIds[0], 10, 2, heaterPins[0], &Wire, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10 C, alg = PID
 // heater1.initINA219(&Wire, heaterINAAddr[0], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
+HeaterCommand heater2("heater 2", heaterCommandIds[1], 10, 2, heaterPins[1], &Wire, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent); // setPoint = 10C, alg = PID
 // heater2.initINA219(&Wire, heaterINAAddr[1], powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numLinActPairs = 0;

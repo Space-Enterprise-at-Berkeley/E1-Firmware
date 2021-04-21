@@ -1,6 +1,7 @@
 #include <solenoids.h>
 #include <Analog_Thermocouple.h>
-#include <Cryo_Thermocouple.h>
+// #include <Cryo_Thermocouple.h>
+#include <Adafruit_MCP9600.h>
 #include <common_fw.h>
 #include <ADS1219.h>
 #include <ADS8167.h>
@@ -10,7 +11,6 @@
 #include <LTC4151.h>
 #include <command.h>
 #include <tempController.h>
-
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -36,14 +36,14 @@ uint8_t adcAlertPins[numADCSensors] = {9, 10};
 ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
-const uint8_t numAnalogThermocouples = 1;
+const uint8_t numAnalogThermocouples = 4;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
 uint8_t thermAdcChannels[numAnalogThermocouples] = {4};
 
-const uint8_t numPressureTransducers = 8;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
-uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
-uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
+const uint8_t numPressureTransducers = 4;
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0}; //, 1, 1, 1, 1};
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3}; //, 4, 5, 6, 7};
+uint32_t ptTypes[numPressureTransducers] = {1000, 100, 300, 5000}; //, 5000, 1000, 1000, 1000};
 const uint8_t pressurantIdx = 5;
 const uint8_t loxDomeIdx = 6;
 const uint8_t propDomeIdx = 7;
@@ -68,9 +68,9 @@ uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
 
-const uint8_t loxAdapterPTHeaterPin = 9;
+const uint8_t loxAdapterPTHeaterPin = 7;
 const uint8_t loxGemsHeaterPin = 7;
-const uint8_t propAdapterPTHeaterPin = 9;
+const uint8_t propAdapterPTHeaterPin = 7;
 const uint8_t propGemsHeaterPin = 7;
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -78,6 +78,9 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
+const float actuatorMonitorShuntR = 0.033;
+const float actuatorMonitorMaxExpectedCurrent = 5;
 
 HeaterCommand loxPTHeater("LOX PT Heater", 40, 10, 2, loxAdapterPTHeaterPin); // setPoint = 10 C, alg = PID
 HeaterCommand loxGemsHeater("LOX Gems Heater", 41, 10, 2, loxGemsHeaterPin); // setPoint = 10C, alg = PID
@@ -119,6 +122,20 @@ namespace config {
         powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
 
+    debug("initializing cryo therms");
+    for (int i = 0; i < numCryoTherms; i++) {
+
+      if (!_cryo_boards[i].begin(cryoThermAddrs[i], &Wire)) {
+        Serial.println("Error initializing cryo board at Addr 0x" + String(cryoThermAddrs[i], HEX));
+        return -1;
+      }
+
+      _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_12);
+      _cryo_boards[i].setThermocoupleType(cryoTypes[i]);
+      _cryo_boards[i].setFilterCoefficient(3);
+      _cryo_boards[i].enable(true);
+    }
+
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
@@ -130,6 +147,5 @@ namespace config {
     sensors[6] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
     sensors[7] = {"Prop PT Temp", FLIGHT_BRAIN_ADDR, 16, 4};
     sensors[8] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-
   }
 }

@@ -11,6 +11,8 @@ namespace Automation {
 
 //-----------------------Variables-----------------------
 
+  int _autoEventTracker = 0;
+
   bool _startup = false;
   int _startupPhase = 0;
   uint32_t _startupTimer;
@@ -20,10 +22,12 @@ namespace Automation {
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
 
-  flow_type_t flowtype;
-  flow_state_t flowstate = ON_PAD;
+  // flow_type_t flowtype;
+  // flow_state_t flowstate = ON_PAD;
 
- struct autoEventList* _eventList;
+ const uint8_t maxNumEvents = 15;
+ struct autoEventList _eventList;
+ autoEvent events[maxNumEvents];
 
   /* Delays during startup sequence:
     1 - Between open pressure and open LOX Main
@@ -44,11 +48,19 @@ namespace Automation {
 //-----------------------Functions-----------------------
 
   bool init() {
-    _eventList = new autoEventList;
-    _eventList->maxEvents = 15; //arbitrary max of 10 events right now.
-    _eventList->events = new autoEvent[_eventList->maxEvents];
+    //_eventList = new autoEventList;
+    _eventList.maxEvents = maxNumEvents; //arbitrary max of 10 events right now.
+    _eventList.events = new autoEvent[maxNumEvents];
 
-    _eventList->length = 0;
+    for (int i = 0; i < maxNumEvents; i++) {
+      _eventList.events[i].duration = 750 + i;
+      _eventList.events[i].action = &(Solenoids::armLOX);
+      _eventList.events[i].report = false;
+    }
+
+    _eventList.length = 0;
+    Serial.println(_eventList.length);
+    Serial.flush();
     return true;
   }
 
@@ -69,15 +81,48 @@ namespace Automation {
    * overhead, but avoids dealing with allocating & deallocation memory for each event
    */
   bool addEvent(autoEvent* e) {
-    if (_eventList->length < 10) {
-      (_eventList->events)[_eventList->length] = *e;
-      _eventList->length++;
+    Serial.println("add Event; len: " + String(_eventList.length));
+    Serial.flush();
+    if (_eventList.length < maxNumEvents) {
+      Serial.println("duration: " + e->duration);
+      Serial.println("report: " + e->report);
+      //_eventList.events[_eventList.length] = *e;
+      memmove(&_eventList.events[_eventList.length], e, sizeof(autoEvent));
+      _eventList.length++;
       Serial.println("eventList len!");
-      Serial.println(_eventList->length);
+      Serial.println(_eventList.length);
+      Serial.flush();
       // if first event is being added then need to restart timer.
-      if (_eventList->length == 1) {
-        _eventList->timer = millis();
+      if (_eventList.length == 1) {
+        _eventList.timer = millis();
       }
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool addEvent(int duration, int (*action)(), bool report) {
+    Serial.println("add Event; len: " + String(_eventList.length));
+    Serial.flush();
+    if (_eventList.length < maxNumEvents) {
+      Serial.println("duration: " + String(duration));
+      Serial.println("report: " + String(report));
+      autoEvent *tmpE = new autoEvent{duration, action, report};
+      //_eventList.events[_eventList.length] = new autoEvent{duration, action, report};
+      memmove(&_eventList.events[_eventList.length], tmpE, sizeof(autoEvent));
+      free(tmpE);
+
+      _eventList.length++;
+      Serial.println("eventList len!");
+      Serial.println(_eventList.length);
+      Serial.flush();
+      // if first event is being added then need to restart timer.
+      if (_eventList.length == 1) {
+        _eventList.timer = millis();
+      }
+
       return true;
     } else {
       return false;
@@ -85,11 +130,13 @@ namespace Automation {
   }
 
   bool removeEvent() {
-    if (_eventList->length > 0) {
+    Serial.println("remvoe Event");
+    Serial.flush();
+    if (_eventList.length > 0) {
       //move events 1 - 9 & move to slots 0 - 8, effectively "popping" first event
-      memmove(_eventList->events, _eventList->events + 1, sizeof(autoEvent)*(_eventList->maxEvents - 1));
+      memmove(_eventList.events, _eventList.events + 1, sizeof(autoEvent)*(_eventList.maxEvents - 1));
 
-      Automation::_eventList->length--;
+      Automation::_eventList.length--;
     }
   }
 
@@ -105,7 +152,7 @@ namespace Automation {
   }
 
   int act_pressurizeTanks() {
-    flowstate = PRESS;
+    // flowstate = PRESS;
     Solenoids::closeLOXGems();
     Solenoids::closePropaneGems();
     Solenoids::openHighPressureSolenoid();
@@ -117,45 +164,45 @@ namespace Automation {
   }
 
   int act_armOpenLox() {
-    flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
+    // flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
     Solenoids::armLOX();
     Solenoids::openLOX();
   }
 
   int act_armOpenProp() {
-    flowstate = (flowstate == LOX_FLOWING)? BOTH_FLOWING : PROP_FLOWING;
+    // flowstate = (flowstate == LOX_FLOWING)? BOTH_FLOWING : PROP_FLOWING;
     Solenoids::armLOX();
     Solenoids::openPropane();
   }
 
   int act_armOpenBoth() {
-    flowstate = BOTH_FLOWING;
+    // flowstate = BOTH_FLOWING;
     Solenoids::armLOX();
     Solenoids::openLOX();
     Solenoids::openPropane();
   }
 
   int act_armCloseProp() {
-    flowstate = (flowstate == BOTH_FLOWING)? LOX_FLOWING : SHUTOFF;
+    // flowstate = (flowstate == BOTH_FLOWING)? LOX_FLOWING : SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closePropane();
   }
 
   int act_armCloseLox() {
-    flowstate = (flowstate == BOTH_FLOWING)? PROP_FLOWING : SHUTOFF;
+    // flowstate = (flowstate == BOTH_FLOWING)? PROP_FLOWING : SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closeLOX();
   }
 
   int act_armCloseBoth() {
-    flowstate = SHUTOFF;
+    // flowstate = SHUTOFF;
     Solenoids::armLOX();
     Solenoids::closeLOX();
     Solenoids::closePropane();
   }
 
   int act_depressurize() {
-    flowstate = DEPRESSURIZE;
+    // flowstate = DEPRESSURIZE;
     Solenoids::disarmLOX();
     Solenoids::closeHighPressureSolenoid();
     Solenoids::ventLOXGems();
@@ -163,8 +210,8 @@ namespace Automation {
   }
 
   int beginLoxFlow() {
-    flowtype = LOX_ONLY;
-    autoEvent events[4];
+    // flowtype = LOX_ONLY;
+    // autoEvent events[4];
     events[0] = {0, &(act_pressurizeTanks), false};
     events[1] = {1000, &(act_armOpenLox), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
@@ -173,7 +220,7 @@ namespace Automation {
   }
 
   int endLoxFlow() {
-    autoEvent events[4];
+    // autoEvent events[4];
     events[0] = {0, &(act_armCloseLox), false};
     events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
     events[2] = {750, &(Solenoids::disarmLOX), false};
@@ -182,7 +229,7 @@ namespace Automation {
   }
 
   int openLox() {
-    autoEvent events[3];
+    // autoEvent events[3];
     events[0] = {0, &(act_armOpenLox), false};
     events[1] = {750, &(Solenoids::disarmLOX), false};
     events[2] = {1000, &(state_setFlowing), false};
@@ -202,35 +249,77 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
-    flowtype = BOTH_COLD;
+    #if DEBUG
+      Serial.println("begin both flow");
+      Serial.flush();
+    #endif
+    // flowtype = BOTH_COLD;
+    Serial.println("eventlist len: " + String(_eventList.length));
+    Serial.flush();
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
+    Serial.println("startup: " + String(_startup));
     if (_startup) {
       Serial.println("Eureka-1 is in Startup");
+      Serial.flush();
 
-      autoEvent events[4];
-      events[0] = {0, &(act_pressurizeTanks), false};
-      events[1] = {1000, &(act_armOpenBoth), false};
-      events[2] = {750, &(Solenoids::disarmLOX), false};
-      events[3] = {1000, &(state_setFlowing), false};
+      _autoEventTracker = 0;
+
+      _startupTimer = millis();
+
+      // autoEvent events[4];
+      // events[0] = {0, &(act_pressurizeTanks), false};
+      // addEvent(0, &(act_pressurizeTanks), false);
+      // Serial.println("add press to list");
+      // Serial.flush();
+      // // addEvent(&events[0]);
+      // Serial.println("add event press");
+      // Serial.flush();
+      // // events[1] = {1000, &(act_armOpenBoth), false};
+      // addEvent(1000, &(act_armOpenBoth), false);
+      // Serial.println("add arm to list");
+      // Serial.flush();
+      // // addEvent(&events[1]);
+
+      // // events[2] = {750, &(Solenoids::disarmLOX), false};
+      // addEvent(750, &(Solenoids::disarmLOX), false);
+      // Serial.println("add disarm to list");
+      // Serial.flush();
+      // // addEvent(&events[2]);
+
+      // // events[3] = {1000, &(state_setFlowing), false};
+      // addEvent(1000, &(state_setFlowing), false);
+      // Serial.println("add set state flowing");
+      // Serial.flush();
+      // addEvent(&events[3]);
+
       //TODO @Ben: after ~1sec delay change startup to false & shutdown to true so shutdownDetection can start
-      for (int i = 0; i < 4; i++) addEvent(&events[i]);
-    }
+      // for (int i = 0; i < 4; i++) addEvent(&events[i]);
+    } else {
+    #if DEBUG
+      Serial.println("not startup");
+      Serial.flush();
+    #endif
+  }
     return -1;
   }
 
   int endBothFlow() {
+    _startup = false;
     _flowing = false;
     _shutdown = true;
+
+    _autoEventTracker = 8;
+
     Serial.println("Eureka-1 is in Shutdown");
 
-    autoEvent events[4];
-    events[0] = {0, &(act_armCloseBoth), false};
-    events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
-    events[2] = {750, &(Solenoids::disarmLOX), false};
-    events[3] = {0, &(act_openGems), false};
-    //TODO: set shutdown to be false
-    for (int i = 0; i < 4; i++) addEvent(&events[i]);
+    // autoEvent events[4];
+    // events[0] = {0, &(act_armCloseBoth), false};
+    // events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
+    // events[2] = {750, &(Solenoids::disarmLOX), false};
+    // events[3] = {0, &(act_openGems), false};
+    // //TODO: set shutdown to be false
+    // for (int i = 0; i < 4; i++) addEvent(&events[i]);
 
     return -1;
   }
@@ -242,7 +331,7 @@ namespace Automation {
       Arming Valve - Closed
       LOX Main Valve & Prop Main Valve - Closed
     */
-    flowtype = HOT;
+    // flowtype = HOT;
     _startup = !Solenoids::getHPS() &&
         !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     if (_startup) {
@@ -259,7 +348,7 @@ namespace Automation {
 
       for (int i = 0; i < 6; i++) addEvent(&events[i]);
     } else {
-      flowstate = ERROR;
+      // flowstate = ERROR;
     }
 
     Serial.println("If no fire, PUSH RED BUTTON");
@@ -293,8 +382,8 @@ namespace Automation {
   }
 
   void flowStatus(float *data) {
-    data[0] = flowtype;
-    data[1] = flowstate;
+    data[0] = 0;//flowtype;
+    data[1] = 0;//flowstate;
     data[2] = -1;
   }
 

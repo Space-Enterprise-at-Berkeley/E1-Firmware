@@ -25,27 +25,29 @@ namespace Automation {
 //     DEPRESSURIZE = 3
 //   } cold_flow_state_t;
 
-typedef enum {
-    LOX_ONLY = 0,
-    BOTH_COLD = 1,
-    HOT = 2
-  } flow_type_t;
+// typedef enum {
+//     LOX_ONLY = 0,
+//     BOTH_COLD = 1,
+//     HOT = 2
+//   } flow_type_t;
+//
+// typedef enum {
+//     ABORT = -2,
+//     ERROR = -1,
+//     ON_PAD = 0,
+//     PRESS = 1,
+//     IGNITED = 2,
+//     LOX_FLOWING = 3,
+//     PROP_FLOWING = 4,
+//     BOTH_FLOWING = 5,
+//     SHUTOFF = 6,
+//     DEPRESSURIZE = 7
+//   } flow_state_t;
+//
+//   extern flow_type_t flowtype;
+//   extern flow_state_t flowstate;
 
-typedef enum {
-    ABORT = -2,
-    ERROR = -1,
-    ON_PAD = 0,
-    PRESS = 1,
-    IGNITED = 2,
-    LOX_FLOWING = 3,
-    PROP_FLOWING = 4,
-    BOTH_FLOWING = 5,
-    SHUTOFF = 6,
-    DEPRESSURIZE = 7
-  } flow_state_t;
-
-  extern flow_type_t flowtype;
-  extern flow_state_t flowstate;
+  extern int _autoEventTracker;
 
   extern bool _startup;
   extern int _startupPhase;
@@ -95,7 +97,7 @@ struct autoEventList {
   int timer;
 };
 
-extern struct autoEventList* _eventList;
+extern struct autoEventList _eventList;
 
 
 //------------------Function Definitions-----------------
@@ -109,6 +111,7 @@ extern struct autoEventList* _eventList;
   bool inShutdown();
 
   bool addEvent(autoEvent* e);
+  bool addEvent(int duration, int (*action)(), bool report);
   bool removeEvent();
 
   // Actions that can be taken/combined as desired

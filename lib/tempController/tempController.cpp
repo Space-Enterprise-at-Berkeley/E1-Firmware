@@ -47,11 +47,9 @@ int TempController::calculateOutput(float currTemp) {
 float TempController::controlTemp(float currTemp) {
   _heaterOutput = (humanOverride) ? humanSpecifiedValue : calculateOutput(currTemp);
   if(_heaterPin != -1) {
-    Serial.println("writing light");
     analogWrite(_heaterPin, _heaterOutput);
     return _heaterOutput / 255.0;
   } else if (_channel != -1) {
-    Serial.println("gpioexpander");
     if (_heaterOutput / 255.0 > 0.5) {
       _expander->turnOn(_channel);
       return 1.0;

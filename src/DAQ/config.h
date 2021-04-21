@@ -65,7 +65,6 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
-
 namespace config {
   void setup() {
     debug("Initializing ADCs");
@@ -93,15 +92,16 @@ namespace config {
     }
 
     debug("Initializing the Load Cells");
-    for (int i = 0; i < numLoadCells; i++) {
-     debug("before begin");
-     loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
-     debug("after begin");
-     loadcells[i].set_scale(lcCalVals[i]);
-     debug("after set scale");
-     loadcells[i].tare();
-     debug("after tare");
-    }
+    // for (int i = 0; i < numLoadCells; i++) {
+    //  debug("before begin");
+    //  loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
+    //  debug("after begin");
+    //  loadcells[i].set_scale(lcCalVals[i]);
+    //  debug("after set scale");
+    //  loadcells[i].tare();
+    //  debug("after tare");
+    // }
+
     // debug("before begin");
     // loadcell1.begin(lcDoutPins[0], lcSckPins[0]);
     // debug("after begin");
