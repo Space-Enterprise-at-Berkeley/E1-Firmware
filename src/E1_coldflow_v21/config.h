@@ -106,7 +106,7 @@ CommandArray commands(numCommands, backingStore);
 
 // Automation
 Automation::autoEvent autoEvents[13];
-const int burnTime = 3000;
+const int burnTime = 15000;
 
 namespace config {
   void setup() {
@@ -160,7 +160,7 @@ namespace config {
 
     // Automation Sequences
     debug("Initializing Ignition Sequence");
-    autoEvents[0] = {0, &(Automation::act_pressurizeTanks), false};
+    autoEvents[0] = {1300, &(Automation::act_pressurizeTanks), false};
     autoEvents[1] = {1000, &(Solenoids::armAll), false}; // igniter
     autoEvents[2] = {1200, &(Automation::act_armOpenLox), false};
     autoEvents[3] = {127, &(Automation::act_armOpenProp), false}; // T-0
