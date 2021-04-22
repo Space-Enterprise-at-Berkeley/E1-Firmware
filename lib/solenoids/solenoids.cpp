@@ -125,7 +125,7 @@ namespace Solenoids {
 
   void getAllCurrents(float *data) {
     #ifdef DEBUG
-      Serial.println("Solenoids, get all states");
+      Serial.println("Solenoids, get all currents");
       Serial.flush();
     #endif
     data[0] = lox_2.outputMonitor.readShuntCurrent();
