@@ -134,7 +134,7 @@ namespace Solenoids {
     data[3] = prop_5.outputMonitor.readShuntCurrent();;
     data[4] = lox_G.outputMonitor.readShuntCurrent();
     data[5] = prop_G.outputMonitor.readShuntCurrent();
-    data[6] = -1;
+    data[6] = 0; // pressurant solenoid 
     data[7] = -1;
     data[8] = -1;
   }
