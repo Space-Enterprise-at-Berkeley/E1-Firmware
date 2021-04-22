@@ -68,9 +68,8 @@ namespace LinearActuators {
           Serial.println("lin act, parse command");
           Serial.flush();
         #endif
-        
 
-        if (data[0] == 0) { // off
+         if (data[0] == 0) { // off
           _off();
         } else if (data[0] == 1)  { // forward
           _forward();
@@ -88,6 +87,7 @@ namespace LinearActuators {
             endtime = millis() - data[0];
           }
         }
+
       }
 
       void confirmation(float *data) {

@@ -152,22 +152,22 @@ namespace Ducers {
         //data[i] = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
       } else if (type == 100) {
         #ifdef DEBUG
-          Serial.println("reading high pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
+          Serial.println("reading 100 pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
         data[i] = interpolate100(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
       } else if (type == 300) {
         #ifdef DEBUG
-          Serial.println("reading high pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
+          Serial.println("reading 300 pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
         data[i] = interpolate300(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
       } else if (type == 30) {
         #ifdef DEBUG
-          Serial.println("reading high pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
+          Serial.println("reading 30 pressure data from ADC" + String(_adcIndices[i]) + " Ain" + String(_adcChannels[i]));
           Serial.flush();
         #endif
-        data[i] = interpolate300(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
+        data[i] = interpolate30(_adcs[_adcIndices[i]]->readData(_adcChannels[i]));
       }
       _latestReads[i] = data[i];
     }

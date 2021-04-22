@@ -96,6 +96,7 @@ IPAddress ip(10, 0, 0, 23); // dependent on local network
 // uint8_t solenoidPins[numSolenoids] = {15,  23};
 // uint8_t solenoidCommandIds[numSolenoids] = {21, 23};
 //
+const uint8_t numHeaters = 2;
 uint8_t heaterPins[numHeaters] = {22, 23};
 uint8_t heaterCommandIds[numHeaters] = {12, 13};
 uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};

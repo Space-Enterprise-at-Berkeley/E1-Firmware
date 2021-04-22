@@ -170,7 +170,7 @@ void loop() {
     #endif
     //write_to_SD(packet.c_str(), file_name);
   }
-  delay(10);
+  // delay(10);
 }
 
 
@@ -202,7 +202,7 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 19:
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

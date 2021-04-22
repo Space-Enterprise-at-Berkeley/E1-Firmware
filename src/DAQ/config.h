@@ -15,7 +15,7 @@ std::string str_file_name = "DAQ.txt";
 const char * file_name = str_file_name.c_str();
 
 #ifdef ETH
-IPAddress ip(10, 0, 0, 177); // dependent on local network
+IPAddress ip(10, 0, 0, 11); // dependent on local network
 #endif
 
 const uint8_t numCryoTherms = 4;
@@ -56,7 +56,7 @@ HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 6;
+const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -121,10 +121,10 @@ namespace config {
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
     // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[2] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[3] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
-    sensors[4] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[5] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    sensors[1] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
+    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 
   }
