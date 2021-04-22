@@ -24,9 +24,9 @@ namespace Thermocouple {
           return -1;
         }
 
-        _cryo_amp_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_12);
+        _cryo_amp_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_16);
         _cryo_amp_boards[i].setThermocoupleType(types[i]);
-        _cryo_amp_boards[i].setFilterCoefficient(3);
+        _cryo_amp_boards[i].setFilterCoefficient(0);
         _cryo_amp_boards[i].enable(true);
       }
 
@@ -52,8 +52,8 @@ namespace Thermocouple {
         Serial.print(i);
         Serial.flush();
         #endif
-        // data[i] = _cryo_amp_boards[i].readThermocouple();
-        data[i] = _cryo_amp_boards[i].readAmbient();
+        data[i] = _cryo_amp_boards[i].readThermocouple();
+        // data[i] = _cryo_amp_boards[i].readAmbient();
         // data[i] = _cryo_amp_boards[i].readADC();
         #ifdef DEBUG
         Serial.print(data[i]);
