@@ -165,7 +165,7 @@ void loop() {
         for (int i = 0 ; i < numSolenoids; i++){
           sum += (int)farrbconvert.sensorReadings[i];
         }
-        if (i > 0){
+        if (sum > 0){
           sensors[11].clock_freq = 10;
         } else {
           sensors[11].clock_freq = 50;
@@ -341,7 +341,7 @@ void sensorReadFunc(int id) {
       break;
     case 21:
       debug("solenoid currents");
-      Soleniods::getAllCurrents(farrbconvert.sensorReadings);
+      Solenoids::getAllCurrents(farrbconvert.sensorReadings);
       break;
     case 60:
       debug("Prop Injector");
