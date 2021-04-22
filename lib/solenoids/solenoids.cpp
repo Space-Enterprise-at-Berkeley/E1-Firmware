@@ -123,6 +123,22 @@ namespace Solenoids {
     data[8] = -1;
   }
 
+  void getAllCurrents(float *data) {
+    #ifdef DEBUG
+      Serial.println("Solenoids, get all states");
+      Serial.flush();
+    #endif
+    data[0] = lox_2.outputMonitor.readShuntCurrent();
+    data[1] = prop_2.outputMonitor.readShuntCurrent();
+    data[2] = lox_5.outputMonitor.readShuntCurrent();
+    data[3] = prop_5.outputMonitor.readShuntCurrent();;
+    data[4] = lox_G.outputMonitor.readShuntCurrent();
+    data[5] = prop_G.outputMonitor.readShuntCurrent();
+    data[6] = -1;
+    data[7] = -1;
+    data[8] = -1;
+  }
+
   bool loxArmed() {
     return lox2_state == 1;
   }

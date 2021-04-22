@@ -66,6 +66,7 @@ namespace Solenoids {
   int getProp5();
   int getPropGems();
   void getAllStates(float *data);
+  void getAllCurrents(float *data);
   bool loxArmed();
   bool propArmed();
 
@@ -75,6 +76,8 @@ namespace Solenoids {
     typedef int (*func_t)();
 
     public:
+      INA219 outputMonitor;
+
       SolenoidCommand(std::string name, uint8_t id, func_t openFunc, func_t closeFunc):
         Command(name, id),
         openSolenoid(openFunc),
@@ -112,7 +115,6 @@ namespace Solenoids {
     private:
       func_t openSolenoid;
       func_t closeSolenoid;
-      INA219 outputMonitor;
   };
 
   extern SolenoidCommand lox_2;
