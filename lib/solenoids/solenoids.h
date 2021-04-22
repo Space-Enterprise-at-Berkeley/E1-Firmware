@@ -29,7 +29,7 @@ namespace Solenoids {
   extern uint8_t prop5_state;
   extern uint8_t prop_gems_state;
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs = nullptr);
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent);
 
   int toggleHighPressureSolenoid();
   int toggleLOX2Way();

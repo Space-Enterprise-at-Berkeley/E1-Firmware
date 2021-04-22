@@ -30,7 +30,7 @@ namespace Solenoids {
   uint8_t prop_gems_state = 0;
 
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs = nullptr) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -97,6 +97,14 @@ namespace Solenoids {
     if(_numCommands > 9) {
       high_p_enable.setId(_commandIds[9]);
     }
+
+    lox_2.initINA219(wire, outputMonitorAddrs[0], shuntR, maxExpectedCurrent);
+    lox_5.initINA219(wire, outputMonitorAddrs[1], shuntR, maxExpectedCurrent);
+    lox_G.initINA219(wire, outputMonitorAddrs[2], shuntR, maxExpectedCurrent);
+    prop_2.initINA219(wire, outputMonitorAddrs[3], shuntR, maxExpectedCurrent);
+    prop_5.initINA219(wire, outputMonitorAddrs[4], shuntR, maxExpectedCurrent);
+    prop_G.initINA219(wire, outputMonitorAddrs[5], shuntR, maxExpectedCurrent);
+
   }
 
   void getAllStates(float *data) {
