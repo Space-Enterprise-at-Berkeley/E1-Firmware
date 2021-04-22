@@ -74,14 +74,19 @@ void setup() {
     RFSerial.println(packet);
   }
 
+  #ifdef ETH
+  debug("Setup Ethernet");
+  setupEthernetComms(mac, ip);
+  #endif
+
   debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent);
 
-  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, ads);
+  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, ads);
+  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
   Automation::init();
   commands.updateIds();
@@ -89,6 +94,27 @@ void setup() {
 
 void loop() {
   // process command
+  #ifdef ETH
+  if (Udp.parsePacket()) {
+    debug("received udp packet");
+    IPAddress remote = Udp.remoteIP();
+    for (int i=0; i < 4; i++) {
+      Serial.print(remote[i], DEC);
+      if (i < 3) {
+        Serial.print(".");
+      }
+    }
+    for (uint8_t i = 0; i < numGrounds; i++) {
+      if(Udp.remoteIP() == groundIP[i]) {
+        debug("received packet came from groundIP");
+        receivedCommand = true;
+        Udp.read(command, 75);
+        debug(String(command));
+        break;
+      }
+    }
+  }
+  #endif
   if (RFSerial.available() > 0) {
     int i = 0;
 
@@ -97,7 +123,10 @@ void loop() {
       Serial.print(command[i]);
       i++;
     }
+    receivedCommand = true;
+  }
 
+  if(receivedCommand) {
     debug(String(command));
     int8_t id = processCommand(String(command));
     if (id != -1) {
@@ -106,8 +135,12 @@ void loop() {
       #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
+      #ifdef ETH
+        sendEthPacket(packet.c_str());
+      #endif
       write_to_SD(packet.c_str(), file_name);
     }
+    receivedCommand = false;
   }
 
   /*
@@ -127,7 +160,9 @@ void loop() {
     #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
-
+    #ifdef ETH
+      sendEthPacket(packet.c_str());
+    #endif
     write_to_SD(packet.c_str(), file_name);
   }
   delay(10);

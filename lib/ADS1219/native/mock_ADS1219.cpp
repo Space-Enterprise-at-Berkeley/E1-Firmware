@@ -1,7 +1,8 @@
 #include <Wire.h>
 #include "ADS1219.h"
 
-ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
+ADS1219::ADS1219(uint8_t drdy, uint8_t addr, TwoWire *wire):
+ADC(drdy) {
   // do nothing.
 }
 
@@ -46,7 +47,7 @@ void ADS1219::resetConfig(){
   //do nothing
 }
 
-long ADS1219::readData(int channel){
+long ADS1219::readData(uint8_t channel){
 	  return readConversionResult();
 }
 

@@ -23,7 +23,11 @@ Command * CommandArray::get(uint8_t id) {
     Serial.flush();
   #endif
   int8_t index = linear_search(_ids, _size, id); //binary_search(_ids, 0, _size, id);
-  if (index != -1){
+  if (index != -1) {
+    #if DEBUG
+      Serial.println("index: " + String(index));
+      Serial.flush();
+    #endif
     return _backingStore[index];
   } else {
     Serial.println("ERROR. ID NOT FOUND IN COMMAND ARRAY.");
@@ -47,6 +51,9 @@ void CommandArray::insert(Command * toInsert) {
 void CommandArray::updateIds() {
   for(int i = 0; i < _size; i++){
     _ids[i] = _backingStore[i]->ID();
+    Serial.println(i);
+    Serial.println(_ids[i]);
+    Serial.flush();
   }
 }
 

@@ -11,10 +11,13 @@ namespace Solenoids {
 
   uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
   uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
-  uint8_t high_sol_pin;
+  uint8_t high_sol_pin, high_sol_enable_pin;
 
+  uint8_t high_sol_enable_state = 0;
   uint8_t *_commandIds;
   uint8_t _numCommands;
+
+  uint8_t *_outputMonitorAddrs;
 
   uint8_t high_sol_state = 0;
 
@@ -27,7 +30,7 @@ namespace Solenoids {
   uint8_t prop_gems_state = 0;
 
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs = nullptr) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -37,6 +40,7 @@ namespace Solenoids {
     prop_gems_state = 0;
 
     high_sol_state = 0;
+    high_sol_enable_state = 0;
 
     lox_2_pin = solenoidPins[0];
     lox_5_pin = solenoidPins[1];
@@ -47,9 +51,14 @@ namespace Solenoids {
     prop_gems_pin = solenoidPins[5];
 
     high_sol_pin = solenoidPins[6];
+    if(numSolenoids > 7) {
+      high_sol_enable_pin = solenoidPins[7];
+    }
 
     _numCommands = numCommands;
     _commandIds = commandIds;
+
+    _outputMonitorAddrs = outputMonitorAddrs;
 
     pinMode(lox_2_pin, OUTPUT);
     pinMode(lox_5_pin, OUTPUT);
@@ -60,6 +69,7 @@ namespace Solenoids {
     pinMode(prop_gems_pin, OUTPUT);
 
     pinMode(high_sol_pin, OUTPUT);
+    pinMode(high_sol_enable_pin, OUTPUT);
 
     digitalWrite(lox_2_pin, lox2_state);
     digitalWrite(lox_5_pin, lox5_state);
@@ -70,6 +80,7 @@ namespace Solenoids {
     digitalWrite(prop_gems_pin, prop_gems_state);
 
     digitalWrite(high_sol_pin, high_sol_state);
+    digitalWrite(high_sol_enable_pin, high_sol_enable_state);
 
     lox_2.setId(_commandIds[0]);
     lox_5.setId(_commandIds[1]);
@@ -83,8 +94,9 @@ namespace Solenoids {
 
     arm_rocket.setId(_commandIds[7]);
     launch.setId(_commandIds[8]);
-
-
+    if(_numCommands > 9) {
+      high_p_enable.setId(_commandIds[9]);
+    }
   }
 
   void getAllStates(float *data) {
@@ -99,7 +111,8 @@ namespace Solenoids {
     data[4] = lox_gems_state;
     data[5] = prop_gems_state;
     data[6] = high_sol_state;
-    data[7] = -1;
+    data[7] = high_sol_enable_state;
+    data[8] = -1;
   }
 
   bool loxArmed() {
@@ -180,7 +193,7 @@ namespace Solenoids {
     return prop_gems_state;
   }
 
-  int activateHighPressureSolenoid() {
+  int openHighPressureSolenoid() {
     if(high_sol_state == 0){
       toggleHighPressureSolenoid();
     } else {
@@ -189,12 +202,24 @@ namespace Solenoids {
     return high_sol_state;
   }
 
-  int deactivateHighPressureSolenoid() {
+  int closeHighPressureSolenoid() {
     if(high_sol_state == 1){
       toggleHighPressureSolenoid();
     } else {
       // already closed, do nothing.
     }
+    return high_sol_state;
+  }
+
+  int enableHighPressureSolenoid() {
+    high_sol_enable_state = 1;
+    digitalWrite(high_sol_enable_pin, high_sol_enable_state);
+    return high_sol_state;
+  }
+
+  int disableHighPressureSolenoid() {
+    high_sol_enable_state = 0;
+    digitalWrite(high_sol_enable_pin, high_sol_enable_state);
     return high_sol_state;
   }
 
@@ -326,7 +351,7 @@ namespace Solenoids {
     return 1;
   }
 
-   int getHPS() {
+  int getHPS() {
     return high_sol_state;
   }
 
@@ -361,7 +386,8 @@ namespace Solenoids {
   SolenoidCommand prop_5("Propane 5 Way", &openPropane, &closePropane);
   SolenoidCommand prop_G("Propane Gems", &ventPropaneGems, &closePropaneGems);
 
-  SolenoidCommand high_p("High Pressure Solenoid", &activateHighPressureSolenoid, &deactivateHighPressureSolenoid);
+  SolenoidCommand high_p_enable("Enable High Pressure Solenoid", &enableHighPressureSolenoid, &disableHighPressureSolenoid);
+  SolenoidCommand high_p("High Pressure Solenoid", &openHighPressureSolenoid, &closeHighPressureSolenoid);
 
   SolenoidCommand arm_rocket("Arm Rocket", &armAll, &disarmAll);
   SolenoidCommand launch("Launch Rocket", &LAUNCH, &endBurn);

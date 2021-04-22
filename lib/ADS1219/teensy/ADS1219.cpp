@@ -3,12 +3,9 @@
 #include <Wire.h>
 #include "ADS1219.h"
 
-ADS1219::ADS1219(){
-
-}
-
-ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
-  data_ready = drdy;
+ADS1219::ADS1219(uint8_t drdy, uint8_t addr, TwoWire *wire):
+  ADC(drdy) {
+  _rdy_pin = drdy;
   address = addr;
   config = 0x00;
   singleShot = true;
@@ -16,8 +13,12 @@ ADS1219::ADS1219(int drdy, uint8_t addr, TwoWire *wire) {
   _wire->begin();
 }
 
+ADS1219::ADS1219(){
+
+}
+
 void ADS1219::init(int drdy, uint8_t addr, TwoWire *wire) {
-  data_ready = drdy;
+  _rdy_pin = drdy;
   address = addr;
   config = 0x00;
   singleShot = true;
@@ -35,7 +36,7 @@ long ADS1219::getData(uint8_t conf) {
   _wire->write(0x08);
   _wire->endTransmission();
 
-  while(digitalRead(data_ready)==1);
+  while(digitalRead(_rdy_pin)==1);
   delay(1);
   _wire->beginTransmission(address);
   _wire->write(0x10);
@@ -102,7 +103,7 @@ void ADS1219::resetConfig(){
 	writeRegister(0x00);
 }
 
-long ADS1219::readData(int channel){
+long ADS1219::readData(uint8_t channel){
 	config &= MUX_MASK;
 	switch (channel){
     case (0):
@@ -124,7 +125,7 @@ long ADS1219::readData(int channel){
     if(singleShot){
 	     start();
     }
-	  while(digitalRead(data_ready)==1){
+	  while(digitalRead(_rdy_pin)==1){
       // Serial.println("waiting");
       ;
     }
@@ -136,7 +137,7 @@ long ADS1219::readDifferential_0_1(){
   config |= MUX_DIFF_0_1;
   writeRegister(config);
   start();
-  while(digitalRead(data_ready)==1);
+  while(digitalRead(_rdy_pin)==1);
   return readConversionResult();
 }
 
@@ -145,7 +146,7 @@ long ADS1219::readDifferential_2_3(){
   config |= MUX_DIFF_2_3;
   writeRegister(config);
   start();
-  while(digitalRead(data_ready)==1);
+  while(digitalRead(_rdy_pin)==1);
   return readConversionResult();
 }
 
@@ -154,7 +155,7 @@ long ADS1219::readDifferential_1_2(){
   config |= MUX_DIFF_1_2;
   writeRegister(config);
   start();
-  while(digitalRead(data_ready)==1);
+  while(digitalRead(_rdy_pin)==1);
   return readConversionResult();
 }
 
@@ -162,7 +163,7 @@ long ADS1219::readShorted(){
   config &= MUX_MASK;
   config |= MUX_SHORTED;
   writeRegister(config);
-  while(digitalRead(data_ready)==1);
+  while(digitalRead(_rdy_pin)==1);
   return readConversionResult();
 }
 

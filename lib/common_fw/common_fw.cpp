@@ -7,33 +7,26 @@
 
 SdFat sd;
 File file;
+
+bool receivedCommand = false;
+
 int packetCounter = 0;
 
 char buffer[75];
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
 
-Command *tmpCommand;
+#ifdef ETH
+EthernetUDP Udp;
+byte mac[] = {
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
+unsigned int port = 42069; // try to find something that can be the same on gs
+const uint8_t numGrounds = 2;
+IPAddress groundIP[numGrounds] = {IPAddress(10, 0, 0, 69), IPAddress(10, 0, 0, 70)};
+#endif
 
-/**
- * Add messages to a queue, and every n messages,
- * dequeue everything and dump it onto the sd.
- */
-bool write_to_SD(std::string message, const char * file_name) {
-    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
-    sdBuffer->enqueue(newMessage);
-    if(sdBuffer->length >= qMaxSize) {
-        int initialLength = sdBuffer->length;
-        for(int i = 0; i < initialLength; i++) {
-          uint8_t strLength = sdBuffer->dequeue(buffer);
-          file.write(buffer, strLength);
-        }
-        debug("flushing file");
-        file.flush();
-        return true;
-    }
-    return true;
-}
+Command *tmpCommand;
 
 /*
  * Constructs packet in the following format:
@@ -42,10 +35,10 @@ bool write_to_SD(std::string message, const char * file_name) {
 String make_packet(int id, bool error) {
   String packet_content = (String)id;
   packet_content += ",";
-  packet_content += String(millis());
-  packet_content += ",";
+  // packet_content += String(millis());
+  // packet_content += ",";
   if (!error) {
-    for (int i=0; i<7; i++) {
+    for (int i=0; i<8; i++) {
       float reading = farrbconvert.sensorReadings[i];
       if (reading != -1) {
         packet_content += (String)reading;
@@ -122,25 +115,24 @@ int8_t processCommand(String packet) {
   if (_check == checksum) {
     debug("Checksum correct, taking action");
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
-    if (tmpCommand != nullptr){
+    if (tmpCommand != nullptr) {
+      debug("valid command");
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
+      Serial.println("got valid conf");
+      if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
+        return 20;
+      }
+      Serial.println("returning: " + String(tmpCommand->ID()));
+      Serial.flush();
       return tmpCommand->ID();
     } else {
+      debug("couldn't find valid command.");
       return -1;
     }
   } else {
     return -1;
   }
-}
-
-void readPacketCounter(float *data) {
-    data[0] = packetCounter;
-    data[1] = -1;
-  }
-
-void incrementPacketCounter() {
-    packetCounter+=1;
 }
 
 /*
@@ -161,9 +153,71 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
+/**
+ * Add messages to a queue, and every n messages,
+ * dequeue everything and dump it onto the sd.
+ */
+bool write_to_SD(std::string message, const char * file_name) {
+    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
+    sdBuffer->enqueue(newMessage);
+    if(sdBuffer->length >= qMaxSize) {
+        int initialLength = sdBuffer->length;
+        for(int i = 0; i < initialLength; i++) {
+          uint8_t strLength = sdBuffer->dequeue(buffer);
+          // Serial.println("dequeue: ");
+          // Serial.print(String(buffer));
+          file.write(buffer, strLength);
+        }
+        debug("flushing file");
+        file.flush();
+        return true;
+    }
+    return true;
+}
+
+void readPacketCounter(float *data) {
+    data[0] = packetCounter;
+    data[1] = -1;
+  }
+
+void incrementPacketCounter() {
+    packetCounter+=1;
+}
+
+#ifdef ETH
+bool setupEthernetComms(byte * mac, IPAddress ip){
+  Ethernet.begin(mac, ip);
+
+  // Check for Ethernet hardware present
+  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    Serial.flush();
+    exit(1);
+  } else if (Ethernet.linkStatus() == LinkOFF) {
+    Serial.println("Ethernet cable is not connected.");
+    Serial.flush();
+    exit(1);
+  }
+
+  Udp.begin(port);
+  return true;
+}
+
+void sendEthPacket(std::string packet) {
+  for (uint8_t i = 0; i < numGrounds; i++){
+    Udp.beginPacket(groundIP[i], port);
+    Udp.write(packet.c_str());
+    Udp.endPacket();
+  }
+}
+#endif
+
 void debug(String str) {
   #ifdef DEBUG
     Serial.println(str);
     Serial.flush();
+    // #ifdef ETH
+    //   sendEthPacket(std::string(str.c_str()));
+    // #endif
   #endif
 }

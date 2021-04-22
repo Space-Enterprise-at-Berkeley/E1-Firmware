@@ -11,7 +11,7 @@ std::string str_file_name = "LAD4_1.txt";
 const char * file_name = str_file_name.c_str();
 
 const uint8_t numSensors = 9;
-sensorInfo *sensors;
+sensorInfo sensors[numSensors];
 
 // Constants
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -32,7 +32,6 @@ namespace config {
   void setup() {
 
     //debug("Initializing sensors", DEBUG);
-    sensors = new sensorInfo[numSensors];
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Barometer", FLIGHT_BRAIN_ADDR, 13, 1};
     sensors[1] = {"IMU Acceleration",   FLIGHT_BRAIN_ADDR, 14, 1};

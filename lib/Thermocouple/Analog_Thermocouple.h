@@ -8,17 +8,18 @@
 #define __ANALOG_THERMS__
 
 #include <ADS1219.h>
+#include <ADS8167.h>
 #include <Wire.h>
 
 namespace Thermocouple {
   namespace Analog {
 
-    ADS1219 * _adcs;
+    ADC ** _adcs;
 
-    int * _adcIndices; // array of size _numSensors
-    int * _adcChannels;
+    uint8_t * _adcIndices; // array of size _numSensors
+    uint8_t * _adcChannels;
 
-    int _numSensors; // number of analog thermocouples, not number of adcs
+    uint8_t _numSensors; // number of analog thermocouples, not number of adcs
 
     float tempOverVoltageScale = 1 / 0.01;
     float voltageOffset = 0.75, tempOffset = 25; // 25 C = 0.450 V
@@ -26,8 +27,7 @@ namespace Thermocouple {
     long rawRead;
     float voltageRead;
 
-
-    void init (int numSensors, int * adcIndices, int * adcChannels, ADS1219 * adcs) {
+    void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, ADC ** adcs) {
       _numSensors = numSensors;
       _adcIndices = adcIndices;
       _adcChannels = adcChannels;
@@ -38,12 +38,33 @@ namespace Thermocouple {
     void readTemperatureData(float *data) {
       int i = 0;
       while (i < _numSensors) {
-        rawRead = _adcs[_adcIndices[i]].readData(_adcChannels[i]);
-        voltageRead = (float) rawRead * (5.0 / pow(2,23));
+        rawRead = _adcs[_adcIndices[i]]->readData(_adcChannels[i]);
+        voltageRead = (float) rawRead * (5.0 / pow(2,15));
         data[i] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
         i++;
       }
       data[i] = -1;
+    }
+
+    void readSpecificTemperatureData(int idx, float *data) {
+      long rawValue = _adcs[_adcIndices[idx]]->readData(_adcChannels[idx]);
+      // voltageRead = (float) rawRead * (5.0 / pow(2,15));
+      // data[0] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;
+      // data[1] = -1;
+
+      double values[2][2] = { // [x, y] pairs
+        {1310,  -40},
+        {22937, 125}
+      };
+      // return std::lerp(-123.89876445934394, 1131.40825, (double) rawValue / 64901);
+      float upperBound = values[1][0];
+      float lowerBound = values[0][0];
+      float upperBoundPressure = values[1][1];
+      float lowerBoundPressure = values[0][1];
+      float proportion = (rawValue - lowerBound)/(upperBound - lowerBound);
+      float convertedValue = proportion * (upperBoundPressure - lowerBoundPressure) + lowerBoundPressure;
+      data[0] = convertedValue;
+      data[1] = -1;
     }
 
   }

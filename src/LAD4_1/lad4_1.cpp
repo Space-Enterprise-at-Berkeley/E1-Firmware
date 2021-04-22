@@ -28,7 +28,6 @@ String packet;
 
 // Helper functions
 void sensorReadFunc(int id);
-bool aroundMainDeploy();
 void recoveryPacket();
 
 IMU _imu;
