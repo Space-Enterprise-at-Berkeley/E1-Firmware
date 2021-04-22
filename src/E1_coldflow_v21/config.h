@@ -60,6 +60,11 @@ INA * powSupMonPointers[numPowerSupplyMonitors];
 // Battery Monitor
 uint8_t battMonINAAddr = 0x43;
 
+const float powerSupplyMonitorShuntR = 0.010; // ohms
+const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
+const float actuatorMonitorShuntR = 0.033; // ohms
+
 // GPIO Expander
 const uint8_t numGPIOExpanders = 1;
 uint8_t gpioExpAddr[numGPIOExpanders] = {TCA6408A_ADDR1};
@@ -70,14 +75,14 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 const uint8_t numHeaters = 6;
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
-// uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
+uint8_t heaterINAAddr[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
 
-HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0]);
-HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1]);
-HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2]);
-HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3]);
-HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4]);
-HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5]);
+HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0], &Wire1, heaterINAAddr[0], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1], &Wire1, heaterINAAddr[1], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2], &Wire1, heaterINAAddr[2], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3], &Wire1, heaterINAAddr[3], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4], &Wire1, heaterINAAddr[4], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
+HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5], &Wire1, heaterINAAddr[5], actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
 
 const uint8_t numSensors = 11;
 sensorInfo sensors[numSensors];
@@ -89,9 +94,6 @@ uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
-
-const float powerSupplyMonitorShuntR = 0.010; // ohms
-const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
