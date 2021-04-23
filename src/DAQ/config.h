@@ -35,11 +35,11 @@ ADC * adsPointers[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {3};
 
 const uint8_t numPressureTransducers = 1;
 uint8_t ptAdcIndices[numPressureTransducers] = {0};
-uint8_t ptAdcChannels[numPressureTransducers] = {3};
+uint8_t ptAdcChannels[numPressureTransducers] = {4};
 uint32_t ptTypes[numPressureTransducers] = {30};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
@@ -56,7 +56,7 @@ HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 5;
+const uint8_t numSensors = 4;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -91,7 +91,7 @@ namespace config {
         powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
 
-    debug("Initializing the Load Cells");
+    // debug("Initializing the Load Cells");
     // for (int i = 0; i < numLoadCells; i++) {
     //  debug("before begin");
     //  loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
@@ -102,29 +102,16 @@ namespace config {
     //  debug("after tare");
     // }
 
-    // debug("before begin");
-    // loadcell1.begin(lcDoutPins[0], lcSckPins[0]);
-    // debug("after begin");
-    // loadcell1.set_scale(lcCalVals[0]);
-    // debug("after set scale");
-    // loadcell1.tare();
-    // debug("after tare");
-    // debug("before begin");
-    // loadcell2.begin(lcDoutPins[1], lcSckPins[1]);
-    // debug("after begin");
-    // loadcell2.set_scale(lcCalVals[1]);
-    // debug("after set scale");
-    // loadcell2.tare();
-    // debug("after tare");
+
 
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id
     sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
     // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[1] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
-    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+  //sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
+    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[3] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 
   }

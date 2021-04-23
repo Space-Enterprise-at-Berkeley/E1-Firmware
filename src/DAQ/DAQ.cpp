@@ -94,10 +94,11 @@ void setup() {
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   debug("Initializing Load Cell");
-  // LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  //LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
 }
 
 void loop() {
+
   // process command
   // #ifdef ETH
   // if (Udp.parsePacket()) {
@@ -168,6 +169,7 @@ void loop() {
     #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
+
     //write_to_SD(packet.c_str(), file_name);
   }
   // delay(10);
@@ -189,7 +191,7 @@ void sensorReadFunc(int id) {
     //   break;
     case 3:
       debug("Load Cells");
-      // LoadCell::readLoadCells(farrbconvert.sensorReadings);
+      LoadCell::readLoadCells(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
