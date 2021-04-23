@@ -35,11 +35,11 @@ ADC * adsPointers[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {3};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
 
 const uint8_t numPressureTransducers = 1;
 uint8_t ptAdcIndices[numPressureTransducers] = {0};
-uint8_t ptAdcChannels[numPressureTransducers] = {4};
+uint8_t ptAdcChannels[numPressureTransducers] = {3};
 uint32_t ptTypes[numPressureTransducers] = {30};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
