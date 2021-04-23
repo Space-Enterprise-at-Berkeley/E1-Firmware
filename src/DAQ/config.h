@@ -22,7 +22,7 @@ const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
 uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
-_themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_J, MCP9600_TYPE_T, MCP9600_TYPE_T, MCP9600_TYPE_K};
+_themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_K, MCP9600_TYPE_K, MCP9600_TYPE_K, MCP9600_TYPE_K};
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
 float cryoReadsBackingStore[numCryoTherms];
 
@@ -56,7 +56,7 @@ HX711 loadcells[numLoadCells];
 
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 4;
+const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -109,9 +109,9 @@ namespace config {
     sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
     // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[1] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-  //sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
-    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
-    sensors[3] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
+    sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 
   }

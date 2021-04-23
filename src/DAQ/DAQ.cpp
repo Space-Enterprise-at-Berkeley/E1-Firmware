@@ -94,7 +94,7 @@ void setup() {
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   debug("Initializing Load Cell");
-  //LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
 }
 
 void loop() {
@@ -204,7 +204,8 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 19:
-      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
