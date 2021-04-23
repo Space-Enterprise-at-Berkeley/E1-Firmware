@@ -266,16 +266,16 @@ void loop() {
 
 }
 
-
 /**
  *
  */
+
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
       debug("lox tank pt");
       // these hardcode ids are going to royally fuck us soon
-      Thermocouple::Analog::readSpecificTemperatureData(1, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(1, farrbconvert.sensorReadings, true);
       farrbconvert.sensorReadings[1] = loxTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
@@ -300,19 +300,19 @@ void sensorReadFunc(int id) {
       break;
     case 6:
       debug("lox gems");
-      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings, true);
       farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 8:
       debug("prop gems");
-      Thermocouple::Analog::readSpecificTemperatureData(5, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(5, farrbconvert.sensorReadings, true);
       farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 16:
       debug("prop tank pt");
-      Thermocouple::Analog::readSpecificTemperatureData(4, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(4, farrbconvert.sensorReadings, true);
       farrbconvert.sensorReadings[1] = propTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
@@ -324,13 +324,13 @@ void sensorReadFunc(int id) {
       break;
     case 19:
       debug("lox injector");
-      Thermocouple::Analog::readSpecificTemperatureData(2, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(2, farrbconvert.sensorReadings, true);
       farrbconvert.sensorReadings[1] = loxInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 60:
       debug("Prop Injector");
-      Thermocouple::Analog::readSpecificTemperatureData(3, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readSpecificTemperatureData(3, farrbconvert.sensorReadings, true);
       farrbconvert.sensorReadings[1] = propInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
