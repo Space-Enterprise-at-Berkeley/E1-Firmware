@@ -146,7 +146,7 @@ namespace config {
         return -1;
       }
 
-      _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_12);
+      _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_16);
       _cryo_boards[i].setThermocoupleType(cryoTypes[i]);
       _cryo_boards[i].setFilterCoefficient(3);
       _cryo_boards[i].enable(true);
@@ -157,9 +157,9 @@ namespace config {
     debug("Initializing sensors");
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 4*25};
     sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 4 * 15};
     sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 4};
     sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
     sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 4};
