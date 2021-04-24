@@ -43,7 +43,6 @@ long LTC4151::readADC(byte reg, byte numOfBytes)
 		l = _wire->read();
 		result = h << 4 | l >> 4;
 	}
-	Serial.println(result);
 
 	return result;
 }
