@@ -133,7 +133,7 @@ namespace config {
     debug("Initializing Power Supply monitors");
     for (int i = 0; i < numPowerSupplyMonitors; i++) {
         powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
-        powerSupplyMonitors[i].configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        powerSupplyMonitors[i].configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
         powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
@@ -156,16 +156,16 @@ namespace config {
 
     debug("Initializing sensors");
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
+    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 35};
     sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 4*25};
     sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
     sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 4 * 15};
-    sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 4};
-    sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
-    sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 4};
-    sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 4};
-    sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
-    sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 4};
+    sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 50};
+    sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 50};
+    sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 50};
+    sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 50};
+    sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 50};
+    sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 50};
     sensors[11] = {"Solenoid currents", FLIGHT_BRAIN_ADDR, 21, 50};
     sensors[12] = {"Solenoid Volages", FLIGHT_BRAIN_ADDR, 22, 50};
 
