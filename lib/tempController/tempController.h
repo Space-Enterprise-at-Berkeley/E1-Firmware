@@ -73,6 +73,15 @@ class HeaterCommand : public Command, public TempController {
       inaExists = false;
     }
 
+
+    HeaterCommand(std::string name, uint8_t id, int tempSetPoint, int algorithmChoice, GpioExpander * expander, int8_t channel, TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent):
+      Command(name, id),
+      TempController(tempSetPoint, algorithmChoice, expander, channel)
+    {
+      initINA219(wire, inaAddr, shuntR, maxExpectedCurrent);
+      inaExists = true;
+    }
+
     HeaterCommand(std::string name, int tempSetPoint, int algorithmChoice, int heaterPin, TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent):
       Command(name),
       TempController(tempSetPoint, algorithmChoice, heaterPin)

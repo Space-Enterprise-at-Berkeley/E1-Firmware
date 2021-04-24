@@ -52,7 +52,7 @@ namespace Ducers {
   }
 
   float propStaticP(float propDomeP, float highP) {
-    return -20.08 + 1.413 * propDomeP + 0.02343 * highP;
+    return -20.08 + 1.413 * propDomeP + 0.002343 * highP;
   }
 
   float interpolateHigh(long rawValue) { //5k psi sensor
