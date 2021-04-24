@@ -47,9 +47,9 @@ const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
 uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
-const uint8_t pressurantIdx = 5;
-const uint8_t loxDomeIdx = 6;
-const uint8_t propDomeIdx = 7;
+const uint8_t pressurantIdx = 4;
+const uint8_t loxDomeIdx = 5;
+const uint8_t propDomeIdx = 6;
 
 // Power Supply Monitors
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
