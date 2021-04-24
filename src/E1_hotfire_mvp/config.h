@@ -10,6 +10,7 @@
 #include <Automation.h>
 #include <command.h>
 #include <tempController.h>
+#include <LTC4151.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -47,9 +48,9 @@ const uint8_t numPressureTransducers = 8;
 uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
 uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
 uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
-const uint8_t pressurantIdx = 5;
-const uint8_t loxDomeIdx = 6;
-const uint8_t propDomeIdx = 7;
+const uint8_t pressurantIdx = 4;
+const uint8_t loxDomeIdx = 5;
+const uint8_t propDomeIdx = 6;
 
 // Power Supply Monitors
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v
@@ -79,19 +80,26 @@ HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heat
 HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4]);
 HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5]);
 
-const uint8_t numSensors = 11;
+const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
 
+// Solenoids
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
 uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
+uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x41, 0x43, 0x45};
+
+LTC4151 pressurantSolenoidMonitor;
+float pressurantSolMonShuntR = 0.02;
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
+
+const float actuatorMonitorShuntR = 0.033; // ohms
 
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
@@ -144,6 +152,8 @@ namespace config {
       _cryo_boards[i].enable(true);
     }
 
+    pressurantSolenoidMonitor.init(LTC4151::F, LTC4151::F, &Wire1);
+
     debug("Initializing sensors");
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
@@ -156,6 +166,8 @@ namespace config {
     sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 4};
     sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
     sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 4};
+    sensors[11] = {"Solenoid currents", FLIGHT_BRAIN_ADDR, 21, 50};
+    sensors[12] = {"Solenoid Volages", FLIGHT_BRAIN_ADDR, 22, 50};
 
 
     // Automation Sequences
