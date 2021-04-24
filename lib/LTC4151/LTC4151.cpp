@@ -98,6 +98,11 @@ double LTC4151::getADCInVoltage()
 	return readADC(REG_ADIN_H, 2) * 2.048 / 4096.0;
 }
 
+double LTC4151::getADCInVoltageMinus() {
+	return readADC(REG_ADIN_L, 2) * 2.048 / 4096.0;
+
+}
+
 double LTC4151::getSnapshotLoadCurrent(double r)
 {
 	byte ctrlReg = getControlRegister();

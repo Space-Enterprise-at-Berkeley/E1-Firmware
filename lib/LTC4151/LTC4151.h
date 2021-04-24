@@ -56,6 +56,7 @@ public:
 	double getLoadCurrent(double r);
 	double getInputVoltage();
 	double getADCInVoltage();
+	double getADCInVoltageMinus();
 
 	double getSnapshotLoadCurrent(double r);
 	double getSnapshotInputVoltage();
