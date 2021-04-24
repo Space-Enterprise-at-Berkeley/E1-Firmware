@@ -85,7 +85,7 @@ byte LTC4151::getControlRegister()
 
 double LTC4151::getLoadCurrent(double r)
 {
-	return (readADC(REG_SENSE_H, 2) + readADC(REG_SENSE_L, 2)) * 81.92 / 4096.0 / r;
+	return (readADC(REG_SENSE_H, 2)) * 0.08192 / 4096.0 / r;
 }
 
 double LTC4151::getInputVoltage()
@@ -93,22 +93,9 @@ double LTC4151::getInputVoltage()
 	return readADC(REG_VIN_H, 2) * 102.4 / 4096.0;
 }
 
-double LTC4151::getVoltageRPlus() {
-	return readADC(REG_SENSE_H, 2) * 81.92 / 4096.0;
-}
-
-double LTC4151::getVoltageRMinus() {
-	return readADC(REG_SENSE_L, 2) * 81.92 / 4096.0;
-}
-
 double LTC4151::getADCInVoltage()
 {
 	return readADC(REG_ADIN_H, 2) * 2.048 / 4096.0;
-}
-
-double LTC4151::getADCInVoltageMinus() {
-	return readADC(REG_ADIN_L, 2) * 2.048 / 4096.0;
-
 }
 
 double LTC4151::getSnapshotLoadCurrent(double r)

@@ -155,7 +155,7 @@ namespace Solenoids {
     data[4] = lox_G.outputMonitor.readBusVoltage();
     data[5] = prop_G.outputMonitor.readBusVoltage();
     data[6] = _pressurantSolenoidMonitor->getADCInVoltage();
-    data[7] = -1;
+    data[7] = _pressurantSolenoidMonitor->getInputVoltage();
     data[8] = -1;
   }
 

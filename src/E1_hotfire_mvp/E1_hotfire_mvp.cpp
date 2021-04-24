@@ -107,6 +107,12 @@ void setup() {
   commands.updateIds();
 
   Automation::_eventList.length = 2;
+
+
+
+
+
+  Wire1.setClock(400000);
 }
 
 // bool states[8] = {0,0,0,0,0,0,0,0};
