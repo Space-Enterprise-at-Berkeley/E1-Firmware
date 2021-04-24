@@ -328,6 +328,14 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[1] = loxInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
+    case 21:
+      debug("solenoid currents");
+      Solenoids::getAllCurrents(farrbconvert.sensorReadings);
+      break;
+    case 22:
+      debug("solenoid voltages");
+      Solenoids::getAllVoltages(farrbconvert.sensorReadings);
+      break;
     case 60:
       debug("Prop Injector");
       Thermocouple::Analog::readSpecificTemperatureData(3, farrbconvert.sensorReadings);

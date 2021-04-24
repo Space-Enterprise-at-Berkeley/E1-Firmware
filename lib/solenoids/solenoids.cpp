@@ -131,10 +131,26 @@ namespace Solenoids {
     data[0] = lox_2.outputMonitor.readShuntCurrent();
     data[1] = prop_2.outputMonitor.readShuntCurrent();
     data[2] = lox_5.outputMonitor.readShuntCurrent();
-    data[3] = prop_5.outputMonitor.readShuntCurrent();;
+    data[3] = prop_5.outputMonitor.readShuntCurrent();
     data[4] = lox_G.outputMonitor.readShuntCurrent();
     data[5] = prop_G.outputMonitor.readShuntCurrent();
-    data[6] = 0; // pressurant solenoid 
+    data[6] = 0; // pressurant solenoid
+    data[7] = -1;
+    data[8] = -1;
+  }
+
+  void getAllVoltages(float *data) {
+    #ifdef DEBUG
+      Serial.println("Solenoids, get all currents");
+      Serial.flush();
+    #endif
+    data[0] = lox_2.outputMonitor.readBusVoltage();
+    data[1] = prop_2.outputMonitor.readBusVoltage();
+    data[2] = lox_5.outputMonitor.readBusVoltage();
+    data[3] = prop_5.outputMonitor.readBusVoltage();
+    data[4] = lox_G.outputMonitor.readBusVoltage();
+    data[5] = prop_G.outputMonitor.readBusVoltage();
+    data[6] = 0; // pressurant solenoid
     data[7] = -1;
     data[8] = -1;
   }

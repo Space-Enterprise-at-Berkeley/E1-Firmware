@@ -79,7 +79,7 @@ HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heat
 HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4]);
 HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5]);
 
-const uint8_t numSensors = 11;
+const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
 
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
@@ -159,6 +159,8 @@ namespace config {
     sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 4};
     sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 4};
     sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 4};
+    sensors[11] = {"Solenoid currents", FLIGHT_BRAIN_ADDR, 21, 50};
+    sensors[12] = {"Solenoid Volages", FLIGHT_BRAIN_ADDR, 22, 50};
 
 
     // Automation Sequences
