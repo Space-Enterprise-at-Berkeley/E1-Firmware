@@ -91,16 +91,16 @@ namespace config {
         powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
 
-    // debug("Initializing the Load Cells");
-    // for (int i = 0; i < numLoadCells; i++) {
-    //  debug("before begin");
-    //  loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
-    //  debug("after begin");
-    //  loadcells[i].set_scale(lcCalVals[i]);
-    //  debug("after set scale");
-    //  loadcells[i].tare();
-    //  debug("after tare");
-    // }
+    debug("Initializing the Load Cells");
+    for (int i = 0; i < numLoadCells; i++) {
+     debug("before begin");
+     loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
+     debug("after begin");
+     loadcells[i].set_scale(lcCalVals[i]);
+     debug("after set scale");
+     loadcells[i].tare();
+     debug("after tare");
+    }
 
 
 
