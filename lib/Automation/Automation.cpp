@@ -163,6 +163,12 @@ namespace Automation {
     Solenoids::ventPropaneGems();
   }
 
+   int act_closeGems() {
+    Solenoids::ventLOXGems();
+    Solenoids::ventPropaneGems();
+    return 0;
+  }
+
   int act_armOpenLox() {
     // flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
     Solenoids::armLOX();
