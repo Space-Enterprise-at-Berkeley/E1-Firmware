@@ -29,8 +29,10 @@ namespace Solenoids {
   uint8_t prop5_state = 0;
   uint8_t prop_gems_state = 0;
 
+  float _pressurantSolenoidMonitorShuntR;
+  LTC4151 *_pressurantSolenoidMonitor;
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent) {
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent,  LTC4151 *pressurantMonitor, float pressurantSolMonShuntR) {
     lox2_state = 0;
     lox5_state = 0;
     lox_gems_state = 0;
@@ -59,6 +61,8 @@ namespace Solenoids {
     _commandIds = commandIds;
 
     _outputMonitorAddrs = outputMonitorAddrs;
+    _pressurantSolenoidMonitor = pressurantMonitor;
+    _pressurantSolenoidMonitorShuntR = pressurantSolMonShuntR;
 
     pinMode(lox_2_pin, OUTPUT);
     pinMode(lox_5_pin, OUTPUT);
@@ -134,7 +138,7 @@ namespace Solenoids {
     data[3] = prop_5.outputMonitor.readShuntCurrent();
     data[4] = lox_G.outputMonitor.readShuntCurrent();
     data[5] = prop_G.outputMonitor.readShuntCurrent();
-    data[6] = 0; // pressurant solenoid
+    data[6] = _pressurantSolenoidMonitor->getLoadCurrent(_pressurantSolenoidMonitorShuntR);
     data[7] = -1;
     data[8] = -1;
   }
@@ -150,7 +154,7 @@ namespace Solenoids {
     data[3] = prop_5.outputMonitor.readBusVoltage();
     data[4] = lox_G.outputMonitor.readBusVoltage();
     data[5] = prop_G.outputMonitor.readBusVoltage();
-    data[6] = 0; // pressurant solenoid
+    data[6] = _pressurantSolenoidMonitor->getInputVoltage();
     data[7] = -1;
     data[8] = -1;
   }

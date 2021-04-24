@@ -10,6 +10,7 @@
 #include <Automation.h>
 #include <command.h>
 #include <tempController.h>
+#include <LTC4151.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -82,11 +83,15 @@ HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 
 const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
 
+// Solenoids
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
 uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
 uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x41, 0x43, 0x45};
+
+LTC4151 pressurantSolenoidMonitor;
+float pressurantSolMonShuntR = 0.02;
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
@@ -146,6 +151,8 @@ namespace config {
       _cryo_boards[i].setFilterCoefficient(3);
       _cryo_boards[i].enable(true);
     }
+
+    pressurantSolenoidMonitor.init(LTC4151::F, LTC4151::F, &Wire1);
 
     debug("Initializing sensors");
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};

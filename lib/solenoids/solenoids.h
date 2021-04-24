@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <command.h>
 #include <INA219.h>
+#include <LTC4151.h>
 
 using namespace std;
 
@@ -29,7 +30,10 @@ namespace Solenoids {
   extern uint8_t prop5_state;
   extern uint8_t prop_gems_state;
 
-  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent);
+  extern float pressurantSolenoidMonitorShuntR;
+  extern LTC4151 *_pressurantSolenoidMonitor;
+
+  void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent, LTC4151 *pressurantMonitor, float pressurantSolMonShuntR);
 
   int toggleHighPressureSolenoid();
   int toggleLOX2Way();
