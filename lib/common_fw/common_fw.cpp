@@ -117,12 +117,13 @@ int8_t processCommand(String packet) {
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
     if (tmpCommand != nullptr) {
       debug("valid command");
-      tmpCommand->parseCommand(command_data);
+      tmpCommand->parseCommand(command_data); //ok this is where the command is happening, but it seems to only be working wiht the solenoids
       tmpCommand->confirmation(farrbconvert.sensorReadings);
       Serial.println("got valid conf");
       if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
         return 20;
-      }
+      } // this block is of interest
+      //so if the function returns 20, then I do something, otherwise, it would get return the solenoid action
       Serial.println("returning: " + String(tmpCommand->ID()));
       Serial.flush();
       return tmpCommand->ID();
