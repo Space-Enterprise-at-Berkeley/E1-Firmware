@@ -111,6 +111,11 @@ void setup() {
 
 // bool states[8] = {0,0,0,0,0,0,0,0};
 
+
+/*
+    based on pos_num of the sensor in sensor_checks array
+    we would range the rate of reading to the new_rate
+*/
 void rateChanger(int pos_num, int new_rate) {
   //pos_num is the position of the sensor in the sensors array
   //pos_num is not the ID
@@ -156,9 +161,10 @@ void loop() {
   if(receivedCommand) {
     debug(String(command));
     int8_t id = processCommand(String(command));
-    if(id == 20) {
+    if(id == 32) { // cmd 32 is perform hotfire
+    //during horfire is when we would deprioritize the readings for the specific sensors
       for(int i = 5; i < 11; i++) {
-      rateChanger(i, sensor_checks[i][0] + 5); //this seems to be it
+      rateChanger(i, sensor_checks[i][0] + 5); 
       }
     }
     if (id != -1) {
