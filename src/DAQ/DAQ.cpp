@@ -92,6 +92,7 @@ void setup() {
 
   _cryoTherms = Thermocouple::Cryo();
   _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
+  _cryoTherms.lowerI2CSpeed(&Wire);
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);

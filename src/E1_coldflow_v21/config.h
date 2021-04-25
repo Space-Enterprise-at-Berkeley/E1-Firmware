@@ -134,6 +134,22 @@ namespace config {
     }
 
     debug("initializing cryo therms");
+    /* START SET I2C CLOCK FREQ */
+    // Wire.setClock(85000);
+    #define CLOCK_STRETCH_TIMEOUT 15000
+    IMXRT_LPI2C_t *port = &IMXRT_LPI2C1;
+    port->MCCR0 = LPI2C_MCCR0_CLKHI(55) | LPI2C_MCCR0_CLKLO(59) |
+      LPI2C_MCCR0_DATAVD(25) | LPI2C_MCCR0_SETHOLD(40);
+    port->MCFGR1 = LPI2C_MCFGR1_PRESCALE(2);
+    port->MCFGR2 = LPI2C_MCFGR2_FILTSDA(5) | LPI2C_MCFGR2_FILTSCL(5) |
+      LPI2C_MCFGR2_BUSIDLE(3000); // idle timeout 250 us
+    port->MCFGR3 = LPI2C_MCFGR3_PINLOW(CLOCK_STRETCH_TIMEOUT * 12 / 256 + 1);
+
+    port->MCCR1 = port->MCCR0;
+    port->MCFGR0 = 0;
+    port->MFCR = LPI2C_MFCR_RXWATER(1) | LPI2C_MFCR_TXWATER(1);
+    port->MCR = LPI2C_MCR_MEN;
+    /* END SET I2C CLOCK FREQ */
     for (int i = 0; i < numCryoTherms; i++) {
 
       if (!_cryo_boards[i].begin(cryoThermAddrs[i], &Wire)) {
@@ -141,7 +157,7 @@ namespace config {
         return -1;
       }
 
-      _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_12);
+      _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_16);
       _cryo_boards[i].setThermocoupleType(cryoTypes[i]);
       _cryo_boards[i].setFilterCoefficient(3);
       _cryo_boards[i].enable(true);
@@ -150,9 +166,9 @@ namespace config {
     debug("Initializing sensors");
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
     sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
-    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 4*25};
     sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 4 * 15};
     sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 4};
     sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 4};
     sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 4};
