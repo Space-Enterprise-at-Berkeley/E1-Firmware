@@ -204,10 +204,10 @@ void loop() {
       #endif
     }
 
-    if (Automation::_autoEventTracker == 8) {
+    if (Automation::_autoEventTracker == 9) {
       Automation::_startup = false;
     }
-    if (Automation::_autoEventTracker == 13) {
+    if (Automation::_autoEventTracker == 14) {
       Automation::_shutdown = false;
       Automation::_autoEventTracker = 0;
     }
