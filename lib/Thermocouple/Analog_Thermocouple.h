@@ -46,10 +46,7 @@ namespace Thermocouple {
       data[i] = -1;
     }
 
-    void readSpecificTemperatureData(int idx, float *data, bool deprioritize) {
-      if(deprioritize) {
-        _adcs.setData(DATA_RATE_90);
-      }
+    void readSpecificTemperatureData(int idx, float *data) {
       long rawValue = _adcs[_adcIndices[idx]]->readData(_adcChannels[idx]);
       // voltageRead = (float) rawRead * (5.0 / pow(2,15));
       // data[0] = ((voltageRead - voltageOffset) * tempOverVoltageScale) + tempOffset;

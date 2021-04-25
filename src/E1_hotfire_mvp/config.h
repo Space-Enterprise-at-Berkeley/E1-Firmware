@@ -13,7 +13,7 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
-std::string str_file_name = "E1_coldflow_v21.txt";
+std::string str_file_name = "E1_hotfire_mvp.txt";
 const char * file_name = str_file_name.c_str();
 
 #ifdef ETH

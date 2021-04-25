@@ -78,7 +78,7 @@ int8_t processCommand(String packet) {
   int data_start_index = packet.indexOf(',');
   if(data_start_index == -1) {
     return -1;
-  }
+  } 
   debug(String(data_start_index));
   int command_id = packet.substring(1,data_start_index).toInt();
   const int data_end_index = packet.indexOf('|');
