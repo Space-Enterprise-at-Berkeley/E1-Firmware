@@ -95,10 +95,11 @@ void setup() {
   _cryoTherms.lowerI2CSpeed(&Wire);
 
   debug("Initializing Load Cell");
-  // LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
 }
 
 void loop() {
+
   // process command
   // #ifdef ETH
   // if (Udp.parsePacket()) {
@@ -169,6 +170,7 @@ void loop() {
     #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
     #endif
+
     //write_to_SD(packet.c_str(), file_name);
   }
   // delay(10);
@@ -190,7 +192,7 @@ void sensorReadFunc(int id) {
     //   break;
     case 3:
       debug("Load Cells");
-      // LoadCell::readLoadCells(farrbconvert.sensorReadings);
+      LoadCell::readLoadCells(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
@@ -203,7 +205,8 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 19:
-      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");

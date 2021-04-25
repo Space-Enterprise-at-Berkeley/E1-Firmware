@@ -91,7 +91,7 @@ void setup() {
 
   debug("Initializing Libraries");
 
-  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds);
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds, solenoidINAAddrs, &Wire1, actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
@@ -179,6 +179,17 @@ void loop() {
       sendEthPacket(packet.c_str());
       #endif
       write_to_SD(packet.c_str(), file_name);
+    }
+    if (id == 20 ) {
+      int sum = 0;
+        for (int i = 0 ; i < numSolenoids; i++){
+          sum += (int)farrbconvert.sensorReadings[i];
+        }
+        if (sum > 0){
+          sensors[11].clock_freq = 10;
+        } else {
+          sensors[11].clock_freq = 50;
+        }
     }
     receivedCommand = false;
   }
@@ -347,6 +358,10 @@ void sensorReadFunc(int id) {
       Thermocouple::Analog::readSpecificTemperatureData(2, farrbconvert.sensorReadings);
       farrbconvert.sensorReadings[1] = loxInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 21:
+      debug("solenoid currents");
+      Solenoids::getAllCurrents(farrbconvert.sensorReadings);
       break;
     case 60:
       debug("Prop Injector");

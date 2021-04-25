@@ -40,7 +40,7 @@ uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
 const uint8_t numPressureTransducers = 1;
 uint8_t ptAdcIndices[numPressureTransducers] = {0};
 uint8_t ptAdcChannels[numPressureTransducers] = {3};
-uint32_t ptTypes[numPressureTransducers] = {30};
+uint32_t ptTypes[numPressureTransducers] = {150};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
@@ -92,30 +92,17 @@ namespace config {
     }
 
     debug("Initializing the Load Cells");
-    // for (int i = 0; i < numLoadCells; i++) {
-    //  debug("before begin");
-    //  loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
-    //  debug("after begin");
-    //  loadcells[i].set_scale(lcCalVals[i]);
-    //  debug("after set scale");
-    //  loadcells[i].tare();
-    //  debug("after tare");
-    // }
+    for (int i = 0; i < numLoadCells; i++) {
+     debug("before begin");
+     loadcells[i].begin(lcDoutPins[i], lcSckPins[i]);
+     debug("after begin");
+     loadcells[i].set_scale(lcCalVals[i]);
+     debug("after set scale");
+     loadcells[i].tare();
+     debug("after tare");
+    }
 
-    // debug("before begin");
-    // loadcell1.begin(lcDoutPins[0], lcSckPins[0]);
-    // debug("after begin");
-    // loadcell1.set_scale(lcCalVals[0]);
-    // debug("after set scale");
-    // loadcell1.tare();
-    // debug("after tare");
-    // debug("before begin");
-    // loadcell2.begin(lcDoutPins[1], lcSckPins[1]);
-    // debug("after begin");
-    // loadcell2.set_scale(lcCalVals[1]);
-    // debug("after set scale");
-    // loadcell2.tare();
-    // debug("after tare");
+
 
     debug("Initializing sensors");
     // the ordering in this array defines order of operation, not id

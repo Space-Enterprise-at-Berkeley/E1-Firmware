@@ -1,5 +1,5 @@
 /*
-   E1_coldflow.cpp - A c++ program that uses I2C to establish communication between
+   E1_waterflow.cpp - A c++ program that uses I2C to establish communication between
    the sensors and valves inside the rocket & the ground station. Able to send
    data to the ground station via RF. Can receive and process commands sent from
    ground station.
@@ -33,9 +33,13 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
+int packet_count = 0;
+
 void sensorReadFunc(int id);
 
-Thermocouple::Cryo _cryoTherms;
+// int autoEventTracker = 0;
+
+// Thermocouple::Cryo _cryoTherms;
 
 void setup() {
   Wire.begin();
@@ -87,26 +91,47 @@ void setup() {
 
   debug("Initializing Libraries");
 
-  debug("Initializing Solenoids");
-  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds, solenoidINAAddrs, &Wire1, actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
-  debug("Initializing battery monitor");
+  Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds, solenoidINAAddrs, &Wire1, actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &pressurantSolenoidMonitor, pressurantSolMonShuntR);
   batteryMonitor::init(&Wire, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
-  debug("Initializing power supply monitors");
   powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire);
 
-  debug("Initializing ducers");
   Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
 
-  debug("Initializing Thermocouples");
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
+  Thermocouple::Analog::init(numAnalogTempSens, tempSensAdcIndices, tempSensAdcChannels, adsPointers);
 
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
+  // _cryoTherms = Thermocouple::Cryo();
+  // _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
 
   Automation::init();
 
   commands.updateIds();
+
+  Automation::_eventList.length = 2;
+
+
+
+
+  /* START SET I2C CLOCK FREQ */
+  // Wire.setClock(85000);
+  #define CLOCK_STRETCH_TIMEOUT 15000
+  IMXRT_LPI2C_t *port = &IMXRT_LPI2C1;
+  port->MCCR0 = LPI2C_MCCR0_CLKHI(55) | LPI2C_MCCR0_CLKLO(59) |
+    LPI2C_MCCR0_DATAVD(25) | LPI2C_MCCR0_SETHOLD(40);
+  port->MCFGR1 = LPI2C_MCFGR1_PRESCALE(2);
+  port->MCFGR2 = LPI2C_MCFGR2_FILTSDA(5) | LPI2C_MCFGR2_FILTSCL(5) |
+    LPI2C_MCFGR2_BUSIDLE(3000); // idle timeout 250 us
+  port->MCFGR3 = LPI2C_MCFGR3_PINLOW(CLOCK_STRETCH_TIMEOUT * 12 / 256 + 1);
+
+  port->MCCR1 = port->MCCR0;
+	port->MCFGR0 = 0;
+	port->MFCR = LPI2C_MFCR_RXWATER(1) | LPI2C_MFCR_TXWATER(1);
+	port->MCR = LPI2C_MCR_MEN;
+  /* END SET I2C CLOCK FREQ */
+
+  Wire1.setClock(400000);
 }
+
+// bool states[8] = {0,0,0,0,0,0,0,0};
 
 void loop() {
   // process command
@@ -148,6 +173,7 @@ void loop() {
     if (id != -1) {
       packet = make_packet(id, false);
       Serial.println(packet);
+      Serial.flush();
       #ifndef SERIAL_INPUT_DEBUG
         RFSerial.println(packet);
       #endif
@@ -159,39 +185,73 @@ void loop() {
     receivedCommand = false;
   }
 
+  if (Automation::inStartup() || Automation::inShutdown()) {
+
+    Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
+
+    if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
+      Serial.println("executing event");
+      autoEvents[Automation::_autoEventTracker].action();
+      Automation::_startupTimer = millis();
+
+      Automation::_autoEventTracker++;
+
+      Solenoids::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(20, false);
+      Serial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+    }
+
+    if (Automation::_autoEventTracker == 9) {
+      Automation::_startup = false;
+    }
+    if (Automation::_autoEventTracker == 14) {
+      Automation::_shutdown = false;
+      Automation::_autoEventTracker = 0;
+    }
+  }
+
+  // Serial.println("eventlist length: " + String(Automation::_eventList.length));
 
   // if (Automation::_eventList.length > 0) {
   //   Serial.print(Automation::_eventList.length);
   //   Serial.println(" events remain");
   //   Automation::autoEvent* e = &(Automation::_eventList.events[0]);
-  //   if (millis() - Automation::_eventList.timer > e->duration) {
-  //
+  //   Serial.println("duration: " + String(e->duration));
+  //   Serial.println("report: " + String(e->report));
+  //   if (false && millis() - Automation::_eventList.timer > e->duration) {
+  //     Serial.println(" taking action");
+
   //     e->action();
-  //
+
   //     //Update valve states after each action
   //     Solenoids::getAllStates(farrbconvert.sensorReadings);
-  //     packet = make_packet(20, false);
-  //     Serial.println(packet);
-  //     RFSerial.println(packet);
+  //     packet = make_packet(29, false);
+  //     // Serial.println(packet);
+  //     // RFSerial.println(packet);
   //     #ifdef ETH
   //     sendEthPacket(packet.c_str());
   //     #endif
   //     write_to_SD(packet.c_str(), file_name);
-  //
+
   //     Automation::flowStatus(farrbconvert.sensorReadings);
   //     packet = make_packet(18, false);
-  //     Serial.println(packet);
-  //     RFSerial.println(packet);
+  //     // Serial.println(packet);
+  //     // RFSerial.println(packet);
   //     #ifdef ETH
   //     sendEthPacket(packet.c_str());
   //     #endif
   //     write_to_SD(packet.c_str(), file_name);
-  //
+
   //     Automation::removeEvent();
   //     //reset timer
   //     Automation::_eventList.timer = millis();
   //   }
   // }
+
+
 
   /*
      Code for requesting data and relaying back to ground station
@@ -203,30 +263,29 @@ void loop() {
       sensor_checks[j][1] += 1;
       continue;
     }
+
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
-    Serial.println(packet);
+    // Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
-
     #ifndef SERIAL_INPUT_DEBUG
-        RFSerial.println(packet);
+        // RFSerial.println(packet);
     #endif
     write_to_SD(packet.c_str(), file_name);
 
     // After getting new pressure data, check injector pressures to detect end of flow:
-    // Not being used for hotfire
-    // if (sensor->id==1 && Automation::inFlow()){
-    //   sensors[8].clock_freq = 0;
-    //   float loxInjector = farrbconvert.sensorReadings[2];
-    //   float propInjector = farrbconvert.sensorReadings[3];
-    //
-    //   Automation::detectPeaks(loxInjector, propInjector);
-    // }
+    if (false && sensor->id==1 && Automation::inFlow()) {
+
+      float loxInjector = farrbconvert.sensorReadings[2];
+      float propInjector = farrbconvert.sensorReadings[3];
+
+      Automation::detectPeaks(loxInjector, propInjector);
+    }
   }
-  delay(10);
+
 }
 
 
@@ -236,50 +295,73 @@ void loop() {
 void sensorReadFunc(int id) {
   switch (id) {
     case 0:
-      debug("cryo specific read");
-      _cryoTherms.readSpecificCryoTemp(2, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      debug("lox tank pt");
+      // these hardcode ids are going to royally fuck us soon
+      Thermocouple::Analog::readSpecificTemperatureData(1, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 1:
-      debug("pressures all");
+      debug("Ducers");
       Ducers::readAllPressures(farrbconvert.sensorReadings);
       break;
     case 2:
-      debug("battery stats");
-      // batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
+      debug("Batt");
+      batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
       break;
     case 4:
       debug("Cryo all");
-      _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      // _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      for (int i = 0; i < numCryoTherms; i++) {
+        farrbconvert.sensorReadings[i] = _cryo_boards[i].readThermocouple();
+      }
+      farrbconvert.sensorReadings[numCryoTherms] = -1;
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
       break;
     case 6:
-      // this hardcoded 3 is kinda sus.
-      debug("cryo specific read");
-      _cryoTherms.readSpecificCryoTemp(3, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      debug("lox gems");
+      Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxGemsHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 8:
-      // this hardcoded 3 is kinda sus.
-      debug("propane gems");
-      _cryoTherms.readSpecificCryoTemp(0, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      debug("prop gems");
+      Thermocouple::Analog::readSpecificTemperatureData(5, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propGemsHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 16:
-      debug("propane pt");
-      _cryoTherms.readSpecificCryoTemp(1, farrbconvert.sensorReadings);
-      farrbconvert.sensorReadings[1] = propTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]);
+      debug("prop tank pt");
+      Thermocouple::Analog::readSpecificTemperatureData(4, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     case 17:
       debug("static P");
       farrbconvert.sensorReadings[0] = Ducers::loxStaticP(Ducers::_latestReads[loxDomeIdx], Ducers::_latestReads[pressurantIdx]);
       farrbconvert.sensorReadings[1] = Ducers::propStaticP(Ducers::_latestReads[propDomeIdx], Ducers::_latestReads[pressurantIdx]);
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 19:
+      debug("lox injector");
+      Thermocouple::Analog::readSpecificTemperatureData(2, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = loxInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
+      farrbconvert.sensorReadings[2] = -1;
+      break;
+    case 21:
+      debug("solenoid currents");
+      Solenoids::getAllCurrents(farrbconvert.sensorReadings);
+      break;
+    case 22:
+      debug("solenoid voltages");
+      Solenoids::getAllVoltages(farrbconvert.sensorReadings);
+      break;
+    case 60:
+      debug("Prop Injector");
+      Thermocouple::Analog::readSpecificTemperatureData(3, farrbconvert.sensorReadings);
+      farrbconvert.sensorReadings[1] = propInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = -1;
       break;
     default:
