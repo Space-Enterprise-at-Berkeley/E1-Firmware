@@ -164,8 +164,8 @@ namespace Automation {
   }
 
    int act_closeGems() {
-    Solenoids::ventLOXGems();
-    Solenoids::ventPropaneGems();
+    Solenoids::closeLOXGems();
+    Solenoids::closePropaneGems();
     return 0;
   }
 
