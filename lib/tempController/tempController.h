@@ -33,8 +33,8 @@ class TempController {
     int8_t _channel;
 
   protected:
-    bool humanOverride = false;
-    uint16_t humanSpecifiedValue = 300;
+    bool humanOverride = true;
+    uint16_t humanSpecifiedValue = 0;
     INA219 outputMonitor;
     bool inaExists = false;
 

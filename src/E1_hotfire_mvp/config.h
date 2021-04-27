@@ -173,7 +173,7 @@ namespace config {
     // Automation Sequences
     debug("Initializing Ignition Sequence");
     autoEvents[0] = {0, &(Automation::act_closeGems), false};
-    autoEvents[1] = {1300, &(Automation::act_pressurizeTanks), false};
+    autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
     autoEvents[3] = {1200, &(Automation::act_armOpenLox), false};
     autoEvents[4] = {127, &(Automation::act_armOpenProp), false}; // T-0
