@@ -26,11 +26,17 @@ namespace LinearActuators {
   extern uint8_t * _pairIds;
   extern uint8_t * _commandIds;
 
+  extern uint8_t _actStates[7];
+
 
   void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds, TwoWire *wire, uint8_t *outputMonAddrs, float shuntR, float maxExCurrent);
   void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds);
-  void getAllStates(float *data);
+  int setActState(uint8_t actuatorId, uint8_t state);
+  void getAllChStates(float *data);
+  void getAllActStates(float *data);
   void getAllCurrentDraw(float *data);
+  boolean goingForward(uint8_t actuatorId);
+  boolean goingBackward(uint8_t actuatorId);
   void driveForward(uint8_t actuatorId, bool activatePair = true);
   void driveBackward(uint8_t actuatorId, bool activatePair = true);
   void brake(uint8_t actuatorId, bool activatePair = true);
@@ -91,7 +97,7 @@ namespace LinearActuators {
       }
 
       void confirmation(float *data) {
-        LinearActuators::getAllStates(data);
+        LinearActuators::getAllChStates(data);
       }
 
       INA219 outputMonitor;

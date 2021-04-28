@@ -33,6 +33,8 @@ namespace LinearActuators {
 
   LinActCommand * _linActCommands[7] = {&zero, &one, &two, &three, &four, &five, &six};
 
+  uint8_t _actStates[7] = {0, 0, 0, 0, 0, 0, 0}; //assumes all actuators are closed to begin with
+
   void init(uint8_t numActuators, uint8_t numPairs, uint8_t * in1Pins, uint8_t * in2Pins, uint8_t * pairIds, uint8_t * commandIds, TwoWire *wire, uint8_t *outputMonAddrs, float shuntR, float maxExCurrent) {
     init(numActuators, numPairs, in1Pins, in2Pins, pairIds, commandIds);
     for (int i = 0; i < _numlinearActuators; i++){
@@ -73,6 +75,15 @@ namespace LinearActuators {
     }
   }
 
+  int setActState(uint8_t actuatorId, uint8_t state) {
+    if (actuatorId >_numlinearActuators - 1) {
+      return 0;
+    } else {
+      _actStates[actuatorId] = state;
+      return 1;
+    }
+  }
+
   /** In 1, In 2, state
    *   0  , 0   , 0     OFF
    *   0  , 1   , 1     FORWARD
@@ -81,15 +92,36 @@ namespace LinearActuators {
    *  The In1 state is the msb and the In2 state is the lsb.
    *  combine them to form a number.
    */
-  void getAllStates(float *data) {
+  void getAllChStates(float *data) {
     #ifdef DEBUG
-      Serial.println("Actuators, get all states");
+      Serial.println("Actuators, get all channel states");
       Serial.flush();
     #endif
     for (int i = 0; i < _numlinearActuators; i++){
       data[i] = 2 * _in1PinState[i] + _in2PinState[i];
     }
     data[_numlinearActuators] = -1;
+  }
+
+  boolean goingForward(uint8_t actuatorId) {
+    return (2 * _in1PinState[actuatorId] + _in2PinState[actuatorId]) == 1;
+  }
+
+  boolean goingBackward(uint8_t actuatorId) {
+    return (2 * _in1PinState[actuatorId] + _in2PinState[actuatorId]) == 2;
+  }
+
+
+  void getAllActStates(float *data) {
+    #ifdef DEBUG
+      Serial.println("Actuators, get all actuator states");
+      Serial.flush();
+    #endif
+    for (int i = 0; i < _numlinearActuators; i++){
+      data[i] = _actStates[i];
+    }
+    data[_numlinearActuators] = -1;
+
   }
 
   void getAllCurrentDraw(float *data) {
@@ -109,6 +141,8 @@ namespace LinearActuators {
     _in2PinState[actuatorId] = 1;
     digitalWrite(_in1Pins[actuatorId], _in1PinState[actuatorId]);
     digitalWrite(_in2Pins[actuatorId], _in2PinState[actuatorId]);
+    _actStates[actuatorId] = 2;
+    Serial.println("setting thingie");
     if(activatePair) {
       driveForward(_pairIds[actuatorId], false);
     }
@@ -119,6 +153,7 @@ namespace LinearActuators {
     _in2PinState[actuatorId] = 0;
     digitalWrite(_in1Pins[actuatorId], _in1PinState[actuatorId]);
     digitalWrite(_in2Pins[actuatorId], _in2PinState[actuatorId]);
+    _actStates[actuatorId] = 2;
     if(activatePair) {
       driveBackward(_pairIds[actuatorId], false);
     }

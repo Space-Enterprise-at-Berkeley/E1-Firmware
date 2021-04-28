@@ -171,11 +171,16 @@ void loop() {
     }
   }
 
-  LinearActuators::getAllStates(farrbconvert.sensorReadings); // any given index will be a non-zero value if the actuator is not off.
+  LinearActuators::getAllChStates(farrbconvert.sensorReadings); // any given index will be a non-zero value if the actuator is not off.
   for (int i = 0; i < numLinActs; i++) {
     if(farrbconvert.sensorReadings[i] > 0) { // if actuator is not off
-      // Only autoshutoff if not time-based command
+      // Autoshutoff
       if(LinearActuators::_linActCommands[i]->endtime == -1 && LinearActuators::_linActCommands[i]->outputMonitor.readShuntCurrent() < 0.1){ //below threshold, turning off
+        if (LinearActuators::goingForward(i)) {
+          LinearActuators::setActState(i,1);
+        } else {
+          LinearActuators::setActState(i,0);
+        }
         LinearActuators::_linActCommands[i]->_off();
         LinearActuators::_linActCommands[i]->endtime = -1;
       } else if(LinearActuators::_linActCommands[i]->endtime != -1 && millis() > LinearActuators::_linActCommands[i]->endtime) {
@@ -205,7 +210,6 @@ void loop() {
     // }
     // Serial.println("");
     packet = make_packet(sensor->id, false);
-
     Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
@@ -281,11 +285,15 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("lin act all states");
-      LinearActuators::getAllStates(farrbconvert.sensorReadings);
+      LinearActuators::getAllChStates(farrbconvert.sensorReadings);
       break;
     case 5:
       debug("packet count");
       readPacketCounter(farrbconvert.sensorReadings);
+      break;
+    case 6:
+      debug("linear actuator channel states");
+      LinearActuators::getAllActStates(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
