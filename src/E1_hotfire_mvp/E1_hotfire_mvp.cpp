@@ -164,7 +164,8 @@ void loop() {
     if(id == 32) { // cmd 32 is perform hotfire
     //during horfire is when we would deprioritize the readings for the specific sensors
       for(int i = 5; i < 11; i++) {
-      rateChanger(i, sensor_checks[i][0] + 5); 
+        rateChanger(i, sensor_checks[i][0] + 5); //5 is an arbitrary amount to reduce the frequency
+        sensors[i].clock_freq = sensors[i].clock_freq + 5; 
       }
     }
     if (id != -1) {

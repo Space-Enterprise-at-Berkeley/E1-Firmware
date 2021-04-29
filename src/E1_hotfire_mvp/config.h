@@ -85,7 +85,7 @@ sensorInfo sensors[numSensors];
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
 uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
-uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
+uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28, 31};
 
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
