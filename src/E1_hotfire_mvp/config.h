@@ -71,14 +71,15 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 const uint8_t numHeaters = 6;
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
+uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
 // uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
-HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0]);
-HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1]);
-HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2]);
-HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3]);
-HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4]);
-HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5]);
+HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0], &Wire1, heaterINAAddrs[0], 0.033, 5.0);
+HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1], &Wire1, heaterINAAddrs[1], 0.033, 5.0);
+HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2], &Wire1, heaterINAAddrs[2], 0.033, 5.0);
+HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3], &Wire1, heaterINAAddrs[3], 0.033, 5.0);
+HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4], &Wire1, heaterINAAddrs[4], 0.033, 5.0);
+HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5], &Wire1, heaterINAAddrs[5], 0.033, 5.0);
 
 const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
@@ -156,18 +157,18 @@ namespace config {
 
     debug("Initializing sensors");
     sensors[0] = {"All Pressure",  FLIGHT_BRAIN_ADDR, 1, 1};
-    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 35};
-    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 4*25};
-    sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 15};
-    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 4 * 15};
-    sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 50};
-    sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 50};
-    sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 50};
-    sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 50};
-    sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 50};
-    sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 50};
-    sensors[11] = {"Solenoid currents", FLIGHT_BRAIN_ADDR, 21, 50};
-    sensors[12] = {"Solenoid Volages", FLIGHT_BRAIN_ADDR, 22, 50};
+    sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 50};
+    sensors[2] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 250};
+    sensors[3] = {"Expected Static Pressure", FLIGHT_BRAIN_ADDR, 17, 99};
+    sensors[4] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 104};
+    sensors[5] = {"Lox PT/FTG Temperature",   FLIGHT_BRAIN_ADDR, 0, 96};
+    sensors[6] = {"LOX Gems Temp", FLIGHT_BRAIN_ADDR, 6, 97};
+    sensors[7] = {"LOX Injector Temp", FLIGHT_BRAIN_ADDR, 19, 103};
+    sensors[8] = {"Prop PT/FTG Temp", FLIGHT_BRAIN_ADDR, 16, 102};
+    sensors[9] = {"Prop Gems Temp", FLIGHT_BRAIN_ADDR, 8, 101};
+    sensors[10] = {"Prop Injector Temp", FLIGHT_BRAIN_ADDR, 60, 100};
+    sensors[11] = {"Solenoid currents", FLIGHT_BRAIN_ADDR, 21, 99};
+    sensors[12] = {"Solenoid Volages", FLIGHT_BRAIN_ADDR, 22, 98};
 
 
     // Automation Sequences
