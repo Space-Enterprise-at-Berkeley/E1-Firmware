@@ -263,8 +263,7 @@ void loop() {
     }
 
     sensor = &sensors[j];
-    sensorReadFunc(sensor->id); //for every sensor, based on id we are reading from the sensor
-    //however, we don't want to prioritize reading tank thermocouples, LOx, and propane fitting tree temps
+    sensorReadFunc(sensor->id); 
     packet = make_packet(sensor->id, false);
     // Serial.println(packet);
     #ifdef ETH
