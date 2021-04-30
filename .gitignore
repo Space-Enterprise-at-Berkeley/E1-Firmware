@@ -3,3 +3,4 @@
 .pio/
 .gcc-flags.json
 .clang_complete
+.idea/
