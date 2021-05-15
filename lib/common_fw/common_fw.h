@@ -88,7 +88,7 @@ struct sensorInfo {
   String name;
   int board_address;
   int id;
-  int clock_freq;
+  int cycle_period;
 };
 
 String make_packet (int id, bool error);

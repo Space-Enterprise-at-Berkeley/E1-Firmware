@@ -33,4 +33,25 @@ Following that, we define all the sensors.
 ## E1_coldflow_v21.cpp
 
 
-The `setup` function initializes all of our libraries 
+The `setup` function initializes all of our libraries, passing in the relevant configurations defined in `config.h`.
+We also populate the `sensor_checks` object: a 2d int array, with shape `[<numSensors>, 2]`, where `sensor_checks[i][0]` stores the cycle_period of the ith sensor, and `sensor_checks[i][1]` stores a counter that gets incremented for each iteration through the `loop`. We'll see this used in the "Reading from Sensors" section below.
+
+The `loop` function can be broken up into 3 functional parts:
+1. Receiving and Parsing Commands
+2. Conducting Automation Sequences
+3. Reading from Sensors
+
+### Receiving and Parsing Commands
+We receive packets from both Ethernet and Serial channels. We always check the serial channel, and if this is a ground test, ie. there will be ethernet, we'll also check ethernet for any incoming commands. If we are checking via ethernet, we make sure that the command came from an expected ip address. These are defined in config.
+Once we capture a set of data, we pass it to the `processCommand` func in `common`. The process command is explained in more detail in the docs for the common library, but it essentially verifies that the packet is of a valid format, and it completes the action that the command requests (opening a valve, increasing a heater output, etc).
+
+### Automation Sequences
+
+### Sensor Reading
+
+Different sensors are read at different rates defined by the `cycle_period` parameter of the `sensorInfo` struct. The larger `cycle_period`, the less often this sensor is read.
+The `sensor_checks` 2d array is used to keep track of when its time to read a sensor.
+
+Within the `loop` function, there's a secondary `for` loop that goes through each sensor. In order to decide if the `i`th sensor will be read in this iteration, `sensor_checks[i][1]` (the counter) is compared with `sensor_checks[i][0]` (`cycle_period`). When the two are equal, the sensor is read from, else we just increment the counter. This results in each sensor being read from only 1/ `cycle_period` iterations. NOTE: It is possible to achieve the same effect w/out this internal loop. TODO: @nlautrette.
+
+Once we decide on reading from a sensor, we read from it (see `sensorReadFunc`), and transmit a packet with the results.
