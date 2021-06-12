@@ -176,20 +176,20 @@ namespace config {
     autoEvents[0] = {0, &(Automation::act_closeGems), false};
     autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
-    autoEvents[3] = {1200, &(Automation::act_armOpenLox), false};
-    autoEvents[4] = {127, &(Automation::act_armOpenProp), false}; // T-0
-    autoEvents[5] = {500, &(Solenoids::disarmLOX), false};
-    autoEvents[6] = {burnTime - 500, &(Automation::act_armCloseProp), false};
+    autoEvents[3] = {2500, &(Automation::act_openLoxIfIgniter), false};
+    autoEvents[4] = {127, &(Solenoids::openPropane), false}; // T-0
+    autoEvents[5] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[6] = {burnTime, &(Solenoids::closePropane), false};
     autoEvents[7] = {200, &(Solenoids::closeLOX), false};
-    autoEvents[8] = {420, &(Automation::act_depressurize), false};
+    autoEvents[8] = {650, &(Automation::act_depressurize), false};
 
 
     debug("Initializing Shutdown Sequence");
     autoEvents[9] = {0, &(Automation::act_armCloseProp), false};
     autoEvents[10] = {200, &(Automation::act_armCloseLox), false};
     autoEvents[11] = {0, &(Automation::act_depressurize), false};
-    autoEvents[12] = {0, &(Solenoids::disarmLOX), false};
-    autoEvents[13] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[12] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[13] = {650, &(Solenoids::disarmLOX), false};
 
 
     // autoEvents[5] = {300, &(Automation::state_setFlowing), false};

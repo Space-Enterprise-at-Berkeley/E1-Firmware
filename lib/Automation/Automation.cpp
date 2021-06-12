@@ -22,6 +22,8 @@ namespace Automation {
   int _shutdownPhase = 0;
   uint32_t _shutdownTimer;
 
+  bool igniterGood = false;
+
   // flow_type_t flowtype;
   // flow_state_t flowstate = ON_PAD;
 
@@ -167,6 +169,14 @@ namespace Automation {
     Solenoids::closeLOXGems();
     Solenoids::closePropaneGems();
     return 0;
+  }
+
+  int act_openLoxIfIgniter() {
+    if(igniterGood) {
+      Solenoids::openLOX();
+    } else {
+      return -2;
+    }
   }
 
   int act_armOpenLox() {

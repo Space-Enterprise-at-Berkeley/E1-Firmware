@@ -59,6 +59,8 @@ namespace Automation {
   extern int _shutdownPhase;
   extern uint32_t _shutdownTimer;
 
+  extern bool igniterGood;
+
 
   /* Delays during startup sequence:
     1 - Between open pressure and open LOX Main
@@ -135,6 +137,7 @@ extern struct autoEventList _eventList;
   int act_openGems();
   int act_closeGems();
   int act_armOpenLox();
+  int act_openLoxIfIgniter();
   int act_armOpenProp();
   int act_armOpenBoth();
   int act_armCloseLox();

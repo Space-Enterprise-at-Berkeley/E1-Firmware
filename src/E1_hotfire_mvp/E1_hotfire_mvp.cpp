@@ -191,7 +191,10 @@ void loop() {
 
     if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
       Serial.println("executing event");
-      autoEvents[Automation::_autoEventTracker].action();
+      int res = autoEvents[Automation::_autoEventTracker].action();
+      if(res == -2) {
+        Automation::_autoEventTracker = 8;
+      }
       Automation::_startupTimer = millis();
 
       Automation::_autoEventTracker++;
@@ -206,6 +209,7 @@ void loop() {
 
     if (Automation::_autoEventTracker == 9) {
       Automation::_startup = false;
+      Automation::igniterGood = false;
     }
     if (Automation::_autoEventTracker == 14) {
       Automation::_shutdown = false;
@@ -363,6 +367,10 @@ void sensorReadFunc(int id) {
     case 21:
       debug("solenoid currents");
       Solenoids::getAllCurrents(farrbconvert.sensorReadings);
+      if(Automation::inStartup()) {
+        // check if igniter went off
+        Automation::igniterGood = farrbconvert.sensorReadings[1] > 0.06 || Automation::igniterGood;
+      }
       break;
     case 22:
       debug("solenoid voltages");
