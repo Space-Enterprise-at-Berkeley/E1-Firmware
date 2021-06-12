@@ -112,20 +112,24 @@ class HeaterCommand : public Command, public TempController {
       data[1] = (humanOverride)? humanSpecifiedValue : -1;
       if(inaExists){
         data[2] = outputMonitor.readShuntCurrent();
+        data[3] = outputMonitor.readBusVoltage();
       } else {
         data[2] = -1;
       }
-      data[3] = -1;
+      data[4] = -1;
     }
 
-    void readCurrentDraw(float *data, int ch) {
-      data[ch] = outputMonitor.readShuntCurrent();
-      data[ch+1] = -1;
+    float readCurrentDraw() {
+      return outputMonitor.readShuntCurrent();
+    }
+
+    float readBusVoltage() {
+      return outputMonitor.readBusVoltage();
     }
 
     void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
       outputMonitor.begin(wire, inaAddr);
-      outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+      outputMonitor.configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
       outputMonitor.calibrate(shuntR, maxExpectedCurrent);
     }
 };
