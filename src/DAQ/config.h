@@ -48,9 +48,9 @@ INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
 const uint8_t numLoadCells = 3;
-byte lcSckPins[numLoadCells] = {38, 10, 5};
-byte lcDoutPins[numLoadCells] = {39, 9, 4};
-float lcCalVals[numLoadCells] = {4000, -4000, 0};
+byte lcSckPins[numLoadCells] = {38, 10, 25};
+byte lcDoutPins[numLoadCells] = {39, 9, 24};
+float lcCalVals[numLoadCells] = {4000, -4000, -4000};
 HX711 loadcells[numLoadCells];
 // HX711 loadcell1, loadcell2;
 

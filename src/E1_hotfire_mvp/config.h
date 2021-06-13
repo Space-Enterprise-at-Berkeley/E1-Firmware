@@ -149,7 +149,7 @@ namespace config {
 
       _cryo_boards[i].setADCresolution(MCP9600_ADCRESOLUTION_16);
       _cryo_boards[i].setThermocoupleType(cryoTypes[i]);
-      _cryo_boards[i].setFilterCoefficient(0);
+      _cryo_boards[i].setFilterCoefficient(3);
       _cryo_boards[i].enable(true);
     }
 
