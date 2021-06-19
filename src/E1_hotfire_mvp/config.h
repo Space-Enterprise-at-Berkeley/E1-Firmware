@@ -176,7 +176,7 @@ namespace config {
     autoEvents[0] = {0, &(Automation::act_closeGems), false};
     autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
-    autoEvents[3] = {2500, &(Automation::act_openLoxIfIgniter), false};
+    autoEvents[3] = {2000, &(Automation::act_openLoxIfIgniter), false};
     autoEvents[4] = {127, &(Solenoids::openPropane), false}; // T-0
     autoEvents[5] = {0, &(Solenoids::disarmPropane), false};
     autoEvents[6] = {burnTime, &(Solenoids::closePropane), false};
