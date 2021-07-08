@@ -1,7 +1,0 @@
-{
-    "name": "Thermocouple",
-    "version": "1.0.0",
-    "build": {
-        "extraScript": "hal_selection_script.py"
-    }
-}
