@@ -6,22 +6,22 @@ namespace Scheduler
 
   void scheduleTask(Task *task, uint32_t when)
   {
-    eventq.push((Event){.when = when, .task = task});
+    eventq.push((Event){.when = when, .period = 0, .task = task, .run = nullptr});
   }
 
   void repeatTask(Task *task, uint32_t period)
   {
-    eventq.push((Event){.when = micros(), .period = period, .task = task});
+    eventq.push((Event){.when = micros(), .period = period, .task = task, .run = nullptr});
   }
 
   void scheduleFunc(void (*run)(), uint32_t when)
   {
-    eventq.push((Event){.when = when, .run = run});
+    eventq.push((Event){.when = when, .period = 0, .task = nullptr, .run = run});
   }
 
   void repeatFunc(void (*run)(), uint32_t period)
   {
-    eventq.push((Event){.when = micros(), .period = period, .run = run});
+    eventq.push((Event){.when = micros(), .period = period, .task = nullptr, .run = run});
   }
 
   void loop()

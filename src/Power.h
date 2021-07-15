@@ -2,6 +2,6 @@
 
 #include <Arduino.h>
 
-namespace Comms
+namespace Ducers
 {
 }

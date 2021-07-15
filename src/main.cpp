@@ -1,4 +1,10 @@
 #include <Scheduler.h>
+#include <Automation.h>
+#include <Comms.h>
+#include <Ducers.h>
+#include <Heaters.h>
+#include <Thermocouples.h>
+#include <Power.h>
 #include <Valves.h>
 
 #include <Arduino.h>
@@ -11,14 +17,10 @@ void setup()
   Wire1.begin();
   Wire1.setClock(400000); // 400khz clock
   SPI.begin();
-
-  // initialize valves
-  Valves::init();
 }
 
 void loop()
 {
-  // read PT channels @ 5 kHz
-  // read valves sequentially @ 5kHz
+  // run the scheduler
   Scheduler::loop();
 }
