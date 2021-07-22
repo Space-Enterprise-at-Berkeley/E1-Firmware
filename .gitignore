@@ -3,3 +3,5 @@
 .pio/
 .gcc-flags.json
 .clang_complete
+bazel
+bazel-* 
