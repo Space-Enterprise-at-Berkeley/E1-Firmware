@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+FakeSerial Serial;
+
 auto _start_time = chrono::high_resolution_clock::now();
 
 void pinMode(uint8_t pin, uint8_t mode) {

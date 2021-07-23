@@ -1,5 +1,5 @@
 #pragma once
-// #include <FakeSerial.h>
+#include <FakeSerial.h>
 
 #include <cstdint>
 #include <iostream>
@@ -18,7 +18,7 @@
 
 using namespace std;
 
-// extern FakeSerial Serial;
+extern FakeSerial Serial;
 
 void pinMode(uint8_t pin, uint8_t mode);
 void digitalWrite(uint8_t pin, uint8_t val);
