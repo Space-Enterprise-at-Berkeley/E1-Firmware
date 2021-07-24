@@ -21,6 +21,9 @@ void setup()
 
 void loop()
 {
+  #ifdef FW_COMMIT
+  Serial.println(FW_COMMIT);
+  #endif
   // run the scheduler
   Scheduler::loop();
 }
