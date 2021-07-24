@@ -14,12 +14,12 @@ namespace Scheduler
     eventq.push((Event){.when = micros(), .period = period, .task = task, .run = nullptr});
   }
 
-  void scheduleFunc(void (*run)(), uint32_t when)
+  void scheduleFunc(void (*run)(uint32_t exec_time), uint32_t when)
   {
     eventq.push((Event){.when = when, .period = 0, .task = nullptr, .run = run});
   }
 
-  void repeatFunc(void (*run)(), uint32_t period)
+  void repeatFunc(void (*run)(uint32_t exec_time), uint32_t period)
   {
     eventq.push((Event){.when = micros(), .period = period, .task = nullptr, .run = run});
   }
@@ -35,9 +35,9 @@ namespace Scheduler
         eventq.push(top);
       }
       if(top.task != nullptr) {
-        top.task->run();
+        top.task->run(now);
       } else {
-        top.run();
+        top.run(now);
       }
     }
   }
