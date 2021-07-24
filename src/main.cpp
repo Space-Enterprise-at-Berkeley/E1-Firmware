@@ -24,6 +24,19 @@ void loop()
   #ifdef FW_COMMIT
   Serial.println(FW_COMMIT);
   #endif
+
+  #ifdef FW_USERNAME
+  Serial.println(FW_USERNAME);
+  #endif
+
+  #ifdef FW_BUILD_DATE
+  Serial.println(FW_BUILD_DATE);
+  #endif
+
+  #ifdef FW_PROJECT
+  Serial.println(FW_PROJECT);
+  #endif
+
   // run the scheduler
   Scheduler::loop();
 }
