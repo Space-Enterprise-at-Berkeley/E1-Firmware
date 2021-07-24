@@ -13,4 +13,6 @@ public:
   void begin(long b);
   void println(char *out);
   void println(string out);
+  void println(uint32_t out);
+  void println(float out);
 };

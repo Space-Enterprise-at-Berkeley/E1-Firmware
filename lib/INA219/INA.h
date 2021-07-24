@@ -1,7 +1,4 @@
-
-
-#ifndef __INA_H
-#define __INA_H
+#pragma once
 
 #include <Wire.h>
 
@@ -120,5 +117,3 @@ class INA {
       virtual float readBusPower(void) = 0;
       virtual float readBusVoltage(void) = 0;
 };
-
-#endif

@@ -25,4 +25,5 @@ void digitalWrite(uint8_t pin, uint8_t val);
 void digitalWriteFast(uint8_t pin, uint8_t val);
 void delay(uint32_t millis);
 uint32_t millis();
+uint32_t micros();
 void yield();

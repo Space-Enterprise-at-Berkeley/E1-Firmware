@@ -1,4 +1,4 @@
-// #include <Scheduler.h>
+#include <Scheduler.h>
 // #include <Automation.h>
 // #include <Comms.h>
 // #include <Ducers.h>
@@ -7,27 +7,25 @@
 // #include <Power.h>
 // #include <Valves.h>
 
+#include <INA219.h>
+
 #include <Arduino.h>
-// #include <Wire.h>
-// #include <SPI.h>
+#include <Wire.h>
+#include <SPI.h>
 
-extern int main (void);
-
-int main(void) {
+void hardware_init() {
   // low level hardware setup
   Serial.begin(9600);
-  // Wire1.begin();
-  // Wire1.setClock(400000); // 400khz clock
-  // SPI.begin();
-  pinMode(1, OUTPUT);
+  Wire1.begin();
+  Wire1.setClock(400000); // 400khz clock
+  SPI.begin();
+}
+
+int main(void) {
+  hardware_init();
 
   while(1) {
-    // digitalWriteFast(1, HIGH);
-    // delay(1000);
-    // digitalWriteFast(1, LOW);
-    Serial.println("test");
-    delay(1000);
-    // Scheduler::loop();
-    // yield();
+    Scheduler::loop();
+    yield();
   }
 }

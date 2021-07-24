@@ -1,0 +1,8 @@
+cc_library(
+  name = "mock",
+  srcs = glob(["mock/*.cpp"]),
+  hdrs = glob(["*.h"]),
+  deps = ["//test:test"],
+  strip_include_prefix = "",
+  visibility = ["//visibility:public"]
+)

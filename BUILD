@@ -4,6 +4,6 @@ cc_binary(
   # srcs = glob(["src/*.cpp", "src/*.h"]),
   srcs = ["src/main.cpp"],
   copts = [],
-  deps = ["//test:test"],
+  deps = ["//test:test", "//lib/Scheduler:mock", "//lib/INA219:mock"],
   includes = []
 )
