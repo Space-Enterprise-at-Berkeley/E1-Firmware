@@ -19,7 +19,6 @@ namespace Thermocouples
   private:
     Adafruit_MCP9600 * cryo_amp_board;
     uint8_t * _addrs;
-    float * _latestRead;
   };
 
 

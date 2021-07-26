@@ -5,9 +5,8 @@ namespace Thermocouples
 
   //init function for a TC instance
   //taken from old code
-  int Thermocouple::init(Adafruit_MCP9600 *cryo_board, uint8_t * addrs, _themotype * type, TwoWire *theWire, float *latestRead) {
+  int Thermocouple::init(Adafruit_MCP9600 *cryo_board, uint8_t * addrs, _themotype * type, TwoWire *theWire) {
      _addrs = addrs;
-     _latestRead = latestRead;
      _cryo_amp_board = cryo_board;
 
 
@@ -20,15 +19,6 @@ namespace Thermocouples
     _cryo_amp_board.setThermocoupleType(type);
     _cryo_amp_board.setFilterCoefficient(0);
     _cryo_amp_board.enable(true);
-
-
-    Serial.println(i);
-    Serial.println(_latestRead);
-    _latestRead = -1;
-    Serial.println(_latestRead);
-    _latestRead = _cryo_amp_board.readThermocouple();
-    Serial.println(_latestRead);
-
 
      return 0;
    }
