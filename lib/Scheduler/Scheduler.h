@@ -6,6 +6,8 @@
 #include <queue>
 #include <vector>
 
+static const uint32_t HALF_HOUR = 34359738368;
+
 using namespace std;
 
 class Task {
@@ -21,6 +23,9 @@ namespace Scheduler {
     void (*run)(uint32_t exec_time);
 
     bool operator >(const Event& a) const {
+      if(when - a.when > HALF_HOUR) {
+        return true;
+      }
       return when > a.when;
     }
   };
