@@ -69,6 +69,7 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
 // Heaters
 const uint8_t numHeaters = 6;
+//                                    
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
 uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
