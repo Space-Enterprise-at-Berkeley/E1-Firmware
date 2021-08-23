@@ -25,7 +25,8 @@ IPAddress ip(10, 0, 0, 42); // dependent on local network
 const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
-uint8_t cryoThermAddrs[numCryoTherms] = {0x60, 0x61, 0x62, 0x63};
+//old: middleLoxTankTC,TopLoxTankTC,middlePropTankTC,TopPropTankTC
+uint8_t cryoThermAddrs[numCryoTherms] = {0x63, 0x61, 0x60, 0x62};//{0x60, 0x61, 0x62, 0x63}
 _themotype cryoTypes[numCryoTherms] = {MCP9600_TYPE_K, MCP9600_TYPE_K, MCP9600_TYPE_K, MCP9600_TYPE_K};
 Adafruit_MCP9600 _cryo_boards[numCryoTherms];
 float cryoReadsBackingStore[numCryoTherms];
@@ -39,15 +40,18 @@ ADS8167 ads[numADCSensors];
 ADC * adsPointers[numADCSensors];
 
 // Analog Temperature Sensors
-const int numAnalogTempSens = 6;
-uint8_t tempSensAdcIndices[numAnalogTempSens] = {0, 0, 0, 0, 1, 1};
-uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7, 3, 2};
+const int numAnalogTempSens = 4;
+//lox gems, lox tank pt, lox injector, prop injector, prop tank pt, prop gems
+//new: lox injector pt, lox tank pt, fuel tank pt, fuel injector pt
+uint8_t tempSensAdcIndices[numAnalogTempSens] = {0, 0, 1, 1};//{0, 0, 1, 1, 1, 1}
+uint8_t tempSensAdcChannels[numAnalogTempSens] = {4, 5, 6, 7};//{4, 5, 6, 7, 3, 2}
 
 // Pressure Transducers
-const uint8_t numPressureTransducers = 8;
-uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1, 1, 1};
-uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5, 6, 7};
-uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000, 1000, 1000};
+const uint8_t numPressureTransducers = 6;
+//lox tank, prop tank, lox inj, prop inj, pressurant, lox dome, prop dome, lox gems
+uint8_t ptAdcIndices[numPressureTransducers] = {0, 0, 0, 0, 1, 1};
+uint8_t ptAdcChannels[numPressureTransducers] = {0, 1, 2, 3, 4, 5};
+uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000};
 const uint8_t pressurantIdx = 4;
 const uint8_t loxDomeIdx = 5;
 const uint8_t propDomeIdx = 6;
@@ -69,7 +73,7 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
 // Heaters
 const uint8_t numHeaters = 6;
-//                                    
+//
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
 uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
@@ -77,10 +81,11 @@ uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
 
 HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0], &Wire1, heaterINAAddrs[0], 0.033, 5.0);
 HeaterCommand loxGemsHeater("loxGemsHeater", heaterCommandIds[1], 10, 2, &heaterCtl, heaterChannels[1], &Wire1, heaterINAAddrs[1], 0.033, 5.0);
-HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2], &Wire1, heaterINAAddrs[2], 0.033, 5.0);
-HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3], &Wire1, heaterINAAddrs[3], 0.033, 5.0);
-HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4], &Wire1, heaterINAAddrs[4], 0.033, 5.0);
-HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5], &Wire1, heaterINAAddrs[5], 0.033, 5.0);
+HeaterCommand propTankPTHeater("propTankPTHeater", heaterCommandIds[3], 10, 2, &heaterCtl, heaterChannels[3], &Wire1, heaterINAAddrs[3], 0.033, 5.0);
+HeaterCommand propGemsHeater("propGemsHeater", heaterCommandIds[4], 10, 2, &heaterCtl, heaterChannels[4], &Wire1, heaterINAAddrs[4], 0.033, 5.0);
+//4
+HeaterCommand loxInjectorPTHeater("loxInjectorPTHeater", heaterCommandIds[5], 10, 2, &heaterCtl, heaterChannels[5], &Wire1, heaterINAAddrs[5], 0.033, 5.0);
+HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[2], 10, 2, &heaterCtl, heaterChannels[2], &Wire1, heaterINAAddrs[2], 0.033, 5.0);
 
 const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
