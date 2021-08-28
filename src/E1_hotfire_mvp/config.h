@@ -74,9 +74,14 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 // Heaters
 const uint8_t numHeaters = 6;
 //
+
+// uint8_t heaterChannels[numHeaters] = {2, 0, 5, 1};
+// uint8_t heaterCommandIds[numHeaters] = {40, 42, 44, 45};
+// uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x49, 0x4D, 0x4A};
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
-uint8_t heaterCommandIds[numHeaters] = {40, 41, 42, 43, 44, 45};
+uint8_t heaterCommandIds[numHeaters] = {40, 41, 45, 42, 43, 44};
 uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
+//removed 0x4E,
 // uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
 HeaterCommand loxTankPTHeater("loxTankPTHeater", heaterCommandIds[0], 10, 2, &heaterCtl, heaterChannels[0], &Wire1, heaterINAAddrs[0], 0.033, 5.0);
