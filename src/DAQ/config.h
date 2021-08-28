@@ -39,8 +39,8 @@ uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
 
 const uint8_t numPressureTransducers = 1;
 uint8_t ptAdcIndices[numPressureTransducers] = {0};
-uint8_t ptAdcChannels[numPressureTransducers] = {3};
-uint32_t ptTypes[numPressureTransducers] = {150};
+uint8_t ptAdcChannels[numPressureTransducers] = {6};
+uint32_t ptTypes[numPressureTransducers] = {1000};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
