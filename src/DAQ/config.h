@@ -11,9 +11,6 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
-std::string str_file_name = "DAQ.txt";
-const char * file_name = str_file_name.c_str();
-
 #ifdef ETH
 IPAddress ip(10, 0, 0, 11); // dependent on local network
 #endif
