@@ -126,7 +126,7 @@ CommandArray commands(numCommands, backingStore);
 
 // Automation
 Automation::autoEvent autoEvents[13];
-const int burnTime = 3000;
+const int burnTime = 6*1000;
 
 namespace config {
   void setup() {
@@ -188,7 +188,7 @@ namespace config {
     autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
     autoEvents[3] = {2000, &(Automation::act_openLoxIfIgniter), false};
-    autoEvents[4] = {127, &(Solenoids::openPropane), false}; // T-0
+    autoEvents[4] = {0, &(Solenoids::openPropane), false}; // T-0
     autoEvents[5] = {0, &(Solenoids::disarmPropane), false};
     autoEvents[6] = {burnTime, &(Solenoids::closePropane), false};
     autoEvents[7] = {200, &(Solenoids::closeLOX), false};
