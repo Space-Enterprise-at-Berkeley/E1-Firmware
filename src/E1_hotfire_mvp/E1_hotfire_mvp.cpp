@@ -18,6 +18,9 @@
   #define RFSerial Serial6
 #endif
 
+
+#define ENDFLOW_ENABLED false
+
 // within loop state variables
 
 uint8_t val_index = 0;
@@ -47,7 +50,7 @@ void setup() {
   RFSerial.begin(57600);
 
   delay(3000);
-
+  
   #ifdef ETH
   debug("Setup Ethernet");
   setupEthernetComms(mac, ip);
@@ -185,19 +188,22 @@ void loop() {
     receivedCommand = false;
   }
 
-  if (Automation::inStartup() || Automation::inShutdown()) {
+  if (Automation::inStartup() || Automation::inFlow() || Automation::inShutdown()) {
 
     Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
 
     if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
       Serial.println("executing event");
       int res = autoEvents[Automation::_autoEventTracker].action();
-      if(res == -2) {
-        Automation::_autoEventTracker = 8;
-      }
+
       Automation::_startupTimer = millis();
 
       Automation::_autoEventTracker++;
+
+      // If abort code is produced, jump to shutdown
+      if(res == -2) {
+        Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
+      }
 
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(20, false);
@@ -207,14 +213,6 @@ void loop() {
       #endif
     }
 
-    if (Automation::_autoEventTracker == 9) {
-      Automation::_startup = false;
-      Automation::igniterGood = false;
-    }
-    if (Automation::_autoEventTracker == 14) {
-      Automation::_shutdown = false;
-      Automation::_autoEventTracker = 0;
-    }
   }
 
   // Serial.println("eventlist length: " + String(Automation::_eventList.length));
@@ -281,7 +279,7 @@ void loop() {
     write_to_SD(packet.c_str(), file_name);
 
     // After getting new pressure data, check injector pressures to detect end of flow:
-    if (false && sensor->id==1 && Automation::inFlow()) {
+    if (ENDFLOW_ENABLED && sensor->id==1 && Automation::inFlow()) {
 
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];

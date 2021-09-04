@@ -14,6 +14,8 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
+#define AUTO_SHUTDOWN_START 10
+
 std::string str_file_name = "E1_coldflow_v21.txt";
 const char * file_name = str_file_name.c_str();
 
@@ -182,25 +184,29 @@ namespace config {
     sensors[12] = {"Solenoid Volages", FLIGHT_BRAIN_ADDR, 22, 98};
 
 
+  
     // Automation Sequences
     debug("Initializing Ignition Sequence");
     autoEvents[0] = {0, &(Automation::act_closeGems), false};
     autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
-    autoEvents[3] = {2000, &(Automation::act_openLoxIfIgniter), false};
+    autoEvents[3] = {2000, &(Automation::act_openLox), false}; //checks for igniter current, if enabled. 
     autoEvents[4] = {0, &(Solenoids::openPropane), false}; // T-0
-    autoEvents[5] = {0, &(Solenoids::disarmPropane), false};
-    autoEvents[6] = {burnTime, &(Solenoids::closePropane), false};
-    autoEvents[7] = {200, &(Solenoids::closeLOX), false};
-    autoEvents[8] = {650, &(Automation::act_depressurize), false};
+    autoEvents[5] = {750, &(Automation::state_setFlowing), false};
+    autoEvents[6] = {burnTime - 750, &(Solenoids::closePropane), false};
+    autoEvents[7] = {0, &(Automation::state_setShutdown), false};
+    autoEvents[8] = {200, &(Solenoids::closeLOX), false};
+    autoEvents[9] = {650, &(Automation::act_depressurize), false};
+    autoEvents[10] = {0, &(Automation::state_setFlowOver), false};
+    
 
 
     debug("Initializing Shutdown Sequence");
-    autoEvents[9] = {0, &(Automation::act_armCloseProp), false};
-    autoEvents[10] = {200, &(Automation::act_armCloseLox), false};
-    autoEvents[11] = {0, &(Automation::act_depressurize), false};
-    autoEvents[12] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[10] = {0, &(Automation::act_armCloseProp), false};
+    autoEvents[11] = {200, &(Solenoids::closeLOX), false};
+    autoEvents[12] = {0, &(Automation::act_depressurize), false};
     autoEvents[13] = {650, &(Solenoids::disarmLOX), false};
+    autoEvents[14] = {0, &(Automation::state_setFlowOver), false};
 
 
     // autoEvents[5] = {300, &(Automation::state_setFlowing), false};
