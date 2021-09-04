@@ -19,7 +19,7 @@
 #endif
 
 
-#define ENDFLOW_ENABLED false
+#define ENDFLOW_ENABLED true
 
 // within loop state variables
 
@@ -193,6 +193,7 @@ void loop() {
     Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
 
     if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
+
       Serial.println("executing event");
       int res = autoEvents[Automation::_autoEventTracker].action();
 
@@ -202,7 +203,7 @@ void loop() {
 
       // If abort code is produced, jump to shutdown
       if(res == -2) {
-        Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
+        Automation::_autoEventTracker = Automation::SHUTDOWN_START;
       }
 
       Solenoids::getAllStates(farrbconvert.sensorReadings);
@@ -284,7 +285,16 @@ void loop() {
       float loxInjector = farrbconvert.sensorReadings[2];
       float propInjector = farrbconvert.sensorReadings[3];
 
-      Automation::detectPeaks(loxInjector, propInjector);
+      bool res = Automation::detectPeaks(loxInjector, propInjector);
+
+      if (res) {
+        Solenoids::getAllStates(farrbconvert.sensorReadings);
+        packet = make_packet(20, false);
+        Serial.println(packet);
+        #ifdef ETH
+        sendEthPacket(packet.c_str());
+        #endif
+      }
     }
   }
 

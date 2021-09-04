@@ -47,6 +47,9 @@ namespace Automation {
 //   extern flow_type_t flowtype;
 //   extern flow_state_t flowstate;
 
+  extern const bool IGNITER_DETECT_ENABLED;
+  extern const unsigned int SHUTDOWN_START;
+
   extern int _autoEventTracker;
 
   extern bool _startup;
@@ -158,8 +161,8 @@ extern struct autoEventList _eventList;
   // Automatic Detection
   float findAverage(int index);
   void autoShutdown(int index);
-  void detectPeak(float currentPressure, int recordingIndex);
-  void detectPeaks(float loxInjector, float propInjector);
+  bool detectPeak(float currentPressure, int recordingIndex);
+  bool detectPeaks(float loxInjector, float propInjector);
 }
 
 class AutomationSequenceCommand : public Command {

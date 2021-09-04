@@ -14,6 +14,8 @@ namespace Automation {
 
   const bool IGNITER_DETECT_ENABLED = false;
 
+  const unsigned int SHUTDOWN_START = 11;
+
   //-----------------------Variables-----------------------
 
   int _autoEventTracker = 0;
@@ -347,7 +349,7 @@ namespace Automation {
     _flowing = false;
     _shutdown = true;
 
-    _autoEventTracker = 8;
+    _autoEventTracker = SHUTDOWN_START;
 
     Serial.println("Eureka-1 is in Shutdown");
 
@@ -435,7 +437,8 @@ namespace Automation {
     return avg;
   }
 
-  /*
+  /* Perform autoshutdown for the specified side. 
+   *
    * recordingIndex:
    *   0 - LOX
    *   1 - Propane
@@ -444,49 +447,42 @@ namespace Automation {
     Serial.print("Shutting down valve ");
     Serial.println(index);
     if (index == 0) { // Lox is out
-      if (Solenoids::getProp5()) { // Prop is still open
-        autoEvent events[2];
-        events[0] = {0, &(act_armCloseLox), false};  //TODO @Ben: act_armCloseLox is crashing
-        events[1] = {750, &(Solenoids::disarmLOX), false};
-        for (int i = 0; i < 2; i++) addEvent(&events[i]);
 
-      } else { // Prop is already closed, shutdown
-        _flowing = false;
-        autoEvent events[4];
-        events[0] = {0, &(act_armCloseLox), false};
-        events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
-        events[2] = {750, &(Solenoids::disarmLOX), false};
-        events[3] = {0, &(act_openGems), false};
-        for (int i = 0; i < 4; i++) addEvent(&events[i]);
+       Solenoids::closeLOX; 
+
+      if (!Solenoids::getProp5()) { 
+  
+        state_setShutdown();
+        _autoEventTracker = SHUTDOWN_START + 2;
+     
       }
     } else { // Prop is out
-      if (Solenoids::getLox5()) { // Lox is still open
-        autoEvent events[2];
-        events[0] = {0, &(act_armCloseProp), false};
-        events[1] = {750, &(Solenoids::disarmLOX)};
-        for (int i = 0; i < 2; i++) addEvent(&events[i]);
 
-      } else { // Lox is already closed, shutdown
-        _flowing = false;
-        autoEvent events[4];
-        events[0] = {0, &(act_armCloseProp), false};
-        events[1] = {0, &(Solenoids::closeHighPressureSolenoid), false};
-        events[2] = {750, &(Solenoids::disarmLOX), false};
-        events[3] = {0, &(act_openGems), false};
-        for (int i = 0; i < 4; i++) addEvent(&events[i]);
+      Solenoids::closePropane; 
+
+      if (!Solenoids::getLox5()) { 
+
+        state_setShutdown();
+        _autoEventTracker = SHUTDOWN_START + 2;
       }
+
     }
 
   }
 
-  void detectPeaks(float loxInjector, float propInjector) {
+  bool detectPeaks(float loxInjector, float propInjector) {
+
+    bool ret1 = false;
+    bool ret2 = false;
 
     if (Solenoids::getLox5()) { //if LOX Main valve open
-      detectPeak(loxInjector, 0);
+      ret1 = detectPeak(loxInjector, 0);
     }
     if (Solenoids::getProp5()) { //if Prop Main valve open
-      detectPeak(propInjector, 1);
+      ret2 = detectPeak(propInjector, 1);
     }
+
+    return ret1 || ret2;
   }
 
   /*
@@ -495,7 +491,9 @@ namespace Automation {
    *   1 - Propane
    *   Assumes this is only called if the main given valve is actually open
    */
-  void detectPeak(float currentPressure, int recordingIndex) {
+  bool detectPeak(float currentPressure, int recordingIndex) {
+
+    bool action_taken = false;
 
     if (sizes[recordingIndex] == 5) {
 
@@ -512,6 +510,7 @@ namespace Automation {
 
         //initiate shutdown
         autoShutdown(recordingIndex);
+        action_taken = true;
       }
       //removing first element of previous Pressures array, adding new Pressure to the end
       memmove(prevPressures[recordingIndex], prevPressures[recordingIndex] + 1, sizeof(float)*(4));
@@ -521,5 +520,8 @@ namespace Automation {
       prevPressures[recordingIndex][sizes[recordingIndex]] = currentPressure;
       sizes[recordingIndex]++;
     }
+
+    return action_taken;
+
   }
 } //Automation

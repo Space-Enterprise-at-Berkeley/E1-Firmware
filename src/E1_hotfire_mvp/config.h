@@ -14,8 +14,6 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
-#define AUTO_SHUTDOWN_START 10
-
 std::string str_file_name = "E1_coldflow_v21.txt";
 const char * file_name = str_file_name.c_str();
 
@@ -127,8 +125,8 @@ Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &S
 CommandArray commands(numCommands, backingStore);
 
 // Automation
-Automation::autoEvent autoEvents[13];
-const int burnTime = 6*1000;
+Automation::autoEvent autoEvents[16];
+const int burnTime = 30*1000;
 
 namespace config {
   void setup() {
@@ -192,8 +190,9 @@ namespace config {
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
     autoEvents[3] = {2000, &(Automation::act_openLox), false}; //checks for igniter current, if enabled. 
     autoEvents[4] = {0, &(Solenoids::openPropane), false}; // T-0
-    autoEvents[5] = {750, &(Automation::state_setFlowing), false};
-    autoEvents[6] = {burnTime - 750, &(Solenoids::closePropane), false};
+    autoEvents[5] = {1000, &(Automation::state_setFlowing), false};
+    autoEvents[6] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[6] = {burnTime - 1000, &(Solenoids::closePropane), false};
     autoEvents[7] = {0, &(Automation::state_setShutdown), false};
     autoEvents[8] = {200, &(Solenoids::closeLOX), false};
     autoEvents[9] = {650, &(Automation::act_depressurize), false};
@@ -202,11 +201,11 @@ namespace config {
 
 
     debug("Initializing Shutdown Sequence");
-    autoEvents[10] = {0, &(Automation::act_armCloseProp), false};
-    autoEvents[11] = {200, &(Solenoids::closeLOX), false};
-    autoEvents[12] = {0, &(Automation::act_depressurize), false};
-    autoEvents[13] = {650, &(Solenoids::disarmLOX), false};
-    autoEvents[14] = {0, &(Automation::state_setFlowOver), false};
+    autoEvents[11] = {0, &(Automation::act_armCloseProp), false};
+    autoEvents[12] = {200, &(Solenoids::closeLOX), false};
+    autoEvents[13] = {0, &(Automation::act_depressurize), false};
+    autoEvents[14] = {650, &(Solenoids::disarmLOX), false};
+    autoEvents[15] = {0, &(Automation::state_setFlowOver), false};
 
 
     // autoEvents[5] = {300, &(Automation::state_setFlowing), false};

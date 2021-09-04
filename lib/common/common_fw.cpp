@@ -19,7 +19,7 @@ union floatArrToBytes farrbconvert;
 #ifdef ETH
 EthernetUDP Udp;
 byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xFC
 };
 unsigned int port = 42069; // try to find something that can be the same on gs
 const uint8_t numGrounds = 2;
