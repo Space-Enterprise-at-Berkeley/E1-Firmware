@@ -348,6 +348,9 @@ namespace Solenoids {
   }
 
   int openLOX() {
+
+    digitalWrite(lox_gems_pin, 1);
+
     if (lox5_state == 0) {
       toggleLOX5Way();
     } else {
@@ -357,6 +360,9 @@ namespace Solenoids {
   }
 
   int closeLOX() {
+
+    digitalWrite(lox_gems_pin, 0);
+
     if (lox5_state == 1) {
       toggleLOX5Way();
     } else {
@@ -366,6 +372,9 @@ namespace Solenoids {
   }
 
   int openPropane() {
+
+    digitalWrite(prop_gems_pin, 1);
+
     if (prop5_state == 0) {
       toggleProp5Way();
     } else {
@@ -375,6 +384,9 @@ namespace Solenoids {
   }
 
   int closePropane() {
+
+    digitalWrite(prop_gems_pin, 0);
+
     if(prop5_state == 1){
       toggleProp5Way();
     } else {
