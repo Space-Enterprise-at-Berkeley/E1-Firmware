@@ -190,7 +190,7 @@ namespace config {
     autoEvents[0] = {0, &(Automation::act_closeGems), false};
     autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
     autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
-    autoEvents[3] = {2000, &(Automation::act_openLox), false}; //checks for igniter current, if enabled. 
+    autoEvents[3] = {2000, &(Automation::act_armOpenBoth), false}; //checks for igniter current, if enabled. 
     autoEvents[4] = {0, &(Solenoids::openPropane), false}; // T-0
     autoEvents[5] = {750, &(Automation::state_setFlowing), false};
     autoEvents[6] = {burnTime - 750, &(Solenoids::closePropane), false};
