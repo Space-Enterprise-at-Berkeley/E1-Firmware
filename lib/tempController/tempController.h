@@ -129,7 +129,7 @@ class HeaterCommand : public Command, public TempController {
 
     void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
       outputMonitor.begin(wire, inaAddr);
-      outputMonitor.configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+      outputMonitor.configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
       outputMonitor.calibrate(shuntR, maxExpectedCurrent);
     }
 };
