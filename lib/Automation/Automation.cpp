@@ -5,11 +5,16 @@
 
 #include "Automation.h"
 
+
+
 using namespace std;
 
 namespace Automation {
 
-//-----------------------Variables-----------------------
+
+  const bool IGNITER_DETECT_ENABLED = false;
+
+  //-----------------------Variables-----------------------
 
   int _autoEventTracker = 0;
 
@@ -145,12 +150,22 @@ namespace Automation {
   int state_setFlowing() {
     _startup = false;
     _flowing = true;
+    _shutdown = false;
     Serial.println("Flow has begun");
   }
 
   int state_setShutdown() {
+    _startup = false;
     _flowing = false;
     _shutdown = true;
+
+    // TODO: deal with igniterGood here?
+  }
+
+   int state_setFlowOver() {
+    _startup = false;
+    _flowing = false;
+    _shutdown = false;
   }
 
   int act_pressurizeTanks() {
@@ -171,11 +186,17 @@ namespace Automation {
     return 0;
   }
 
-  int act_openLoxIfIgniter() {
-    if(igniterGood) {
-      Solenoids::openLOX();
+  int act_openLox() {
+
+    if (IGNITER_DETECT_ENABLED) { 
+      if(igniterGood) {
+        Solenoids::openLOX();
+        return 0;
+      } else {
+        return -2;
+      }
     } else {
-      return -2;
+      Solenoids::openLOX();
     }
   }
 
@@ -281,6 +302,7 @@ namespace Automation {
 
       _autoEventTracker = 0;
 
+      // record the current time
       _startupTimer = millis();
 
       // autoEvent events[4];
