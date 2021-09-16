@@ -36,11 +36,11 @@ namespace Solenoids {
   void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent, LTC4151 *pressurantMonitor, float pressurantSolMonShuntR);
 
   int toggleHighPressureSolenoid();
-  int toggleLOX2Way();
-  int toggleLOX5Way();
+  int toggleLOX2Way(); // arming valve
+  int toggleLOX5Way();// lox main valve
   int toggleLOXGems();
-  int toggleProp2Way();
-  int toggleProp5Way();
+  int toggleProp2Way(); // igniter
+  int toggleProp5Way(); // fuel main valve
   int togglePropGems();
   int openHighPressureSolenoid();
   int closeHighPressureSolenoid();
