@@ -2,12 +2,7 @@
    Main code for DAQ - vamshi
 */
 
-#include "config.h"
-
-#include <ducer.h>
-#include <tempController.h>
-#include <batteryMonitor.h>
-#include <powerSupplyMonitor.h>
+#include "config2.h"
 
 #define RFSerial Serial
 
@@ -28,7 +23,7 @@ String packet;
 
 void sensorReadFunc(int id);
 
-Thermocouple::Cryo _cryoTherms;
+Thermocouple::SPI _cryoTherms;
 
 void setup() {
   Wire.begin();
@@ -51,51 +46,12 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD");
-
-  int res = sd.begin(SdioConfig(FIFO_SDIO));
-  if (!res) {
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
-  debug("Opening File");
-  file.open(file_name, O_RDWR | O_CREAT);
-
-  debug("Writing Dummy Data");
-  sdBuffer = new Queue();
-
-  std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
   debug("Initializing Libraries");
 
-  debug("Initializing battery monitor");
-  //batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
-  debug("Initializing power supply monitors");
-  powerSupplyMonitor::init(numPowerSupplyMonitors, powSupMonPointers, powSupMonAddrs, powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &Wire1);
-
-  debug("Initializing ducers");
-  Ducers::init(numPressureTransducers, ptAdcIndices, ptAdcChannels, ptTypes, adsPointers);
-
   debug("Initializing Thermocouples");
-  Thermocouple::Analog::init(numAnalogThermocouples, thermAdcIndices, thermAdcChannels, adsPointers);
 
-  _cryoTherms = Thermocouple::Cryo();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermAddrs, cryoTypes, &Wire, cryoReadsBackingStore);
-  _cryoTherms.lowerI2CSpeed(&Wire);
-
-  debug("Initializing Load Cell");
-  LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  _cryoTherms = Thermocouple::SPI();
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermCS, cryoThermCLK, cryoThermDO, cryoReadsBackingStore);
 }
 
 void loop() {
@@ -182,31 +138,12 @@ void loop() {
  */
 void sensorReadFunc(int id) {
   switch (id) {
-    case 1:
-      debug("pressures all");
-      Ducers::readAllPressures(farrbconvert.sensorReadings);
-      break;
-    // case 2:
-    //   debug("battery stats");
-    //   //batteryMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-    //   break;
-    case 3:
-      debug("Load Cells");
-      LoadCell::readLoadCells(farrbconvert.sensorReadings);
-      break;
     case 4:
       debug("Cryo all");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
-      break;
-    // case 6:
-    //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
-    //   break;
-    case 19:
-      //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
-      Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
       break;
     default:
       Serial.println("some other sensor");
