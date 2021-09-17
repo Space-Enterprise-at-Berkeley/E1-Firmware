@@ -18,8 +18,10 @@ union floatArrToBytes farrbconvert;
 
 #ifdef ETH
 EthernetUDP Udp;
+uint32_t m1 = HW_OCOTP_MAC1;
+uint32_t m2 = HW_OCOTP_MAC0;
 byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+  m1 >> 8, m1 >> 0, m2 >> 24, m2 >> 16, m2 >> 8, m2 >> 0
 };
 unsigned int port = 42069; // try to find something that can be the same on gs
 const uint8_t numGrounds = 2;
