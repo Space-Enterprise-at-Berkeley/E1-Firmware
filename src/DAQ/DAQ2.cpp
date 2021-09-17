@@ -141,6 +141,8 @@ void sensorReadFunc(int id) {
     case 4:
       debug("Cryo all");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      Serial.println("TC1:" + String(farrbconvert.sensorReadings[0]) + " TC2:" + String(farrbconvert.sensorReadings[1]) + " TC3:"
+      + String(farrbconvert.sensorReadings[2]) + " TC4:" + String(farrbconvert.sensorReadings[3]));
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
