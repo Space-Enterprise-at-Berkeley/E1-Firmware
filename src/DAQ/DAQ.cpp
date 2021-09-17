@@ -28,7 +28,11 @@ String packet;
 
 void sensorReadFunc(int id);
 
+#ifdef DAQ1
 Thermocouple::Cryo _cryoTherms;
+#elif DAQ2
+Thermocouple::SPI _cryoTherms;
+#endif
 
 void setup() {
   Wire.begin();
@@ -53,6 +57,7 @@ void setup() {
 
   debug("Initializing Libraries");
 
+  #ifdef DAQ1
   debug("Initializing battery monitor");
   //batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
@@ -70,6 +75,10 @@ void setup() {
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  #elif DAQ2
+  _cryoTherms = Thermocouple::SPI();
+  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermCS, cryoThermCLK, cryoThermDO, cryoReadsBackingStore);
+  #endif
 }
 
 void loop() {
@@ -171,6 +180,8 @@ void sensorReadFunc(int id) {
     case 4:
       debug("Cryo all");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      Serial.println("TC1:" + String(farrbconvert.sensorReadings[0]) + " TC2:" + String(farrbconvert.sensorReadings[1]) + " TC3:"
+      + String(farrbconvert.sensorReadings[2]) + " TC4:" + String(farrbconvert.sensorReadings[3]));
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
