@@ -51,31 +51,7 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD");
-
-  int res = sd.begin(SdioConfig(FIFO_SDIO));
-  if (!res) {
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
-  debug("Opening File");
-  file.open(file_name, O_RDWR | O_CREAT);
-
   debug("Writing Dummy Data");
-  sdBuffer = new Queue();
-
-  std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
 
   debug("Initializing Libraries");
 

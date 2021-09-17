@@ -5,9 +5,6 @@
  */
 #include "common_fw.h"
 
-SdFat sd;
-File file;
-
 bool receivedCommand = false;
 
 int packetCounter = 0;
@@ -151,28 +148,6 @@ uint16_t Fletcher16(uint8_t *data, int count) {
     }
   }
   return (sum2 << 8) | sum1;
-}
-
-/**
- * Add messages to a queue, and every n messages,
- * dequeue everything and dump it onto the sd.
- */
-bool write_to_SD(std::string message, const char * file_name) {
-    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
-    sdBuffer->enqueue(newMessage);
-    if(sdBuffer->length >= qMaxSize) {
-        int initialLength = sdBuffer->length;
-        for(int i = 0; i < initialLength; i++) {
-          uint8_t strLength = sdBuffer->dequeue(buffer);
-          // Serial.println("dequeue: ");
-          // Serial.print(String(buffer));
-          file.write(buffer, strLength);
-        }
-        debug("flushing file");
-        file.flush();
-        return true;
-    }
-    return true;
 }
 
 void readPacketCounter(float *data) {

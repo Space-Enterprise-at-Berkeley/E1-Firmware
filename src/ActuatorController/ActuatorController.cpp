@@ -57,17 +57,6 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD");
-
-  int res = sd.begin(SdioConfig(FIFO_SDIO));
-  if (!res) {
-    packet = make_packet(101, true);
-    Serial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
   // debug("Opening File");
   // file.open(file_name, O_RDWR | O_CREAT);
   //

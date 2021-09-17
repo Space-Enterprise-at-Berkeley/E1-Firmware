@@ -12,7 +12,6 @@
 
 // Arduino Libraries
 #include <SPI.h>
-#include <SdFat.h>
 #include <TimeLib.h>
 #include <Arduino.h>
 #include <Wire.h>
@@ -107,9 +106,6 @@ void sendEthPacket(std::string packet);
 bool write_to_SD(std::string message, const char * file_name);
 
 void debug(String str);
-
-extern SdFat sd;
-extern File file;
 
 extern struct Queue *sdBuffer;
 
