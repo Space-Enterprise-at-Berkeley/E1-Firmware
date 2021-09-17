@@ -65,10 +65,6 @@ void setup() {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
   }
-
-  debug("Writing Dummy Data");
-  sdBuffer = new Queue();
-
   debug("Initializing Libraries");
 
   Solenoids::init(numSolenoids, solenoidPins, numSolenoidCommands, solenoidCommandIds, solenoidINAAddrs, &Wire1, actuatorMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent, &pressurantSolenoidMonitor, pressurantSolMonShuntR);

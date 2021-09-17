@@ -51,8 +51,6 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
-  debug("Writing Dummy Data");
-
   debug("Initializing Libraries");
 
   debug("Initializing battery monitor");
