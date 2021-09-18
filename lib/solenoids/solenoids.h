@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 #include <command.h>
+#include <string>
 #include <INA219.h>
 #include <LTC4151.h>
 
@@ -35,12 +36,19 @@ namespace Solenoids {
 
   void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent, LTC4151 *pressurantMonitor, float pressurantSolMonShuntR);
 
+
+  /*
+  LOX2Way: Arming valve for 150psi 
+  Prop2Way: ignitor \shrug
+  LOX5Way: main valve for LOX
+  Prop5Way: main valve for prop
+  */
   int toggleHighPressureSolenoid();
-  int toggleLOX2Way(); // arming valve
-  int toggleLOX5Way();// lox main valve
+  int toggleLOX2Way();
+  int toggleLOX5Way();
   int toggleLOXGems();
-  int toggleProp2Way(); // igniter
-  int toggleProp5Way(); // fuel main valve
+  int toggleProp2Way();
+  int toggleProp5Way();
   int togglePropGems();
   int openHighPressureSolenoid();
   int closeHighPressureSolenoid();
@@ -71,6 +79,8 @@ namespace Solenoids {
   int getPropGems();
   void getAllStates(float *data);
   void getAllCurrents(float *data);
+  void overcurrentCheck(float *data, int current_limit);
+  void sendOvercurrentPacket(int num);
   void getAllVoltages(float *data);
   bool loxArmed();
   bool propArmed();
@@ -97,7 +107,7 @@ namespace Solenoids {
 
       void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
         outputMonitor.begin(wire, inaAddr);
-        outputMonitor.configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         outputMonitor.calibrate(shuntR, maxExpectedCurrent);
       }
 
