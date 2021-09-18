@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <command.h>
 #include <INA219.h>
+#include <string>
 #include <LTC4151.h>
 
 using namespace std;
@@ -35,6 +36,12 @@ namespace Solenoids {
 
   void init(uint8_t numSolenoids, uint8_t * solenoidPins, uint8_t numCommands, uint8_t * commandIds, uint8_t * outputMonitorAddrs, TwoWire *wire, float shuntR, float maxExpectedCurrent, LTC4151 *pressurantMonitor, float pressurantSolMonShuntR);
 
+  /*
+  LOX2Way: Arming valve for 150psi 
+  Prop2Way: ignitor \shrug
+  LOX5Way: main valve for LOX
+  Prop5Way: main valve for prop
+  */
   int toggleHighPressureSolenoid();
   int toggleLOX2Way(); // arming valve
   int toggleLOX5Way();// lox main valve
@@ -71,6 +78,7 @@ namespace Solenoids {
   int getPropGems();
   void getAllStates(float *data);
   void getAllCurrents(float *data);
+  void overcurrentCheck(float *data, int current_limit);
   void getAllVoltages(float *data);
   bool loxArmed();
   bool propArmed();
