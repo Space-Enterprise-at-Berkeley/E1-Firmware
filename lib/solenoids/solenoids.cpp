@@ -141,41 +141,9 @@ namespace Solenoids {
     data[6] = _pressurantSolenoidMonitor->getLoadCurrent(_pressurantSolenoidMonitorShuntR);
     data[7] = -1;
     data[8] = -1;
-  }
 
-  void overCurrentCheck(float *data, int current_limit) {
-
-    /*
-    LOX2Way: Arming valve
-    Prop2Way: ignitor \shrug
-    LOX5Way: main valve for LOX
-    Prop5Way: main valve for prop
-    */
-    for (int i = 0; i < 4; i++) {
-      if (data[i] > current_limit) {
-        switch (i) {
-          case 0 : if (toggleLOX2Way()==1) {toggleLOX2Way;} //if on, turn off; if off, make sure its off
-          case 1 : if (toggleProp2Way()==1) {toggleProp2Way;}
-          case 2 : if (toggleLOX5Way()==1) {toggleLOX5Way;}
-          case 3 : if (toggleProp5Way()==1) {toggleProp2Way;}
-        }
-
-        data[7] = 1; //flag for if there's an issue: usually -1
-        if (data[8] == -1) {data[8] = 0;}
-        
-        int temp = 1; //was worried about messing up something else by importing math lol
-        for (int j = 0; j < i; j++){temp *= 2;} // bad 2**i loop
-        data[8] += temp; //Binary rep of which solenoid shorts, so if all fail all can be logged at once
-        
-
-        
-      }
-    }
     
   }
-
-
-
 
   void getAllVoltages(float *data) {
     #ifdef DEBUG
