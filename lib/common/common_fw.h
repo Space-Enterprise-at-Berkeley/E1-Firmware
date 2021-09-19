@@ -108,9 +108,6 @@ bool write_to_SD(std::string message, const char * file_name);
 
 void debug(String str);
 
-extern SdFat sd;
-extern File file;
-
 extern struct Queue *sdBuffer;
 
 extern union floatArrToBytes farrbconvert;

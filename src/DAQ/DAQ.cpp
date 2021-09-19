@@ -34,6 +34,10 @@ void setup() {
   Wire.begin();
   Serial.begin(57600);
 
+  for(int i =0; i<6;i++){
+    Serial.print(mac[i], HEX);
+  }
+
   delay(3000);
 
   #ifdef ETH
@@ -49,32 +53,6 @@ void setup() {
   for (int i = 0; i < numSensors; i++) {
     sensor_checks[i][0] = sensors[i].clock_freq;
     sensor_checks[i][1] = 1;
-  }
-
-  debug("Starting SD");
-
-  int res = sd.begin(SdioConfig(FIFO_SDIO));
-  if (!res) {
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
-  debug("Opening File");
-  file.open(file_name, O_RDWR | O_CREAT);
-
-  debug("Writing Dummy Data");
-  sdBuffer = new Queue();
-
-  std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
   }
 
   debug("Initializing Libraries");
