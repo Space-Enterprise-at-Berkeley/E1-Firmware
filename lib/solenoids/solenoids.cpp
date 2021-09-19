@@ -160,6 +160,15 @@ namespace Solenoids {
     data[7] = _pressurantSolenoidMonitor->getInputVoltage();
     data[8] = -1;
   }
+
+  int badTwoPowerIFunction(int i) {
+    int temp = 1;
+    for (int j=0; j<i; j++)
+    {
+      temp = 2*temp;
+    }
+    return temp;
+  }
   
   void overCurrentCheck(float *data, int current_limit) {
 
@@ -172,24 +181,26 @@ namespace Solenoids {
     for (int i = 0; i < 4; i++) {
       if (data[i] > current_limit) {
         switch (i) {
-          case 0 : if (toggleLOX2Way()==1) {toggleLOX2Way;} //if on, turn off; if off, make sure its off
-          case 1 : if (toggleProp2Way()==1) {toggleProp2Way;}
-          case 2 : if (toggleLOX5Way()==1) {toggleLOX5Way;}
-          case 3 : if (toggleProp5Way()==1) {toggleProp2Way;}
+          case 0 : if (toggleLOX2Way()==1) {toggleLOX2Way();} //if on, turn off; if off, make sure its off
+          case 1 : if (toggleProp2Way()==1) {toggleProp2Way();}
+          case 2 : if (toggleLOX5Way()==1) {toggleLOX5Way();}
+          case 3 : if (toggleProp5Way()==1) {toggleProp2Way();}
         }
 
         data[7] = 1; //flag for if there's an issue: usually -1
         if (data[8] == -1) {data[8] = 0;}
 
-        int temp = 1; //was worried about messing up something else by importing math lol
-        for (int j = 0; j < i; j++){temp *= 2;} // bad 2**i loop
-        data[8] += temp; //Binary rep of which solenoid shorts, so if all fail all can be logged at once
+
+        data[8] += badTwoPowerIFunction(i); //Binary rep of which solenoid shorts, so if all fail all can be logged at once
+        //so if solenoid 1 fails, data[8] is dec(10) = 1, if 1 & 3 fail, data[8] is dec(1010) = 10
 
 
 
       }
+    
     }
   }
+
 
 
   bool loxArmed() {
