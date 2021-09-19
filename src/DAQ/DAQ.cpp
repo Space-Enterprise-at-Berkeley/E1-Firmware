@@ -26,12 +26,14 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
+
 void sensorReadFunc(int id);
 
 #ifdef DAQ1
 Thermocouple::Cryo _cryoTherms;
 #elif DAQ2
-Thermocouple::SPI _cryoTherms;
+Thermocouple::SPI_TC _cryoTherms;
+unsigned long lastUpdate;
 #endif
 
 void setup() {
@@ -76,8 +78,9 @@ void setup() {
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
   #elif DAQ2
-  _cryoTherms = Thermocouple::SPI();
-  _cryoTherms.init(numCryoTherms, _cryo_boards, cryoThermCS, cryoThermCLK, cryoThermDO, cryoReadsBackingStore);
+  _cryoTherms = Thermocouple::SPI_TC();
+  _cryoTherms.init(numCryoTherms, cryoThermCS, cryoReadsBackingStore);
+  lastUpdate = 0;
   #endif
 }
 
@@ -136,25 +139,28 @@ void loop() {
   /*
      Code for requesting data and relaying back to ground station
   */
-  for (int j = 0; j < numSensors; j++) {
-    if (sensor_checks[j][0] == sensor_checks[j][1]) {
-      sensor_checks[j][1] = 1;
-    } else {
-      sensor_checks[j][1] += 1;
-      continue;
-    }
-    sensor = &sensors[j];
-    sensorReadFunc(sensor->id);
-    packet = make_packet(sensor->id, false);
-    Serial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-    #ifndef SERIAL_INPUT_DEBUG
-        RFSerial.println(packet);
-    #endif
+  if(millis() - lastUpdate > updatePeriod){
+    lastUpdate = millis();
+    for (int j = 0; j < numSensors; j++) {
+      if (sensor_checks[j][0] == sensor_checks[j][1]) {
+        sensor_checks[j][1] = 1;
+      } else {
+        sensor_checks[j][1] += 1;
+        continue;
+      }
+      sensor = &sensors[j];
+      sensorReadFunc(sensor->id);
+      packet = make_packet(sensor->id, false);
+      Serial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+      #ifndef SERIAL_INPUT_DEBUG
+          RFSerial.println(packet);
+      #endif
 
-    //write_to_SD(packet.c_str(), file_name);
+      //write_to_SD(packet.c_str(), file_name);
+    }
   }
   // delay(10);
 }
@@ -178,7 +184,9 @@ void sensorReadFunc(int id) {
       LoadCell::readLoadCells(farrbconvert.sensorReadings);
       break;
     case 4:
-      debug("Cryo all");
+      #ifdef DEBUG
+      //debug("Cryo all");
+      #endif
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       Serial.println("TC1:" + String(farrbconvert.sensorReadings[0]) + " TC2:" + String(farrbconvert.sensorReadings[1]) + " TC3:"
       + String(farrbconvert.sensorReadings[2]) + " TC4:" + String(farrbconvert.sensorReadings[3]));

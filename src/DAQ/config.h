@@ -66,13 +66,12 @@ const uint8_t numCryoTherms = 4;
 // therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
 // ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
 uint8_t cryoThermCS[numCryoTherms] = {21, 20, 19, 18};
-uint8_t cryoThermCLK = 13;
-uint8_t cryoThermDO = 12; 
-Adafruit_MAX31855 _cryo_boards[numCryoTherms];
 float cryoReadsBackingStore[numCryoTherms];
 
 const uint8_t numSensors = 2;
 sensorInfo sensors[numSensors];
+
+unsigned long updatePeriod = 20;
 
 #endif
 
