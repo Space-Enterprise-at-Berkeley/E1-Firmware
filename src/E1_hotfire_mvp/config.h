@@ -75,7 +75,7 @@ GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
 // Heaters
 const uint8_t numHeaters = 6;
-const uint8_t maxPTHeaterCurrent = 5; //maximum current draw allowed for PT heaters 
+const uint8_t maxPTHeaterCurrent = 4; //maximum current draw allowed for PT heaters 
 //
 
 // uint8_t heaterChannels[numHeaters] = {2, 0, 5, 1};
