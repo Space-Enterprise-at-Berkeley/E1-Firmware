@@ -174,8 +174,12 @@ void sendVersion(){
 
   String packet_content = "99";
   IPAddress currIP = Ethernet.localIP();
+  byte macBuffer[6];  // create a buffer to hold the MAC address
+  Ethernet.MACAddress(macBuffer);
   packet_content += ",";
-  packet_content += "Board Address: " + String(currIP[0]) + "." + String(currIP[1]) + "." + String(currIP[2]) + "." + String(currIP[3]) + " ";
+  packet_content += "Board IP: " + String(currIP[0]) + "." + String(currIP[1]) + "." + String(currIP[2]) + "." + String(currIP[3]) + " ";
+  packet_content += "Board MAC: " + String(mac[0], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[2], HEX) 
+  + ":" + String(mac[3], HEX) + ":" + String(mac[4], HEX) + ":" + String(mac[5], HEX) + " ";
   packet_content += "Git Commit Hash: " + fwCommit + " ";
   packet_content += "Uploaded by: " + fwUsername + " ";
   packet_content += "Project: " + fwProject + " ";
