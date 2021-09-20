@@ -92,6 +92,7 @@ struct sensorInfo {
 
 String make_packet (int id, bool error);
 int8_t processCommand(String packet);
+void sendVersion();
 
 uint16_t Fletcher16 (uint8_t *data, int count);
 

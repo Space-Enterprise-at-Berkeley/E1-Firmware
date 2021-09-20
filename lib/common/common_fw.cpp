@@ -78,6 +78,12 @@ int8_t processCommand(String packet) {
   }
   debug(String(data_start_index));
   int command_id = packet.substring(1,data_start_index).toInt();
+
+  if(command_id == 99){
+    sendVersion();
+    return -1;
+  }
+
   const int data_end_index = packet.indexOf('|');
   if(data_end_index == -1) {
     return -1;
@@ -130,6 +136,66 @@ int8_t processCommand(String packet) {
   } else {
     return -1;
   }
+}
+
+void sendVersion(){
+  #ifdef FW_COMMIT
+  String fwCommit = FW_COMMIT;
+  #endif
+  #ifdef FW_USERNAME
+  String fwUsername = FW_USERNAME;
+  #endif
+  #ifdef FW_BUILD_DATE
+  String fwBuildDate = FW_BUILD_DATE;
+  #endif
+  #ifdef FW_PROJECT
+  String fwProject = FW_PROJECT;
+  #endif
+
+  // memset(farrbconvert.buffer ,0, 36);
+  // fwCommit.getBytes(farrbconvert.buffer, 8);
+  // fwUsername.getBytes(farrbconvert.buffer + 8, 8);
+  // fwProject.getBytes(farrbconvert.buffer + 16, 8);
+  // fwBuildDate.getBytes(farrbconvert.buffer + 24, 12);
+
+  // Serial.println();
+  // for(int i = 0; i<36;i++){
+  //   if(farrbconvert.buffer[i] == 0){
+  //     farrbconvert.buffer[i] = 32;
+  //   }
+  //   Serial.print(farrbconvert.buffer[i], HEX);
+  //   Serial.print(" ");
+  // }
+  // Serial.println();
+
+  // for(int i = 0; i<36;i++){
+  //   Serial.print(farrbconvert.buffer[i]);
+  // }
+
+  String packet_content = "99";
+  IPAddress currIP = Ethernet.localIP();
+  packet_content += ",";
+  packet_content += "Board Address: " + String(currIP[0]) + "." + String(currIP[1]) + "." + String(currIP[2]) + "." + String(currIP[3]) + " ";
+  packet_content += "Git Commit Hash: " + fwCommit + " ";
+  packet_content += "Uploaded by: " + fwUsername + " ";
+  packet_content += "Project: " + fwProject + " ";
+  packet_content += "Uploaded on: " + fwBuildDate;
+
+  int count = packet_content.length();
+  char const *data = packet_content.c_str();
+  uint16_t checksum = Fletcher16((uint8_t *) data, count);
+  packet_content += "|";
+  String check_ = String(checksum, HEX);
+  while(check_.length() < 4) {
+    check_ = "0" + check_;
+  }
+  packet_content += check_;
+  String packet = "{" + packet_content + "}";
+  incrementPacketCounter();
+  Serial.println(packet);
+  #ifdef ETH
+  sendEthPacket(packet.c_str());
+  #endif
 }
 
 /*

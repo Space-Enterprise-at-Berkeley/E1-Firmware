@@ -1,7 +1,7 @@
 /*
-  Cryo_Thermocouple.cpp - A c++ library to interface with heavy duty cryo/high temp
-  thermocouples using the MCP9600 chip.
-  Created by Vamshi Balanaga, Feb 5, 2021.
+  SPI_Thermocouple.h - A c++ library to interface with heavy duty cryo/high temp
+  thermocouples using the MAX31855 chip.
+  Created by Justin Yang, Sep 15, 2021.
 */
 
 #include <SPI_Thermocouple.h>

@@ -81,6 +81,9 @@ const float batteryMonitorMaxExpectedCurrent = 10; // amps
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
+const uint8_t numCommands = 0;
+Command *backingStore[numCommands] = {};
+CommandArray commands(numCommands, backingStore);
 
 
 namespace config {
@@ -136,7 +139,7 @@ namespace config {
   #elif DAQ2
   void setup() {
     debug("Initializing sensors");
-    sensors[0] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
+    sensors[0] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 1};
     sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
   }
   #endif 
