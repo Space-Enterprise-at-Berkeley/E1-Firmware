@@ -139,8 +139,8 @@ namespace Solenoids {
     data[4] = lox_G.outputMonitor.readShuntCurrent();
     data[5] = prop_G.outputMonitor.readShuntCurrent();
     data[6] = _pressurantSolenoidMonitor->getLoadCurrent(_pressurantSolenoidMonitorShuntR);
-    data[7] = -1;
-    data[8] = -1;
+    data[7] = 0;
+    data[8] = 0;
 
     
   }
@@ -187,7 +187,7 @@ namespace Solenoids {
           case 3 : if (toggleProp5Way()==1) {toggleProp2Way();}
         }
 
-        data[7] = 1; //flag for if there's an issue: usually -1
+        data[7] = 1; //flag for if there's an issue: usually 0
         if (data[8] == -1) {data[8] = 0;}
 
 

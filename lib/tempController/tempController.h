@@ -127,14 +127,14 @@ class HeaterCommand : public Command, public TempController {
       return outputMonitor.readBusVoltage();
     }
 	
-	float checkOvercurrent(float currentDraw, float maxCurrent) {
+	  float checkOvercurrent(float currentDraw, float maxCurrent) {
       if (currentDraw > maxCurrent) {
         humanOverride = true; //heater is turned off, until another human signal is sent/control loop toggle is resent
         humanSpecifiedValue = 0;
         controlTemp(0); //to trigger controlTemp and set pin to 0
         return 1;
       }
-      return -1;
+      return 0;
     }
 
     void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
