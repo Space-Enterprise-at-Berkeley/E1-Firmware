@@ -179,7 +179,9 @@ namespace Solenoids {
     Prop5Way: main valve for prop
     */
     for (int i = 0; i < 4; i++) {
+      Serial.print("current"+(String)i + "  " + (String)data[i]+"\n");
       if (data[i] > current_limit) {
+        Serial.println("triggered " + (String)i);
         switch (i) {
           case 0 : if (toggleLOX2Way()==1) {toggleLOX2Way();} //if on, turn off; if off, make sure its off
           case 1 : if (toggleProp2Way()==1) {toggleProp2Way();}

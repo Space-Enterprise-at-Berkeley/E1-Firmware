@@ -274,7 +274,7 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[1] = loxTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = loxTankPTHeater.readCurrentDraw();
       farrbconvert.sensorReadings[3] = loxTankPTHeater.readBusVoltage();
-      farrbconvert.sensorReadings[4] = loxTankPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent); //packet[5] is 1 if faulty, -1 if normal
+      //farrbconvert.sensorReadings[4] = loxTankPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent); //packet[5] is 1 if faulty, -1 if normal
 
       break;
     case 1:
@@ -318,7 +318,7 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[1] = propTankPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = propTankPTHeater.readCurrentDraw();
       farrbconvert.sensorReadings[3] = propTankPTHeater.readBusVoltage();
-      farrbconvert.sensorReadings[4] = propTankPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);//packet[5] is 1 if faulty, -1 if normal
+      //farrbconvert.sensorReadings[4] = propTankPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);//packet[5] is 1 if faulty, -1 if normal
       break;
     case 17:
       debug("static P");
@@ -332,12 +332,12 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[1] = loxInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = loxInjectorPTHeater.readCurrentDraw();
       farrbconvert.sensorReadings[3] = loxInjectorPTHeater.readBusVoltage();
-      farrbconvert.sensorReadings[4] = loxInjectorPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);//packet[5] is 1 if faulty, -1 if normal
+      //farrbconvert.sensorReadings[4] = loxInjectorPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);//packet[5] is 1 if faulty, -1 if normal
       break;
     case 21:
       debug("solenoid currents");
       Solenoids::getAllCurrents(farrbconvert.sensorReadings);
-      Solenoids::overcurrentCheck(farrbconvert.sensorReadings, maxSolenoidCurrent);
+      //Solenoids::overCurrentCheck(farrbconvert.sensorReadings, maxSolenoidCurrent);
       if(Automation::inStartup()) {
         // check if igniter went off
         Automation::igniterGood = farrbconvert.sensorReadings[1] > 0.06 || Automation::igniterGood;
@@ -353,7 +353,7 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[1] = propInjectorPTHeater.controlTemp(farrbconvert.sensorReadings[0]); // heater is not used for waterflows.
       farrbconvert.sensorReadings[2] = propInjectorPTHeater.readCurrentDraw();
       farrbconvert.sensorReadings[3] = propInjectorPTHeater.readBusVoltage();
-      farrbconvert.sensorReadings[4] = propInjectorPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);//packet[5] is 1 if faulty, -1 if normal
+      //farrbconvert.sensorReadings[4] = propInjectorPTHeater.checkOvercurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);//packet[5] is 1 if faulty, -1 if normal
       break;
     default:
       Serial.println("some other sensor");
