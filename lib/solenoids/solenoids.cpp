@@ -140,8 +140,8 @@ namespace Solenoids {
     data[4] = lox_G.outputMonitor.readShuntCurrent();
     data[5] = prop_G.outputMonitor.readShuntCurrent();
     data[6] = _pressurantSolenoidMonitor->getLoadCurrent(_pressurantSolenoidMonitorShuntR);
-    data[7] = -1;
-    data[8] = -1;
+    data[7] = 0;
+    data[8] = 0;
   }
 
   void getAllVoltages(float *data) {
