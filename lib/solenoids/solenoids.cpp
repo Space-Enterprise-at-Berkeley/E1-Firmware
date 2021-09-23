@@ -159,7 +159,7 @@ namespace Solenoids {
     data[7] = _pressurantSolenoidMonitor->getInputVoltage();
     data[8] = -1;
   }
-    void overCurrentCheck(float *data, int current_limit) {
+    void overCurrentCheck(float *data, float current_limit) {
 
     /*
     LOX2Way: Arming valve
