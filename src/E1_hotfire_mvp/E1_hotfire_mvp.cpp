@@ -365,6 +365,7 @@ void sensorReadFunc(int id) {
     case 21:
       debug("solenoid currents");
       Solenoids::getAllCurrents(farrbconvert.sensorReadings);
+      Solenoids::overCurrentCheck(farrbconvert.sensorReadings, 1);
       if(Automation::inStartup()) {
         // check if igniter went off
         Automation::igniterGood = farrbconvert.sensorReadings[1] > 0.06 || Automation::igniterGood;

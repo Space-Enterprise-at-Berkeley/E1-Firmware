@@ -71,6 +71,7 @@ namespace Solenoids {
   int getPropGems();
   void getAllStates(float *data);
   void getAllCurrents(float *data);
+  void overCurrentCheck(float *data, int current_limit);
   void getAllVoltages(float *data);
   bool loxArmed();
   bool propArmed();
