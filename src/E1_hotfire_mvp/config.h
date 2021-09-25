@@ -134,7 +134,7 @@ Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &S
 CommandArray commands(numCommands, backingStore);
 
 // Automation
-Automation::autoEvent autoEvents[16];
+Automation::autoEvent autoEvents[15];
 const int burnTime = 3*1000;
 
 namespace config {
@@ -194,26 +194,25 @@ namespace config {
   
     // Automation Sequences
     debug("Initializing Ignition Sequence");
-    autoEvents[0] = {0, &(Automation::act_closeGems), false};
-    autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
-    autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
-    autoEvents[3] = {2000, &(Automation::act_armOpenBoth), false}; //checks for igniter current, if enabled. 
-    autoEvents[4] = {0, &(Solenoids::openPropane), false}; // T-0
-    autoEvents[5] = {750, &(Automation::state_setFlowing), false};
-    autoEvents[6] = {burnTime - 750, &(Solenoids::closePropane), false};
-    autoEvents[7] = {0, &(Automation::state_setShutdown), false};
-    autoEvents[8] = {200, &(Solenoids::closeLOX), false};
-    autoEvents[9] = {650, &(Automation::act_depressurize), false};
-    autoEvents[10] = {0, &(Automation::state_setFlowOver), false};
+    autoEvents[0] = {1000, &(Solenoids::armAll), false}; // igniter
+    autoEvents[1] = {2000, &(Automation::act_armOpenBoth), false}; //checks for igniter current, if enabled. 
+    autoEvents[2] = {0, &(Solenoids::openPropane), false}; // T-0
+    autoEvents[3] = {750, &(Automation::state_setFlowing), false};
+    autoEvents[4] = {burnTime - 750, &(Solenoids::closePropane), false};
+    autoEvents[5] = {0, &(Automation::state_setShutdown), false};
+    autoEvents[6] = {200, &(Solenoids::closeLOX), false};
+    autoEvents[7] = {650, &(Solenoids::disarmLOX), false};
+    autoEvents[8] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[9] = {0, &(Automation::state_setFlowOver), false};
     
 
 
     debug("Initializing Shutdown Sequence");
-    autoEvents[11] = {0, &(Automation::act_armCloseProp), false};
-    autoEvents[12] = {200, &(Solenoids::closeLOX), false};
-    autoEvents[13] = {0, &(Automation::act_depressurize), false};
-    autoEvents[14] = {650, &(Solenoids::disarmLOX), false};
-    autoEvents[15] = {0, &(Automation::state_setFlowOver), false};
+    autoEvents[10] = {0, &(Automation::act_armCloseProp), false};
+    autoEvents[11] = {200, &(Solenoids::closeLOX), false};
+    autoEvents[12] = {0, &(Automation::act_depressurize), false};
+    autoEvents[13] = {650, &(Solenoids::disarmLOX), false};
+    autoEvents[14] = {0, &(Automation::state_setFlowOver), false};
 
 
     // autoEvents[5] = {300, &(Automation::state_setFlowing), false};
