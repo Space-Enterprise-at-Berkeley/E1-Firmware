@@ -126,7 +126,7 @@ class HeaterCommand : public Command, public TempController {
     float readBusVoltage() {
       return outputMonitor.readBusVoltage();
     }
-  float checkOvercurrent(float currentDraw, float maxCurrent) {
+  float checkOverCurrent(float currentDraw, float maxCurrent) {
       if (currentDraw > maxCurrent) {
         humanOverride = true; //heater is turned off, until another human signal is sent/control loop toggle is resent
         humanSpecifiedValue = 0;
