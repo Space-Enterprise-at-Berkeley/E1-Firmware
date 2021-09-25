@@ -83,7 +83,7 @@ const uint8_t numHeaters = 6;
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 45, 42, 43, 44};
 uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
-float maxPTHeaterCurrent = 4.0;
+float maxPTHeaterCurrent = 3.0;
 //removed 0x4E,
 // uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
@@ -104,7 +104,7 @@ uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
 uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x41, 0x43, 0x45};
-float maxSolenoidCurrent = 2.0;
+float maxSolenoidCurrent = 1.0;
 
 LTC4151 pressurantSolenoidMonitor;
 float pressurantSolMonShuntR = 0.02;
