@@ -79,11 +79,6 @@ int8_t processCommand(String packet) {
   debug(String(data_start_index));
   int command_id = packet.substring(1,data_start_index).toInt();
 
-  if(command_id == 99){
-    sendVersion();
-    return -1;
-  }
-
   const int data_end_index = packet.indexOf('|');
   if(data_end_index == -1) {
     return -1;
@@ -117,6 +112,10 @@ int8_t processCommand(String packet) {
   int _check = (int)Fletcher16((uint8_t *) data, count);
   if (_check == checksum) {
     debug("Checksum correct, taking action");
+    if(command_id == 99){
+      sendVersion();
+      return -1;
+    }
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
     if (tmpCommand != nullptr) {
       debug("valid command");
