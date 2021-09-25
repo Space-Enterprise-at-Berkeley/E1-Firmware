@@ -6,7 +6,7 @@
 #include "common_fw.h"
 
 SdFat sd;
-File file;
+FsFile file;
 
 bool receivedCommand = false;
 
