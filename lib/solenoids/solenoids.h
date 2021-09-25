@@ -71,6 +71,7 @@ namespace Solenoids {
   int getPropGems();
   void getAllStates(float *data);
   void getAllCurrents(float *data);
+  void overCurrentCheck(float *data, float current_limit);
   void getAllVoltages(float *data);
   bool loxArmed();
   bool propArmed();
@@ -97,7 +98,7 @@ namespace Solenoids {
 
       void initINA219(TwoWire *wire, uint8_t inaAddr, float shuntR, float maxExpectedCurrent) {
         outputMonitor.begin(wire, inaAddr);
-        outputMonitor.configure(INA219_RANGE_16V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        outputMonitor.configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         outputMonitor.calibrate(shuntR, maxExpectedCurrent);
       }
 
