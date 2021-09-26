@@ -35,11 +35,11 @@ ADC * adsPointers[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {7};
 
 const uint8_t numPressureTransducers = 1;
 uint8_t ptAdcIndices[numPressureTransducers] = {0};
-uint8_t ptAdcChannels[numPressureTransducers] = {3};
+uint8_t ptAdcChannels[numPressureTransducers] = {6};
 uint32_t ptTypes[numPressureTransducers] = {150};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
@@ -50,7 +50,7 @@ INA * powSupMonPointers[numPowerSupplyMonitors];
 const uint8_t numLoadCells = 3;
 byte lcSckPins[numLoadCells] = {38, 10, 25};
 byte lcDoutPins[numLoadCells] = {39, 9, 24};
-float lcCalVals[numLoadCells] = {4000, -4000, -4000};
+float lcCalVals[numLoadCells] = {-2520, 2660, -4000};
 HX711 loadcells[numLoadCells];
 // HX711 loadcell1, loadcell2;
 
