@@ -83,6 +83,7 @@ const uint8_t numHeaters = 6;
 uint8_t heaterChannels[numHeaters] = {2, 3, 1, 0, 4, 5};
 uint8_t heaterCommandIds[numHeaters] = {40, 41, 45, 42, 43, 44};
 uint8_t heaterINAAddrs[numHeaters] = {0x4B, 0x4C, 0x4A, 0x49, 0x4D, 0x4E};
+float maxPTHeaterCurrent = 3.0;
 //removed 0x4E,
 // uint8_t heaterINAAddr[numHeaters] = {0x42, 0x43};
 
@@ -97,12 +98,16 @@ HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[2], 
 const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
 
+//Slow down rate of readings of thermocouple sensors
+int changeThermoReadRate();
+
 // Solenoids
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
 uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  2,  0, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
 uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x41, 0x43, 0x45};
+float maxSolenoidCurrent = 1.0;
 
 LTC4151 pressurantSolenoidMonitor;
 float pressurantSolMonShuntR = 0.02;
@@ -118,17 +123,19 @@ const float actuatorMonitorShuntR = 0.033; // ohms
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
-const uint8_t numCommands = 18;
+AutomationSequenceCommand toggleThermoRate("Toggle Read Rate", 65, &changeThermoReadRate, &changeThermoReadRate);
+
+const uint8_t numCommands = 19;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
                                         &Solenoids::prop_2, &Solenoids::prop_5, &Solenoids::prop_G,
                                         &Solenoids::high_p, &Solenoids::high_p_enable, &Solenoids::arm_rocket, &Solenoids::launch,
                                         &fullFlow, &loxFlow, &loxTankPTHeater, &loxGemsHeater, &loxInjectorPTHeater, &propTankPTHeater,
-                                        &propGemsHeater, &propInjectorPTHeater};
+                                        &propGemsHeater, &propInjectorPTHeater, &toggleThermoRate};
 CommandArray commands(numCommands, backingStore);
 
 // Automation
-Automation::autoEvent autoEvents[13];
-const int burnTime = 30*1000;
+Automation::autoEvent autoEvents[15];
+const int burnTime = 3*1000;
 
 namespace config {
   void setup() {
@@ -147,7 +154,7 @@ namespace config {
     debug("Initializing Power Supply monitors");
     for (int i = 0; i < numPowerSupplyMonitors; i++) {
         powerSupplyMonitors[i].begin(&Wire, powSupMonAddrs[i]);
-        powerSupplyMonitors[i].configure(INA219_RANGE_32V, INA219_GAIN_40MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
+        powerSupplyMonitors[i].configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
         powSupMonPointers[i] = &powerSupplyMonitors[i];
     }
@@ -187,17 +194,16 @@ namespace config {
   
     // Automation Sequences
     debug("Initializing Ignition Sequence");
-    autoEvents[0] = {0, &(Automation::act_closeGems), false};
-    autoEvents[1] = {2300, &(Automation::act_pressurizeTanks), false};
-    autoEvents[2] = {1000, &(Solenoids::armAll), false}; // igniter
-    autoEvents[3] = {2000, &(Automation::act_armOpenBoth), false}; //checks for igniter current, if enabled. 
-    autoEvents[4] = {0, &(Solenoids::openPropane), false}; // T-0
-    autoEvents[5] = {750, &(Automation::state_setFlowing), false};
-    autoEvents[6] = {burnTime - 750, &(Solenoids::closePropane), false};
-    autoEvents[7] = {0, &(Automation::state_setShutdown), false};
-    autoEvents[8] = {200, &(Solenoids::closeLOX), false};
-    autoEvents[9] = {650, &(Automation::act_depressurize), false};
-    autoEvents[10] = {0, &(Automation::state_setFlowOver), false};
+    autoEvents[0] = {1000, &(Solenoids::armAll), false}; // igniter
+    autoEvents[1] = {2000, &(Automation::act_armOpenBoth), false}; //checks for igniter current, if enabled. 
+    autoEvents[2] = {0, &(Solenoids::openPropane), false}; // T-0
+    autoEvents[3] = {750, &(Automation::state_setFlowing), false};
+    autoEvents[4] = {burnTime - 750, &(Solenoids::closePropane), false};
+    autoEvents[5] = {0, &(Automation::state_setShutdown), false};
+    autoEvents[6] = {200, &(Solenoids::closeLOX), false};
+    autoEvents[7] = {650, &(Solenoids::disarmLOX), false};
+    autoEvents[8] = {0, &(Solenoids::disarmPropane), false};
+    autoEvents[9] = {0, &(Automation::state_setFlowOver), false};
     
 
 

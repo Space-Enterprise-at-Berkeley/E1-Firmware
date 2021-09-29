@@ -4,6 +4,7 @@
 */
 
 #include "solenoids.h"
+#include "math.h"
 
 using namespace std;
 
@@ -139,7 +140,7 @@ namespace Solenoids {
     data[4] = lox_G.outputMonitor.readShuntCurrent();
     data[5] = prop_G.outputMonitor.readShuntCurrent();
     data[6] = _pressurantSolenoidMonitor->getLoadCurrent(_pressurantSolenoidMonitorShuntR);
-    data[7] = -1;
+    data[7] = 0;
     data[8] = -1;
   }
 
@@ -156,8 +157,43 @@ namespace Solenoids {
     data[5] = prop_G.outputMonitor.readBusVoltage();
     data[6] = _pressurantSolenoidMonitor->getADCInVoltage() * 162.7 / 4.7;
     data[7] = _pressurantSolenoidMonitor->getInputVoltage();
+    //Serial.println(data[7]);
     data[8] = -1;
   }
+    void overCurrentCheck(float *data, float current_limit) {
+
+    /*
+    LOX2Way: Arming valve
+    Prop2Way: ignitor \shrug
+    LOX5Way: main valve for LOX
+    Prop5Way: main valve for prop
+    */
+    for (int i = 0; i < 4; i++) {
+      //Serial.print("current"+(String)i + "  " + (String)data[i]+"\n");
+      if (data[i] > current_limit) {
+        Serial.println("triggered " + (String)i);
+        switch (i) {
+          case 0 : if (toggleLOX2Way()==1) {toggleLOX2Way();} break;//if on, turn off; if off, make sure its off
+          case 1 : if (toggleProp2Way()==1) {toggleProp2Way();} break;
+          case 2 : closeLOX(); break;
+          case 3 : closePropane();break;
+        }
+
+        if (data[7] == -1) {data[7] = 0;}
+
+
+        data[7] += pow(2,i); //Binary rep of which solenoid shorts, so if all fail all can be logged at once
+        //so if solenoid 1 fails, data[8] is dec(10) = 1, if 1 & 3 fail, data[8] is dec(1010) = 10
+
+
+
+      }
+    
+    }
+       //data[7] += 5;
+       //Serial.println(data[7]);
+
+    }
 
   bool loxArmed() {
     return lox2_state == 1;
@@ -322,6 +358,9 @@ namespace Solenoids {
   }
 
   int armPropane() {
+    digitalWrite(lox_gems_pin, 1);
+    digitalWrite(prop_gems_pin, 1);
+    
     if (prop2_state == 0) {
       toggleProp2Way();
     } else {
@@ -331,6 +370,8 @@ namespace Solenoids {
   }
 
   int disarmPropane() {
+    digitalWrite(lox_gems_pin, 0);
+    digitalWrite(prop_gems_pin, 0);
     if (prop2_state == 1) {
       toggleProp2Way();
     } else {
@@ -349,7 +390,7 @@ namespace Solenoids {
 
   int openLOX() {
 
-    digitalWrite(lox_gems_pin, 1);
+    //digitalWrite(lox_gems_pin, 1);
 
     if (lox5_state == 0) {
       toggleLOX5Way();
@@ -361,7 +402,7 @@ namespace Solenoids {
 
   int closeLOX() {
 
-    digitalWrite(lox_gems_pin, 0);
+    //digitalWrite(lox_gems_pin, 0);
 
     if (lox5_state == 1) {
       toggleLOX5Way();
@@ -373,7 +414,7 @@ namespace Solenoids {
 
   int openPropane() {
 
-    digitalWrite(prop_gems_pin, 1);
+    //digitalWrite(prop_gems_pin, 1);
 
     if (prop5_state == 0) {
       toggleProp5Way();
@@ -385,7 +426,7 @@ namespace Solenoids {
 
   int closePropane() {
 
-    digitalWrite(prop_gems_pin, 0);
+    //digitalWrite(prop_gems_pin, 0);
 
     if(prop5_state == 1){
       toggleProp5Way();

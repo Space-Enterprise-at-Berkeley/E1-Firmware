@@ -93,6 +93,7 @@ struct sensorInfo {
 
 String make_packet (int id, bool error);
 int8_t processCommand(String packet);
+void sendVersion();
 
 uint16_t Fletcher16 (uint8_t *data, int count);
 
@@ -109,7 +110,7 @@ bool write_to_SD(std::string message, const char * file_name);
 void debug(String str);
 
 extern SdFat sd;
-extern File file;
+extern FsFile file;
 
 extern struct Queue *sdBuffer;
 

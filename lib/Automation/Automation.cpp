@@ -293,8 +293,7 @@ namespace Automation {
     // flowtype = BOTH_COLD;
     Serial.println("eventlist len: " + String(_eventList.length));
     Serial.flush();
-    _startup = !Solenoids::getHPS() &&
-        !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
+    _startup = !Solenoids::getLox2() && !Solenoids::getLox5() && !Solenoids::getProp5();
     Serial.println("startup: " + String(_startup));
     if (_startup) {
       Serial.println("Eureka-1 is in Startup");
