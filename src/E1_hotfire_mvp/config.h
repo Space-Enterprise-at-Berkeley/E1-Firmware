@@ -98,8 +98,9 @@ HeaterCommand propInjectorPTHeater("propInjectorPTHeater", heaterCommandIds[2], 
 const uint8_t numSensors = 13;
 sensorInfo sensors[numSensors];
 
-//Slow down rate of readings of thermocouple sensors
-int changeThermoReadRate();
+//Toggle readings of thermocouple sensors
+int startThermoReadRate();
+int stopThermoReadRate();
 
 // Solenoids
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
@@ -123,7 +124,7 @@ const float actuatorMonitorShuntR = 0.033; // ohms
 AutomationSequenceCommand fullFlow("Perform Flow", 29, &(Automation::beginBothFlow), &(Automation::endBothFlow));
 AutomationSequenceCommand loxFlow("Perform LOX Flow", 30, &(Automation::beginLoxFlow), &(Automation::endLoxFlow));
 
-AutomationSequenceCommand toggleThermoRate("Toggle Read Rate", 65, &changeThermoReadRate, &changeThermoReadRate);
+AutomationSequenceCommand toggleThermoRate("Toggle Read Rate", 65, &startThermoReadRate, &stopThermoReadRate);
 
 const uint8_t numCommands = 19;
 Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &Solenoids::lox_G,
