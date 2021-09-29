@@ -402,9 +402,17 @@ void sensorReadFunc(int id) {
 }
 
 /*
- * Slow down rate of readings of thermocouple sensors
+ * Turn off readings from the thermocouple sensors
  */
-int changeThermoReadRate() {
+int stopThermoReadRate() {
   sensor_checks[4][0] = 0; //4 is index of thermocouple packet
   return 0; //isn't used
+}
+
+/*
+ * Turn on readings from the thermocouple sensors
+ */
+int startThermoReadRate() {
+  sensor_checks[4][0] = sensors[4].clock_freq;
+  return 0;
 }
