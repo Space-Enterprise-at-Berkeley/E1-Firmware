@@ -149,27 +149,27 @@ void loop() {
   }
 
 
-  // if (Automation::_eventList->length > 0) {
-  //   Serial.print(Automation::_eventList->length);
-  //   Serial.println(" events remain");
-  //   Automation::autoEvent* e = &(Automation::_eventList->events[0]);
-  //   if (millis() - Automation::_eventList->timer > e->duration) {
-  //
-  //     e->action();
-    //
-    //   //Update valve states after each action
-    //   Solenoids::getAllStates(farrbconvert.sensorReadings);
-    //   packet = make_packet(29, false);
-    //   Serial.println(packet);
-    //   #ifdef ETH
-    //   sendEthPacket(packet.c_str());
-    //   #endif
-    //
-    //   Automation::removeEvent();
-    //   //reset timer
-    //   Automation::_eventList->timer = millis();
-    // }
-  // }
+  if (Automation::_eventList->length > 0) {
+    Serial.print(Automation::_eventList->length);
+    Serial.println(" events remain");
+    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
+    if (millis() - Automation::_eventList->timer > e->duration) {
+  
+      e->action();
+    
+      //Update valve states after each action
+      Solenoids::getAllStates(farrbconvert.sensorReadings);
+      packet = make_packet(29, false);
+      Serial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+    
+      Automation::removeEvent();
+      //reset timer
+      Automation::_eventList->timer = millis();
+    }
+  }
 
   LinearActuators::getAllStates(farrbconvert.sensorReadings); // any given index will be a non-zero value if the actuator is not off.
   for (int i = 0; i < numLinActs; i++) {
