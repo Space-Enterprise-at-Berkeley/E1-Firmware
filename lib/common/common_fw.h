@@ -12,6 +12,7 @@
 
 // Arduino Libraries
 #include <SPI.h>
+#include <SdFat.h>
 #include <TimeLib.h>
 #include <Arduino.h>
 #include <Wire.h>
@@ -96,11 +97,15 @@ void sendVersion();
 
 uint16_t Fletcher16 (uint8_t *data, int count);
 
+bool write_to_SD(std::string message, const char * file_name);
+
 void readPacketCounter(float *data);
 void incrementPacketCounter();
 
 bool setupEthernetComms(byte * mac, IPAddress ip);
 void sendEthPacket(std::string packet);
+
+bool write_to_SD(std::string message, const char * file_name);
 
 void debug(String str);
 
