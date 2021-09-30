@@ -50,7 +50,7 @@ void setup() {
   RFSerial.begin(57600);
 
   delay(3000);
-  
+
   #ifdef ETH
   debug("Setup Ethernet");
   setupEthernetComms(mac, ip);
@@ -190,7 +190,7 @@ void loop() {
 
   if (Automation::inStartup() || Automation::inFlow() || Automation::inShutdown()) {
 
-    Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
+    //Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
 
     if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
       Serial.println("executing event");
@@ -211,6 +211,13 @@ void loop() {
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
+
+      if(!InCheckout){
+        if (autoEvents[Automation::_autoEventTracker].report){
+          sendPacket57(autoEvents[Automation::_autoEventTracker].message_id);
+        }
+      }
+
     }
 
   }
@@ -269,7 +276,7 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
-    // Serial.println(packet);
+    //Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
@@ -305,8 +312,6 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[3] = loxTankPTHeater.readBusVoltage();
       farrbconvert.sensorReadings[4] = loxTankPTHeater.checkOverCurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);
       farrbconvert.sensorReadings[5] = -1;
-
-      break;
       break;
     case 1:
       debug("Ducers");
@@ -372,7 +377,7 @@ void sensorReadFunc(int id) {
     case 21:
       debug("solenoid currents");
       Solenoids::getAllCurrents(farrbconvert.sensorReadings);
-    
+
       Solenoids::overCurrentCheck(farrbconvert.sensorReadings, maxSolenoidCurrent);
       //Serial.println("pl");
       if(Automation::inStartup()) {

@@ -109,6 +109,9 @@ bool write_to_SD(std::string message, const char * file_name);
 
 void debug(String str);
 
+void sendPacket57(float sensorvalue);
+int ChangeInCheckout(float sensorvalue);
+
 extern SdFat sd;
 extern FsFile file;
 
@@ -120,6 +123,7 @@ extern const uint8_t numCommands;
 extern CommandArray commands;
 extern int packetCounter;
 extern bool receivedCommand;
+extern bool InCheckout;
 
 extern EthernetUDP Udp;
 extern byte mac[];

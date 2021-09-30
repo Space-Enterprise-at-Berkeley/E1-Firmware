@@ -10,6 +10,7 @@ FsFile file;
 
 bool receivedCommand = false;
 
+bool InCheckout = true;
 int packetCounter = 0;
 
 char buffer[75];
@@ -121,6 +122,10 @@ int8_t processCommand(String packet) {
       sendVersion();
       return -1;
     }
+    if (command_id == 58) {
+      return ChangeInCheckout(command_data[0]);
+
+    }
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
     if (tmpCommand != nullptr) {
       debug("valid command");
@@ -183,7 +188,7 @@ void sendVersion(){
   packet_content += ",";
   #ifdef ETH
   packet_content += "Board IP: " + String(currIP[0]) + "." + String(currIP[1]) + "." + String(currIP[2]) + "." + String(currIP[3]) + " ";
-  packet_content += "Board MAC: " + String(mac[0], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[2], HEX) 
+  packet_content += "Board MAC: " + String(mac[0], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[2], HEX)
   + ":" + String(mac[3], HEX) + ":" + String(mac[4], HEX) + ":" + String(mac[5], HEX) + " ";
   #endif
   packet_content += "Git Commit Hash: " + fwCommit + " ";
@@ -254,6 +259,33 @@ void readPacketCounter(float *data) {
 
 void incrementPacketCounter() {
     packetCounter+=1;
+}
+
+void sendPacket57(float sensorvalue) {
+  farrbconvert.sensorReadings[0] = sensorvalue;
+  farrbconvert.sensorReadings[1] = -1;
+  String packet1;
+  for(int i = 0; i<=2; i ++){
+    packet1 = make_packet(57, false);
+    Serial.println(packet1);
+    #ifdef ETH
+    sendEthPacket(packet1.c_str());
+    #endif
+  }
+}
+
+int ChangeInCheckout(float sensorvalue){
+  if(sensorvalue == 0){
+    InCheckout = true;
+    sendPacket57(15);
+  }
+  if(sensorvalue == 1){
+    InCheckout = false;
+    sendPacket57(16);
+  }
+  farrbconvert.sensorReadings[0] = sensorvalue;
+  farrbconvert.sensorReadings[1] = -1;
+  return 58;
 }
 
 #ifdef ETH
