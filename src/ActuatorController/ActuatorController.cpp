@@ -149,11 +149,11 @@ void loop() {
   }
 
 
-  if (Automation::_eventList->length > 0) {
-    Serial.print(Automation::_eventList->length);
+  if (Automation::_eventList.length > 0) {
+    Serial.print(Automation::_eventList.length);
     Serial.println(" events remain");
-    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
-    if (millis() - Automation::_eventList->timer > e->duration) {
+    Automation::autoEvent* e = &(Automation::_eventList.events[0]);
+    if (millis() - Automation::_eventList.timer > e->duration) {
   
       e->action();
     
@@ -167,7 +167,7 @@ void loop() {
     
       Automation::removeEvent();
       //reset timer
-      Automation::_eventList->timer = millis();
+      Automation::_eventList.timer = millis();
     }
   }
 
@@ -240,24 +240,31 @@ void sensorReadFunc(int id) {
       debug("heater current draw");
       #ifdef AC1
 
-      heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      farrbconvert.sensorReadings[0] = heater1.readCurrentDraw();
+      farrbconvert.sensorReadings[1] = heater2.readCurrentDraw();
       farrbconvert.sensorReadings[2] = 0;
       farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
 
       #elif AC2
 
-      heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      farrbconvert.sensorReadings[0] = heater1.readCurrentDraw();
+      farrbconvert.sensorReadings[1] = heater2.readCurrentDraw();
       farrbconvert.sensorReadings[2] = 0;
       farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
 
+
       #elif AC3
 
-      heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      farrbconvert.sensorReadings[0] = heater1.readCurrentDraw();
+      farrbconvert.sensorReadings[1] = heater2.readCurrentDraw();
       farrbconvert.sensorReadings[2] = 0;
       farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
