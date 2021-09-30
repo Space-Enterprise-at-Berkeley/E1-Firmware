@@ -149,11 +149,11 @@ void loop() {
   }
 
 
-  if (Automation::_eventList->length > 0) {
-    Serial.print(Automation::_eventList->length);
+  if (Automation::_eventList.length > 0) {
+    Serial.print(Automation::_eventList.length);
     Serial.println(" events remain");
-    Automation::autoEvent* e = &(Automation::_eventList->events[0]);
-    if (millis() - Automation::_eventList->timer > e->duration) {
+    Automation::autoEvent* e = &(Automation::_eventList.events[0]);
+    if (millis() - Automation::_eventList.timer > e->duration) {
   
       e->action();
     
@@ -167,7 +167,7 @@ void loop() {
     
       Automation::removeEvent();
       //reset timer
-      Automation::_eventList->timer = millis();
+      Automation::_eventList.timer = millis();
     }
   }
 
