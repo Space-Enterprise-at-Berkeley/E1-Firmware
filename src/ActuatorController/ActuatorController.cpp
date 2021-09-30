@@ -240,24 +240,31 @@ void sensorReadFunc(int id) {
       debug("heater current draw");
       #ifdef AC1
 
-      heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      farrbconvert.sensorReadings[0] = heater1.readCurrentDraw();
+      farrbconvert.sensorReadings[1] = heater2.readCurrentDraw();
       farrbconvert.sensorReadings[2] = 0;
       farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
 
       #elif AC2
 
-      heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      farrbconvert.sensorReadings[0] = heater1.readCurrentDraw();
+      farrbconvert.sensorReadings[1] = heater2.readCurrentDraw();
       farrbconvert.sensorReadings[2] = 0;
       farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
 
+
       #elif AC3
 
-      heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
-      heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      // heater1.readCurrentDraw(farrbconvert.sensorReadings, 0);
+      // heater2.readCurrentDraw(farrbconvert.sensorReadings, 1);
+      farrbconvert.sensorReadings[0] = heater1.readCurrentDraw();
+      farrbconvert.sensorReadings[1] = heater2.readCurrentDraw();
       farrbconvert.sensorReadings[2] = 0;
       farrbconvert.sensorReadings[3] = 0;
       farrbconvert.sensorReadings[4] = -1;
