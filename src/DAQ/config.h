@@ -13,6 +13,8 @@
 #define FLIGHT_BRAIN_ADDR 0x00
 
 #ifdef DAQ1
+std::string str_file_name = "DAQ.txt";	
+const char * file_name = str_file_name.c_str();
 #ifdef ETH
 IPAddress ip(10, 0, 0, 11); // dependent on local network
 #endif
@@ -59,6 +61,8 @@ const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
 
 #elif DAQ2
+std::string str_file_name = "DAQ2.txt";	
+const char * file_name = str_file_name.c_str();
 #ifdef ETH
 IPAddress ip(10, 0, 0, 12); // dependent on local network
 #endif

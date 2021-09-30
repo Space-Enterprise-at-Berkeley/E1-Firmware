@@ -138,6 +138,28 @@ void loop() {
   /*
      Code for requesting data and relaying back to ground station
   */
+  #ifdef DAQ
+  for (int j = 0; j < numSensors; j++) {
+    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+      sensor_checks[j][1] = 1;
+    } else {
+      sensor_checks[j][1] += 1;
+      continue;
+    }
+    sensor = &sensors[j];
+    sensorReadFunc(sensor->id);
+    packet = make_packet(sensor->id, false);
+    Serial.println(packet);
+    #ifdef ETH
+    sendEthPacket(packet.c_str());
+    #endif
+    #ifndef SERIAL_INPUT_DEBUG
+        RFSerial.println(packet);
+    #endif
+
+    //write_to_SD(packet.c_str(), file_name);
+  }
+  #elif DAQ2
   if(millis() - lastUpdate > updatePeriod){
     lastUpdate = millis();
     for (int j = 0; j < numSensors; j++) {
@@ -161,6 +183,7 @@ void loop() {
       //write_to_SD(packet.c_str(), file_name);
     }
   }
+  #endif
   // delay(10);
 }
 
@@ -183,9 +206,7 @@ void sensorReadFunc(int id) {
       LoadCell::readLoadCells(farrbconvert.sensorReadings);
       break;
     case 4:
-      #ifdef DEBUG
-      //debug("Cryo all");
-      #endif
+      debug("Cryo all");
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
       break;
     case 5:
