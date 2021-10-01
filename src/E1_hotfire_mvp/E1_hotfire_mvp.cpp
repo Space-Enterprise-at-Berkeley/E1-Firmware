@@ -266,7 +266,7 @@ void loop() {
      Code for requesting data and relaying back to ground station
   */
   for (int j = 0; j < numSensors; j++) {
-    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+    if (sensor_checks[j][1] == sensor_checks[j][0]) {
       sensor_checks[j][1] = 1;
     } else {
       sensor_checks[j][1] += 1;
@@ -419,5 +419,6 @@ int stopThermoReadRate() {
  */
 int startThermoReadRate() {
   sensor_checks[4][0] = sensors[4].clock_freq;
+  sensor_checks[4][1] = 1;
   return 0;
 }
