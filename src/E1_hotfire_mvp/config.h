@@ -195,15 +195,15 @@ namespace config {
 
     // Automation Sequences
     debug("Initializing Ignition Sequence");
-    autoEvents[0] = {1000, &(Solenoids::armAll), false, 0}; // igniter
+    autoEvents[0] = {1000, &(Solenoids::armAll), true, 8}; // igniter
     autoEvents[1] = {2000, &(Automation::act_armOpenBoth), true, 1}; //checks for igniter current, if enabled.
-    autoEvents[2] = {0, &(Solenoids::openPropane), true, 2}; // T-0
+    autoEvents[2] = {0, &(Solenoids::openPropane), false, 3}; // T-0
     autoEvents[3] = {750, &(Automation::state_setFlowing), false, 0};
-    autoEvents[4] = {burnTime - 750, &(Solenoids::closePropane), true, 4};
+    autoEvents[4] = {burnTime - 750, &(Solenoids::closePropane), true, 5};
     autoEvents[5] = {0, &(Automation::state_setShutdown), false, 0};
-    autoEvents[6] = {200, &(Solenoids::closeLOX), true, 3};
-    autoEvents[7] = {650, &(Solenoids::disarmLOX), false, 0};
-    autoEvents[8] = {0, &(Solenoids::disarmPropane), false, 0};
+    autoEvents[6] = {200, &(Solenoids::closeLOX), true, 4};
+    autoEvents[7] = {650, &(Solenoids::disarmLOX), true, 9};
+    autoEvents[8] = {0, &(Solenoids::disarmPropane), true, 10}; //turn off igniter 
     autoEvents[9] = {0, &(Automation::state_setFlowOver), false, 0};
 
 
@@ -211,8 +211,8 @@ namespace config {
 
 
     debug("Initializing Shutdown Sequence");
-    autoEvents[10] = {0, &(Automation::act_armCloseProp), true, 6};
-    autoEvents[11] = {200, &(Solenoids::closeLOX), true, 5};
+    autoEvents[10] = {0, &(Automation::act_armCloseProp), true, 7};
+    autoEvents[11] = {200, &(Solenoids::closeLOX), true, 6};
     autoEvents[12] = {0, &(Automation::act_depressurize), false, 0};
     autoEvents[13] = {650, &(Solenoids::disarmLOX), false, 0};
     autoEvents[14] = {0, &(Automation::state_setFlowOver), false, 0};

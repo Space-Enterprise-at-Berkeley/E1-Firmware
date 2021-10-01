@@ -198,13 +198,6 @@ void loop() {
 
       Automation::_startupTimer = millis();
 
-      Automation::_autoEventTracker++;
-
-      // If abort code is produced, jump to shutdown
-      if(res == -2) {
-        Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
-      }
-
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(20, false);
       Serial.println(packet);
@@ -216,6 +209,13 @@ void loop() {
         if (autoEvents[Automation::_autoEventTracker].report){
           sendPacket57(autoEvents[Automation::_autoEventTracker].message_id);
         }
+      }
+
+      Automation::_autoEventTracker++;
+
+      // If abort code is produced, jump to shutdown
+      if(res == -2) {
+        Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
       }
 
     }
