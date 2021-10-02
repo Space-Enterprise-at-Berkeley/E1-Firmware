@@ -131,6 +131,10 @@ int8_t processCommand(String packet) {
       debug("valid command");
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
+      if(command_id == 65){
+        farrbconvert.sensorReadings[0] = command_data[0];
+        farrbconvert.sensorReadings[0] = command_data[-1];
+      }
       Serial.println("got valid conf");
       if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
         return 20;
