@@ -381,8 +381,10 @@ void sensorReadFunc(int id) {
       Solenoids::overCurrentCheck(farrbconvert.sensorReadings, maxSolenoidCurrent);
       //Serial.println("pl");
       if(Automation::inStartup()) {
-        // check if igniter went off
+        // check if igniter had current
         Automation::igniterGood = farrbconvert.sensorReadings[1] > 0.06 || Automation::igniterGood;
+      } else {
+        Automation::igniterGood = false;
       }
       break;
     case 22:
