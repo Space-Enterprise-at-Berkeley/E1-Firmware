@@ -215,6 +215,7 @@ void loop() {
 
       // If abort code is produced, jump to shutdown
       if(res == -2) {
+        sendPacket57(11);
         Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
       }
 
