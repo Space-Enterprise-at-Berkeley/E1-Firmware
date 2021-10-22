@@ -57,6 +57,7 @@ uint32_t ptTypes[numPressureTransducers] = {1000, 1000, 1000, 1000, 5000, 1000};
 const uint8_t pressurantIdx = 4;
 const uint8_t loxDomeIdx = 5;
 const uint8_t propDomeIdx = 6;
+const uint8_t numInitialOffsetReads = 200;
 
 // Power Supply Monitors
 const uint8_t numPowerSupplyMonitors = 2;       //12v  , 8v

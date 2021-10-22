@@ -23,13 +23,18 @@ namespace Ducers {
 
   float * _latestReads;
 
+  uint8_t _numInitialOffsetReads;
+  float * _offsets;
+  uint8_t * _offsetCounters;
+  const float offset_threshold = 10.0; //threshold to determine if a PT just has an offset or is actually pressurized
+
   const uint8_t strideLength = sizeof(ADS8167);
 
   uint8_t _numSensors; // number of analog thermocouples, not number of adcs
 
   uint8_t buffer[4];
 
-  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint32_t * ptTypes, ADC ** adcs) {
+  void init (uint8_t numSensors, uint8_t * adcIndices, uint8_t * adcChannels, uint32_t * ptTypes, ADC ** adcs, uint8_t numInitialOffsetReads) {
     _numSensors = numSensors;
     _adcIndices = adcIndices;
     _adcChannels = adcChannels;
@@ -37,8 +42,16 @@ namespace Ducers {
     _adcs = adcs;
     _latestReads = (float *)malloc(numSensors);
 
+    _numInitialOffsetReads = numInitialOffsetReads;
+    _offsets = (float *)malloc(numSensors); //actually stores the offsets
+    _offsetCounters = (uint8_t *) malloc(numSensors); //a countdown to how many more readings to collect before averaging. 
+    //Not using one counter for everything since some PTs might not be at ambient pressure while others might be
+
+    
     for (int i = 0; i < _numSensors; i ++){
       Serial.println(_ptTypes[i]);
+      _offsets[i] = 0.0;
+      _offsetCounters[i] = _numInitialOffsetReads;
     }
   }
 
@@ -190,7 +203,34 @@ namespace Ducers {
         #endif
         data[i] = interpolate(_adcs[_adcIndices[i]]->readData(_adcChannels[i]), type);
       }
-      _latestReads[i] = data[i];
+
+      if (_offsetCounters[i] == 0) {
+        _latestReads[i] = data[i] - _offsets[i];
+      } else {
+
+        if (data[i] > offset_threshold) { //if its pressurized above threshold, stop trying to offset it & nuke all existing offsets/counters
+          _offsetCounters[i] = _numInitialOffsetReads;
+          _offsets[i] = 0.0;
+
+        } else { //its at something below threshold, so decrease counter and add the value
+
+          _offsetCounters[i] -= 1; //decrease the counter, add value to the offset
+          _offsets[i] += data[i];
+
+          if (_offsetCounters[i] == 0) { //average the offset if the counter goes to zero
+            _offsets[i] /= _numInitialOffsetReads;
+          }
+
+
+        }
+
+        _latestReads[i] = data[i];
+
+        
+        
+
+      }
+
     }
     data[_numSensors] = -1;
   }
