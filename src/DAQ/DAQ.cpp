@@ -34,6 +34,9 @@ Thermocouple::Cryo _cryoTherms;
 #elif DAQ2
 Thermocouple::SPI_TC _cryoTherms;
 unsigned long lastUpdate;
+#elif DAQ3
+FDC2214 _capSens;
+unsigned long lastUpdate;
 #endif
 
 void setup() {
@@ -80,6 +83,10 @@ void setup() {
   #elif DAQ2
   _cryoTherms = Thermocouple::SPI_TC();
   _cryoTherms.init(numCryoTherms, cryoThermCS, cryoReadsBackingStore);
+  lastUpdate = 0;
+  #elif DAQ3
+  _capSens = FDC2214();
+  _capSens.begin(capSenseAddr, &Wire);
   lastUpdate = 0;
   #endif
 }
@@ -183,6 +190,29 @@ void loop() {
       //write_to_SD(packet.c_str(), file_name);
     }
   }
+  #elif DAQ3
+  if(millis() - lastUpdate > updatePeriod){
+    lastUpdate = millis();
+    for (int j = 0; j < numSensors; j++) {
+      if (sensor_checks[j][0] == sensor_checks[j][1]) {
+        sensor_checks[j][1] = 1;
+      } else {
+        sensor_checks[j][1] += 1;
+        continue;
+      }
+      sensor = &sensors[j];
+      sensorReadFunc(sensor->id);
+      packet = make_packet(sensor->id, false);
+      //Serial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+      #ifndef SERIAL_INPUT_DEBUG
+          RFSerial.println(packet);
+      #endif
+      //write_to_SD(packet.c_str(), file_name);
+    }
+  }
   #endif
   // delay(10);
 }
@@ -207,7 +237,9 @@ void sensorReadFunc(int id) {
       break;
     case 4:
       debug("Cryo all");
+      #ifndef DAQ3
       _cryoTherms.readCryoTemps(farrbconvert.sensorReadings);
+      #endif
       break;
     case 5:
       readPacketCounter(farrbconvert.sensorReadings);
@@ -215,6 +247,11 @@ void sensorReadFunc(int id) {
     // case 6:
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
+    case 8:
+      #ifdef DAQ3
+      _capSens.readCapacitance(farrbconvert.sensorReadings);
+      #endif
+      break;
     case 19:
       //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);

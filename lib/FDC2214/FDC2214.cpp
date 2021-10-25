@@ -44,17 +44,24 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     return true;
 }
 
-
-
 unsigned long FDC2214::readSensor(){
-    int timeout = 100;
-    unsigned long reading = 0;
-    long long fsensor = 0;
     
     Adafruit_I2CRegister _msb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH0_MSB, 2, MSBFIRST);
     Adafruit_I2CRegister _lsb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH0_LSB, 2, MSBFIRST);
  
     unsigned long reading = (uint32_t)(_msb_reg.read() & FDC2214_DATA_CHx_MASK_DATA) << 16;
     reading |= _lsb_reg.read();
+    Serial.println(reading);
     return reading;
+}
+
+void FDC2214::readCapacitance(float *data){
+    const float sensorL = 0.000018; // 18 μH
+    const float sensorC = 0.000000000033; // 33 pF
+    const float fRef = 43355000; //43.355 MHz
+
+    float fSens = readSensor() * fRef / pow(2, 28);
+
+    data[0] = (1 / (sensorL * pow(2 * PI * fSens, 2))) - sensorC;
+    data[1] = -1;
 }

@@ -1,6 +1,7 @@
 #include <Analog_Thermocouple.h>
 #include <Cryo_Thermocouple.h>
 #include <SPI_Thermocouple.h>
+#include <FDC2214.h>
 #include <common_fw.h>
 #include <ADS8167.h>
 #include <Automation.h>
@@ -77,6 +78,15 @@ sensorInfo sensors[numSensors];
 
 unsigned long updatePeriod = 20;
 
+#elif DAQ3
+#ifdef ETH
+IPAddress ip(10, 0, 0, 13); // dependent on local network
+#endif
+uint8_t capSenseAddr = 0x2A;
+const uint8_t numSensors = 2;
+sensorInfo sensors[numSensors];
+unsigned long updatePeriod = 10;
+
 #endif
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -144,6 +154,12 @@ namespace config {
   void setup() {
     debug("Initializing sensors");
     sensors[0] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 1};
+    sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+  }
+  #elif DAQ3
+  void setup() {
+    debug("Initializing sensors");
+    sensors[0] = {"Sensor Capacitance",      FLIGHT_BRAIN_ADDR, 8, 1};
     sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
   }
   #endif 

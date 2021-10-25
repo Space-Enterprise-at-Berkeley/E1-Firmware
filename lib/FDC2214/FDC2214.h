@@ -67,11 +67,12 @@
 
 class FDC2214 {
 public:
-  FDC2214();
-  boolean begin(uint8_t i2c_addr = FDC2214_I2C_ADDR_0,
-                TwoWire *theWire = &Wire);
-
-  float readCapacitance(void);
+    FDC2214();
+    boolean begin(uint8_t i2c_addr = FDC2214_I2C_ADDR_0,
+                    TwoWire *theWire = &Wire);
+    unsigned long readSensor(void); 
+       
+    void readCapacitance(float *data);
   
 protected:
   uint8_t _device_id = 0;
