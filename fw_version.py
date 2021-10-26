@@ -12,7 +12,10 @@ def get_firmware_specifier_build_flag():
     return (build_flag)
 
 def get_username_build_flag():
-    name = os.getlogin()
+    try:
+        name = os.getlogin()
+    except Exception as e:
+        name = 'Error:GetLoginFailure'
     build_flag = "-D FW_USERNAME=\\\"" + name + "\\\""
     print("Username: " + name)
     return (build_flag)
