@@ -18,6 +18,7 @@
   #define RFSerial Serial6
 #endif
 
+some text without a comment. 
 
 #define ENDFLOW_ENABLED false
 
