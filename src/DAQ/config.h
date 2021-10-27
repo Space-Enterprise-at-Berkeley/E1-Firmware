@@ -80,7 +80,8 @@ unsigned long updatePeriod = 20;
 
 #elif DAQ3
 #ifdef ETH
-IPAddress ip(10, 0, 0, 13); // dependent on local network
+//IPAddress ip(10, 0, 0, 13); // dependent on local network
+IPAddress ip(10, 0, 0, 12); 
 #endif
 uint8_t capSenseAddr = 0x2A;
 const uint8_t numSensors = 2;
