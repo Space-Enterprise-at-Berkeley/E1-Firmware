@@ -3,3 +3,7 @@
 .pio/
 .gcc-flags.json
 .clang_complete
+bazel-bin
+bazel-Firmware
+bazel-out
+bazel-testlogs
