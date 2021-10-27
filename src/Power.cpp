@@ -2,6 +2,16 @@
 
 namespace Power
 {   
+
+    PowerTask::PowerTask(Power* power, int target, void (Power::*func)(uint32_t, int)){
+        _power = power;
+        _target = target;
+        _func = func;
+    }
+    void PowerTask::run(uint32_t exec_time) {
+        (_power->*_func)(exec_time, _target);
+    }
+
     // values taken from old code, hotfire/main 68c4e9e
     uint8_t numSupplies = 3;
     uint8_t powSupMonAddrs[] = {0x41, 0x42, 0x43};
@@ -29,6 +39,7 @@ namespace Power
         _supplyMonitors = supplyMons;
 
         _energyConsumed = (float *) malloc(numSupplies * sizeof(float));
+        last_checked = (long *) malloc((numSupplies) * sizeof(float));
         voltages = (float *) malloc((numSupplies) * sizeof(float));
         currents = (float *) malloc((numSupplies) * sizeof(float));
         powers = (float *) malloc((numSupplies) * sizeof(float));
@@ -46,32 +57,26 @@ namespace Power
 
     }
 
-    void Power::readVoltage(uint32_t exec_time) {
+    void Power::readVoltage(uint32_t exec_time, int target) {
         // TODO: record data AND timestamps
-        for (int i = 0; i < _numSupplies; i++){
-            voltages[i] = _supplyMonitors[i]->readBusVoltage();
-        }
+        voltages[target] = _supplyMonitors[target]->readBusVoltage();
         // w h y??
         // voltages[_numSupplies] = -1;
     }
 
-    void Power::readCurrent(uint32_t exec_time) {
-        for (int i = 0; i < _numSupplies; i++){
-            currents[i] = _supplyMonitors[i]->readShuntCurrent();
-        }
+    void Power::readCurrent(uint32_t exec_time, int target) {
+        currents[target] = _supplyMonitors[target]->readShuntCurrent();
         // currents[_numSupplies] = -1;
     }
 
-    void Power::readPowerConsumption(uint32_t exec_time) {
-        for (int i = 0; i < _numSupplies; i++) {
-            powers[i] = _supplyMonitors[i]->readBusPower();
-            _energyConsumed[i] += powers[i] * (millis() - last_checked) / 1000;
-        }
-        last_checked = millis();
+    void Power::readPowerConsumption(uint32_t exec_time, int target) {
+        powers[target] = _supplyMonitors[target]->readBusPower();
+        _energyConsumed[target] += powers[target] * (millis() - last_checked[target]) / 1000;
+        last_checked[target] = millis();
     }
 
-    void Power::readAllBatteryStats(uint32_t exec_time) {
-        this->readVoltage(exec_time);
-        this->readCurrent(exec_time);
+    void Power::readAllBatteryStats(uint32_t exec_time, int target) {
+        this->readVoltage(exec_time, target);
+        this->readCurrent(exec_time, target);
     }
 }

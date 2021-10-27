@@ -7,10 +7,9 @@
 
 namespace Power
 {   
-
     // 3 power supply monitors: 12V, 8V, Battery
     // uses INA219 - current/voltage/power monitoring
-    class Power: public Task {
+    class Power{
         
         uint8_t _numSupplies;
         INA219 ** _supplyMonitors;
@@ -19,21 +18,30 @@ namespace Power
         float * _energyConsumed;
 
         public:
-        long last_checked;
+        long * last_checked;
         float * voltages;
         float * currents;
         float * powers;
 
         Power(uint8_t numSupplies, INA219 ** supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire);
 
-        void readVoltage(uint32_t exec_time);
+        void readVoltage(uint32_t exec_time, int target);
 
-        void readCurrent(uint32_t exec_time);
+        void readCurrent(uint32_t exec_time, int target);
 
-        void readPowerConsumption(uint32_t exec_time);
+        void readPowerConsumption(uint32_t exec_time, int target);
 
-        void readAllBatteryStats(uint32_t exec_time);
+        void readAllBatteryStats(uint32_t exec_time, int target);
 
+    };
+
+    class PowerTask: public Task {
+        Power *_power;
+        int _target; // which sensor is being targeted by task
+        void (Power::*_func)(uint32_t, int);
+
+        PowerTask(Power* power, int target, void (Power::*func)(uint32_t, int));
+        void run(uint32_t exec_time);
     };
 
     // helper function to instantiate power supply monitors

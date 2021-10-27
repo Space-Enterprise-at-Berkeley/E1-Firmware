@@ -12,7 +12,7 @@ using namespace std;
 
 class Task {
 public:
-  // virtual void run(uint32_t exec_time) = 0;
+  virtual void run(uint32_t exec_time) = 0;
 };
 
 typedef void (Task::*taskfunc)(uint32_t);
@@ -22,7 +22,6 @@ namespace Scheduler {
     uint32_t when;
     uint32_t period; // microseconds between executions
     Task *task;
-    taskfunc taskrun;
     void (*run)(uint32_t exec_time);
 
     bool operator >(const Event& a) const {
