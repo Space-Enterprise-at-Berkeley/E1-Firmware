@@ -37,7 +37,7 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     rcount_reg.write(0xFFFF); // Max resolution/rcount
 
     Adafruit_I2CRegister clockdiv_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH0, 2);
-    clockdiv_reg.write(0x1001);
+    clockdiv_reg.write(0x2001);
 
     Adafruit_I2CRegister drive_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2);
     drive_reg.write(0x8800);
