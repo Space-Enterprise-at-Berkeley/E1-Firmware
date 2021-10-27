@@ -12,14 +12,17 @@ using namespace std;
 
 class Task {
 public:
-  virtual void run(uint32_t exec_time) = 0;
+  // virtual void run(uint32_t exec_time) = 0;
 };
+
+typedef void (Task::*taskfunc)(uint32_t);
 
 namespace Scheduler {
   struct Event {
     uint32_t when;
     uint32_t period; // microseconds between executions
     Task *task;
+    taskfunc taskrun;
     void (*run)(uint32_t exec_time);
 
     bool operator >(const Event& a) const {
@@ -32,8 +35,8 @@ namespace Scheduler {
 
   extern priority_queue<Event, vector<Event>, greater<Event>> eventq;
 
-  void scheduleTask(Task *task, uint32_t when);
-  void repeatTask(Task *task, uint32_t period);
+  void scheduleTask(Task *task, uint32_t when, taskfunc run);
+  void repeatTask(Task *task, uint32_t period, taskfunc run);
   void scheduleFunc(void (*run)(uint32_t exec_time), uint32_t when);
   void repeatFunc(void (*run)(uint32_t exec_time), uint32_t period);
   void loop();
