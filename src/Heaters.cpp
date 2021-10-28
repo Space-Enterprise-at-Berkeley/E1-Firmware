@@ -29,22 +29,25 @@ namespace Heaters
     uint8_t gpioExpIntPin[numGPIOExpanders] = {-1};
     GpioExpander heaterCtl(gpioExpAddr[0], gpioExpIntPin[0], &Wire);
 
-    Heater& initHeater(TwoWire *localwire){
+    Heater* initHeater(TwoWire *localwire){
+        /* Helper function for initializing heater class */
+        localwire->begin();
         std::string *namePtrs[numHeaters];
         for (int i = 0; i < numHeaters; i++) {
             namePtrs[i] = &names[i];
         }
         Heater *out = new Heater((uint8_t)numHeaters, namePtrs, heaterCommandIds, tempSetPoint, algorithm, &heaterCtl, heaterChannels, localwire, heaterINAAddrs, shuntR, maxExpectedCurrent, maxPTHeaterCurrent);
-        return *out;
+        return out;
     }
 
-    Heater::Heater(uint8_t numHeaters, std::string **names, uint8_t *heaterCommandIds, int tempSetPoint, int algorithmChoice, GpioExpander *expander, uint8_t *channels, TwoWire *wire, uint8_t *addrs, float shuntR, float maxExpectedCurrent, float maxPTHeaterCurrent) {
+    Heater::Heater(uint8_t numHeaterChannels, std::string **names, uint8_t *heaterCommandIds, int tempSetPoint, int algorithmChoice, GpioExpander *expander, uint8_t *channels, TwoWire *wire, uint8_t *addrs, float shuntR, float maxExpectedCurrent, float maxPTHeaterCurrent) {
+        numHeaters = numHeaterChannels;
         _names = (std::string **)malloc(numHeaters * sizeof(std::string *));
         _heaterCommands = (HeaterCommand **)malloc(numHeaters * sizeof(HeaterCommand *));
         _maxPTHeaterCurrent = maxPTHeaterCurrent;
-        _voltages = (float *) malloc((numHeaters) * sizeof(float));
-        _currents = (float *) malloc((numHeaters) * sizeof(float));
-        _overCurrents = (float *) malloc((numHeaters) * sizeof(float));
+        voltages = (float *) malloc((numHeaters) * sizeof(float));
+        currents = (float *) malloc((numHeaters) * sizeof(float));
+        overCurrents = (float *) malloc((numHeaters) * sizeof(float));
 
         for (int i = 0; i < numHeaters; i++) {
             HeaterCommand *newHeater = new HeaterCommand(*names[i], heaterCommandIds[i], tempSetPoint, algorithmChoice, expander, channels[i], wire, addrs[i], shuntR, maxExpectedCurrent);
@@ -53,25 +56,24 @@ namespace Heaters
         }
     }
 
-    void Heater::controlTemp(uint32_t exec_time, int target){
+    void Heater::controlTemp(uint32_t exec_time, int target, float currTemp){
         // TODO: get current temperature from thermocouple
         // TODO: save controlTemp output (heater status) somewhere
-        float currTemp = 0.0;
         _heaterCommands[target]->controlTemp(currTemp);
     }
 
     void Heater::readCurrentDraw(uint32_t exec_time, int target){
-        _currents[target] = _heaterCommands[target]->readCurrentDraw();
+        currents[target] = _heaterCommands[target]->readCurrentDraw();
         // TODO: update timestamps, queue for Ethernet/radio output
     }
 
     void Heater::readBusVoltage(uint32_t exec_time, int target){
-        _voltages[target] = _heaterCommands[target]->readBusVoltage();
+        voltages[target] = _heaterCommands[target]->readBusVoltage();
         // TODO: update timestamps, queue for Ethernet/radio output
     }
 
     void Heater::checkOverCurrent(uint32_t exec_time, int target){
-        _overCurrents[target] = _heaterCommands[target]->checkOverCurrent(_currents[target], _maxPTHeaterCurrent);
+        overCurrents[target] = _heaterCommands[target]->checkOverCurrent(currents[target], _maxPTHeaterCurrent);
         // TODO: update timestamps, queue for Ethernet/radio output
     }
 

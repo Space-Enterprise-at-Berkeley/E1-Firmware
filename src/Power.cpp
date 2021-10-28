@@ -19,21 +19,22 @@ namespace Power
     float maxExpectedCurrent = 5;
 
     // helper function to instantiate power supply monitors
-    Power& initPower(TwoWire *localwire){
+    Power* initPower(TwoWire *localwire){
+        localwire->begin();
         INA219 powerSupplyMonitors[numSupplies];
         INA219 *powSupMonPointers[numSupplies];
         for (int i = 0; i < numSupplies; i++) {
             powSupMonPointers[i] = &powerSupplyMonitors[i];
         }
         Power *out = new Power(numSupplies, powSupMonPointers, powSupMonAddrs, rShunt, maxExpectedCurrent, localwire);
-        return *out;
+        return out;
     }
 
     // 3 power supply monitors: 12V, 8V, Battery
     // uses INA219 - current/voltage/power monitoring
 
     Power::Power(uint8_t numSupplies, INA219 ** supplyMons, uint8_t * addrs, float rShunt, float maxExpectedCurrent, TwoWire *localWire) {
-        _numSupplies = numSupplies;
+        numSupplies = numSupplies;
         _localWire = localWire;
         _addrs = addrs;
         _supplyMonitors = supplyMons;
@@ -44,7 +45,7 @@ namespace Power
         currents = (float *) malloc((numSupplies) * sizeof(float));
         powers = (float *) malloc((numSupplies) * sizeof(float));
 
-        for (int i = 0; i < _numSupplies; i++) {
+        for (int i = 0; i < numSupplies; i++) {
             _supplyMonitors[i]->begin(localWire, addrs[i]);
             _supplyMonitors[i]->configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
             _supplyMonitors[i]->calibrate(rShunt, maxExpectedCurrent);

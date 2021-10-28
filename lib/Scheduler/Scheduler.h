@@ -34,8 +34,8 @@ namespace Scheduler {
 
   extern priority_queue<Event, vector<Event>, greater<Event>> eventq;
 
-  void scheduleTask(Task *task, uint32_t when, taskfunc run);
-  void repeatTask(Task *task, uint32_t period, taskfunc run);
+  void scheduleTask(Task *task, uint32_t when);
+  void repeatTask(Task *task, uint32_t period);
   void scheduleFunc(void (*run)(uint32_t exec_time), uint32_t when);
   void repeatFunc(void (*run)(uint32_t exec_time), uint32_t period);
   void loop();
