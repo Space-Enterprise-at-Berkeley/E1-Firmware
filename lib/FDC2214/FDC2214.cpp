@@ -26,33 +26,33 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
 
     // define the config registers
     Adafruit_I2CRegister config_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CONFIG, 2, MSBFIRST);
-    config_reg.write(0x1481);
+    config_reg.write(0xD481);
 
     Adafruit_I2CRegister muxconfig_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_MUX_CONFIG, 2, MSBFIRST);
     muxconfig_reg.write(0x0208);
 
-    Adafruit_I2CRegister settlecount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_SETTLECOUNT_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister settlecount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_SETTLECOUNT_CH3, 2, MSBFIRST);
     settlecount_reg.write(0x0400); // 10 settlecount
 
-    Adafruit_I2CRegister rcount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister rcount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH3, 2, MSBFIRST);
     rcount_reg.write(0xFFFF); // Max resolution/rcount
 
-    Adafruit_I2CRegister clockdiv_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister clockdiv_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH3, 2, MSBFIRST);
     clockdiv_reg.write(0x1001);
 
-    Adafruit_I2CRegister drive_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2, MSBFIRST);
-    drive_reg.write(0x7800);
+    Adafruit_I2CRegister drive_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH3, 2, MSBFIRST);
+    drive_reg.write(0xF800);
 
     return true;
 }
 
 unsigned long FDC2214::readSensor(){
     
-    Adafruit_I2CRegister msb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH0_MSB, 2, MSBFIRST);
-    Adafruit_I2CRegister lsb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH0_LSB, 2, MSBFIRST);
+    Adafruit_I2CRegister msb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH3_MSB, 2, MSBFIRST);
+    Adafruit_I2CRegister lsb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH3_LSB, 2, MSBFIRST);
     
-    Serial.println(msb_reg.read());
-    Serial.println(lsb_reg.read());
+    //Serial.println(msb_reg.read());
+    //Serial.println(lsb_reg.read());
 
     unsigned long reading = (uint32_t)(msb_reg.read() & FDC2214_DATA_CHx_MASK_DATA) << 16;
     reading |= lsb_reg.read();
@@ -61,14 +61,14 @@ unsigned long FDC2214::readSensor(){
 }
 
 void FDC2214::readCapacitance(float *data){
-    const float sensorL = 0.000018; // 18 μH
+    const double sensorL = 0.000010; // 10 μH
     //const float sensorC = 0.000000000033; // 33 pF
-    const float sensorC = 0; // 33 pF
-    const float fRef = 43355000; //43.355 MHz
+    const double sensorC = 0; // 33 pF
+    const double fRef = 43355000; //43.355 MHz
 
     float fSens = readSensor() * fRef / pow(2, 28);
+    double capVal = (1.0 / (sensorL * pow(2.0* PI * fSens, 2.0))) - sensorC;
 
-    data[0] = (1 / (sensorL * pow(2 * PI * fSens, 2))) - sensorC;
-    data[1] = fSens;
-    data[2] = -1;
+    data[0] = capVal * pow(10, 12);
+    data[1] = -1;
 }
