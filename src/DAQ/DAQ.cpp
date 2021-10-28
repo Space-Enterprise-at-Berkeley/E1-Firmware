@@ -203,7 +203,7 @@ void loop() {
       sensor = &sensors[j];
       sensorReadFunc(sensor->id);
       //packet = make_packet(sensor->id, false);
-      packet = make_packet(4, false);
+      packet = make_packet(sensor->id, false);
       //Serial.println(packet);
       #ifdef ETH
       sendEthPacket(packet.c_str());
