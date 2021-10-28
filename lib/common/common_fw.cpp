@@ -165,6 +165,11 @@ void sendVersion(){
   String fwProject = FW_PROJECT;
   #endif
 
+  String fwCommit = "";
+  String fwUsername = "";
+  String fwBuildDate = "";
+  String fwProject = "";
+
   // memset(farrbconvert.buffer ,0, 36);
   // fwCommit.getBytes(farrbconvert.buffer, 8);
   // fwUsername.getBytes(farrbconvert.buffer + 8, 8);

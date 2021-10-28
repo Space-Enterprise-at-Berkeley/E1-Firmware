@@ -86,7 +86,7 @@ IPAddress ip(10, 0, 0, 12);
 uint8_t capSenseAddr = 0x2A;
 const uint8_t numSensors = 2;
 sensorInfo sensors[numSensors];
-unsigned long updatePeriod = 10;
+unsigned long updatePeriod = 100;
 
 #endif
 

@@ -20,12 +20,13 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
         Adafruit_I2CRegister(i2c_dev, FDC2214_DEVICE_ID, 2);
 
     if ((id_reg.read() >> 8) != _device_id) {
+        Serial.println("bad_id");
         return false;
     }
 
     // define the config registers
     Adafruit_I2CRegister config_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CONFIG, 2);
-    config_reg.write(0x1C81);
+    config_reg.write(0x1CC1);
 
     Adafruit_I2CRegister muxconfig_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_MUX_CONFIG, 2);
     muxconfig_reg.write(0x0208);
@@ -34,15 +35,13 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     settlecount_reg.write(0x000A); // 10 settlecount
 
     Adafruit_I2CRegister rcount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH0, 2);
-    rcount_reg.write(0xFFFF); // Max resolution/rcount
+    rcount_reg.write(0x0400); // Max resolution/rcount
 
     Adafruit_I2CRegister clockdiv_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH0, 2);
     clockdiv_reg.write(0x2001);
 
     Adafruit_I2CRegister drive_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2);
-    drive_reg.write(0x8800);
-
-    //MUXCONFIG HERE
+    drive_reg.write(0xF800);
 
     return true;
 }
@@ -52,9 +51,13 @@ unsigned long FDC2214::readSensor(){
     Adafruit_I2CRegister msb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH0_MSB, 2);
     Adafruit_I2CRegister lsb_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DATA_CH0_LSB, 2);
  
+    Serial.println(msb_reg.read());
+    Serial.println(lsb_reg.read());
+
+
     unsigned long reading = (uint32_t)(msb_reg.read() & FDC2214_DATA_CHx_MASK_DATA) << 16;
     reading |= lsb_reg.read();
-    Serial.println(reading);
+    //Serial.println(reading);
     return reading;
 }
 
@@ -67,6 +70,6 @@ void FDC2214::readCapacitance(float *data){
     float fSens = readSensor() * fRef / pow(2, 28);
 
     data[0] = (1 / (sensorL * pow(2 * PI * fSens, 2))) - sensorC;
-    data[1] = -1;
-    data[0] = 420;
+    data[1] = fSens;
+    data[2] = -1;
 }
