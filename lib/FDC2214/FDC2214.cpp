@@ -41,7 +41,7 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     clockdiv_reg.write(0x1001);
 
     Adafruit_I2CRegister drive_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH3, 2, MSBFIRST);
-    drive_reg.write(0xF800);
+    drive_reg.write(0x9800);
 
     return true;
 }
