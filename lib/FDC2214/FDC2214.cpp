@@ -24,23 +24,30 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
         return false;
     }
 
-    // define the config registers
+    // Set sensor configuration registers
+
     Adafruit_I2CRegister config_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CONFIG, 2, MSBFIRST);
+    // Active channel 3; Sleep disabled; Full sensor activiation current; Internal oscillator; Interrupt unused; High current drive disabled
     config_reg.write(0xD481);
 
     Adafruit_I2CRegister muxconfig_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_MUX_CONFIG, 2, MSBFIRST);
-    muxconfig_reg.write(0x0208);
+    // Continuous conversion; 10MHz deglitch
+    muxconfig_reg.write(0x020D);
 
     Adafruit_I2CRegister settlecount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_SETTLECOUNT_CH3, 2, MSBFIRST);
-    settlecount_reg.write(0x0400); // 10 settlecount
+    // 16 settlecount
+    settlecount_reg.write(0x0010); 
 
     Adafruit_I2CRegister rcount_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH3, 2, MSBFIRST);
-    rcount_reg.write(0xFFFF); // Max resolution/rcount
+    // 8192 RCount
+    rcount_reg.write(0x0200);
 
     Adafruit_I2CRegister clockdiv_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH3, 2, MSBFIRST);
-    clockdiv_reg.write(0x1001);
+    // Single-ended configuration; 1x Clock divider
+    clockdiv_reg.write(0x2001); 
 
     Adafruit_I2CRegister drive_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH3, 2, MSBFIRST);
+    // .264mA sensor drive current
     drive_reg.write(0x9800);
 
     return true;
@@ -61,14 +68,16 @@ unsigned long FDC2214::readSensor(){
 }
 
 void FDC2214::readCapacitance(float *data){
-    const double sensorL = 0.000010; // 10 μH
-    //const float sensorC = 0.000000000033; // 33 pF
-    const double sensorC = 0; // 33 pF
+    const double fixedL = 0.000010; // 10 μH
+    const double paraC = 40; // 33 pF
     const double fRef = 43355000; //43.355 MHz
 
     float fSens = readSensor() * fRef / pow(2, 28);
-    double capVal = (1.0 / (sensorL * pow(2.0* PI * fSens, 2.0))) - sensorC;
+
+    // double capVal = (1.0 / (fixedL * pow(2.0* PI * fSens, 2.0)));
+    double capVal = (pow(1/(fSens * PI * sqrt(fixedL * paraC)) - 1, 2) - 1) * paraC;
 
     data[0] = capVal * pow(10, 12);
-    data[1] = -1;
+    data[1] = fSens;
+    data[2] = -1;
 }
