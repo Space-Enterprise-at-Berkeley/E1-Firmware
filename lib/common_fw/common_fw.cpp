@@ -5,12 +5,8 @@
  */
 #include "common_fw.h"
 
-SdFat sd;
-FsFile file;
-
 bool receivedCommand = false;
 
-bool InCheckout = true;
 int packetCounter = 0;
 
 char buffer[75];
@@ -19,10 +15,8 @@ union floatArrToBytes farrbconvert;
 
 #ifdef ETH
 EthernetUDP Udp;
-uint32_t m1 = HW_OCOTP_MAC1;
-uint32_t m2 = HW_OCOTP_MAC0;
 byte mac[] = {
-  m1 >> 8, m1 >> 0, m2 >> 24, m2 >> 16, m2 >> 8, m2 >> 0
+  0xDE, 0xAD, 0xBE, 0xEF, 0xDA, 0x02
 };
 unsigned int port = 42069; // try to find something that can be the same on gs
 const uint8_t numGrounds = 2;
@@ -84,7 +78,6 @@ int8_t processCommand(String packet) {
   }
   debug(String(data_start_index));
   int command_id = packet.substring(1,data_start_index).toInt();
-
   const int data_end_index = packet.indexOf('|');
   if(data_end_index == -1) {
     return -1;
@@ -118,32 +111,12 @@ int8_t processCommand(String packet) {
   int _check = (int)Fletcher16((uint8_t *) data, count);
   if (_check == checksum) {
     debug("Checksum correct, taking action");
-    if(command_id == 99){
-      sendVersion();
-      return -1;
-    }
-    if (command_id == 58) {
-      return ChangeInCheckout(command_data[0]);
-
-    }
     tmpCommand = commands.get(command_id); //chooseValveById(valve_id, valve, valves, numValves);
-    if (tmpCommand != nullptr) {
-      debug("valid command");
+    if (tmpCommand != nullptr){
       tmpCommand->parseCommand(command_data);
       tmpCommand->confirmation(farrbconvert.sensorReadings);
-      if(command_id == 65){
-        farrbconvert.sensorReadings[0] = command_data[0];
-        farrbconvert.sensorReadings[1] = -1;
-      }
-      Serial.println("got valid conf");
-      if (tmpCommand->ID() == 20 || tmpCommand->ID() == 21 || tmpCommand->ID() == 22 || tmpCommand->ID() == 23 || tmpCommand->ID() == 24 || tmpCommand->ID() == 25 || tmpCommand->ID() == 26 || tmpCommand->ID() == 27 || tmpCommand->ID() == 28 || tmpCommand->ID() == 31) {
-        return 20;
-      }
-      Serial.println("returning: " + String(tmpCommand->ID()));
-      Serial.flush();
       return tmpCommand->ID();
     } else {
-      debug("couldn't find valid command.");
       return -1;
     }
   } else {
@@ -151,71 +124,6 @@ int8_t processCommand(String packet) {
   }
 }
 
-void sendVersion(){
-  #ifdef FW_COMMIT
-  String fwCommit = FW_COMMIT;
-  #endif
-  #ifdef FW_USERNAME
-  String fwUsername = FW_USERNAME;
-  #endif
-  #ifdef FW_BUILD_DATE
-  String fwBuildDate = FW_BUILD_DATE;
-  #endif
-  #ifdef FW_PROJECT
-  String fwProject = FW_PROJECT;
-  #endif
-
-  // memset(farrbconvert.buffer ,0, 36);
-  // fwCommit.getBytes(farrbconvert.buffer, 8);
-  // fwUsername.getBytes(farrbconvert.buffer + 8, 8);
-  // fwProject.getBytes(farrbconvert.buffer + 16, 8);
-  // fwBuildDate.getBytes(farrbconvert.buffer + 24, 12);
-
-  // Serial.println();
-  // for(int i = 0; i<36;i++){
-  //   if(farrbconvert.buffer[i] == 0){
-  //     farrbconvert.buffer[i] = 32;
-  //   }
-  //   Serial.print(farrbconvert.buffer[i], HEX);
-  //   Serial.print(" ");
-  // }
-  // Serial.println();
-
-  // for(int i = 0; i<36;i++){
-  //   Serial.print(farrbconvert.buffer[i]);
-  // }
-
-  String packet_content = "99";
-  IPAddress currIP = Ethernet.localIP();
-  byte macBuffer[6];  // create a buffer to hold the MAC address
-  Ethernet.MACAddress(macBuffer);
-  packet_content += ",";
-  #ifdef ETH
-  packet_content += "Board IP: " + String(currIP[0]) + "." + String(currIP[1]) + "." + String(currIP[2]) + "." + String(currIP[3]) + " ";
-  packet_content += "Board MAC: " + String(mac[0], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[2], HEX)
-  + ":" + String(mac[3], HEX) + ":" + String(mac[4], HEX) + ":" + String(mac[5], HEX) + " ";
-  #endif
-  packet_content += "Git Commit Hash: " + fwCommit + " ";
-  packet_content += "Uploaded by: " + fwUsername + " ";
-  packet_content += "Project: " + fwProject + " ";
-  packet_content += "Uploaded on: " + fwBuildDate;
-
-  int count = packet_content.length();
-  char const *data = packet_content.c_str();
-  uint16_t checksum = Fletcher16((uint8_t *) data, count);
-  packet_content += "|";
-  String check_ = String(checksum, HEX);
-  while(check_.length() < 4) {
-    check_ = "0" + check_;
-  }
-  packet_content += check_;
-  String packet = "{" + packet_content + "}";
-  incrementPacketCounter();
-  Serial.println(packet);
-  #ifdef ETH
-  sendEthPacket(packet.c_str());
-  #endif
-}
 /*
  * Calculates checksum for key values being sent to ground station:
  * sensor_ID and it's corresponding data points
@@ -234,28 +142,6 @@ uint16_t Fletcher16(uint8_t *data, int count) {
   return (sum2 << 8) | sum1;
 }
 
-/**
- * Add messages to a queue, and every n messages,
- * dequeue everything and dump it onto the sd.
- */
-bool write_to_SD(std::string message, const char * file_name) {
-    std::string newMessage = std::string(itoa(millis(), buffer, 10)) + ", " + message;
-    sdBuffer->enqueue(newMessage);
-    if(sdBuffer->length >= qMaxSize) {
-        int initialLength = sdBuffer->length;
-        for(int i = 0; i < initialLength; i++) {
-          uint8_t strLength = sdBuffer->dequeue(buffer);
-          // Serial.println("dequeue: ");
-          // Serial.print(String(buffer));
-          file.write(buffer, strLength);
-        }
-        debug("flushing file");
-        file.flush();
-        return true;
-    }
-    return true;
-}
-
 void readPacketCounter(float *data) {
     data[0] = packetCounter;
     data[1] = -1;
@@ -263,33 +149,6 @@ void readPacketCounter(float *data) {
 
 void incrementPacketCounter() {
     packetCounter+=1;
-}
-
-void sendPacket57(float sensorvalue) {
-  farrbconvert.sensorReadings[0] = sensorvalue;
-  farrbconvert.sensorReadings[1] = -1;
-  String packet1;
-  for(int i = 0; i<=2; i ++){
-    packet1 = make_packet(57, false);
-    Serial.println(packet1);
-    #ifdef ETH
-    sendEthPacket(packet1.c_str());
-    #endif
-  }
-}
-
-int ChangeInCheckout(float sensorvalue){
-  if(sensorvalue == 0){
-    InCheckout = true;
-    sendPacket57(15);
-  }
-  if(sensorvalue == 1){
-    InCheckout = false;
-    sendPacket57(16);
-  }
-  farrbconvert.sensorReadings[0] = sensorvalue;
-  farrbconvert.sensorReadings[1] = -1;
-  return 58;
 }
 
 #ifdef ETH
@@ -311,7 +170,7 @@ bool setupEthernetComms(byte * mac, IPAddress ip){
   return true;
 }
 
-void sendEthPacket(std::string packet) {
+void sendEthPacket(std::string packet){
   for (uint8_t i = 0; i < numGrounds; i++){
     Udp.beginPacket(groundIP[i], port);
     Udp.write(packet.c_str());

@@ -12,7 +12,7 @@ using namespace std;
 namespace Automation {
 
 
-  const bool IGNITER_DETECT_ENABLED = false;
+  const bool IGNITER_DETECT_ENABLED = true;
 
   //-----------------------Variables-----------------------
 
@@ -214,9 +214,21 @@ namespace Automation {
 
   int act_armOpenBoth() {
     // flowstate = BOTH_FLOWING;
-    Solenoids::armLOX();
-    Solenoids::openLOX();
-    Solenoids::openPropane();
+
+    if (IGNITER_DETECT_ENABLED) { 
+      if(igniterGood) {
+        Solenoids::armLOX();
+        Solenoids::openLOX();
+        Solenoids::openPropane();
+        return 0;
+      } else {
+        return -2;
+      }
+    } else {
+      Solenoids::armLOX();
+      Solenoids::openLOX();
+      Solenoids::openPropane();
+    }
   }
 
   int act_armCloseProp() {

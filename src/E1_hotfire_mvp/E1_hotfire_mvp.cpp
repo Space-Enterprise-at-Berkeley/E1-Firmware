@@ -50,7 +50,7 @@ void setup() {
   RFSerial.begin(57600);
 
   delay(3000);
-  
+
   #ifdef ETH
   debug("Setup Ethernet");
   setupEthernetComms(mac, ip);
@@ -190,7 +190,7 @@ void loop() {
 
   if (Automation::inStartup() || Automation::inFlow() || Automation::inShutdown()) {
 
-    Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
+    //Serial.println("waiting for: " + String(autoEvents[Automation::_autoEventTracker].duration));
 
     if (millis() - Automation::_startupTimer > autoEvents[Automation::_autoEventTracker].duration) {
       Serial.println("executing event");
@@ -198,19 +198,27 @@ void loop() {
 
       Automation::_startupTimer = millis();
 
-      Automation::_autoEventTracker++;
-
-      // If abort code is produced, jump to shutdown
-      if(res == -2) {
-        Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
-      }
-
       Solenoids::getAllStates(farrbconvert.sensorReadings);
       packet = make_packet(20, false);
       Serial.println(packet);
       #ifdef ETH
       sendEthPacket(packet.c_str());
       #endif
+
+      if(!InCheckout){
+        if (autoEvents[Automation::_autoEventTracker].report){
+          sendPacket57(autoEvents[Automation::_autoEventTracker].message_id);
+        }
+      }
+
+      Automation::_autoEventTracker++;
+
+      // If abort code is produced, jump to shutdown
+      if(res == -2) {
+        sendPacket57(11);
+        Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
+      }
+
     }
 
   }
@@ -259,7 +267,7 @@ void loop() {
      Code for requesting data and relaying back to ground station
   */
   for (int j = 0; j < numSensors; j++) {
-    if (sensor_checks[j][0] == sensor_checks[j][1]) {
+    if (sensor_checks[j][1] == sensor_checks[j][0]) {
       sensor_checks[j][1] = 1;
     } else {
       sensor_checks[j][1] += 1;
@@ -269,7 +277,7 @@ void loop() {
     sensor = &sensors[j];
     sensorReadFunc(sensor->id);
     packet = make_packet(sensor->id, false);
-    // Serial.println(packet);
+    //Serial.println(packet);
     #ifdef ETH
     sendEthPacket(packet.c_str());
     #endif
@@ -305,8 +313,6 @@ void sensorReadFunc(int id) {
       farrbconvert.sensorReadings[3] = loxTankPTHeater.readBusVoltage();
       farrbconvert.sensorReadings[4] = loxTankPTHeater.checkOverCurrent(farrbconvert.sensorReadings[2], maxPTHeaterCurrent);
       farrbconvert.sensorReadings[5] = -1;
-
-      break;
       break;
     case 1:
       debug("Ducers");
@@ -372,12 +378,14 @@ void sensorReadFunc(int id) {
     case 21:
       debug("solenoid currents");
       Solenoids::getAllCurrents(farrbconvert.sensorReadings);
-    
+
       Solenoids::overCurrentCheck(farrbconvert.sensorReadings, maxSolenoidCurrent);
       //Serial.println("pl");
       if(Automation::inStartup()) {
-        // check if igniter went off
+        // check if igniter had current
         Automation::igniterGood = farrbconvert.sensorReadings[1] > 0.06 || Automation::igniterGood;
+      } else {
+        Automation::igniterGood = false;
       }
       break;
     case 22:
@@ -402,9 +410,18 @@ void sensorReadFunc(int id) {
 }
 
 /*
- * Slow down rate of readings of thermocouple sensors
+ * Turn off readings from the thermocouple sensors
  */
-int changeThermoReadRate() {
+int stopThermoReadRate() {
   sensor_checks[4][0] = 0; //4 is index of thermocouple packet
   return 0; //isn't used
+}
+
+/*
+ * Turn on readings from the thermocouple sensors
+ */
+int startThermoReadRate() {
+  sensor_checks[4][0] = sensors[4].clock_freq;
+  sensor_checks[4][1] = 1;
+  return 0;
 }

@@ -168,7 +168,7 @@ namespace Solenoids {
     LOX5Way: main valve for LOX
     Prop5Way: main valve for prop
     */
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
       //Serial.print("current"+(String)i + "  " + (String)data[i]+"\n");
       if (data[i] > current_limit) {
         Serial.println("triggered " + (String)i);
@@ -177,6 +177,8 @@ namespace Solenoids {
           case 1 : if (toggleProp2Way()==1) {toggleProp2Way();} break;
           case 2 : closeLOX(); break;
           case 3 : closePropane();break;
+          case 4 : closeLOXGems(); break;
+          case 5 : closePropaneGems(); break;
         }
 
         if (data[7] == -1) {data[7] = 0;}
@@ -313,12 +315,9 @@ namespace Solenoids {
   }
 
   int closeLOXGems(){
-    if (lox_gems_state == 1) {
-      toggleLOXGems();
-    } else {
-      // already closed, do nothing.
-    }
-    return lox_gems_state;
+    lox_gems_state == 0;
+    digitalWrite(lox_gems_pin, 0);
+    return 0;
   }
 
   int ventPropaneGems(){
@@ -331,12 +330,9 @@ namespace Solenoids {
   }
 
   int closePropaneGems(){
-    if (prop_gems_state == 1) {
-      togglePropGems();
-    } else {
-      // already closed, do nothing.
-    }
-    return prop_gems_state;
+    prop_gems_state == 0;
+    digitalWrite(prop_gems_pin, 0);
+    return 0;
   }
 
   int armLOX() {

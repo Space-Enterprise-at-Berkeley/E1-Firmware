@@ -90,6 +90,7 @@ struct autoEvent {
   int duration;
   int (*action)();
   bool report;
+  int message_id;
 };
 
 struct autoEventList {

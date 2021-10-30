@@ -1,5 +1,6 @@
 #include <Analog_Thermocouple.h>
 #include <Cryo_Thermocouple.h>
+#include <SPI_Thermocouple.h>
 #include <common_fw.h>
 #include <ADS8167.h>
 #include <Automation.h>
@@ -11,9 +12,9 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
-std::string str_file_name = "DAQ.txt";
+#ifdef DAQ1
+std::string str_file_name = "DAQ.txt";	
 const char * file_name = str_file_name.c_str();
-
 #ifdef ETH
 IPAddress ip(10, 0, 0, 11); // dependent on local network
 #endif
@@ -35,12 +36,12 @@ ADC * adsPointers[numADCSensors];
 
 const uint8_t numAnalogThermocouples = 1;
 uint8_t thermAdcIndices[numAnalogThermocouples] = {0};
-uint8_t thermAdcChannels[numAnalogThermocouples] = {5};
+uint8_t thermAdcChannels[numAnalogThermocouples] = {7};
 
 const uint8_t numPressureTransducers = 1;
 uint8_t ptAdcIndices[numPressureTransducers] = {0};
-uint8_t ptAdcChannels[numPressureTransducers] = {3};
-uint32_t ptTypes[numPressureTransducers] = {150};
+uint8_t ptAdcChannels[numPressureTransducers] = {6};
+uint32_t ptTypes[numPressureTransducers] = {1000};
 
 const uint8_t numPowerSupplyMonitors = 3;       //5v  , 5V  , 3.3v
 uint8_t powSupMonAddrs[numPowerSupplyMonitors] = {0x41, 0x42, 0x43};
@@ -59,13 +60,38 @@ uint8_t battMonINAAddr = 0x40;
 const uint8_t numSensors = 5;
 sensorInfo sensors[numSensors];
 
+#elif DAQ2
+std::string str_file_name = "DAQ2.txt";	
+const char * file_name = str_file_name.c_str();
+#ifdef ETH
+IPAddress ip(10, 0, 0, 12); // dependent on local network
+#endif
+const uint8_t numCryoTherms = 4;
+// therm[2] = lox adapter tree pt, therm[3] = lox adapter tree gems
+// ADDR = GND, VDD, 10k & 4.3K, 10K & 13K
+uint8_t cryoThermCS[numCryoTherms] = {21, 20, 19, 18};
+float cryoReadsBackingStore[numCryoTherms];
+
+const uint8_t numSensors = 2;
+sensorInfo sensors[numSensors];
+
+unsigned long updatePeriod = 20;
+
+#endif
+
 const float batteryMonitorShuntR = 0.002; // ohms
 const float batteryMonitorMaxExpectedCurrent = 10; // amps
 
 const float powerSupplyMonitorShuntR = 0.010; // ohms
 const float powerSupplyMonitorMaxExpectedCurrent = 5; // amps
 
+const uint8_t numCommands = 0;
+Command *backingStore[numCommands] = {};
+CommandArray commands(numCommands, backingStore);
+
+
 namespace config {
+  #ifdef DAQ1
   void setup() {
     debug("Initializing ADCs");
     for (int i = 0; i < numADCSensors; i++) {
@@ -113,6 +139,12 @@ namespace config {
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
-
   }
+  #elif DAQ2
+  void setup() {
+    debug("Initializing sensors");
+    sensors[0] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 1};
+    sensors[1] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
+  }
+  #endif 
 }

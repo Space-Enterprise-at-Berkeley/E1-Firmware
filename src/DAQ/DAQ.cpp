@@ -26,9 +26,15 @@ sensorInfo *sensor;
 long startTime;
 String packet;
 
+
 void sensorReadFunc(int id);
 
+#ifdef DAQ1
 Thermocouple::Cryo _cryoTherms;
+#elif DAQ2
+Thermocouple::SPI_TC _cryoTherms;
+unsigned long lastUpdate;
+#endif
 
 void setup() {
   Wire.begin();
@@ -51,34 +57,9 @@ void setup() {
     sensor_checks[i][1] = 1;
   }
 
-  debug("Starting SD");
-
-  int res = sd.begin(SdioConfig(FIFO_SDIO));
-  if (!res) {
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
-  debug("Opening File");
-  file.open(file_name, O_RDWR | O_CREAT);
-
-  debug("Writing Dummy Data");
-  sdBuffer = new Queue();
-
-  std::string start = "beginning writing data";
-  if(!write_to_SD(start, file_name)) { // if unable to write to SD, send error packet
-    packet = make_packet(101, true);
-    RFSerial.println(packet);
-    #ifdef ETH
-    sendEthPacket(packet.c_str());
-    #endif
-  }
-
   debug("Initializing Libraries");
 
+  #ifdef DAQ1
   debug("Initializing battery monitor");
   //batteryMonitor::init(&Wire1, batteryMonitorShuntR, batteryMonitorMaxExpectedCurrent, battMonINAAddr);
   debug("Initializing power supply monitors");
@@ -96,63 +77,68 @@ void setup() {
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+  #elif DAQ2
+  _cryoTherms = Thermocouple::SPI_TC();
+  _cryoTherms.init(numCryoTherms, cryoThermCS, cryoReadsBackingStore);
+  lastUpdate = 0;
+  #endif
 }
 
 void loop() {
 
-  // process command
-  // #ifdef ETH
-  // if (Udp.parsePacket()) {
-  //   debug("received udp packet");
-  //   IPAddress remote = Udp.remoteIP();
-  //   for (int i=0; i < 4; i++) {
-  //     Serial.print(remote[i], DEC);
-  //     if (i < 3) {
-  //       Serial.print(".");
-  //     }
-  //   }
-  //   for (uint8_t i = 0; i < numGrounds; i++) {
-    // if(Udp.remoteIP() == groundIP[i]) {
-      // debug("received packet came from groundIP");
-      // receivedCommand = true;
-      // Udp.read(command, 75);
-      // debug(String(command));
-      // break;
-    // }
-  // }
-  // }
-  // #endif
-  // if (RFSerial.available() > 0) {
-  //   int i = 0;
-  //
-  //   while (RFSerial.available()) {
-  //     command[i] = RFSerial.read();
-  //     Serial.print(command[i]);
-  //     i++;
-  //   }
-  //   receivedCommand = true;
-  // }
-  //
-  // if(receivedCommand) {
-  //   debug(String(command));
-  //   int8_t id = processCommand(String(command));
-  //   if (id != -1) {
-  //     packet = make_packet(id, false);
-  //     Serial.println(packet);
-  //     #ifndef SERIAL_INPUT_DEBUG
-  //       RFSerial.println(packet);
-  //     #endif
-  //     #ifdef ETH
-  //     sendEthPacket(packet.c_str());
-  //     #endif
-  //     write_to_SD(packet.c_str(), file_name);
-  //   }
-  //   receivedCommand = false;
-  // }
+  //process command
+  #ifdef ETH
+  if (Udp.parsePacket()) {
+    debug("received udp packet");
+    IPAddress remote = Udp.remoteIP();
+    for (int i=0; i < 4; i++) {
+      Serial.print(remote[i], DEC);
+      if (i < 3) {
+        Serial.print(".");
+      }
+    }
+    for (uint8_t i = 0; i < numGrounds; i++) {
+    if(Udp.remoteIP() == groundIP[i]) {
+      debug("received packet came from groundIP");
+      receivedCommand = true;
+      Udp.read(command, 75);
+      debug(String(command));
+      break;
+    }
+  }
+  }
+  #endif
+  if (RFSerial.available() > 0) {
+    int i = 0;
+  
+    while (RFSerial.available()) {
+      command[i] = RFSerial.read();
+      Serial.print(command[i]);
+      i++;
+    }
+    receivedCommand = true;
+  }
+  
+  if(receivedCommand) {
+    debug(String(command));
+    int8_t id = processCommand(String(command));
+    if (id != -1) {
+      packet = make_packet(id, false);
+      Serial.println(packet);
+      #ifndef SERIAL_INPUT_DEBUG
+        RFSerial.println(packet);
+      #endif
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+    }
+    receivedCommand = false;
+  }
 
   /*
      Code for requesting data and relaying back to ground station
   */
+  #ifdef DAQ
   for (int j = 0; j < numSensors; j++) {
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
@@ -173,6 +159,31 @@ void loop() {
 
     //write_to_SD(packet.c_str(), file_name);
   }
+  #elif DAQ2
+  if(millis() - lastUpdate > updatePeriod){
+    lastUpdate = millis();
+    for (int j = 0; j < numSensors; j++) {
+      if (sensor_checks[j][0] == sensor_checks[j][1]) {
+        sensor_checks[j][1] = 1;
+      } else {
+        sensor_checks[j][1] += 1;
+        continue;
+      }
+      sensor = &sensors[j];
+      sensorReadFunc(sensor->id);
+      packet = make_packet(sensor->id, false);
+      Serial.println(packet);
+      #ifdef ETH
+      sendEthPacket(packet.c_str());
+      #endif
+      #ifndef SERIAL_INPUT_DEBUG
+          RFSerial.println(packet);
+      #endif
+
+      //write_to_SD(packet.c_str(), file_name);
+    }
+  }
+  #endif
   // delay(10);
 }
 
