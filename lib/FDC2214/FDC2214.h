@@ -70,7 +70,7 @@ public:
     FDC2214();
     boolean begin(uint8_t i2c_addr = FDC2214_I2C_ADDR_0,
                     TwoWire *theWire = &Wire);
-    unsigned long readSensor(void); 
+    unsigned long readSensor(int channel); 
        
     void readCapacitance(float *data);
   
