@@ -85,7 +85,8 @@ IPAddress ip(10, 0, 0, 13); // dependent on local network
 uint8_t capSenseAddr = 0x2A;
 const uint8_t numSensors = 2;
 sensorInfo sensors[numSensors];
-unsigned long updatePeriod = 1000;
+// 333Hz sample rate
+unsigned long updatePeriod = 3;
 
 #endif
 
