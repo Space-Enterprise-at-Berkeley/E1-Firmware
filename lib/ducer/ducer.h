@@ -25,7 +25,8 @@ namespace Ducers {
 
   uint8_t _numInitialOffsetReads;
   float * _offsets;
-  uint8_t * _offsetCounters;
+  uint8_t * _offsetCounters; //array of size numSensors, each element counts down from numInitialOffsetReads to zero
+                            // to keep track of how many reads to average
   const float offset_threshold = 10.0; //threshold to determine if a PT just has an offset or is actually pressurized
 
   const uint8_t strideLength = sizeof(ADS8167);
@@ -211,17 +212,12 @@ namespace Ducers {
         if (data[i] > offset_threshold) { //if its pressurized above threshold, stop trying to offset it & nuke all existing offsets/counters
           _offsetCounters[i] = _numInitialOffsetReads;
           _offsets[i] = 0.0;
-
         } else { //its at something below threshold, so decrease counter and add the value
-
           _offsetCounters[i] -= 1; //decrease the counter, add value to the offset
           _offsets[i] += data[i];
-
           if (_offsetCounters[i] == 0) { //average the offset if the counter goes to zero
             _offsets[i] /= _numInitialOffsetReads;
           }
-
-
         }
 
         _latestReads[i] = data[i];
