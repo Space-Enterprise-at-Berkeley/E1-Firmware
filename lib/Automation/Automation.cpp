@@ -201,9 +201,18 @@ namespace Automation {
   }
 
   int act_armOpenLox() {
-    // flowstate = (flowstate == PROP_FLOWING)? BOTH_FLOWING : LOX_FLOWING;
-    Solenoids::armLOX();
-    Solenoids::openLOX();
+    if (IGNITER_DETECT_ENABLED) { 
+      if(igniterGood) {
+        Solenoids::armLOX();
+        Solenoids::openLOX();
+        return 0;
+      } else {
+        return -2;
+      }
+    } else {
+      Solenoids::armLOX();
+      Solenoids::openLOX();
+    }
   }
 
   int act_armOpenProp() {
