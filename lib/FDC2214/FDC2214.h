@@ -76,6 +76,9 @@ public:
   
 protected:
   uint8_t _device_id = 0;
+  float low_pass0;
+  float low_pass1;
+  float low_pass_alpha = .25;
 private:
   Adafruit_I2CDevice *i2c_dev;
 };

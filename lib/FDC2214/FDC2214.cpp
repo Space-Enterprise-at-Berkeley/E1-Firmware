@@ -58,6 +58,9 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     drive_regch0.write(0x9800);
     drive_regch1.write(0x9800);
 
+    low_pass0 = 0;
+    low_pass1 = 0;
+
     return true;
 }
 
@@ -101,9 +104,18 @@ void FDC2214::readCapacitance(float *data){
     // Serial.println(capVal0 * pow(10, 12));
     // Serial.println(capVal1 * pow(10, 12));
 
-    data[0] = capVal0 * pow(10, 12);
+    // data[0] = capVal0 * pow(10, 12);
+    // data[1] = (fSens0 * 2);
+    // data[2] = capVal1 * pow(10, 12);
+    // data[3] = (fSens1 * 2);
+
+    low_pass0 = low_pass_alpha * low_pass0 + (1 - low_pass_alpha) * capVal0 * pow(10, 12);
+    low_pass1 = low_pass_alpha * low_pass1 + (1 - low_pass_alpha) * capVal1 * pow(10, 12);
+
+    data[0] = low_pass0;
     data[1] = (fSens0 * 2);
-    data[2] = capVal1 * pow(10, 12);
+    data[2] = low_pass1;
     data[3] = (fSens1 * 2);
+
     data[4] = -1;
 }
