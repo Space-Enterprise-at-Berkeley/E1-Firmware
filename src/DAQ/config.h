@@ -49,11 +49,13 @@ INA219 powerSupplyMonitors[numPowerSupplyMonitors];
 INA * powSupMonPointers[numPowerSupplyMonitors];
 
 const uint8_t numLoadCells = 2;
+const uint8_t numDigiPots = 2;
 byte lcSckPins[numLoadCells] = {38, 10};
 byte lcDoutPins[numLoadCells] = {39, 9};
 float lcCalVals[numLoadCells] = {-2520, 2660}; // as of calibration 9.25.2021
 HX711 loadcells[numLoadCells];
 // HX711 loadcell1, loadcell2;
+
 
 uint8_t battMonINAAddr = 0x40;
 
@@ -115,6 +117,11 @@ namespace config {
         powerSupplyMonitors[i].configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         powerSupplyMonitors[i].calibrate(powerSupplyMonitorShuntR, powerSupplyMonitorMaxExpectedCurrent);
         powSupMonPointers[i] = &powerSupplyMonitors[i];
+    }
+
+    debug("Initializing the Load Cell Digipots");
+    for (int i = 0; i < numDigiPots; i++) {
+
     }
 
     debug("Initializing the Load Cells");
