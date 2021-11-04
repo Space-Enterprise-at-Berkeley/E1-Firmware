@@ -12,6 +12,8 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
+#define DAQ1
+
 #ifdef DAQ1
 std::string str_file_name = "DAQ.txt";	
 const char * file_name = str_file_name.c_str();
@@ -56,10 +58,15 @@ float lcCalVals[numLoadCells] = {-2520, 2660}; // as of calibration 9.25.2021
 HX711 loadcells[numLoadCells];
 // HX711 loadcell1, loadcell2;
 
-
+const uint8_t numNewLoadCells = 2;
+byte newLoadCellAdcIndices[numNewLoadCells] = {0, 0};
+byte newLoadCellAdcChannels[numNewLoadCells] = {69, 70}; //change this + check wrt indices, they're both 0?
+byte newLoadCellDigPot = 20; //corresponds to 5k * (20/128) = 780 ohms
+byte newLoadCellDigPotAddr = 46;
+float loadCellScaling[numNewLoadCells] = {1, 1};
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 5;
+const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];
 
 #elif DAQ2
@@ -145,6 +152,8 @@ namespace config {
     sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    sensors[5] = {"New Load Cell Readings", FLIGHT_BRAIN_ADDR, 7, 2};
+
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
   }
   #elif DAQ2

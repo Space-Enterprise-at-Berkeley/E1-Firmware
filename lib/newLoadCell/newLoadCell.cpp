@@ -1,18 +1,19 @@
 #include <newLoadCell.h>
 
-
+using namespace std;
 namespace newLoadCell
 {
     uint8_t _digPotVal, _numNewLoadCells;
 
 
-    ADC ** _adcs;
+    ADC **_adcs;
 
     uint8_t * _adcIndices; // array of size _numSensors
     uint8_t * _adcChannels;
-    float* _loadCellScaling;
+    float * _loadCellScaling;
 
-    void init(uint8_t numNewLoadCells, float* loadCellScaling, byte digPotVal, TwoWire* wire, uint8_t * adcIndices, uint8_t * adcChannels, ADC ** adcs);
+    void init(uint8_t numNewLoadCells, uint8_t loadCellDigPotAddr, TwoWire* wire, float * loadCellScaling, byte digPotVal, int8_t * adcIndices, uint8_t * adcChannels, ADC ** adcs)
+    {
         
         _adcIndices = adcIndices;
         _adcChannels = adcChannels;
@@ -20,11 +21,10 @@ namespace newLoadCell
 
         _loadCellScaling = loadCellScaling;
         _digPotVal = digPotVal;
-        _newLoadCellPins = newLoadCellPins;
-        wire.beginTransmission(loadCellDigPotAddr);
-        wire.write(byte(0x00));
-        wire.write(byte(digPotVal));
-        wire.endTransmission();
+        wire->beginTransmission(loadCellDigPotAddr);
+        wire->write(byte(0x00));
+        wire->write(byte(digPotVal));
+        wire->endTransmission();
 
     }
     void getNewLoadCellReads(float* data) {

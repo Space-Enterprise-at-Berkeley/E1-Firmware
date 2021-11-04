@@ -8,6 +8,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
+#include <newLoadCell.h>
 
 #define RFSerial Serial
 
@@ -77,6 +78,10 @@ void setup() {
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+
+  debug("Initializing New Load Cells");
+  newLoadCell::init(numNewLoadCells, newLoadCellDigPotAddr, &Wire, loadCellScaling, newLoadCellDigPot, newLoadCellAdcIndices, newLoadCellAdcChannels, adsPointers);
+
   #elif DAQ2
   _cryoTherms = Thermocouple::SPI_TC();
   _cryoTherms.init(numCryoTherms, cryoThermCS, cryoReadsBackingStore);
@@ -215,6 +220,9 @@ void sensorReadFunc(int id) {
     // case 6:
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
+    case 6:
+      newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
+      break;
     case 19:
       //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);
