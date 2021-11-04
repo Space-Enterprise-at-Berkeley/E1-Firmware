@@ -12,7 +12,7 @@ namespace newLoadCell
     uint8_t * _adcChannels;
     float * _loadCellScaling;
 
-    void init(uint8_t numNewLoadCells, uint8_t loadCellDigPotAddr, TwoWire* wire, float * loadCellScaling, byte digPotVal, int8_t * adcIndices, uint8_t * adcChannels, ADC ** adcs)
+    void init(uint8_t numNewLoadCells, uint8_t loadCellDigPotAddr, TwoWire* wire, float * loadCellScaling, byte digPotVal, uint8_t * adcIndices, uint8_t * adcChannels, ADC ** adcs)
     {
         
         _adcIndices = adcIndices;
