@@ -21,22 +21,26 @@ TestHeater::testFunc *testHtr;
 void setup()
 {
   // low level hardware setup
+  delay(500);
   Wire1.begin();
   Wire1.setClock(400000); // 400khz clock
   SPI.begin();
 
   // initialize testing functions
   testPwr = new TestPower::testReadouts();
-  testPwrTasks = new TestPower::testPowerTasks();
+  // testPwrTasks = new TestPower::testPowerTasks();
   testHtr = new TestHeater::testFunc();
+  Serial.begin(57600);
 }
 
 void loop()
 {
   // run the scheduler
   Scheduler::loop();
+  
   // run Tests - uncomment only one at a time!
-  testPwr->loop();
+  // testPwr->loop();
+
   // testPwrTasks->loop();
-  // testHtr->loop();
+  testHtr->loop();
 }

@@ -12,7 +12,9 @@ using namespace std;
 
 class Task {
 public:
-  virtual void run(uint32_t exec_time) = 0;
+  virtual void run(uint32_t exec_time){
+    Serial.print("calling virtual function. No bueno!");
+  }
 };
 
 typedef void (Task::*taskfunc)(uint32_t);

@@ -56,16 +56,16 @@ namespace TestPower
 
         // Create and schedule tasks
         Serial.println("\nTesting Task creation, scheduling, and execution for Power.");
-        for (int i = 0; i < powerClass->numSupplies; i++) {
-            Power::PowerTask voltageTask(powerClass, i, &Power::Power::readVoltage);
-            Power::PowerTask currTask(powerClass, i, &Power::Power::readCurrent);
-            Power::PowerTask powerConsTask(powerClass, i, &Power::Power::readPowerConsumption);
+        for (uint8_t i = 0; i < powerClass->numSupplies; i++) {
+            Power::PowerTask * voltageTask = new Power::PowerTask(powerClass, i, &Power::Power::readVoltage);
+            Power::PowerTask * currTask = new Power::PowerTask(powerClass, i, &Power::Power::readCurrent);
+            Power::PowerTask * powerConsTask = new Power::PowerTask(powerClass, i, &Power::Power::readPowerConsumption);
             // Schedule voltage readings to take place at 0.5s intervals
-            Scheduler::repeatTask(&voltageTask, 500000);
+            Scheduler::repeatTask(voltageTask, 500000);
             // Schedule current readings to take place at 0.1s intervals
-            Scheduler::repeatTask(&currTask, 100000);
+            Scheduler::repeatTask(currTask, 100000);
             // Schedule power consumption readings to take place at 1.5s intervals
-            Scheduler::repeatTask(&powerConsTask, 1500000);
+            Scheduler::repeatTask(powerConsTask, 1500000);
         }
         Serial.println("PowerTasks scheduled...");
     }

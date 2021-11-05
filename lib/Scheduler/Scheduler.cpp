@@ -40,7 +40,8 @@ namespace Scheduler
   void loop()
   {
     uint32_t now = micros();
-    if(eventq.top().when <= now) {
+    if(!eventq.empty() && eventq.top().when <= now) {
+      Serial.println("popping valid event. total events:\t" + String(eventq.size()));
       Event top = eventq.top();
       eventq.pop();
       if(top.period > 0) {
@@ -48,6 +49,7 @@ namespace Scheduler
         eventq.push(top);
       }
       if(top.task != nullptr) {
+        Serial.println("running task " + String((unsigned long)(top.task)));
         top.task->run(now);
       } else {
         top.run(now);
