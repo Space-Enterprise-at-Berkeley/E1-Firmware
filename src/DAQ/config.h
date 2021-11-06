@@ -59,9 +59,10 @@ HX711 loadcells[numLoadCells];
 const uint8_t numNewLoadCells = 2;
 byte newLoadCellAdcIndices[numNewLoadCells] = {0, 0};
 byte newLoadCellAdcChannels[numNewLoadCells] = {7, 1}; //change this + check wrt indices, they're both 0?
-byte newLoadCellDigPot = 60; //corresponds to 5k * (20/128) = 780 ohms
+byte newLoadCellDigPot = 60; //corresponds to 5k * (val/128)
 byte newLoadCellDigPotAddr = 46;
-float loadCellScaling[numNewLoadCells] = {1, 1};
+float newLoadCellScaling[numNewLoadCells] = {1, 1};
+float newLoadCellOffsets[numNewLoadCells] = {200, 200};
 
 uint8_t battMonINAAddr = 0x40;
 

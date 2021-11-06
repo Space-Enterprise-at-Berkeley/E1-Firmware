@@ -98,13 +98,8 @@ void setup() {
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
 
   debug("Initializing New Load Cells");
-  Serial.println("initialize new loads");
-  newLoadCell::init(numNewLoadCells, newLoadCellDigPotAddr, &Wire, loadCellScaling, newLoadCellDigPot, newLoadCellAdcIndices, newLoadCellAdcChannels, adsPointers);
-  // Wire.beginTransmission(46);
-  // Wire.write(byte(0x00));
-  // Wire.write(byte(35));
-  // Serial.println("sending 10");
-  // Wire.endTransmission();
+  newLoadCell::init(numNewLoadCells, newLoadCellDigPotAddr, &Wire, newLoadCellScaling, newLoadCellDigPot, newLoadCellAdcIndices, newLoadCellAdcChannels, adsPointers, newLoadCellOffsets);
+
 }
 
 void loop() {
@@ -214,11 +209,8 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 7:
-      Serial.println('got load cells');
       newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
-      // farrbconvert.sensorReadings[0] = 6.0;
-      // farrbconvert.sensorReadings[1] = 9.0;
-      // farrbconvert.sensorReadings[2] = -1.0;
+
       
       break;
     case 19:
