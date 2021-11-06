@@ -10,6 +10,8 @@ using namespace std;
 
 namespace Solenoids {
 
+  bool breakwire_enabled = true;
+
   uint8_t lox_2_pin, lox_5_pin, lox_gems_pin;
   uint8_t prop_2_pin, prop_5_pin, prop_gems_pin;
   uint8_t high_sol_pin, high_sol_enable_pin;
@@ -354,7 +356,9 @@ namespace Solenoids {
   }
 
   int armPropane() {
-    digitalWrite(lox_gems_pin, 1);
+    if (!breakwire_enabled) {
+      digitalWrite(lox_gems_pin, 1);
+    }
     digitalWrite(prop_gems_pin, 1);
     
     if (prop2_state == 0) {

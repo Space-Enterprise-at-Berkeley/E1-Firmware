@@ -136,7 +136,7 @@ CommandArray commands(numCommands, backingStore);
 
 // Automation
 Automation::autoEvent autoEvents[15];
-const int burnTime = 30*1000;
+const int burnTime = 5*1000;
 
 namespace config {
   void setup() {
