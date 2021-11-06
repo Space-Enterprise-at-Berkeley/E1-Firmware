@@ -8,9 +8,9 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
+#include <newLoadCell.h>
 
 #define RFSerial Serial
-
 // within loop state variables
 
 uint8_t val_index = 0;
@@ -96,6 +96,15 @@ void setup() {
 
   debug("Initializing Load Cell");
   LoadCell::init(loadcells, numLoadCells, lcDoutPins, lcSckPins, lcCalVals);
+
+  debug("Initializing New Load Cells");
+  Serial.println("initialize new loads");
+  newLoadCell::init(numNewLoadCells, newLoadCellDigPotAddr, &Wire, loadCellScaling, newLoadCellDigPot, newLoadCellAdcIndices, newLoadCellAdcChannels, adsPointers);
+  // Wire.beginTransmission(46);
+  // Wire.write(byte(0x00));
+  // Wire.write(byte(35));
+  // Serial.println("sending 10");
+  // Wire.endTransmission();
 }
 
 void loop() {
@@ -204,6 +213,14 @@ void sensorReadFunc(int id) {
     // case 6:
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
+    case 7:
+      Serial.println('got load cells');
+      newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
+      // farrbconvert.sensorReadings[0] = 6.0;
+      // farrbconvert.sensorReadings[1] = 9.0;
+      // farrbconvert.sensorReadings[2] = -1.0;
+      
+      break;
     case 19:
       //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
       Thermocouple::Analog::readTemperatureData(farrbconvert.sensorReadings);

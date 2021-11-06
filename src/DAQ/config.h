@@ -11,6 +11,7 @@
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
+#define DAQ1
 std::string str_file_name = "DAQ.txt";
 const char * file_name = str_file_name.c_str();
 
@@ -54,9 +55,17 @@ float lcCalVals[numLoadCells] = {-2520, 2660};
 HX711 loadcells[numLoadCells];
 // HX711 loadcell1, loadcell2;
 
+
+const uint8_t numNewLoadCells = 2;
+byte newLoadCellAdcIndices[numNewLoadCells] = {0, 0};
+byte newLoadCellAdcChannels[numNewLoadCells] = {7, 1}; //change this + check wrt indices, they're both 0?
+byte newLoadCellDigPot = 60; //corresponds to 5k * (20/128) = 780 ohms
+byte newLoadCellDigPotAddr = 46;
+float loadCellScaling[numNewLoadCells] = {1, 1};
+
 uint8_t battMonINAAddr = 0x40;
 
-const uint8_t numSensors = 5;
+const uint8_t numSensors = 6;
 sensorInfo sensors[numSensors];
 
 const float batteryMonitorShuntR = 0.002; // ohms
@@ -74,6 +83,7 @@ namespace config {
       debug(String(adcDataReadyPins[i]));
       debug(String(adcAlertPins[i]));
       Serial.print("test");
+      Serial.println("test22");
       Serial.flush();
       ads[i].init(&SPI, adcCSPins[i], adcDataReadyPins[i], adcAlertPins[i]);
       ads[i].setManualMode();
@@ -82,6 +92,7 @@ namespace config {
       pinMode(adcDataReadyPins[i], INPUT_PULLUP);
       adsPointers[i] = &ads[i];
     }
+    //Serial.println("config setup complete");
 
     debug("Initializing Power Supply monitors");
     for (int i = 0; i < numPowerSupplyMonitors; i++) {
@@ -112,6 +123,8 @@ namespace config {
     sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 2};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
+    sensors[5] = {"New Load Cell Readings", FLIGHT_BRAIN_ADDR, 7, 2};
+
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 
   }
