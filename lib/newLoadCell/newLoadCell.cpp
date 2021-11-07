@@ -22,14 +22,14 @@ namespace newLoadCell
         _loadCellScaling = loadCellScaling;
         _digPotVal = digPotVal;
         _offsets = offsets;
-        wire->beginTransmission(loadCellDigPotAddr);
-        wire->write(byte(0x00));
-        wire->write(byte(digPotVal));
-        wire->endTransmission();
+        // wire->beginTransmission(46);
+        // wire->write(byte(0x00));
+        // wire->write(byte(40));
+        // wire->endTransmission();
 
     }
     void getNewLoadCellReads(float* data) {
-        
+            
    
         float totalThrust = 0;
         for (int i = 0; i < _numNewLoadCells; i++) {

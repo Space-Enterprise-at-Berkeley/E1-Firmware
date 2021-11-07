@@ -33,6 +33,7 @@ Thermocouple::Cryo _cryoTherms;
 void setup() {
   Wire.begin();
   Serial.begin(57600);
+  Serial.println("ruh");
 
   delay(3000);
 
