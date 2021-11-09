@@ -158,6 +158,15 @@ void loop() {
      Code for requesting data and relaying back to ground station
   */
   for (int j = 0; j < numSensors; j++) {
+
+    // next few lines will heavily slow down all other sensors but will increase load cell for sure, need to test how bad it is.
+    sensorReadFunc(7);
+    packet = make_packet(7, false);
+    #ifdef ETH
+    sendEthPacket(packet.c_str());
+    #endif
+
+
     if (sensor_checks[j][0] == sensor_checks[j][1]) {
       sensor_checks[j][1] = 1;
     } else {
@@ -211,9 +220,7 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 7:
-      //newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
-
-      
+      newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
       break;
     case 19:
       //Thermocouple::Analog::readSpecificTemperatureData(0, farrbconvert.sensorReadings);
