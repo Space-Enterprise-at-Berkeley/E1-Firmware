@@ -197,7 +197,9 @@ void sensorReadFunc(int id) {
     //   break;
     case 3:
       debug("Load Cells");
-      LoadCell::readLoadCells(farrbconvert.sensorReadings);
+      LoadCell::readLoadCells(farrbconvert.sensorReadings); //only to test!!!
+      //newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
+
       break;
     case 4:
       debug("Cryo all");
