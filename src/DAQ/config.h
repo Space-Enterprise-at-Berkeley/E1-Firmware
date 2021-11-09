@@ -122,10 +122,10 @@ namespace config {
     sensors[0] = {"Pressures",  FLIGHT_BRAIN_ADDR, 1, 1};
     // sensors[1] = {"Battery Stats", FLIGHT_BRAIN_ADDR, 2, 3};
     sensors[1] = {"Cryo Temps",      FLIGHT_BRAIN_ADDR, 4, 3};
-    sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 200};
+    sensors[2] = {"Load Readings", FLIGHT_BRAIN_ADDR, 3, 10000};
     sensors[3] = {"Number Packets Sent", FLIGHT_BRAIN_ADDR, 5, 10};
     sensors[4] = {"Analog Thermocouples", FLIGHT_BRAIN_ADDR, 19, 3};
-    sensors[5] = {"New Load Cell Readings", FLIGHT_BRAIN_ADDR, 7, 1};
+    sensors[5] = {"New Load Cell Readings", FLIGHT_BRAIN_ADDR, 7, 10000};
 
     // sensors[6] = {"Power Supply Stats", FLIGHT_BRAIN_ADDR, 6, 3};
 

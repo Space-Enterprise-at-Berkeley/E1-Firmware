@@ -33,7 +33,6 @@ Thermocouple::Cryo _cryoTherms;
 void setup() {
   Wire.begin();
   Serial.begin(57600);
-  Serial.println("ruh");
 
   delay(3000);
 
@@ -212,7 +211,7 @@ void sensorReadFunc(int id) {
     //   powerSupplyMonitor::readAllBatteryStats(farrbconvert.sensorReadings);
     //   break;
     case 7:
-      newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
+      //newLoadCell::getNewLoadCellReads(farrbconvert.sensorReadings);
 
       
       break;
