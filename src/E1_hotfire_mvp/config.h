@@ -104,10 +104,10 @@ int stopThermoReadRate();
 
 // Solenoids
 const uint8_t numSolenoids = 8;   // l2, l5, lg, p2, p5, pg, h, h enable
-uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  4,  0,  2, 6, 39};
+uint8_t solenoidPins[numSolenoids] = {5,  3,  1,  0,  2,  4, 6, 39};
 const uint8_t numSolenoidCommands = 10;    //       l2, l5, lg, p2, p5, pg,  h, arm, launch , h enable
 uint8_t solenoidCommandIds[numSolenoidCommands] = {20, 21, 22, 23, 24, 25, 26,  27, 28     , 31};
-uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x41, 0x45, 0x43};
+uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x45, 0x43, 0x41};
 float maxSolenoidCurrent = 1.0;
 
 LTC4151 pressurantSolenoidMonitor;
@@ -200,7 +200,7 @@ namespace config {
     autoEvents[2] = {115, &(Solenoids::openPropane), true, 3}; // T-0
     autoEvents[3] = {750, &(Automation::state_setFlowing), false, 0};
     autoEvents[4] = {250, &(Solenoids::disarmPropane), true, 10}; //turn off igniter 
-    autoEvents[5] = {burnTime - 1000, &(Solenoids::closePropane), true, 5}; // must substract delay from "openPropane" to here
+    autoEvents[5] = {burnTime - 1000, &(Solenoids::closePropane), true, 5}; // must substract delay between "openPropane" & here
     autoEvents[6] = {0, &(Automation::state_setShutdown), false, 0};
     autoEvents[7] = {200, &(Solenoids::closeLOX), true, 4};
     autoEvents[8] = {650, &(Solenoids::disarmLOX), true, 9};
