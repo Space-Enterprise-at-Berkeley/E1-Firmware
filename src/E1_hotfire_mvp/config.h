@@ -135,7 +135,7 @@ Command *backingStore[numCommands] = {&Solenoids::lox_2,  &Solenoids::lox_5,  &S
 CommandArray commands(numCommands, backingStore);
 
 // Automation
-Automation::autoEvent autoEvents[15];
+Automation::autoEvent autoEvents[14];
 const int burnTime = 5*1000;
 
 namespace config {
@@ -213,8 +213,8 @@ namespace config {
     debug("Initializing Shutdown Sequence");
     autoEvents[10] = {0, &(Automation::act_armCloseProp), true, 7};
     autoEvents[11] = {200, &(Solenoids::closeLOX), true, 6};
-    autoEvents[12] = {0, &(Automation::act_depressurize), false, 0};
-    autoEvents[13] = {650, &(Solenoids::disarmLOX), false, 0};
+    autoEvents[12] = {650, &(Solenoids::disarmLOX), false, 0};
+    autoEvents[13] = {0, &(Solenoids::disarmPropane), false, 0}; //turn off igniter 
     autoEvents[14] = {0, &(Automation::state_setFlowOver), false, 0};
 
 
