@@ -197,13 +197,13 @@ namespace config {
     debug("Initializing Ignition Sequence");
     autoEvents[0] = {1000, &(Solenoids::armAll), true, 8}; // igniter
     autoEvents[1] = {2000, &(Automation::act_armOpenLox), true, 2}; //checks for igniter current, if enabled.
-    autoEvents[2] = {215, &(Solenoids::openPropane), true, 3}; // T-0
+    autoEvents[2] = {115, &(Solenoids::openPropane), true, 3}; // T-0
     autoEvents[3] = {750, &(Automation::state_setFlowing), false, 0};
-    autoEvents[4] = {burnTime - 750, &(Solenoids::closePropane), true, 5};
-    autoEvents[5] = {0, &(Automation::state_setShutdown), false, 0};
-    autoEvents[6] = {200, &(Solenoids::closeLOX), true, 4};
-    autoEvents[7] = {650, &(Solenoids::disarmLOX), true, 9};
-    autoEvents[8] = {0, &(Solenoids::disarmPropane), true, 10}; //turn off igniter 
+    autoEvents[4] = {250, &(Solenoids::disarmPropane), true, 10}; //turn off igniter 
+    autoEvents[5] = {burnTime - 1000, &(Solenoids::closePropane), true, 5}; // must substract delay from "openPropane" to here
+    autoEvents[6] = {0, &(Automation::state_setShutdown), false, 0};
+    autoEvents[7] = {200, &(Solenoids::closeLOX), true, 4};
+    autoEvents[8] = {650, &(Solenoids::disarmLOX), true, 9};
     autoEvents[9] = {0, &(Automation::state_setFlowOver), false, 0};
 
 
