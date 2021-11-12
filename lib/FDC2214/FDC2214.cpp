@@ -43,8 +43,8 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     Adafruit_I2CRegister rcount_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH0, 2, MSBFIRST);
     Adafruit_I2CRegister rcount_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH1, 2, MSBFIRST);
     // 8192 RCount
-    rcount_regch0.write(0x0200);
-    rcount_regch1.write(0x0200);
+    rcount_regch0.write(0x0300);
+    rcount_regch1.write(0x0300);
 
     Adafruit_I2CRegister clockdiv_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH0, 2, MSBFIRST);
     Adafruit_I2CRegister clockdiv_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH1, 2, MSBFIRST);
@@ -55,8 +55,8 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     Adafruit_I2CRegister drive_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2, MSBFIRST);
     Adafruit_I2CRegister drive_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH1, 2, MSBFIRST);
     // .264mA sensor drive current
-    drive_regch0.write(0x9800);
-    drive_regch1.write(0x9800);
+    drive_regch0.write(0xF800);
+    drive_regch1.write(0xF800);
 
     low_pass0 = 0;
     low_pass1 = 0;
@@ -112,10 +112,31 @@ void FDC2214::readCapacitance(float *data){
     low_pass0 = low_pass_alpha * low_pass0 + (1 - low_pass_alpha) * capVal0 * pow(10, 12);
     low_pass1 = low_pass_alpha * low_pass1 + (1 - low_pass_alpha) * capVal1 * pow(10, 12);
 
+    // float height0 = ((capVal0 * pow(10, 12)) - min_fuel) / (max_fuel - min_fuel);
+    // float height1 = ((capVal1 * pow(10, 12)) - min_lox) / (max_lox - min_lox);
+
+    // float vol0;
+    // if(height0 < 0){
+    //     vol0 = 0;
+    // }else if(height0 < .92){
+    //     vol0 = .74 + 12.65 * height0;
+    // }else{
+    //     vol0 = 12.38 + 9.125*(height0-.92);
+    // }
+
+    // float vol1;
+    // if(height1 < 0){
+    //     vol1 = 0;
+    // }else if(height1 < .92){
+    //     vol1 = .74 + 12.65 * height1;
+    // }else{
+    //     vol1 = 12.38 + 9.125*(height1-.92);
+    // }
+
     data[0] = low_pass0;
-    data[1] = (fSens0 * 2);
+    data[1] = capVal0 * pow(10, 12);
     data[2] = low_pass1;
-    data[3] = (fSens1 * 2);
+    data[3] = capVal1 * pow(10, 12);
 
     data[4] = -1;
 }
