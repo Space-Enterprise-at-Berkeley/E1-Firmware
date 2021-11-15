@@ -391,8 +391,8 @@ void sensorReadFunc(int id) {
       debug("solenoid voltages");
       Solenoids::getAllVoltages(farrbconvert.sensorReadings);
       if(Automation::inStartup()) {
-        // check if igniter had current
-        Automation::breakGood = farrbconvert.sensorReadings[4] > -5 || Automation::breakGood;
+        // check if breakwire broke
+        Automation::breakGood = farrbconvert.sensorReadings[4] < 24 || Automation::breakGood;
       } else {
         Automation::breakGood = false;
       }
