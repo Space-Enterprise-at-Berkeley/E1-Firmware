@@ -78,7 +78,7 @@ protected:
   uint8_t _device_id = 0;
   float low_pass0;
   float low_pass1;
-  float low_pass_alpha = .99;
+  float low_pass_alpha = .95;
   float min_lox = 139;
   float max_lox = 148.5;  
   float min_fuel = 139;
