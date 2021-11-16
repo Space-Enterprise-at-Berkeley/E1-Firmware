@@ -40,6 +40,7 @@ namespace newLoadCell
         }
         data[_numNewLoadCells] = totalThrust;
         data[_numNewLoadCells + 1] = -1;
+        data[4] = -1;
     }
 
 } // namespace newLoadCell
