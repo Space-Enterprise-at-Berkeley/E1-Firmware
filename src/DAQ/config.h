@@ -9,6 +9,7 @@
 #include <LTC4151.h>
 #include <loadCell.h>
 #include <command.h>
+#include <Adafruit_NeoPixel.h>
 
 #define FLIGHT_BRAIN_ADDR 0x00
 
@@ -76,6 +77,36 @@ const uint8_t numSensors = 2;
 sensorInfo sensors[numSensors];
 
 unsigned long updatePeriod = 20;
+
+#define NUM_LEDS 300
+#define DATA_PIN 0
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN);
+
+int lox_bot  = 107;
+int lox_top = 147;
+double loxOff = 17;
+
+int fuel_bot = 253;
+int fuel_top = 209;
+double fuelOff = 17;
+
+enum led_state {
+    SAFE,
+    WORK,
+    COLORS,
+    COUNTDOWN,
+    ABORT,
+    CLEAR
+};
+
+void set_base(int, int, int);
+void set_led(int, int, int, int, int);
+void rainbow(uint8_t);
+
+void baseColor(led_state state);
+void capFill(double cap, int side);
+uint32_t Wheel(byte WheelPos);
 
 #endif
 

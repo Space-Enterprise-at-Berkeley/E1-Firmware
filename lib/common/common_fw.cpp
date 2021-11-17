@@ -13,6 +13,12 @@ bool receivedCommand = false;
 bool InCheckout = true;
 int packetCounter = 0;
 
+int led_mode = 0;
+float capFuel = 0;
+float capLox = 0;
+double loxMin = 214;
+double fuelMin = 214;
+
 char buffer[75];
 struct Queue *sdBuffer;
 union floatArrToBytes farrbconvert;
@@ -121,6 +127,18 @@ int8_t processCommand(String packet) {
     if(command_id == 99){
       sendVersion();
       return -1;
+    } else if (command_id == 98) {
+      led_mode = command_data[0];
+      capFuel = command_data[1];
+      Serial.println(capFuel);
+      capLox = command_data[2];
+      return -2;
+    } else if (command_id == 97) {
+      loxMin = command_data[0];
+      return -2;
+    } else if (command_id == 96) {
+      fuelMin = command_data[0];
+      return -2;
     }
     if (command_id == 58) {
       return ChangeInCheckout(command_data[0]);

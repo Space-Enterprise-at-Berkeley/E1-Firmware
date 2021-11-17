@@ -8,6 +8,7 @@
 #include <tempController.h>
 #include <batteryMonitor.h>
 #include <powerSupplyMonitor.h>
+#include <Adafruit_NeoPixel.h>
 
 #define RFSerial Serial
 
@@ -23,7 +24,7 @@ int sensor_checks[numSensors][2];
 
 sensorInfo *sensor;
 
-long startTime;
+long startTime; 
 String packet;
 
 
@@ -32,6 +33,8 @@ void sensorReadFunc(int id);
 #ifdef DAQ1
 Thermocouple::Cryo _cryoTherms;
 #elif DAQ2
+
+
 Thermocouple::SPI_TC _cryoTherms;
 unsigned long lastUpdate;
 #endif
@@ -81,6 +84,10 @@ void setup() {
   _cryoTherms = Thermocouple::SPI_TC();
   _cryoTherms.init(numCryoTherms, cryoThermCS, cryoReadsBackingStore);
   lastUpdate = 0;
+
+  pixels.begin();
+  pixels.setBrightness(255);
+
   #endif
 }
 
@@ -122,7 +129,7 @@ void loop() {
   if(receivedCommand) {
     debug(String(command));
     int8_t id = processCommand(String(command));
-    if (id != -1) {
+    if (id != -1 && id != -2) {
       packet = make_packet(id, false);
       Serial.println(packet);
       #ifndef SERIAL_INPUT_DEBUG
@@ -183,9 +190,159 @@ void loop() {
       //write_to_SD(packet.c_str(), file_name);
     }
   }
+  switch(led_mode){
+    case 0:
+      baseColor(SAFE);
+      break;
+    case 1:
+      baseColor(WORK);
+      break;
+    case 2:
+      baseColor(COUNTDOWN);
+      break;
+    case 3:
+      baseColor(COLORS);
+      break;
+    case 4:
+      baseColor(ABORT);
+      break;
+    case 5:
+      baseColor(CLEAR);
+      break;
+    case 6: 
+      altCol(BG)
+  }
+  capFill(capLox, 0);
+  capFill(capFuel, 1);
   #endif
   // delay(10);
+  
 }
+
+#ifdef DAQ2
+void baseColor(led_state state) {
+  if (state == SAFE) {
+       set_base(159, 43, 104);
+  } else if (state == WORK) {
+      set_base(255, 255, 255);
+  } else if (state == COLORS) {
+      rainbow(5);
+      return;
+  } else if (state == COUNTDOWN) {
+      set_led(0, 0, 255, 0, NUM_LEDS);
+  } else if (state == ABORT) {
+      set_base(255, 0, 0);
+  } else if (state == CLEAR) {
+      pixels.clear();
+  } else if (state == BG) {
+      altCol(0, 20, 38, 253, 181, 21)
+  }
+  pixels.show();
+}
+
+void capFill(double cap, int side) {
+
+    if (side == 0) {
+
+        set_led(0, 0, 0, lox_bot, lox_top);
+
+        double fillp = (cap - loxMin) / loxOff;
+        int filln = (int) floor((lox_top - lox_bot) * fillp);
+        int i = lox_bot;
+        //i <= lox_bot + filln && 
+        while (i <= lox_top) {
+          if (i > lox_bot + filln && i <= lox_top) {
+            pixels.setPixelColor(i, pixels.Color(102, 255, 102));
+          } else {
+            pixels.setPixelColor(i, pixels.Color(0, 30, 255));
+          }
+          i++;
+        }
+    } else if (side == 1) {
+
+        set_led(0, 0, 0, fuel_bot, fuel_top);
+
+        double fillp = (cap - fuelMin) / fuelOff;
+        int filln = (int) floor((fuel_bot - fuel_top) * fillp);
+
+        int i = fuel_bot;
+        //i >= fuel_bot - filln && 
+        while (i >= fuel_top) {
+          if (i < fuel_bot - filln && i >= lox_top) {
+            pixels.setPixelColor(i, pixels.Color(102, 255, 102));
+          } else {
+              pixels.setPixelColor(i, pixels.Color(255, 50, 0));
+          }
+            i--;
+        }
+
+     }
+    pixels.show();
+}
+
+void set_led(int R, int G, int B, int mint, int maxt) {
+    
+    for (int i = mint; i <= maxt; i++) {
+        pixels.setPixelColor(i, pixels.Color(R, G, B));
+    }
+}
+
+void altCol(int R1, int G1, int B1, int R2, int G2, int B2) {
+  
+    for (int i = 0; i < NUM_LEDS; i++) {
+        if ((i >= lox_bot && i <= lox_top) || (i >= fuel_top && i <= fuel_bot)) {
+            continue;
+        }
+        if (i % 2  == 0) {
+          pixels.setPixelColor(i, pixels.Color(R1, G1, B1));
+        } else {
+          pixels.setPixelColor(i, pixels.Color(R2, G2, B2));
+        }
+    }
+}
+
+void set_base(int R, int G, int B) {
+
+    for (int i = 0; i < NUM_LEDS; i++) {
+        if ((i >= lox_bot && i <= lox_top) || (i >= fuel_top && i <= fuel_bot)) {
+            continue;
+        }
+        pixels.setPixelColor(i, pixels.Color(R, G, B));
+    }
+}
+
+void rainbow(uint8_t wait) {
+  uint16_t i, j;
+
+  for(j=0; j<256; j++) {
+    for(i=0; i<pixels.numPixels(); i++) {
+      if ((i >= lox_bot && i <= lox_top) || (i >= fuel_top && i <= fuel_bot)) {
+            continue;
+      }
+      pixels.setPixelColor(i, Wheel((i*1+j) & 255));
+    }
+    pixels.show();
+    delay(wait);
+  }
+}
+
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  if(WheelPos < 85) {
+    return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+  } 
+  else if(WheelPos < 170) {
+    WheelPos -= 85;
+    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  } 
+  else {
+    WheelPos -= 170;
+    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+}
+#endif
 
 
 /**

@@ -81,6 +81,8 @@ union floatArrToBytes {
   float sensorReadings[maxReadings];
 };
 
+
+
 /*
  * Data structure to store all information relevant to a specific sensor type.
  */
@@ -116,6 +118,12 @@ extern SdFat sd;
 extern FsFile file;
 
 extern struct Queue *sdBuffer;
+
+extern int led_mode;
+extern float capFuel;
+extern float capLox;
+extern double loxMin;
+extern double fuelMin;
 
 extern union floatArrToBytes farrbconvert;
 extern struct sensorInfo sensors[];
