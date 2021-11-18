@@ -214,11 +214,10 @@ void loop() {
       Automation::_autoEventTracker++;
 
       // If abort code is produced, jump to shutdown
-      if(res == -2) {
-        sendPacket57(11);
+      if(res < -1) {
+        sendPacket57(9-res);
         Automation::_autoEventTracker = AUTO_SHUTDOWN_START;
       }
-
     }
 
   }
@@ -391,6 +390,12 @@ void sensorReadFunc(int id) {
     case 22:
       debug("solenoid voltages");
       Solenoids::getAllVoltages(farrbconvert.sensorReadings);
+      if(Automation::inStartup()) {
+        // check if breakwire broke
+        Automation::breakGood = farrbconvert.sensorReadings[4] < 24 || Automation::breakGood;
+      } else {
+        Automation::breakGood = false;
+      }
       break;
     case 60:
       debug("Prop Injector");

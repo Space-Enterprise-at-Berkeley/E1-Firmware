@@ -13,6 +13,7 @@ namespace Automation {
 
 
   const bool IGNITER_DETECT_ENABLED = true;
+  const bool BREAK_DETECT_ENABLED = true;
 
   //-----------------------Variables-----------------------
 
@@ -28,6 +29,7 @@ namespace Automation {
   uint32_t _shutdownTimer;
 
   bool igniterGood = false;
+  bool breakGood = false;
 
   // flow_type_t flowtype;
   // flow_state_t flowstate = ON_PAD;
@@ -188,31 +190,28 @@ namespace Automation {
 
   int act_openLox() {
 
-    if (IGNITER_DETECT_ENABLED) { 
-      if(igniterGood) {
-        Solenoids::openLOX();
-        return 0;
-      } else {
+    if (IGNITER_DETECT_ENABLED) {
+      if(!igniterGood) {
         return -2;
       }
-    } else {
-      Solenoids::openLOX();
+      if(BREAK_DETECT_ENABLED && !breakGood) {
+        return -3;
+      }
     }
+    Solenoids::openLOX();
   }
 
   int act_armOpenLox() {
     if (IGNITER_DETECT_ENABLED) { 
-      if(igniterGood) {
-        Solenoids::armLOX();
-        Solenoids::openLOX();
-        return 0;
-      } else {
+      if(!igniterGood) {
         return -2;
       }
-    } else {
-      Solenoids::armLOX();
-      Solenoids::openLOX();
-    }
+      if(BREAK_DETECT_ENABLED && !breakGood) {
+        return -3;
+      }
+    } 
+    Solenoids::armLOX();
+    Solenoids::openLOX();
   }
 
   int act_armOpenProp() {
@@ -225,19 +224,16 @@ namespace Automation {
     // flowstate = BOTH_FLOWING;
 
     if (IGNITER_DETECT_ENABLED) { 
-      if(igniterGood) {
-        Solenoids::armLOX();
-        Solenoids::openLOX();
-        Solenoids::openPropane();
-        return 0;
-      } else {
+      if(!igniterGood) {
         return -2;
       }
-    } else {
-      Solenoids::armLOX();
-      Solenoids::openLOX();
-      Solenoids::openPropane();
-    }
+      if(BREAK_DETECT_ENABLED && !breakGood) {
+        return -3;
+      }
+    }  
+    Solenoids::armLOX();
+    Solenoids::openLOX();
+    Solenoids::openPropane();
   }
 
   int act_armCloseProp() {
@@ -358,7 +354,7 @@ namespace Automation {
       Serial.println("not startup");
       Serial.flush();
     #endif
-  }
+    }
     return -1;
   }
 

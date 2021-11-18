@@ -60,6 +60,7 @@ namespace Automation {
   extern uint32_t _shutdownTimer;
 
   extern bool igniterGood;
+  extern bool breakGood;
 
 
   /* Delays during startup sequence:
