@@ -21,11 +21,15 @@ void delay(uint32_t millis) {
 }
 
 uint32_t millis() {
-    return NULL;
+    uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::
+                  now().time_since_epoch()).count();
+    return ms;
 }
 
 uint32_t micros() {
-    return NULL;
+    uint64_t us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::
+                  now().time_since_epoch()).count();
+    return us; 
 }
 
 void yield() {
