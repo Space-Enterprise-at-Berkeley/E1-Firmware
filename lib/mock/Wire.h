@@ -2,8 +2,12 @@
 
 #include <cstdint>
 #include <math.h>
+#include <iostream>
 
 class TwoWire {
+  private:
+  long baud;
+
   public:
   TwoWire();
   void begin();

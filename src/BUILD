@@ -1,10 +1,20 @@
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary
 cc_binary(
+    name = "test",
+    srcs = ["Test.cpp"],
+   deps = [
+       ":main",
+   ],
+)
+
+cc_library(
     name = "main",
     srcs = ["main.cpp"],
+    hdrs = ["main.h"],
+    strip_include_prefix = "",
     deps = [
-        "//src/tests:tests",
-    ],
+        "//src/tests:tests"
+    ]
 )
 
 cc_library(

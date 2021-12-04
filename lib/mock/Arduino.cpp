@@ -17,7 +17,7 @@ void digitalWriteFast(uint8_t pin, uint8_t val) {
 }
 
 void delay(uint32_t millis) {
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 }
 
 uint32_t millis() {

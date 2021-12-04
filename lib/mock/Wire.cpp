@@ -9,11 +9,11 @@ void TwoWire::begin() {
 }
 
 void TwoWire::setClock(uint32_t baud) {
-
+    TwoWire::baud = baud;
 }
 
 void TwoWire::beginTransmission(uint8_t address) {
-
+  std::cout << "beginning transmission to: " << std::to_string((int) address) << "\n";
 }
 
 int TwoWire::write(uint8_t value) {
@@ -29,19 +29,19 @@ void TwoWire::send(uint8_t value) {
 }
 
 uint8_t TwoWire::requestFrom(uint8_t, uint8_t) {
-    return NULL;
+    return 1;
 }
 
 uint8_t TwoWire::available() {
-    return NULL;
+    return true;
 }
 
 uint8_t TwoWire::receive() {
-    return NULL;
+    return 1;
 }
 
 uint8_t TwoWire::read() {
-    return NULL;
+    return 1;
 }
 
 TwoWire Wire;
