@@ -10,27 +10,26 @@
 ADS8167::ADS8167() {}
 
 bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
-    _cs_pin = cs;
-    _rdy_pin = rdy;
-    _alrt_pin = alrt;
-    _theSPI = theSPI;
-    
-    _theSPI->begin();
+  _cs_pin = cs;
+  _rdy_pin = rdy;
+  _alrt_pin = alrt;
+  _theSPI = theSPI;
+  
+  _theSPI->begin();
 
-    // not sure if any of these need to be pullup, or that's handled in hardware
-    pinMode(_cs_pin, OUTPUT);
-    pinMode(_rdy_pin, INPUT);
-    pinMode(_alrt_pin, INPUT);
+  pinMode(_cs_pin, OUTPUT);
+  pinMode(_rdy_pin, INPUT_PULLUP);
+  pinMode(_alrt_pin, INPUT);
 
-    digitalWriteFast(_cs_pin, HIGH);
+  digitalWriteFast(_cs_pin, HIGH);
 
-    // enable writing
-    write_cmd(ADCCMD_WR_REG, REG_ACCESS, REG_ACCESS_BITS);
+  // enable writing
+  write_cmd(ADCCMD_WR_REG, REG_ACCESS, REG_ACCESS_BITS);
 
-    // Powerup all except the internal ref buffer
-    write_cmd(ADCCMD_WR_REG, REG_PD_CNTL, PD_CNTL_PD_REF);
-    
-    return true;
+  // Powerup all except the internal ref buffer
+  write_cmd(ADCCMD_WR_REG, REG_PD_CNTL, PD_CNTL_PD_REF);
+  
+  return true;
 }
 
 /*
@@ -62,10 +61,6 @@ void ADS8167::setAllInputsSeparate(){
  * for manual mode.
  */
 void ADS8167::setChannel(const uint8_t channelno) {
-    #ifdef DEBUG
-      Serial.println("set channel " + String(channelno));
-      Serial.flush();
-    #endif
     write_cmd(ADCCMD_WR_REG, REG_CHANNEL_ID, channelno & 0x07); // 3 lsb 1, rest 0
 }
 

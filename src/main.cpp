@@ -17,7 +17,9 @@ Task taskTable[] = {
 int main() {
   // hardware setup
   Serial.begin(115200);
+  while(!Serial) {} // wait for user to open serial port (debugging only)
   HAL::initHAL();
+  Ducers::initDucers();
 
   while(1) {
     uint32_t ticks = micros(); // current time in microseconds
