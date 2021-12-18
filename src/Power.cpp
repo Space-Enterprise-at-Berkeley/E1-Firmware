@@ -34,6 +34,9 @@ namespace Power {
             powers[target] = _supplyMonitors[target]->readBusPower();
             _energyConsumed[target] += powers[target] * (millis() - last_checked[target]) / 1000;
             last_checked[target] = millis();
+            // TODO: remove this janky ass test code 
+            Serial.println("Read values from "+String(target));
+            Serial.println("Voltage: " + String(voltages[target]) + "V \tCurrent: " + String(currents[target]) + "A \tPower: " + String(powers[target]));
         }
 
         return powerUpdatePeriod;
