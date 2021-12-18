@@ -47,6 +47,7 @@ class ADS8167 {
 
         uint8_t _cs_pin;
         uint8_t _alrt_pin;
+        uint8_t _rdy_pin;
         SPIClass *_theSPI;
 
         uint8_t buffer[6];

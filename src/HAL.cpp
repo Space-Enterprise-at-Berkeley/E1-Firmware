@@ -7,9 +7,15 @@ namespace HAL {
     INA219 ina2;
     INA219 ina3;
 
-    uint32_t initHAL() {
+    void initHAL() {
         // initialize ADC 1
+        adc1.init(&SPI, 37, 26, 9);
+        adc1.setAllInputsSeparate();
+        adc1.enableOTFMode();
         // initialize ADC 2
+        adc2.init(&SPI, 36, 27, 10);
+        adc2.setAllInputsSeparate();
+        adc2.enableOTFMode();
         // etc...
 
         // Initialize INA219
