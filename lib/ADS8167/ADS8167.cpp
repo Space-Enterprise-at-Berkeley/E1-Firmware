@@ -14,6 +14,7 @@ bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
     _rdy_pin = rdy;
     _alrt_pin = alrt;
     _theSPI = theSPI;
+    
     _theSPI->begin();
 
     // not sure if any of these need to be pullup, or that's handled in hardware
@@ -28,46 +29,7 @@ bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
 
     // Powerup all except the internal ref buffer
     write_cmd(ADCCMD_WR_REG, REG_PD_CNTL, PD_CNTL_PD_REF);
-    return true;
-}
-
-bool ADS8167::init() {
-    #ifdef DEBUG
-      Serial.println("top of init ADC");
-      Serial.flush();
-    #endif
-    _theSPI->begin();
-
-    // not sure if any of these need to be pullup, or that's handled in hardware
-    pinMode(_cs_pin, OUTPUT);
-    pinMode(_rdy_pin, INPUT);
-    pinMode(_alrt_pin, INPUT);
-
-    digitalWrite(_cs_pin, HIGH);
-
-    // enable writing
-    write_cmd(ADCCMD_WR_REG, REG_ACCESS, REG_ACCESS_BITS);
-
-    // Powerup all except the internal ref buffer
-    write_cmd(ADCCMD_WR_REG, REG_PD_CNTL, PD_CNTL_PD_REF);
-
-    // Data type: ADC value + 4-bit channel id
-    // write_cmd(ADCCMD_WR_REG, REG_DATA_CNTL, DATA_CNTL_FORMAT_SAMPLE);
-
-    // Vref = 5V0
-    // write_cmd(ADCCMD_WR_REG, REG_OFST_CAL, OFST_CAL_5V0);
-
-    // setSDOMode();
-
-    // Custom channel seq mode
-    // write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_CUSTOM);
-    // Manual channel seq moe
-    // write_cmd(ADCCMD_WR_REG, REG_DEVICE_CFG, DEVICE_CFG_SEQMODE_MANUAL);
-    #ifdef DEBUG
-    Serial.println("bottom of init ADC");
-      Serial.println("Initialized ADS8167 w/ cs pin: " + String(_cs_pin));
-      Serial.flush();
-    #endif
+    
     return true;
 }
 
@@ -117,10 +79,6 @@ void ADS8167::setAutoSequenceMode() {
 
 void ADS8167::setSequence(const uint8_t length, const uint8_t* channels, const uint8_t repeat, const bool loop) {
   if(length < 1 || length > 16) {
-    #ifdef DEBUG
-      Serial.println("Sequence max length = 16");
-      Serial.flush();
-    #endif
     exit(1);
   }
 
@@ -178,13 +136,6 @@ uint16_t ADS8167::readChannel(uint8_t* channel_out) {
   // if(channel_out != NULL)
   //   *channel_out = buffer[2] >> 4;
 
-  #ifdef DEBUG
-    Serial.println("raw reads (4 bytes)");
-    Serial.println(buffer[0], BIN);
-    Serial.println(buffer[1], BIN);
-    Serial.println(buffer[2], BIN);
-    Serial.println(buffer[3], BIN);
-  #endif
   uint16_t result = buffer[0] << 8;
   result |= buffer[1];
   return result;
@@ -202,11 +153,7 @@ void ADS8167::enableOTFMode() {
 }
 
 void ADS8167::waitForDataReady() {
-  while(digitalRead(_rdy_pin)==0) {
-    #ifdef DEBUG
-      Serial.println("adc waiting");
-      Serial.flush();
-    #endif
+  while(digitalReadFast(_rdy_pin)==0) {
   }
 }
 
@@ -223,7 +170,7 @@ uint16_t ADS8167::readChannelOTF(const uint8_t otf_next_channel, uint8_t* channe
     waitForDataReady();
 
     _theSPI->beginTransaction(SPISettings(_SPI_SPEED, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
-    digitalWrite(_cs_pin, LOW);
+    digitalWriteFast(_cs_pin, LOW);
 
     buffer[0] = cmd << 3;
     buffer[1] = 0x00;
@@ -231,7 +178,7 @@ uint16_t ADS8167::readChannelOTF(const uint8_t otf_next_channel, uint8_t* channe
 
     _theSPI->transfer(buffer, 3);
 
-    digitalWrite(_cs_pin, HIGH);
+    digitalWriteFast(_cs_pin, HIGH);
     _theSPI->endTransaction();
 
     if(channel_out != NULL)
@@ -242,7 +189,7 @@ uint16_t ADS8167::readChannelOTF(const uint8_t otf_next_channel, uint8_t* channe
 
 void ADS8167::write_cmd(const adc_cmd_t cmd, const uint16_t address, const uint8_t data) {
     _theSPI->beginTransaction(SPISettings(_SPI_SPEED, MSBFIRST, SPI_MODE0)); // chip uses mode 0 by default
-    digitalWrite(_cs_pin, LOW);
+    digitalWriteFast(_cs_pin, LOW);
     uint32_t writeData = (cmd << 3) << 16; // Top 3 address bits are discarded, cmd is 5 bits
     writeData  |= address << 8; // Top 5 address bits are discarded, address is 11 bits
     writeData  |= data;
@@ -253,5 +200,5 @@ void ADS8167::write_cmd(const adc_cmd_t cmd, const uint16_t address, const uint8
 
     _theSPI->endTransaction();
 
-    digitalWrite(_cs_pin, HIGH);
+    digitalWriteFast(_cs_pin, HIGH);
 }

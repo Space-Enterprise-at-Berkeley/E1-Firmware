@@ -8,15 +8,15 @@
 #include <SPI.h>
 
 Task taskTable[] = {
-  // sensors
+  // ducers
   {Ducers::ptSample, 0},
-
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
 
 int main() {
   // hardware setup
+  Serial.begin(115200);
   HAL::initHAL();
 
   while(1) {

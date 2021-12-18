@@ -1,5 +1,7 @@
 #pragma once
 
+#include <HAL.h>
+
 #include <Arduino.h>
 
 namespace Ducers {
