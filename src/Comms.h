@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 
-namespace Comms
-{
-}
+namespace Comms {
+    uint32_t packetWaiting();
+    void processPackets();
+};

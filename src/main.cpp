@@ -1,46 +1,32 @@
-#include <Scheduler.h>
-#include <Automation.h>
+#include <Task.h>
 #include <Comms.h>
 #include <Ducers.h>
-#include <Heaters.h>
-#include <Thermocouples.h>
-#include <Power.h>
-#include <Valves.h>
+#include <HAL.h>
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 
-#include <tests/TestHeaters.h>
-#include <tests/TestPower.h>
+Task taskTable[] = {
+  // sensors
+  {Ducers::ptSample, 0},
 
-TestPower::testReadouts *testPwr;
-TestPower::testPowerTasks *testPwrTasks;
-TestHeater::testFunc *testHtr;
+};
 
-void setup()
-{
-  // low level hardware setup
-  delay(500);
-  Wire1.begin();
-  Wire1.setClock(400000); // 400khz clock
-  SPI.begin();
+#define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
 
-  // initialize testing functions
-  testPwr = new TestPower::testReadouts();
-  // testPwrTasks = new TestPower::testPowerTasks();
-  testHtr = new TestHeater::testFunc();
-  Serial.begin(57600);
-}
+int main() {
+  // hardware setup
+  HAL::initHAL();
 
-void loop()
-{
-  // run the scheduler
-  Scheduler::loop();
-  
-  // run Tests - uncomment only one at a time!
-  // testPwr->loop();
-
-  // testPwrTasks->loop();
-  testHtr->loop();
+  while(1) {
+    uint32_t ticks = micros(); // current time in microseconds
+    for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
+      if (ticks >= taskTable[i].nexttime)
+        taskTable[i].nexttime = ticks + taskTable[i].taskCall();
+    }
+    if (Comms::packetWaiting())
+      Comms::processPackets();
+  }
+  return 0;
 }
