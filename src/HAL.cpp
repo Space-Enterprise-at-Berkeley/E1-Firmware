@@ -14,7 +14,7 @@ namespace HAL {
     INA219* valveMonitors[numValves];
     
     
-    void initHAL() {
+    void initHAL(TwoWire *supplyBus, TwoWire *valveBus) {
         // initialize ADC 1
         adc1.init(&SPI, 37, 26, 9);
         adc1.setAllInputsSeparate();
@@ -29,10 +29,9 @@ namespace HAL {
         // values taken from old code, hotfire/main 68c4e9e
         float rShunt = 0.010;
         float maxExpectedCurrent = 5;
-        Wire.begin();
         for (int i=0; i<numSupplies; i++) {
             supplyMonitors[i] = new INA219();
-            supplyMonitors[i]->begin(&Wire, powerAddrs[i]);
+            supplyMonitors[i]->begin(supplyBus, powerAddrs[i]);
             supplyMonitors[i]->configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
             supplyMonitors[i]->calibrate(rShunt, maxExpectedCurrent);
         }
@@ -46,15 +45,14 @@ namespace HAL {
         // ina3.configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
         // ina3.calibrate(rShunt, maxExpectedCurrent);
 
-        Wire1.begin();
         float valveRShunt = 0.033;
         for(int i=0; i<numValves; i++) {
             valveMonitors[i] = new INA219();
-            valveMonitors[i]->begin(&Wire1, valveAddrs[i]);
+            valveMonitors[i]->begin(valveBus, valveAddrs[i]);
             valveMonitors[i]->configure(INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S);
             valveMonitors[i]->calibrate(valveRShunt, maxExpectedCurrent);
         }
         
-        return 0; // success
+        return; // success
     }
 };

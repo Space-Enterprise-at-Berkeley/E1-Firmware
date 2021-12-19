@@ -18,6 +18,6 @@ namespace HAL {
     extern uint8_t valvePins[numValves];
     extern INA219* valveMonitors[numValves];
 
-    void initHAL();
+    void initHAL(TwoWire *supplyBus, TwoWire *valveBus);
     
 };

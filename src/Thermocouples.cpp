@@ -1,53 +1,47 @@
+#pragma once
+
+#include <Arduino.h>
+#include <Comms.h>
 #include <Thermocouples.h>
 
-namespace Thermocouples
-{
+namespace Thermocouples {
+    uint32_t tcUpdatePeriod = 10 * 1000;
+    Comms::Packet tcPacket;
 
-  //init function for a TC instance
-  //taken from old code
-  int Thermocouple::init(Adafruit_MCP9600 *cryo_board, uint8_t * addrs, _themotype * type, TwoWire *theWire) {
-     _addrs = addrs;
-     _cryo_amp_board = cryo_board;
+    float tcTemps[4] = {0.0, 0.0, 0.0, 0.0};
+    uint8_t tcAddrs[4] = {0x60, 0x61, 0x62, 0x63};
+    Adafruit_MCP9600 TCs[numTCs];
 
+    void initThermocouples(TwoWire *tcBus) {
+      //TODO: SET CORRECT ID
+      tcPacket.id = 1;
 
-    if (!_cryo_amp_board.begin(addrs, theWire)) {
-         Serial.println("Error initializing cryo board at Addr 0x" + String(addrs, HEX));
-         return -1;
-       }
+      for (int i = 0; i < numTCs; i++) {
+        if (!TCs[i].begin(tcAddrs[i], tcBus)) {
+          Serial.println("Error initializing cryo board at Addr 0x" + String(tcAddrs[i], HEX));
+          return;
+        }
 
-    _cryo_amp_board.setADCresolution(MCP9600_ADCRESOLUTION_16);
-    _cryo_amp_board.setThermocoupleType(type);
-    _cryo_amp_board.setFilterCoefficient(0);
-    _cryo_amp_board.enable(true);
+        TCs[i].setADCresolution(MCP9600_ADCRESOLUTION_16);
+        TCs[i].setThermocoupleType(MCP9600_TYPE_K);
+        TCs[i].setFilterCoefficient(0);
+        TCs[i].enable(true);
+      }
+    }
 
-     return 0;
-   }
+    uint32_t tcSample() {
+        // read from all TCs in sequence
+        for (int i = 0; i < numTCs; i++) {
+          tcTemps[i] = TCs[i].readThermocouple();
+        }
+        
+        tcPacket.len = 0;
+        for (int i = 0; i < numTCs; i++) {
+          Comms::packetAddFloat(&tcPacket, tcTemps[i]);
+        }
 
-//function for reading value for TC amp.
-//record the timestamp and the read value; both of which are variables defined in the header file.
-  void Thermocouple::run() {
-    value = cryo_amp_board.readThermocouple();
-    timestamp = micros();
-  }
-
-  //creating Thermocouple instances, each corresponding to a specific TC used in the system.
-  Thermocouple TC1;
-  Thermocouple TC2;
-  Thermocouple TC3;
-
-  //array of all Thermocouples
-  Thermocouple allThermocouples [] = {TC1, TC2, TC3};
-
-  //function within Thermocouples namespace that intialiazes all Thermocouple instances, as defined above.
-  void initializeAll() {
-    TC1.init(/*parameters here*/);
-    TC2.init(/*parameters here*/);
-    TC3.init(/*parameters here*/);
-
-    //adding TC instances to the scheduer
-    Scheduler::repeatTask(&TC1, 200 * 1000);
-    Scheduler::repeatTask(&TC2, 200 * 1000);
-    Scheduler::repeatTask(&TC3, 200 * 1000);
-
-  }
-}
+        Comms::emitPacket(&tcPacket);
+        // return the next execution time
+        return tcUpdatePeriod;
+    }
+};
