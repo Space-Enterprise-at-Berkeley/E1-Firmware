@@ -8,8 +8,16 @@
 namespace HAL {
     extern ADS8167 adc1;
     extern ADS8167 adc2;
-    extern INA219 ina1;
-    extern INA219 ina2;
-    extern INA219 ina3;
+
+    const int numSupplies = 3;
+    extern uint8_t powerAddrs[numSupplies];
+    extern INA219* supplyMonitors[numSupplies];
+
+    const int numValves = 8;
+    extern uint8_t valveAddrs[numValves];
+    extern uint8_t valvePins[numValves];
+    extern INA219* valveMonitors[numValves];
+
     void initHAL();
+    
 };
