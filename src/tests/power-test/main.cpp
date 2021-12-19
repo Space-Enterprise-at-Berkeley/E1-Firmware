@@ -1,31 +1,24 @@
 #include <Task.h>
 #include <Comms.h>
 #include <Ducers.h>
-#include <Power.h>
-#include <Valves.h>
 #include <HAL.h>
+#include <Power.h>
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 
 Task taskTable[] = {
-  // ducers
-  {Ducers::ptSample, 0},
+  // sensors
   {Power::powerSample, 0},
-  {Valves::check_currents, 0}
+
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
 
 int main() {
   // hardware setup
-  Serial.begin(115200);
-  while(!Serial) {} // wait for user to open serial port (debugging only)
   HAL::initHAL();
-  Ducers::initDucers();
-  Power::initPower();
-  Valves::initValves();
 
   while(1) {
     uint32_t ticks = micros(); // current time in microseconds
