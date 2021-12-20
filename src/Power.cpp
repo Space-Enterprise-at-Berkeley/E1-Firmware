@@ -3,40 +3,57 @@
 namespace Power {
 
     // TODO: change this to appropriate value
-    uint32_t powerUpdatePeriod = 1 * 1000;
+    uint32_t powerUpdatePeriod = 100 * 1000;
 
-    long last_checked[HAL::numSupplies];
-    float voltages[HAL::numSupplies];
-    float currents[HAL::numSupplies];
-    float powers[HAL::numSupplies];
-    float energyConsumed[HAL::numSupplies];
+    Comms::Packet battPacket = {.id = 2};
+    float battVoltage = 0.0;
+    float battCurrent = 0.0;
+    float battPower = 0.0;
+
+    Comms::Packet supply12Packet = {.id = 3};
+    float supply12Voltage = 0.0;
+    float supply12Current = 0.0;
+    float supply12Power = 0.0;
+
+    Comms::Packet supply8Packet = {.id = 4};
+    float supply8Voltage = 0.0;
+    float supply8Current = 0.0;
+    float supply8Power = 0.0;
 
     void initPower(){
-
-        // initialize buffers
-        for (int i = 0; i < HAL::numSupplies; i++) {
-            last_checked[i] = 0;
-            voltages[i] = 0;
-            currents[i] = 0;
-            powers[i] = 0;
-            energyConsumed[i] = 0;
-        }
-
     }
 
-    uint32_t powerSample() {
-        // Reads all current, voltage, power values for all power supplies
+    uint32_t battSample() {
+        // Reads current, voltage, power values for battery supply
+        // TODO
 
-        for (int target = 0; target < HAL::numSupplies; target++){
-            voltages[target] = HAL::supplyMonitors[target]->readBusVoltage();
-            currents[target] = HAL::supplyMonitors[target]->readShuntCurrent();
-            powers[target] = HAL::supplyMonitors[target]->readBusPower();
-            energyConsumed[target] += powers[target] * (millis() - last_checked[target]) / 1000;
-            last_checked[target] = millis();
-            // TODO: remove this janky ass test code 
-            Serial.println("Read values from "+String(target));
-            Serial.println("Voltage: " + String(voltages[target]) + "V \tCurrent: " + String(currents[target]) + "A \tPower: " + String(powers[target]));
-        }
+        return powerUpdatePeriod;
+    }
+
+    uint32_t supply12Sample() {
+        supply12Voltage = HAL::supply12v.readBusVoltage();
+        supply12Current = HAL::supply12v.readShuntCurrent();
+        supply12Power = supply12Voltage * supply12Current;
+
+        supply12Packet.len = 0;
+        Comms::packetAddFloat(&supply12Packet, supply12Voltage);
+        Comms::packetAddFloat(&supply12Packet, supply12Current);
+        Comms::packetAddFloat(&supply12Packet, supply12Power);
+        Comms::emitPacket(&supply12Packet);
+
+        return powerUpdatePeriod;
+    }
+
+    uint32_t supply8Sample() {
+        supply8Voltage = HAL::supply8v.readBusVoltage();
+        supply8Current = HAL::supply8v.readShuntCurrent();
+        supply8Power = supply8Voltage * supply8Current;
+
+        supply8Packet.len = 0;
+        Comms::packetAddFloat(&supply8Packet, supply8Voltage);
+        Comms::packetAddFloat(&supply8Packet, supply8Current);
+        Comms::packetAddFloat(&supply8Packet, supply8Power);
+        Comms::emitPacket(&supply8Packet);
 
         return powerUpdatePeriod;
     }

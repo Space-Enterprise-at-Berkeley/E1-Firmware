@@ -2,7 +2,7 @@
 
 namespace Ducers {
     uint32_t ptUpdatePeriod = 100 * 1000;
-    Comms::Packet ptPacket;
+    Comms::Packet ptPacket = {.id = 1};
 
     float pressurantPTValue = 0.0;
     float loxTankPTValue = 0.0;
@@ -13,7 +13,6 @@ namespace Ducers {
     float fuelDomePTValue = 0.0;
 
     void initDucers() {
-        ptPacket.id = 1;
     }
 
     float interpolate1000(uint16_t rawValue) {

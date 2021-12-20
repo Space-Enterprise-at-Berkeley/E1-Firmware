@@ -1,7 +1,10 @@
 #pragma once
+
+#include <HAL.h>
+#include <Comms.h>
+
 #include <Arduino.h>
 #include <INA219.h>
-#include <HAL.h>
 
 namespace Power {
 
@@ -9,13 +12,20 @@ namespace Power {
     extern uint32_t powerUpdatePeriod;
 
     // buffers to store voltages, current, power for each sensor
-    extern long last_checked[HAL::numSupplies];
-    extern float voltages[HAL::numSupplies];
-    extern float currents[HAL::numSupplies];
-    extern float powers[HAL::numSupplies];
-    extern float energyConsumed[HAL::numSupplies];
-    
+    extern float battVoltage;
+    extern float battCurrent;
+    extern float battPower;
 
+    extern float supply12Voltage;
+    extern float supply12Current;
+    extern float supply12Power;
+
+    extern float supply8Voltage;
+    extern float supply8Current;
+    extern float supply8Power;
+    
     void initPower();
-    uint32_t powerSample();
+    uint32_t battSample();
+    uint32_t supply12Sample();
+    uint32_t supply8Sample();
 }

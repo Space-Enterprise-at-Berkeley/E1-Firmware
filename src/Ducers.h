@@ -7,7 +7,6 @@
 
 namespace Ducers {
     extern uint32_t ptUpdatePeriod;
-    extern Comms::Packet ptPacket;
 
     extern float pressurantPTValue;
     extern float loxTankPTValue;
