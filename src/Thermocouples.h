@@ -1,17 +1,17 @@
 #pragma once
 
+#include <HAL.h>
+
 #include <Arduino.h>
-#include <Adafruit_MCP9600.h>
 
 namespace Thermocouples {
     extern uint32_t tcUpdatePeriod;
-    extern Comms::Packet tcPacket;
 
-    const int numTCs = 4;
-    extern float tcTemps[numTCs];
-    extern uint8_t tcAddrs[numTCs];
-    extern Adafruit_MCP9600 TCs[numTCs];
-    
-    void initThermocouples(TwoWire *tcBus);
+    extern float engineTC1Value;
+    extern float engineTC2Value;
+    extern float engineTC3Value;
+    extern float engineTC4Value;
+
+    void initThermocouples();
     uint32_t tcSample();
 };

@@ -1,41 +1,11 @@
-/*
-INA219.cpp - Class file for the INA219 Zero-Drift, Bi-directional Current/Power Monitor Arduino Library.
+#include <INA219.h>
 
-Version: 1.0.0
-(c) 2014 Korneliusz Jarzebski
-www.jarzebski.pl
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#if ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
-
-#include "INA219.h"
-
-bool INA219::begin(TwoWire *localWire, uint8_t address)
+void INA219::init(TwoWire *localWire, uint8_t address, float shuntR, float currMax, ina219_range_t range, ina219_gain_t gain, ina219_busRes_t busRes, ina219_shuntRes_t shuntRes, ina219_mode_t mode)
 {
     _localWire = localWire;
-    _localWire->begin();
     inaAddress = address;
-    return true;
-}
 
-bool INA219::configure(ina219_range_t range, ina219_gain_t gain, ina219_busRes_t busRes, ina219_shuntRes_t shuntRes, ina219_mode_t mode)
-{
+    // device settings
     uint16_t config = 0;
 
     config |= (range << 13 | gain << 11 | busRes << 7 | shuntRes << 3 | mode);
@@ -68,26 +38,14 @@ bool INA219::configure(ina219_range_t range, ina219_gain_t gain, ina219_busRes_t
 
     writeRegister16(INA219_REG_CONFIG, config);
 
-    return true;
-}
-
-bool INA219::configure(ina226_averages_t avg = INA226_AVERAGES_1, ina226_busConvTime_t busConvTime = INA226_BUS_CONV_TIME_1100US, ina226_shuntConvTime_t shuntConvTime = INA226_SHUNT_CONV_TIME_1100US, ina226_mode_t mode = INA226_MODE_SHUNT_BUS_CONT) {
-  exit(1);
-  // do not use.
-  return false;
-}
-
-
-bool INA219::calibrate(float rShuntValue, float iMaxExpected)
-{
+    // device calibration
     uint16_t calibrationValue;
-    rShunt = rShuntValue;
 
     float iMaxPossible, minimumLSB;
 
-    iMaxPossible = vShuntMax / rShunt;
+    iMaxPossible = vShuntMax / shuntR;
 
-    minimumLSB = iMaxExpected / 32767;
+    minimumLSB = currMax / 32767;
 
     currentLSB = (uint16_t)(minimumLSB * 100000000);
     currentLSB /= 100000000;
@@ -97,11 +55,9 @@ bool INA219::calibrate(float rShuntValue, float iMaxExpected)
 
     powerLSB = currentLSB * 20;
 
-    calibrationValue = (uint16_t)((0.04096) / (currentLSB * rShunt));
+    calibrationValue = (uint16_t)((0.04096) / (currentLSB * shuntR));
 
     writeRegister16(INA219_REG_CALIBRATION, calibrationValue);
-
-    return true;
 }
 
 float INA219::getMaxPossibleCurrent(void)
@@ -229,28 +185,17 @@ int16_t INA219::readRegister16(uint8_t reg)
     int16_t value;
 
     _localWire->beginTransmission(inaAddress);
-    #if ARDUINO >= 100
-        _localWire->write(reg);
-    #else
-        _localWire->send(reg);
-    #endif
+    _localWire->write(reg);
     _localWire->endTransmission();
-
-    delay(1);
 
     _localWire->beginTransmission(inaAddress);
     _localWire->requestFrom(inaAddress, 2);
     while(!_localWire->available()) {};
-    #if ARDUINO >= 100
-        uint8_t vha = _localWire->read();
-        uint8_t vla = _localWire->read();
-    #else
-        uint8_t vha = _localWire->receive();
-        uint8_t vla = _localWire->receive();
-    #endif;
+    uint8_t vha = _localWire->read();
+    uint8_t vla = _localWire->read();
     _localWire->endTransmission();
 
-    value = vha << 8 | vla;
+    value = ((uint16_t) vha) << 8 | vla;
 
     return value;
 }
@@ -262,14 +207,8 @@ void INA219::writeRegister16(uint8_t reg, uint16_t val)
     val >>= 8;
 
     _localWire->beginTransmission(inaAddress);
-    #if ARDUINO >= 100
-        _localWire->write(reg);
-        _localWire->write((uint8_t)val);
-        _localWire->write(vla);
-    #else
-        _localWire->send(reg);
-        _localWire->send((uint8_t)val);
-        _localWire->send(vla);
-    #endif
+    _localWire->write(reg);
+    _localWire->write((uint8_t)val);
+    _localWire->write(vla);
     _localWire->endTransmission();
 }

@@ -1,7 +1,10 @@
 #pragma once
+
+#include <HAL.h>
+#include <Comms.h>
+
 #include <Arduino.h>
 #include <INA219.h>
-#include <HAL.h>
 
 namespace Valves {
     
@@ -14,18 +17,27 @@ namespace Valves {
     // uint8_t solenoidINAAddrs[numSolenoids] = {0x40, 0x42, 0x44, 0x45, 0x43, 0x41};
     const float maxValveCurrent = 1.0;
 
-    extern bool valve_is_open[HAL::numValves];
-    extern long last_checked[HAL::numValves];
-    extern float currents[HAL::numValves];
-    extern float voltages[HAL::numValves];
+    extern float armVoltage;
+    extern float armCurrent;
+    const uint8_t armPin = HAL::chan0Pin;
+
+    extern float igniterVoltage;
+    extern float igniterCurrent;
+    const uint8_t igniterPin = HAL::chan1Pin;
+
+    extern float loxMainVoltage;
+    extern float loxMainCurrent;
+    const uint8_t loxMainPin = HAL::chan2Pin;
+
+    extern float fuelMainVoltage;
+    extern float fuelMainCurrent;
+    const uint8_t fuelMainPin = HAL::chan3Pin;
     
     void initValves();
 
-    uint32_t check_currents(); // reads all currents, checks for overcurrent
-    // uint32_t check_voltages(); // reads all voltages
- 
-    // helper functions
-    void open_valve(int valve_num);
-    void close_valve(int valve_num);
-
-}
+    void sampleValve(Comms::Packet *packet, INA219 *ina, float *voltage, float *current);
+    uint32_t armValveSample();
+    uint32_t igniterSample();
+    uint32_t loxMainValveSample();
+    uint32_t fuelMainValveSample();
+};
