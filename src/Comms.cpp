@@ -25,7 +25,10 @@ namespace Comms {
         Packet packet = *(struct Packet *)&packetBuffer;
 
         //call callback function
-        callbackMap.at(packet.id)(packet);
+        uint16_t checksum = *(uint16_t *)&packet.checksum;
+        if (checksum == fletcher16(packet.data, packet.len)) {
+            callbackMap.at(packet.id)(packet);
+        }
     }
 
     void packetAddFloat(Packet *packet, float value) {
@@ -38,15 +41,46 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet) {
+        //generate checksum from data and add it to the packet
+        uint16_t checksum = fletcher16(packet->data, packet->len);
+        uint8_t *ptr = (uint8_t *)&checksum;
+        packet->checksum[0] = ptr[0];
+        packet->checksum[1] = ptr[1];
+
         //Send over serial
-        for (int i = 0; i < packet->len; i++) {
-            Serial.println(packet->data[i]);
-        }
-        Serial.println("");
+        Serial.write(packet->id);
+        Serial.write(packet->len);
+        Serial.write(packet->checksum, 2);
+        Serial.write(packet->data, packet->len);
+        Serial.write("\n");
 
         //Send over ethernet
         Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+        Udp.write(packet->id);
+        Udp.write(packet->len);
+        Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+    }
+
+    /**
+     * @brief generates a 2 byte checksum
+     * 
+     * @param data pointer to data array
+     * @param len length of data array
+     * @return uint16_t 
+     */
+    uint16_t fletcher16(uint8_t *data, int len) {
+
+        uint16_t sum1 = 0;
+        uint16_t sum2 = 0;
+
+        for (int index=0; index<len; index++) {
+            if (data[index] > 0) {
+            sum1 = (sum1 + data[index]) % 255;
+            sum2 = (sum2 + sum1) % 255;
+            }
+        }
+        return (sum2 << 8) | sum1;
     }
 };

@@ -6,16 +6,16 @@
 #include <map>
 #include <string>
 
-//TODO replace with actual values
-byte mac[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-int port = 0;
-IPAddress ip(192, 168, 1, 177);
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xDA, 0x02};
+int port = 42069;
+IPAddress ip(10, 0, 0, 42);
 
 namespace Comms {
     struct Packet {
         uint8_t id;
-        uint8_t data[256];
         uint8_t len;
+        uint8_t checksum[2];
+        uint8_t data[256];
     };
 
     void initComms();
