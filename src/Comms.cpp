@@ -1,15 +1,31 @@
 #include <Comms.h>
 
 namespace Comms {
+
+    std::map<int, commFunction> callbackMap;
+    EthernetUDP Udp;
+    char packetBuffer[sizeof(Packet)];
+
     void initComms() {
+        Ethernet.begin(mac, ip);
+        Udp.begin(port);
+    }
+
+    void registerCallback(int id, commFunction function) {
+        callbackMap.insert(std::pair<int, commFunction>(id, function));
     }
 
     uint32_t packetWaiting() {
-        return 0; // return 1 if packets waiting
+        return Udp.parsePacket();
     }
 
     void processPackets() {
-        // process all waiting packets
+        Udp.read(packetBuffer, sizeof(Packet));
+
+        Packet packet = *(struct Packet *)&packetBuffer;
+
+        //call callback function
+        callbackMap.at(packet.id)(packet);
     }
 
     void packetAddFloat(Packet *packet, float value) {
@@ -22,9 +38,15 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet) {
-        Serial.print(packet->data[0]);
-        Serial.print(packet->data[1]);
-        Serial.print(packet->data[2]);
-        Serial.println(packet->data[3]);
+        //Send over serial
+        for (int i = 0; i < packet->len; i++) {
+            Serial.println(packet->data[i]);
+        }
+        Serial.println("");
+
+        //Send over ethernet
+        Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+        Udp.write(packet->data, packet->len);
+        Udp.endPacket();
     }
 };
