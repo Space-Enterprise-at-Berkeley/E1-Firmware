@@ -25,7 +25,15 @@ namespace Power {
 
     uint32_t battSample() {
         // Reads current, voltage, power values for battery supply
-        // TODO
+        battVoltage = HAL::supplyBatt.readBusVoltage();
+        battCurrent = HAL::supplyBatt.readShuntCurrent();
+        battPower = battVoltage * battCurrent;
+
+        battPacket.len = 0;
+        Comms::packetAddFloat(&battPacket, battVoltage);
+        Comms::packetAddFloat(&battPacket, battCurrent);
+        Comms::packetAddFloat(&battPacket, battPower);
+        Comms::emitPacket(&battPacket);
 
         return powerUpdatePeriod;
     }
