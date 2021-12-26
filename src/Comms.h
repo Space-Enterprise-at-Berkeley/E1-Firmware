@@ -4,13 +4,17 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 #include <map>
-#include <string>
-
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xDA, 0x02};
-int port = 42069;
-IPAddress ip(10, 0, 0, 42);
 
 namespace Comms {
+    //https://github.com/sstaub/TeensyID/issues/3
+    uint32_t m1 = HW_OCOTP_MAC1;
+    uint32_t m2 = HW_OCOTP_MAC0;
+    const byte mac[] = {
+        m1 >> 8, m1 >> 0, m2 >> 24, m2 >> 16, m2 >> 8, m2 >> 0
+    };
+    const int port = 42069;
+    const IPAddress ip(10, 0, 0, 42);
+
     struct Packet {
         uint8_t id;
         uint8_t len;

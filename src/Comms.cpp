@@ -7,7 +7,7 @@ namespace Comms {
     char packetBuffer[sizeof(Packet)];
 
     void initComms() {
-        Ethernet.begin(mac, ip);
+        Ethernet.begin((uint8_t *)mac, ip);
         Udp.begin(port);
     }
 
@@ -22,12 +22,12 @@ namespace Comms {
     void processPackets() {
         Udp.read(packetBuffer, sizeof(Packet));
 
-        Packet packet = *(struct Packet *)&packetBuffer;
+        Packet *packet = (Packet *)&packetBuffer;
 
         //call callback function
-        uint16_t checksum = *(uint16_t *)&packet.checksum;
-        if (checksum == fletcher16(packet.data, packet.len)) {
-            callbackMap.at(packet.id)(packet);
+        uint16_t checksum = *(uint16_t *)&packet->checksum;
+        if (checksum == computePacketChecksum(packet)) {
+            callbackMap.at(packet->id)(*packet);
         }
     }
 
@@ -41,8 +41,8 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet) {
-        //generate checksum from data and add it to the packet
-        uint16_t checksum = fletcher16(packet->data, packet->len);
+        //calculate and append checksum to struct
+        uint16_t checksum = computePacketChecksum(packet);
         uint8_t *ptr = (uint8_t *)&checksum;
         packet->checksum[0] = ptr[0];
         packet->checksum[1] = ptr[1];
@@ -52,7 +52,7 @@ namespace Comms {
         Serial.write(packet->len);
         Serial.write(packet->checksum, 2);
         Serial.write(packet->data, packet->len);
-        Serial.write("\n");
+        Serial.write('\n');
 
         //Send over ethernet
         Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
@@ -61,6 +61,19 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+    }
+
+    /**
+     * @brief Computes and returns a 16 byte checksum of a packet
+     */
+    uint16_t computePacketChecksum(Packet *packet) {
+        uint8_t vals[packet->len + 2];
+        vals[0] = packet->id;
+        vals[1] = packet-> len;
+        for (int i = 0; i < packet->len; i++) {
+            vals[i + 2] = packet->data[i];
+        }
+        return fletcher16(vals, packet->len + 2);
     }
 
     /**
