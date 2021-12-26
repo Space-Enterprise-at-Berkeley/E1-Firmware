@@ -24,10 +24,10 @@ namespace HAL {
     INA219 chan13;
     INA219 chan14;
 
-    // MCP9600 tcAmp0;
-    // MCP9600 tcAmp1;
-    // MCP9600 tcAmp2;
-    // MCP9600 tcAmp3;
+    MCP9600 tcAmp0;
+    MCP9600 tcAmp1;
+    MCP9600 tcAmp2;
+    MCP9600 tcAmp3;
 
     // TCA6408A ioExpander0;
     // TCA6408A ioExpander1;
@@ -100,5 +100,11 @@ namespace HAL {
         pinMode(chan3Pin, OUTPUT);
         pinMode(chan4Pin, OUTPUT);
         pinMode(chan5Pin, OUTPUT);
+
+        // thermocouple amplifiers
+        tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
     }
 };
