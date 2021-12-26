@@ -4,7 +4,7 @@ namespace HAL {
     ADS8167 adc1;
     ADS8167 adc2;
 
-    // INA226 supplyBatt;
+    INA226 supplyBatt;
     INA219 supply12v;
     INA219 supply8v;
 
@@ -69,7 +69,7 @@ namespace HAL {
         Wire1.setClock(1000000);
 
         // Initialize INA219s
-        // supplyBatt.init(&Wire, 0x43, battShuntR, battCurrMax, INA226_AVERAGES_1, INA226_BUS_CONV_TIME_8244US, INA226_BUS_CONV_TIME_8244US);
+        supplyBatt.init(&Wire, 0x43, battShuntR, battCurrMax, INA226_AVERAGES_1, INA226_BUS_CONV_TIME_8244US, INA226_SHUNT_CONV_TIME_8244US, INA226_MODE_SHUNT_BUS_CONT);
         supply12v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
         supply8v.init(&Wire, 0x45, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 

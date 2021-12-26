@@ -2,7 +2,7 @@
 
 #include <ADS8167.h>
 #include <INA219.h>
-// #include <INA226.h>
+#include <INA226.h>
 #include <MCP9600.h>
 
 #include <Arduino.h>
@@ -17,7 +17,7 @@ namespace HAL {
     const float battCurrMax = 8.0;
     const float supplyShuntR = 0.01;
     const float supplyCurrMax = 4.0;
-    // extern INA226 supplyBatt;
+    extern INA226 supplyBatt;
     extern INA219 supply12v;
     extern INA219 supply8v;
 
