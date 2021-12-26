@@ -54,8 +54,15 @@ namespace Comms {
         Serial.write(packet->data, packet->len);
         Serial.write('\n');
 
-        //Send over ethernet
-        Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+        //Send over ethernet to both ground stations
+        Udp.beginPacket(groundStation1, port);
+        Udp.write(packet->id);
+        Udp.write(packet->len);
+        Udp.write(packet->checksum, 2);
+        Udp.write(packet->data, packet->len);
+        Udp.endPacket();
+
+        Udp.beginPacket(groundStation2, port);
         Udp.write(packet->id);
         Udp.write(packet->len);
         Udp.write(packet->checksum, 2);
@@ -64,34 +71,21 @@ namespace Comms {
     }
 
     /**
-     * @brief Computes and returns a 16 byte checksum of a packet
-     */
-    uint16_t computePacketChecksum(Packet *packet) {
-        uint8_t vals[packet->len + 2];
-        vals[0] = packet->id;
-        vals[1] = packet-> len;
-        for (int i = 0; i < packet->len; i++) {
-            vals[i + 2] = packet->data[i];
-        }
-        return fletcher16(vals, packet->len + 2);
-    }
-
-    /**
-     * @brief generates a 2 byte checksum
+     * @brief generates a 2 byte checksum from the information of a packet
      * 
      * @param data pointer to data array
      * @param len length of data array
      * @return uint16_t 
      */
-    uint16_t fletcher16(uint8_t *data, int len) {
+    uint16_t computePacketChecksum(Packet *packet) {
 
-        uint16_t sum1 = 0;
-        uint16_t sum2 = 0;
+        uint16_t sum1 = packet->id;
+        uint16_t sum2 = (packet-> id + packet-> len) % 256;
 
-        for (int index=0; index<len; index++) {
-            if (data[index] > 0) {
-            sum1 = (sum1 + data[index]) % 255;
-            sum2 = (sum2 + sum1) % 255;
+        for (int index = 0; index < packet->len; index++) {
+            if (packet->data[index] > 0) {
+                sum1 = (sum1 + packet->data[index]) % 256;
+                sum2 = (sum2 + sum1) % 256;
             }
         }
         return (sum2 << 8) | sum1;

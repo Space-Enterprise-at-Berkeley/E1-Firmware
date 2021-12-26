@@ -14,6 +14,8 @@ namespace Comms {
     };
     const int port = 42069;
     const IPAddress ip(10, 0, 0, 42);
+    const IPAddress groundStation1(10, 0, 0, 69);
+    const IPAddress groundStation2(10, 0, 0, 70);
 
     struct Packet {
         uint8_t id;
