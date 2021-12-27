@@ -20,6 +20,8 @@ namespace Comms {
     }
 
     void processPackets() {
+        if(Udp.remotePort() != port) return; // make sure this packet is for the right port
+        if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2)) return; // make sure this packet is from a ground station computer
         Udp.read(packetBuffer, sizeof(Packet));
 
         Packet *packet = (Packet *)&packetBuffer;
@@ -43,9 +45,8 @@ namespace Comms {
     void emitPacket(Packet *packet) {
         //calculate and append checksum to struct
         uint16_t checksum = computePacketChecksum(packet);
-        uint8_t *ptr = (uint8_t *)&checksum;
-        packet->checksum[0] = ptr[0];
-        packet->checksum[1] = ptr[1];
+        packet->checksum[0] = checksum & 0xFF;
+        packet->checksum[1] = checksum >> 8;
 
         //Send over serial
         Serial.write(packet->id);
@@ -79,15 +80,18 @@ namespace Comms {
      */
     uint16_t computePacketChecksum(Packet *packet) {
 
-        uint16_t sum1 = packet->id;
-        uint16_t sum2 = (packet-> id + packet-> len) % 256;
+        uint8_t sum1 = 0;
+        uint8_t sum2 = 0;
 
-        for (int index = 0; index < packet->len; index++) {
-            if (packet->data[index] > 0) {
-                sum1 = (sum1 + packet->data[index]) % 256;
-                sum2 = (sum2 + sum1) % 256;
-            }
+        sum1 = sum1 + packet->id;
+        sum2 = sum2 + sum1;
+        sum1 = sum1 + packet->len;
+        sum2 = sum2 + sum1;
+
+        for (uint8_t index = 0; index < packet->len; index++) {
+            sum1 = sum1 + packet->data[index];
+            sum2 = sum2 + sum1;
         }
-        return (sum2 << 8) | sum1;
+        return (((uint16_t)sum2) << 8) | (uint16_t) sum1;
     }
 };
