@@ -15,6 +15,28 @@ namespace Comms {
         callbackMap.insert(std::pair<int, commFunction>(id, function));
     }
 
+    /**
+     * @brief Checks checksum of packet and tries to call the associated callback function.
+     * 
+     * @param packet Packet to be processed.
+     */
+    void evokeCallbackFunction(Packet *packet) {
+        uint16_t checksum = *(uint16_t *)&packet->checksum;
+        if (checksum == computePacketChecksum(packet)) {
+            DEBUG("Packet with ID ");
+            DEBUG(packet->id);
+            DEBUG(" has correct checksum!\n");
+            //try to access function, checking for out of range exception
+            if(callbackMap.count(packet->id)) {
+                callbackMap.at(packet->id)(*packet);
+            } else {
+                DEBUG("ID ");
+                DEBUG(packet->id);
+                DEBUG("does not have a registered callback function.\n");
+            }
+        }
+    }
+
     void processWaitingPackets() {
         if(Udp.parsePacket()) {
             if(Udp.remotePort() != port) return; // make sure this packet is for the right port
@@ -33,29 +55,6 @@ namespace Comms {
             DEBUG(packet->id);
             DEBUG('\n');
             evokeCallbackFunction(packet);
-        }
-    }
-
-    /**
-     * @brief Checks checksum of packet and tries to call the associated callback function.
-     * 
-     * @param packet Packet to be processed.
-     */
-    void evokeCallbackFunction(Packet *packet) {
-        uint16_t checksum = *(uint16_t *)&packet->checksum;
-        if (checksum == computePacketChecksum(packet)) {
-            DEBUG("Packet with ID ");
-            DEBUG(packet->id);
-            DEBUG(" has correct checksum!");
-            DEBUG('\n');
-            //try to access function, checking for out of range exception
-            try {
-                callbackMap.at(packet->id)(*packet);
-            } catch (const std::out_of_range& e) {
-                DEBUG("ID ");
-                DEBUG(packet->id);
-                DEBUG("does not have a registered callback function.");
-            }
         }
     }
 
