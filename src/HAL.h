@@ -5,6 +5,7 @@
 #include <ADS8167.h>
 #include <INA219.h>
 #include <INA226.h>
+#include <MCP9600.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -47,10 +48,10 @@ namespace HAL {
     const uint8_t chan4Pin = 1;
     const uint8_t chan5Pin = 0;
 
-    // extern MCP9600 tcAmp0;
-    // extern MCP9600 tcAmp1;
-    // extern MCP9600 tcAmp2;
-    // extern MCP9600 tcAmp3;
+    extern MCP9600 tcAmp0;
+    extern MCP9600 tcAmp1;
+    extern MCP9600 tcAmp2;
+    extern MCP9600 tcAmp3;
 
     // extern TCA6408A ioExpander0;
     // extern TCA6408A ioExpander1;

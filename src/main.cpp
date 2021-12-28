@@ -4,6 +4,7 @@
 #include <Power.h>
 #include <Valves.h>
 #include <HAL.h>
+#include <Thermocouples.h>
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -23,6 +24,9 @@ Task taskTable[] = {
     {Valves::igniterSample, 0},
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
+
+    // thermocouples
+    {Thermocouples::tcSample, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -38,6 +42,7 @@ int main() {
     Ducers::initDucers();
     Power::initPower();
     Valves::initValves();
+    Thermocouples::initThermocouples();
 
     while(1) {
         uint32_t ticks = micros(); // current time in microseconds
