@@ -2,7 +2,7 @@
 
 namespace Comms {
 
-    std::map<int, commFunction> callbackMap;
+    std::map<uint8_t, commFunction> callbackMap;
     EthernetUDP Udp;
     char packetBuffer[sizeof(Packet)];
 
@@ -11,7 +11,7 @@ namespace Comms {
         Udp.begin(port);
     }
 
-    void registerCallback(int id, commFunction function) {
+    void registerCallback(uint8_t id, commFunction function) {
         callbackMap.insert(std::pair<int, commFunction>(id, function));
     }
 
@@ -25,21 +25,37 @@ namespace Comms {
             DEBUG("Got unverified packet with ID ");
             DEBUG(packet->id);
             DEBUG('\n');
-
-            //call callback function
-            uint16_t checksum = *(uint16_t *)&packet->checksum;
-            if (checksum == computePacketChecksum(packet)) {
-                DEBUG("Packet with ID ");
-                DEBUG(packet->id);
-                DEBUG(" has correct checksum!");
-                DEBUG('\n');
-                callbackMap.at(packet->id)(*packet);
-            }
+            evokeCallbackFunction(packet);
         } else if(Serial.available()) {
-            // TODO: implement me!
-            DEBUG("Serial packet receive not implemented!");
+            Serial.readBytes(packetBuffer, sizeof(Packet));
+            Packet *packet = (Packet *)&packetBuffer;
+            DEBUG("Got unverified packet with ID ");
+            DEBUG(packet->id);
             DEBUG('\n');
-            Serial.clear(); // just delete input for now, until this is implemented
+            evokeCallbackFunction(packet);
+        }
+    }
+
+    /**
+     * @brief Checks checksum of packet and tries to call the associated callback function.
+     * 
+     * @param packet Packet to be processed.
+     */
+    void evokeCallbackFunction(Packet *packet) {
+        uint16_t checksum = *(uint16_t *)&packet->checksum;
+        if (checksum == computePacketChecksum(packet)) {
+            DEBUG("Packet with ID ");
+            DEBUG(packet->id);
+            DEBUG(" has correct checksum!");
+            DEBUG('\n');
+            //try to access function, checking for out of range exception
+            try {
+                callbackMap.at(packet->id)(*packet);
+            } catch (const std::out_of_range& e) {
+                DEBUG("ID ");
+                DEBUG(packet->id);
+                DEBUG("does not have a registered callback function.");
+            }
         }
     }
 

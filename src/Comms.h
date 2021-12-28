@@ -41,7 +41,7 @@ namespace Comms {
      * @param id The ID of the packet associated with a specific command.
      * @param function a pointer to a method that takes in a Packet struct.
      */
-    void registerCallback(int id, commFunction function);
+    void registerCallback(uint8_t id, commFunction function);
 
     void processWaitingPackets();
 
