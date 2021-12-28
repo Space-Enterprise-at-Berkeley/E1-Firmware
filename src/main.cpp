@@ -1,4 +1,4 @@
-#include <Task.h>
+#include <Common.h>
 #include <Comms.h>
 #include <Ducers.h>
 #include <Power.h>
@@ -30,8 +30,11 @@ Task taskTable[] = {
 int main() {
     // hardware setup
     Serial.begin(115200);
-    // while(!Serial) {} // wait for user to open serial port (debugging only)
+    #ifdef DEBUG_MODE
+    while(!Serial) {} // wait for user to open serial port (debugging only)
+    #endif
     HAL::initHAL();
+    Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
     Valves::initValves();
@@ -42,8 +45,7 @@ int main() {
         if (ticks >= taskTable[i].nexttime)
             taskTable[i].nexttime = ticks + taskTable[i].taskCall();
         }
-        if (Comms::packetWaiting())
-        Comms::processPackets();
+        Comms::processWaitingPackets();
     }
     return 0;
 }

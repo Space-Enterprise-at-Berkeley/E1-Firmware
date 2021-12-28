@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Common.h>
+
 #include <ADS8167.h>
 #include <INA219.h>
 #include <INA226.h>

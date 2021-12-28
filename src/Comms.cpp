@@ -15,21 +15,31 @@ namespace Comms {
         callbackMap.insert(std::pair<int, commFunction>(id, function));
     }
 
-    uint32_t packetWaiting() {
-        return Udp.parsePacket();
-    }
+    void processWaitingPackets() {
+        if(Udp.parsePacket()) {
+            if(Udp.remotePort() != port) return; // make sure this packet is for the right port
+            if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2)) return; // make sure this packet is from a ground station computer
+            Udp.read(packetBuffer, sizeof(Packet));
 
-    void processPackets() {
-        if(Udp.remotePort() != port) return; // make sure this packet is for the right port
-        if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2)) return; // make sure this packet is from a ground station computer
-        Udp.read(packetBuffer, sizeof(Packet));
+            Packet *packet = (Packet *)&packetBuffer;
+            DEBUG("Got unverified packet with ID ");
+            DEBUG(packet->id);
+            DEBUG('\n');
 
-        Packet *packet = (Packet *)&packetBuffer;
-
-        //call callback function
-        uint16_t checksum = *(uint16_t *)&packet->checksum;
-        if (checksum == computePacketChecksum(packet)) {
-            callbackMap.at(packet->id)(*packet);
+            //call callback function
+            uint16_t checksum = *(uint16_t *)&packet->checksum;
+            if (checksum == computePacketChecksum(packet)) {
+                DEBUG("Packet with ID ");
+                DEBUG(packet->id);
+                DEBUG(" has correct checksum!");
+                DEBUG('\n');
+                callbackMap.at(packet->id)(*packet);
+            }
+        } else if(Serial.available()) {
+            // TODO: implement me!
+            DEBUG("Serial packet receive not implemented!");
+            DEBUG('\n');
+            Serial.clear(); // just delete input for now, until this is implemented
         }
     }
 
@@ -42,18 +52,31 @@ namespace Comms {
         packet->len += 4;
     }
 
+    float packetGetFloat(Packet *packet, uint8_t index) {
+        uint32_t rawData = packet->data[index+3];
+        rawData <<= 8;
+        rawData += packet->data[index+2];
+        rawData <<= 8;
+        rawData += packet->data[index+1];
+        rawData <<= 8;
+        rawData += packet->data[index];
+        return * ( float * ) &rawData;
+    }
+
     void emitPacket(Packet *packet) {
         //calculate and append checksum to struct
         uint16_t checksum = computePacketChecksum(packet);
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
 
-        //Send over serial
+        // Send over serial, but disable if in debug mode
+        #ifndef DEBUG_MODE
         Serial.write(packet->id);
         Serial.write(packet->len);
         Serial.write(packet->checksum, 2);
         Serial.write(packet->data, packet->len);
         Serial.write('\n');
+        #endif
 
         //Send over ethernet to both ground stations
         Udp.beginPacket(groundStation1, port);

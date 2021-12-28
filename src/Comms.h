@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Common.h>
+
 #include <Arduino.h>
-#include <Ethernet.h>
-#include <EthernetUdp.h>
+#include <NativeEthernet.h>
+#include <NativeEthernetUdp.h>
 #include <map>
 
 namespace Comms {
@@ -41,10 +43,10 @@ namespace Comms {
      */
     void registerCallback(int id, commFunction function);
 
-    uint32_t packetWaiting();
-    void processPackets();
+    void processWaitingPackets();
 
     void packetAddFloat(Packet *packet, float value);
+    float packetGetFloat(Packet *packet, uint8_t index);
 
     /**
      * @brief Sends packet data over ethernet and serial.
