@@ -32,16 +32,16 @@ namespace Valves {
     void initValves();
 
     void openArmValve();
-    void closeArmValve();
+    void closeArmValve(int OCShutoff = 0);
 
     void activateIgniter();
-    void deactivateIgniter();
+    void deactivateIgniter(int OCShutoff = 0);
 
     void openLoxMainValve();
-    void closeLoxMainValve();
+    void closeLoxMainValve(int OCShutoff = 0);
 
     void openFuelMainValve();
-    void closeFuelMainValve();
+    void closeFuelMainValve(int OCShutoff = 0);
 
     void sampleValve(Comms::Packet *packet, INA219 *ina, float *voltage, float *current);
     uint32_t armValveSample();
