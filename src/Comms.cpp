@@ -34,6 +34,10 @@ namespace Comms {
                 DEBUG(packet->id);
                 DEBUG("does not have a registered callback function.\n");
             }
+        } else {
+            DEBUG("Packet with ID ");
+            DEBUG(packet->id);
+            DEBUG(" does not have correct checksum!\n");
         }
     }
 
@@ -49,7 +53,11 @@ namespace Comms {
             DEBUG('\n');
             evokeCallbackFunction(packet);
         } else if(Serial.available()) {
-            Serial.readBytes(packetBuffer, sizeof(Packet));
+            int cnt = 0;
+            while(Serial.available() && cnt < sizeof(Packet)) {
+                packetBuffer[cnt] = Serial.read();
+                cnt++;
+            }
             Packet *packet = (Packet *)&packetBuffer;
             DEBUG("Got unverified packet with ID ");
             DEBUG(packet->id);
