@@ -46,6 +46,8 @@ namespace Comms {
     void processWaitingPackets();
 
     void packetAddFloat(Packet *packet, float value);
+    void packetAddUint8(Packet *packet, uint8_t value);
+
     float packetGetFloat(Packet *packet, uint8_t index);
 
     /**
