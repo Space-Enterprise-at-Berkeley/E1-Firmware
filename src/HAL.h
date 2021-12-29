@@ -56,6 +56,7 @@ namespace HAL {
     // extern TCA6408A ioExpander0;
     // extern TCA6408A ioExpander1;
 
+    // void setWireClockLow();
+    // void resetWireClock();
     void initHAL();
-    
 };
