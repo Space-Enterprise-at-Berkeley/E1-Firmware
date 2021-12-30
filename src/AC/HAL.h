@@ -54,7 +54,6 @@ namespace HAL {
     const uint8_t ctl24vChan1 = 22;
     const uint8_t ctl24vChan2 = 23;
 
-
     void initHAL();
     
 };

@@ -1,4 +1,4 @@
-#include <Heaters.h>
+#include "Heaters.h"
 
 namespace Heaters {
 
@@ -22,9 +22,6 @@ namespace Heaters {
     float ctl24vChan2Voltage = 0.0;
     float ctl24vChan2Current = 0.0;
 
-    void initHeaters() {
-    }
-
     void sampleHeater(Comms::Packet *packet, INA219 *ina, float *voltage, float *current) {
         *voltage = ina->readBusVoltage();
         *current = ina->readShuntCurrent();
@@ -36,7 +33,7 @@ namespace Heaters {
     }
 
     uint32_t ctl12vChan1Sample() {
-        sampleHeater(&ctl12vChan1, &HAL::chan0, &ctl12vChan1Voltage, &ctl12vChan1Current);
+        sampleHeater(&ctl12vChan1Packet, &HAL::chan0, &ctl12vChan1Voltage, &ctl12vChan1Current);
         return heaterCheckPeriod;
     }
 
@@ -54,4 +51,7 @@ namespace Heaters {
         return heaterCheckPeriod;
     }
 
+    void initHeaters() {
+        
+    }
 };

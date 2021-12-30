@@ -1,4 +1,4 @@
-#include <Power.h>
+#include "Power.h"
 
 namespace Power {
 
@@ -47,17 +47,4 @@ namespace Power {
         return powerUpdatePeriod;
     }
 
-    uint32_t supply8Sample() {
-        supply8Voltage = HAL::supply8v.readBusVoltage();
-        supply8Current = HAL::supply8v.readShuntCurrent();
-        supply8Power = supply8Voltage * supply8Current;
-
-        supply8Packet.len = 0;
-        Comms::packetAddFloat(&supply8Packet, supply8Voltage);
-        Comms::packetAddFloat(&supply8Packet, supply8Current);
-        Comms::packetAddFloat(&supply8Packet, supply8Power);
-        Comms::emitPacket(&supply8Packet);
-
-        return powerUpdatePeriod;
-    }
 }

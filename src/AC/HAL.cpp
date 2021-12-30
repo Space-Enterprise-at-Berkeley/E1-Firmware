@@ -1,4 +1,4 @@
-#include <HAL.h>
+#include "Hal.h"
 
 namespace HAL {
 
@@ -46,13 +46,14 @@ namespace HAL {
 
         // Initialize INA219s
         supplyBatt.init(&Wire, 0x40, battShuntR, battCurrMax, INA226_AVERAGES_1, INA226_BUS_CONV_TIME_8244US, INA226_SHUNT_CONV_TIME_8244US, INA226_MODE_SHUNT_BUS_CONT);
-        supply12v.init(&Wire, 0x41 supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
+        supply12v.init(&Wire, 0x41, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
-        // Actuator monitors
+        // Heater monitors
         initChannel(&chan0, 0x40);
         initChannel(&chan1, 0x41);
         initChannel(&chan2, 0x42);
         initChannel(&chan3, 0x43);
+        // Actuator monitors
         initChannel(&chan4, 0x44);
         initChannel(&chan5, 0x45);
         initChannel(&chan6, 0x46);

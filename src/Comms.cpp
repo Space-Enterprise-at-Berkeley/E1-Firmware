@@ -75,6 +75,11 @@ namespace Comms {
         packet->len += 4;
     }
 
+    void packetAddUint8(Packet *packet, uint8_t value) {
+        packet->data[packet->len] = value;
+        packet->len++;
+    }
+
     float packetGetFloat(Packet *packet, uint8_t index) {
         uint32_t rawData = packet->data[index+3];
         rawData <<= 8;
@@ -84,6 +89,17 @@ namespace Comms {
         rawData <<= 8;
         rawData += packet->data[index];
         return * ( float * ) &rawData;
+    }
+
+    uint32_t packetGetUint32(Packet *packet, uint8_t index) {
+        uint32_t rawData = packet->data[index+3];
+        rawData <<= 8;
+        rawData += packet->data[index+2];
+        rawData <<= 8;
+        rawData += packet->data[index+1];
+        rawData <<= 8;
+        rawData += packet->data[index];
+        return rawData;
     }
 
     void emitPacket(Packet *packet) {
