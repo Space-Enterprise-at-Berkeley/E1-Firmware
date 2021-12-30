@@ -15,11 +15,6 @@ namespace Power {
     float supply12Current = 0.0;
     float supply12Power = 0.0;
 
-    Comms::Packet supply8Packet = {.id = 4};
-    float supply8Voltage = 0.0;
-    float supply8Current = 0.0;
-    float supply8Power = 0.0;
-
     void initPower(){
     }
 
