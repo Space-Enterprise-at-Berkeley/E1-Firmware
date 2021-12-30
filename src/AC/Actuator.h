@@ -8,7 +8,7 @@
 #include <Arduino.h>
 #include <INA219.h>
 
-namespace Heaters {
+namespace Valves {
     
     extern uint32_t heaterCheckPeriod; // interval for checking valve current and voltages
 
