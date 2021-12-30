@@ -115,7 +115,7 @@ namespace Actuators {
     void act7PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct7, &retractAct7, stop7); }
 
     void actPacketHandler(Comms::Packet tmp, void (*extend)(), void (*retract)(), Task *stopTask){
-        switch(tmp.data[0]){
+/*         switch(tmp.data[0]){
             case 0:
                 (*extend)();
                 break;
@@ -124,14 +124,28 @@ namespace Actuators {
                 break;
             case 2:
                 (*extend)();
-                stopTask->nexttime = micros() + Comms::packetGetUint32(&tmp, 1) * 1000;
+                if(stopTask->enabled) stopTask->nexttime += Comms::packetGetUint32(&tmp, 1) * 1000;
+                else stopTask->nexttime = micros() + Comms::packetGetUint32(&tmp, 1) * 1000;
                 stopTask->enabled = true;
                 break;
             case 3:
                 (*retract)();
-                stopTask->nexttime = micros() + Comms::packetGetUint32(&tmp, 1) * 1000;
+                if(stopTask->enabled) stopTask->nexttime += Comms::packetGetUint32(&tmp, 1) * 1000;
+                else stopTask->nexttime = micros() + Comms::packetGetUint32(&tmp, 1) * 1000;
                 stopTask->enabled = true;
                 break;
+        } */
+
+        // (Actuate code) 0: extend fully 1: retract fully 2: extend millis 3: retract millis
+
+        if(tmp.data[0]%2)(*extend)();
+        else (*retract)();
+
+        if(tmp.data[0]>1){
+            uint32_t actuatetime = Comms::packetGetUint32(&tmp, 1);
+            if(stopTask->enabled) stopTask->nexttime += actuatetime * 1000;
+            else stopTask->nexttime = micros() + actuatetime * 1000;
+            stopTask->enabled = true;
         }
     }
 

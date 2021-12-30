@@ -55,7 +55,7 @@ int main() {
     while(1) {
         uint32_t ticks = micros(); // current time in microseconds
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
-        if (ticks >= taskTable[i].nexttime)
+        if (taskTable[i].enabled && ticks >= taskTable[i].nexttime)
             taskTable[i].nexttime = ticks + taskTable[i].taskCall();
         }
         Comms::processWaitingPackets();
