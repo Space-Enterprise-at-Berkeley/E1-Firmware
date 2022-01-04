@@ -32,7 +32,7 @@ namespace Comms {
             } else {
                 DEBUG("ID ");
                 DEBUG(packet->id);
-                DEBUG("does not have a registered callback function.\n");
+                DEBUG(" does not have a registered callback function.\n");
             }
         } else {
             DEBUG("Packet with ID ");
@@ -73,6 +73,11 @@ namespace Comms {
         packet->data[packet->len + 2] = rawData >> 16 & 0xFF;
         packet->data[packet->len + 3] = rawData >> 24 & 0xFF;
         packet->len += 4;
+    }
+
+    void packetAddUint8(Packet *packet, uint8_t value) {
+        packet->data[packet->len] = value;
+        packet->len++;
     }
 
     float packetGetFloat(Packet *packet, uint8_t index) {

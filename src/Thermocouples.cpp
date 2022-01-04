@@ -6,31 +6,32 @@
 
 namespace Thermocouples {
     uint32_t tcUpdatePeriod = 100 * 1000;
-    Comms::Packet tcPacket = {.id = 9};
+    Comms::Packet tcPacket = {.id = 10};
 
+    float engineTC0Value;
     float engineTC1Value;
     float engineTC2Value;
     float engineTC3Value;
-    float engineTC4Value;
 
     void initThermocouples() {
     }
 
-    uint32_t tcSample() {
+    uint32_t tcSample(MCP9600 *amp, uint8_t packetID, float *value) {
         // read from all TCs in sequence
-        engineTC1Value = HAL::tcAmp0.readThermocouple();
-        engineTC2Value = HAL::tcAmp1.readThermocouple();
-        engineTC3Value = HAL::tcAmp2.readThermocouple();
-        engineTC4Value = HAL::tcAmp3.readThermocouple();
+        *value = amp->readThermocouple();
         
+        tcPacket.id = packetID;
         tcPacket.len = 0;
-        Comms::packetAddFloat(&tcPacket, engineTC1Value);
-        Comms::packetAddFloat(&tcPacket, engineTC2Value);
-        Comms::packetAddFloat(&tcPacket, engineTC3Value);
-        Comms::packetAddFloat(&tcPacket, engineTC4Value);
+        Comms::packetAddFloat(&tcPacket, *value);
         
         Comms::emitPacket(&tcPacket);
         // return the next execution time
         return tcUpdatePeriod;
     }
+
+    uint32_t tc0Sample() { return tcSample(&HAL::tcAmp0, 10, &engineTC0Value); }
+    uint32_t tc1Sample() { return tcSample(&HAL::tcAmp1, 11, &engineTC1Value); }
+    uint32_t tc2Sample() { return tcSample(&HAL::tcAmp2, 12, &engineTC2Value); }
+    uint32_t tc3Sample() { return tcSample(&HAL::tcAmp3, 13, &engineTC3Value); }
+
 };
