@@ -92,17 +92,17 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet) {
+        //add timestamp to struct
+        uint32_t timestamp = millis();
+        packet->timestamp[0] = timestamp & 0xFF;
+        packet->timestamp[1] = (timestamp >> 8) & 0xFF;
+        packet->timestamp[2] = (timestamp >> 16) & 0xFF;
+        packet->timestamp[3] = (timestamp >> 24) & 0xFF;
+
         //calculate and append checksum to struct
         uint16_t checksum = computePacketChecksum(packet);
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
-
-        //add timestamp to struct
-       uint32_t timestamp = micros();
-       packet->timestamp[0] = timestamp & 0xFF;
-       packet->timestamp[1] = (timestamp >> 8) & 0xFF;
-       packet->timestamp[2] = (timestamp >> 16) & 0xFF;
-       packet->timestamp[3] = (timestamp >> 24) & 0xFF;
 
         // Send over serial, but disable if in debug mode
         #ifndef DEBUG_MODE
@@ -150,7 +150,7 @@ namespace Comms {
         sum2 = sum2 + sum1;
         
         for (uint8_t index = 0; index < 4; index++) {
-            sum1 = sum1 + packet->checksum[index];
+            sum1 = sum1 + packet->timestamp[index];
             sum2 = sum2 + sum1;
         }
 
