@@ -5,17 +5,17 @@ namespace Power {
     // TODO: change this to appropriate value
     uint32_t powerUpdatePeriod = 100 * 1000;
 
-    Comms::Packet battPacket = {.id = 2};
+    Comms::Packet battPacket = {.id = 1};
     float battVoltage = 0.0;
     float battCurrent = 0.0;
     float battPower = 0.0;
 
-    Comms::Packet supply12Packet = {.id = 3};
+    Comms::Packet supply12Packet = {.id = 2};
     float supply12Voltage = 0.0;
     float supply12Current = 0.0;
     float supply12Power = 0.0;
 
-    Comms::Packet supply8Packet = {.id = 4};
+    Comms::Packet supply8Packet = {.id = 3};
     float supply8Voltage = 0.0;
     float supply8Current = 0.0;
     float supply8Power = 0.0;
