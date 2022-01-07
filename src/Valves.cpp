@@ -47,6 +47,17 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan3};
 
+    // igniter break wire (not actually a valve, this just allows us to check continuity)
+    Valve breakWire = {.valveID = 255, // unused
+                      .statePacketID = 255, // unused
+                      .statusPacketID = 34,
+                      .pin = HAL::chan4Pin, // unused (the break wire doesn't turn on and off)
+                      .voltage = 0.0,
+                      .current = 0.0,
+                      .ocThreshold = 0.0, // unused
+                      .period = 50 * 1000,
+                      .ina = &HAL::chan4}; // read from the channel 4 
+
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
         Comms::packetAddUint8(&tmp, valveStates);
@@ -129,6 +140,11 @@ namespace Valves {
     uint32_t fuelMainValveSample() {
         sampleValve(&fuelMainValve);
         return fuelMainValve.period;
+    }
+
+    uint32_t breakWireSample() {
+        sampleValve(&breakWire);
+        return breakWire.period;
     }
 
     // init function for valves namespace
