@@ -1,3 +1,4 @@
+#include <Automation.h>
 #include <Common.h>
 #include <Comms.h>
 #include <Ducers.h>
@@ -11,6 +12,11 @@
 #include <SPI.h>
 
 Task taskTable[] = {
+    //automation
+    {Automation::flow, 0, false},
+    {Automation::abortFlow, 0, false},
+    {Automation::checkIgniter, 0},
+
     // ducers
     {Ducers::ptSample, 0},
 
@@ -41,6 +47,7 @@ int main() {
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
+    Automation::initAutomation();
     HAL::initHAL();
     Comms::initComms();
     Ducers::initDucers();
@@ -48,10 +55,13 @@ int main() {
     Valves::initValves();
     Thermocouples::initThermocouples();
 
+    Automation::flowTask = &taskTable[0];
+    Automation::abortFlowTask = &taskTable[1];
+
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
             uint32_t ticks = micros(); // current time in microseconds
-            if (taskTable[i].nexttime - ticks > UINT32_MAX / 2) {
+            if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
             }
         }

@@ -28,6 +28,7 @@ namespace Valves {
     extern Valve igniter;
     extern Valve loxMainValve;
     extern Valve fuelMainValve;
+    extern Valve breakWire;
     
     void initValves();
 
