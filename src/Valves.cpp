@@ -150,6 +150,18 @@ namespace Valves {
     void closeFuelMainValve(uint8_t OCShutoff = 0) { closeValve(&fuelMainValve, OCShutoff); }
     void fuelMainValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openFuelMainValve() : closeFuelMainValve(); }
 
+    void activateLoxTankBottomHtr() { openValve(&loxTankBottomHtr); }
+    void deactivateLoxTankBottomHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankBottomHtr, OCShutoff); }
+    void loxTankBottomHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankBottomHtr() : deactivateLoxTankBottomHtr(); }
+
+    void activateLoxTankMidHtr() { openValve(&loxTankMidHtr); }
+    void deactivateLoxTankMidHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankMidHtr, OCShutoff); }
+    void loxTankMidHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankMidHtr() : deactivateLoxTankMidHtr(); }
+
+    void activateLoxTankTopHtr() { openValve(&loxTankTopHtr); }
+    void deactivateLoxTankTopHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankTopHtr, OCShutoff); }
+    void loxTankTopHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankTopHtr() : deactivateLoxTankTopHtr(); }
+
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
         valve->voltage = valve->ina->readBusVoltage();
@@ -187,6 +199,21 @@ namespace Valves {
         return fuelMainValve.period;
     }
 
+    uint32_t loxTankBottomHtrSample() {
+        sampleValve(&loxTankBottomHtr);
+        return loxTankBottomHtr.period;
+    }
+
+    uint32_t loxTankMidHtrSample() {
+        sampleValve(&loxTankMidHtr);
+        return loxTankMidHtr.period;
+    }
+
+    uint32_t loxTankTopHtrSample() {
+        sampleValve(&loxTankTopHtr);
+        return loxTankTopHtr.period;
+    }
+
     // init function for valves namespace
     void initValves() {
         // link the right packet IDs to the valve open/close handler functions
@@ -194,6 +221,10 @@ namespace Valves {
         Comms::registerCallback(51, igniterPacketHandler);
         Comms::registerCallback(52, loxMainValvePacketHandler);
         Comms::registerCallback(53, fuelMainValvePacketHandler);
+
+        Comms::registerCallback(55, loxTankBottomHtrPacketHandler);
+        Comms::registerCallback(56, loxTankMidHtrPacketHandler);
+        Comms::registerCallback(57, loxTankTopHtrPacketHandler);
     }
 
 };

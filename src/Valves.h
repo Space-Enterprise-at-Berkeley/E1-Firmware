@@ -29,6 +29,9 @@ namespace Valves {
     extern Valve igniter;
     extern Valve loxMainValve;
     extern Valve fuelMainValve;
+    extern Valve loxTankBottomHtr;
+    extern Valve loxTankMidHtr;
+    extern Valve loxTankTopHtr;
     
     void initValves();
 
@@ -44,9 +47,21 @@ namespace Valves {
     void openFuelMainValve();
     void closeFuelMainValve(uint8_t OCShutoff = 0);
 
+    void activateLoxTankBottomHtr();
+    void deavtivateLoxTankBottomHtr(uint8_t OCShutoff = 0);
+    
+    void activateLoxTankMidHtr();
+    void deavtivateLoxTankMidHtr(uint8_t OCShutoff = 0);
+
+    void activateLoxTankTopHtr();
+    void deavtivateLoxTankTopHtr(uint8_t OCShutoff = 0);
+
     void sampleValve(Valve *valve);
     uint32_t armValveSample();
     uint32_t igniterSample();
     uint32_t loxMainValveSample();
     uint32_t fuelMainValveSample();
+    uint32_t loxTankBottomHtrSample();
+    uint32_t loxTankMidHtrSample();
+    uint32_t loxTankTopHtrSample();
 };

@@ -31,6 +31,11 @@ Task taskTable[] = {
     {Valves::igniterSample, 0},
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
+
+    // heaters
+    {Valves::loxTankBottomHtrSample, 0},
+    {Valves::loxTankMidHtrSample, 0},
+    {Valves::loxTankTopHtrSample, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
