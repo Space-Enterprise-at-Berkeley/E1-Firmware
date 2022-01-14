@@ -217,14 +217,14 @@ namespace Valves {
     // init function for valves namespace
     void initValves() {
         // link the right packet IDs to the valve open/close handler functions
-        Comms::registerCallback(50, armValvePacketHandler);
-        Comms::registerCallback(51, igniterPacketHandler);
-        Comms::registerCallback(52, loxMainValvePacketHandler);
-        Comms::registerCallback(53, fuelMainValvePacketHandler);
+        Comms::registerCallback(130, armValvePacketHandler);
+        Comms::registerCallback(131, igniterPacketHandler);
+        Comms::registerCallback(132, loxMainValvePacketHandler);
+        Comms::registerCallback(133, fuelMainValvePacketHandler);
 
-        Comms::registerCallback(55, loxTankBottomHtrPacketHandler);
-        Comms::registerCallback(56, loxTankMidHtrPacketHandler);
-        Comms::registerCallback(57, loxTankTopHtrPacketHandler);
+        Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
+        Comms::registerCallback(136, loxTankMidHtrPacketHandler);
+        Comms::registerCallback(137, loxTankTopHtrPacketHandler);
     }
 
 };
