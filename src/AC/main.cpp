@@ -18,13 +18,13 @@ Task taskTable[] = {
     {Actuators::act6Sample, 0},
     {Actuators::act7Sample, 0},
 
-    {Actuators::stopAct1, 0},
-    {Actuators::stopAct2, 0},
-    {Actuators::stopAct3, 0},
-    {Actuators::stopAct4, 0},
-    {Actuators::stopAct5, 0},
-    {Actuators::stopAct6, 0},
-    {Actuators::stopAct7, 0},
+    {Actuators::stopAct1, 0, false},
+    {Actuators::stopAct2, 0, false},
+    {Actuators::stopAct3, 0, false},
+    {Actuators::stopAct4, 0, false},
+    {Actuators::stopAct5, 0, false},
+    {Actuators::stopAct6, 0, false},
+    {Actuators::stopAct7, 0, false},
 
     // power
     {Power::battSample, 0},
@@ -56,6 +56,8 @@ int main() {
         uint32_t ticks = micros(); // current time in microseconds
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
         if (taskTable[i].enabled && ticks >= taskTable[i].nexttime)
+            // DEBUG(i);
+            // DEBUG("\n");
             taskTable[i].nexttime = ticks + taskTable[i].taskCall();
         }
         Comms::processWaitingPackets();

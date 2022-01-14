@@ -20,13 +20,14 @@ namespace Comms {
         (uint8_t)(__m2 >> 0),
     };
     const int port = 42069;
-    const IPAddress ip(10, 0, 0, 42);
+    const IPAddress ip(10, 0, 0, 22);
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
 
     struct Packet {
         uint8_t id;
         uint8_t len;
+        uint8_t timestamp[4];
         uint8_t checksum[2];
         uint8_t data[256];
     };
@@ -47,7 +48,6 @@ namespace Comms {
 
     void packetAddFloat(Packet *packet, float value);
     void packetAddUint8(Packet *packet, uint8_t value);
-
 
     float packetGetFloat(Packet *packet, uint8_t index);
     uint32_t packetGetUint32(Packet *packet, uint8_t index);

@@ -32,7 +32,7 @@ namespace Comms {
             } else {
                 DEBUG("ID ");
                 DEBUG(packet->id);
-                DEBUG("does not have a registered callback function.\n");
+                DEBUG(" does not have a registered callback function.\n");
             }
         } else {
             DEBUG("Packet with ID ");
@@ -103,6 +103,13 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet) {
+        //add timestamp to struct
+        uint32_t timestamp = millis();
+        packet->timestamp[0] = timestamp & 0xFF;
+        packet->timestamp[1] = (timestamp >> 8) & 0xFF;
+        packet->timestamp[2] = (timestamp >> 16) & 0xFF;
+        packet->timestamp[3] = (timestamp >> 24) & 0xFF;
+
         //calculate and append checksum to struct
         uint16_t checksum = computePacketChecksum(packet);
         packet->checksum[0] = checksum & 0xFF;
@@ -112,6 +119,7 @@ namespace Comms {
         #ifndef DEBUG_MODE
         Serial.write(packet->id);
         Serial.write(packet->len);
+        Serial.write(packet->timestamp, 4);
         Serial.write(packet->checksum, 2);
         Serial.write(packet->data, packet->len);
         Serial.write('\n');
@@ -121,6 +129,7 @@ namespace Comms {
         Udp.beginPacket(groundStation1, port);
         Udp.write(packet->id);
         Udp.write(packet->len);
+        Udp.write(packet->timestamp, 4);
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
@@ -128,6 +137,7 @@ namespace Comms {
         Udp.beginPacket(groundStation2, port);
         Udp.write(packet->id);
         Udp.write(packet->len);
+        Udp.write(packet->timestamp, 4);
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
@@ -149,6 +159,11 @@ namespace Comms {
         sum2 = sum2 + sum1;
         sum1 = sum1 + packet->len;
         sum2 = sum2 + sum1;
+        
+        for (uint8_t index = 0; index < 4; index++) {
+            sum1 = sum1 + packet->timestamp[index];
+            sum2 = sum2 + sum1;
+        }
 
         for (uint8_t index = 0; index < packet->len; index++) {
             sum1 = sum1 + packet->data[index];

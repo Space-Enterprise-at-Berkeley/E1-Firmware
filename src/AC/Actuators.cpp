@@ -49,14 +49,14 @@ namespace Actuators {
     Task *stop7;
 
     void driveForwards(uint8_t pin1, uint8_t pin2, uint8_t *actState, uint8_t actuatorID){
-        digitalWriteFast(pin1, LOW);
-        digitalWriteFast(pin2, HIGH);
+        digitalWriteFast(pin1, HIGH);
+        digitalWriteFast(pin2, LOW);
         *actState = 1;
     }
 
     void driveBackwards(uint8_t pin1, uint8_t pin2, uint8_t *actState, uint8_t actuatorID){
-        digitalWriteFast(pin1, HIGH);
-        digitalWriteFast(pin2, LOW);
+        digitalWriteFast(pin1, LOW);
+        digitalWriteFast(pin2, HIGH);
         *actState = 2;
     }
 

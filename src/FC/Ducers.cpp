@@ -2,7 +2,7 @@
 
 namespace Ducers {
     uint32_t ptUpdatePeriod = 100 * 1000;
-    Comms::Packet ptPacket = {.id = 1};
+    Comms::Packet ptPacket = {.id = 10};
 
     float pressurantPTValue = 0.0;
     float loxTankPTValue = 0.0;

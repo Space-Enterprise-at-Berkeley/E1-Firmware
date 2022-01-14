@@ -19,14 +19,18 @@ Task taskTable[] = {
     {Power::supply12Sample, 0},
     {Power::supply8Sample, 0},
 
+    // thermocouples
+    // {Thermocouples::tcSample, 0},
+    {Thermocouples::tc0Sample, 0},
+    {Thermocouples::tc1Sample, 0},
+    {Thermocouples::tc2Sample, 0},
+    {Thermocouples::tc3Sample, 0},
+
     // valves
     {Valves::armValveSample, 0},
     {Valves::igniterSample, 0},
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
-
-    // thermocouples
-    {Thermocouples::tcSample, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -45,10 +49,11 @@ int main() {
     Thermocouples::initThermocouples();
 
     while(1) {
-        uint32_t ticks = micros(); // current time in microseconds
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
-        if (ticks >= taskTable[i].nexttime)
-            taskTable[i].nexttime = ticks + taskTable[i].taskCall();
+            uint32_t ticks = micros(); // current time in microseconds
+            if (taskTable[i].nexttime - ticks > UINT32_MAX / 2) {
+                taskTable[i].nexttime = ticks + taskTable[i].taskCall();
+            }
         }
         Comms::processWaitingPackets();
     }
