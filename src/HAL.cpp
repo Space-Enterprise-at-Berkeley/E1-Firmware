@@ -8,6 +8,8 @@ namespace HAL {
     INA219 supply12v;
     INA219 supply8v;
 
+    TCA6408A ioExpander;
+
     INA219 chan0;
     INA219 chan1;
     INA219 chan2;
@@ -28,9 +30,6 @@ namespace HAL {
     MCP9600 tcAmp1;
     MCP9600 tcAmp2;
     MCP9600 tcAmp3;
-
-    // TCA6408A ioExpander0;
-    // TCA6408A ioExpander1;
 
     void initChannel(INA219 *channel, uint8_t address) {
         channel->init(&Wire1, address, chanShuntR, chanCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
@@ -69,6 +68,9 @@ namespace HAL {
         supplyBatt.init(&Wire, 0x43, battShuntR, battCurrMax, INA226_AVERAGES_1, INA226_BUS_CONV_TIME_8244US, INA226_SHUNT_CONV_TIME_8244US, INA226_MODE_SHUNT_BUS_CONT);
         supply12v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
         supply8v.init(&Wire, 0x45, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
+
+        // IO Expander
+        ioExpander.init(0x20, &Wire);
 
         // valves
         initChannel(&chan0, 0x40);

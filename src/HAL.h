@@ -6,6 +6,7 @@
 #include <INA219.h>
 #include <INA226.h>
 #include <MCP9600.h>
+#include <TCA6408A.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -22,6 +23,8 @@ namespace HAL {
     extern INA226 supplyBatt;
     extern INA219 supply12v;
     extern INA219 supply8v;
+
+    extern TCA6408A ioExpander;
 
     const float chanShuntR = 0.033;
     const float chanCurrMax = 4.0;
@@ -47,6 +50,14 @@ namespace HAL {
     const uint8_t chan3Pin = 2;
     const uint8_t chan4Pin = 1;
     const uint8_t chan5Pin = 0;
+
+    // NOTE: these pins refer to the IO Expander
+    const uint8_t chan6Pin = 0;
+    const uint8_t chan7Pin = 1;
+    const uint8_t chan8Pin = 2;
+    const uint8_t chan9Pin = 3;
+    const uint8_t chan10Pin = 4;
+    const uint8_t chan11Pin = 5;
 
     extern MCP9600 tcAmp0;
     extern MCP9600 tcAmp1;

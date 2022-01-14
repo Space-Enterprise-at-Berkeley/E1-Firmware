@@ -15,7 +15,8 @@ namespace Valves {
         uint8_t statePacketID;
         uint8_t statusPacketID;
 
-        uint8_t pin;
+        uint8_t pin; // use either pin or expanderPin, and set the other to 255
+        uint8_t expanderPin;
         float voltage;
         float current;
         float ocThreshold;
