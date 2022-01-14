@@ -20,7 +20,7 @@ namespace Comms {
         (uint8_t)(__m2 >> 0),
     };
     const int port = 42069;
-    const IPAddress ip(10, 0, 0, 42);
+    const IPAddress ip(10, 0, 0, IP_ADDRESS_END);
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
 
@@ -50,6 +50,7 @@ namespace Comms {
     void packetAddUint8(Packet *packet, uint8_t value);
 
     float packetGetFloat(Packet *packet, uint8_t index);
+    uint32_t packetGetUint32(Packet *packet, uint8_t index);
 
     /**
      * @brief Sends packet data over ethernet and serial.

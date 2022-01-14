@@ -91,6 +91,17 @@ namespace Comms {
         return * ( float * ) &rawData;
     }
 
+    uint32_t packetGetUint32(Packet *packet, uint8_t index) {
+        uint32_t rawData = packet->data[index+3];
+        rawData <<= 8;
+        rawData += packet->data[index+2];
+        rawData <<= 8;
+        rawData += packet->data[index+1];
+        rawData <<= 8;
+        rawData += packet->data[index];
+        return rawData;
+    }
+
     void emitPacket(Packet *packet) {
         //add timestamp to struct
         uint32_t timestamp = millis();

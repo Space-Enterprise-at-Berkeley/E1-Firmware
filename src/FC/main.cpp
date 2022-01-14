@@ -1,10 +1,10 @@
 #include <Common.h>
 #include <Comms.h>
-#include <Ducers.h>
-#include <Power.h>
-#include <Valves.h>
-#include <HAL.h>
-#include <Thermocouples.h>
+#include "Ducers.h"
+#include "Power.h"
+#include "Valves.h"
+#include "HAL.h"
+#include "Thermocouples.h"
 
 #include <Arduino.h>
 #include <Wire.h>

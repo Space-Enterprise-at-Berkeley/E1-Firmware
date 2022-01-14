@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common.h>
-#include <HAL.h>
+#include "HAL.h"
 #include <Comms.h>
 
 #include <Arduino.h>
