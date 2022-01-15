@@ -20,12 +20,12 @@ namespace Valves {
     Valve igniter = {.valveID = 1,
                       .statePacketID = 41,
                       .statusPacketID = 31,
-                      .pin = HAL::chan1Pin,
+                      .pin = HAL::chan4Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan1};
+                      .ina = &HAL::chan4};
     
     Valve loxMainValve = {.valveID = 2,
                       .statePacketID = 42,
@@ -150,10 +150,10 @@ namespace Valves {
     // init function for valves namespace
     void initValves() {
         // link the right packet IDs to the valve open/close handler functions
-        Comms::registerCallback(50, armValvePacketHandler);
-        Comms::registerCallback(51, igniterPacketHandler);
-        Comms::registerCallback(52, loxMainValvePacketHandler);
-        Comms::registerCallback(53, fuelMainValvePacketHandler);
+        Comms::registerCallback(130, armValvePacketHandler);
+        Comms::registerCallback(131, igniterPacketHandler);
+        Comms::registerCallback(132, loxMainValvePacketHandler);
+        Comms::registerCallback(133, fuelMainValvePacketHandler);
     }
 
 };
