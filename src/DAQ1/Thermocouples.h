@@ -8,10 +8,10 @@
 namespace Thermocouples {
     extern uint32_t tcUpdatePeriod;
 
-    extern float engineTC0Value;
-    extern float engineTC1Value;
-    extern float engineTC2Value;
-    extern float engineTC3Value;
+    extern float TC0Value;
+    extern float TC1Value;
+    extern float TC2Value;
+    extern float TC3Value;
 
     void initThermocouples();
     uint32_t tcSample();

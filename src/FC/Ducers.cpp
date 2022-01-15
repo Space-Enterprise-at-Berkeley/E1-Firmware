@@ -12,7 +12,16 @@ namespace Ducers {
     float loxDomePTValue = 0.0;
     float fuelDomePTValue = 0.0;
 
+    void handleFastReadPacket(Comms::Packet tmp) {
+        if(tmp.data[0]) {
+            ptUpdatePeriod = 1 * 1000;
+        } else {
+            ptUpdatePeriod = 100 * 1000;
+        }
+    }
+
     void initDucers() {
+        Comms::registerCallback(140, handleFastReadPacket);
     }
 
     float interpolate1000(uint16_t rawValue) {
