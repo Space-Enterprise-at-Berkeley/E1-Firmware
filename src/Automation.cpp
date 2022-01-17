@@ -66,6 +66,8 @@ namespace Automation {
                         && Valves::loxMainValve.current > currentThreshold
                         && Valves::fuelMainValve.current > currentThreshold) {
                     Valves::openFuelMainValve();
+                    //begin checking thermocouple values
+                    checkForAbortTask->enabled = true;
                     sendFlowStatus(3);
                     step++;
                     return burnTime * 1000000; // delay by burn time
@@ -75,6 +77,7 @@ namespace Automation {
                 }
             case 4: // step 4 (close fuel)
                 Valves::closeFuelMainValve();
+                checkForAbortTask->enabled = false;
                 sendFlowStatus(4);
                 step++;
                 return 200 * 1000; // delay by burn time
@@ -117,5 +120,16 @@ namespace Automation {
     uint32_t checkIgniter() {
         igniterTriggered = Valves::igniter.current > igniterTriggerThreshold || igniterTriggered;
         return 1000; //TODO determine appropriate sampling time
+    }
+
+    uint32_t checkForAbort() {
+        //check thermocouple temperatures to be below a threshold
+        if (Thermocouples::engineTC1Value > thermocoupleThreshold ||
+                Thermocouples::engineTC2Value > thermocoupleThreshold ||
+                Thermocouples::engineTC3Value > thermocoupleThreshold ||
+                Thermocouples::engineTC4Value > thermocoupleThreshold) {
+            beginAbortFlow();
+        }
+        return 2000; //TODO determine appropriate sampling time
     }
 };

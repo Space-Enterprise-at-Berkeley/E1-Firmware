@@ -16,6 +16,7 @@ Task taskTable[] = {
     {Automation::flow, 0, false},
     {Automation::abortFlow, 0, false},
     {Automation::checkIgniter, 0},
+    {Automation::checkForAbort, 0, false},
 
     // ducers
     {Ducers::ptSample, 0},
@@ -57,6 +58,7 @@ int main() {
 
     Automation::flowTask = &taskTable[0];
     Automation::abortFlowTask = &taskTable[1];
+    Automation::checkForAbortTask = &taskTable[2];
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
