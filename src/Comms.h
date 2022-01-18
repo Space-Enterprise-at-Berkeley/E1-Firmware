@@ -1,28 +1,25 @@
 #pragma once
 
-#include <Common.h>
-
 #include <Arduino.h>
-#include <NativeEthernet.h>
-#include <NativeEthernetUdp.h>
+#include <WiFi.h>
+#include <ESPmDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 #include <map>
 
 namespace Comms {
     //https://github.com/sstaub/TeensyID/issues/3
-    const uint32_t __m1 = HW_OCOTP_MAC1;
-    const uint32_t __m2 = HW_OCOTP_MAC0;
-    const byte mac[] = {
-        (uint8_t)(__m1 >> 8),
-        (uint8_t)(__m1 >> 0),
-        (uint8_t)(__m2 >> 24),
-        (uint8_t)(__m2 >> 16),
-        (uint8_t)(__m2 >> 8),
-        (uint8_t)(__m2 >> 0),
-    };
+
     const int port = 42069;
-    const IPAddress ip(10, 0, 0, 42);
-    const IPAddress groundStation1(10, 0, 0, 69);
-    const IPAddress groundStation2(10, 0, 0, 70);
+    const char* ssid = "eureka_cart";
+    const char* password = "Up_Dog69";
+
+    IPAddress local_IP(10, 0, 0, 31);
+    IPAddress gateway(10, 0, 0, 1);
+
+    IPAddress subnet(255, 255, 255, 0);
+
+    IPAddress ground(10, 0, 0, 70);
 
     struct Packet {
         uint8_t id;
