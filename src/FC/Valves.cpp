@@ -199,6 +199,13 @@ namespace Valves {
         return fuelMainValve.period;
     }
 
+    uint32_t breakWireSample() {
+        sampleValve(&breakWire);
+        DEBUG(breakWire.voltage);
+        DEBUG('\n');
+        return breakWire.period;
+    }
+
     uint32_t loxTankBottomHtrSample() {
         sampleValve(&loxTankBottomHtr);
         return loxTankBottomHtr.period;

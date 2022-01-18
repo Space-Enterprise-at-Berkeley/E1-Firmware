@@ -29,6 +29,7 @@ namespace Valves {
     extern Valve igniter;
     extern Valve loxMainValve;
     extern Valve fuelMainValve;
+    extern Valve breakWire;
     extern Valve loxTankBottomHtr;
     extern Valve loxTankMidHtr;
     extern Valve loxTankTopHtr;
@@ -61,6 +62,7 @@ namespace Valves {
     uint32_t igniterSample();
     uint32_t loxMainValveSample();
     uint32_t fuelMainValveSample();
+    uint32_t breakWireSample();
     uint32_t loxTankBottomHtrSample();
     uint32_t loxTankMidHtrSample();
     uint32_t loxTankTopHtrSample();
