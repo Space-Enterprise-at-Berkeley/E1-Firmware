@@ -22,7 +22,7 @@ class HX711
 		// - With a gain factor of 64 or 128, channel A is selected
 		// - With a gain factor of 32, channel B is selected
 		// The library default is "128" (Channel A).
-		void begin(uint8_t dout, uint8_t pd_sck, uint8_t gain = 128);
+		void init(uint8_t dout, uint8_t pd_sck, uint8_t gain = 128);
 
 		// Check if HX711 is ready
 		// from the datasheet: When output data is not ready for retrieval, digital output pin DOUT is high. Serial clock

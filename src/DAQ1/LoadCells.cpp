@@ -4,11 +4,17 @@ namespace LoadCells {
     float loadCell1Value;
     float loadCell2Value;
 
-    void initLoadCells() {}
+    void initLoadCells() {
+        HAL::lcAmp0.set_scale(4000);
+        HAL::lcAmp1.set_scale(-4000);
+
+        HAL::lcAmp0.tare();
+        HAL::lcAmp1.tare();
+    }
 
     uint32_t sampleLoadCells() {
-        loadCell1Value = HAL::lcAmp0.read();
-        loadCell2Value = HAL::lcAmp1.read();
+        loadCell1Value = HAL::lcAmp0.get_units();
+        loadCell2Value = HAL::lcAmp1.get_units();
 
         Comms::Packet tmp = {.id = 120};
         Comms::packetAddFloat(&tmp, loadCell1Value);

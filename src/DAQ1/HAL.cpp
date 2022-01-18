@@ -23,5 +23,8 @@ namespace HAL {
         tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+
+        lcAmp0.init(39, 38);
+        lcAmp1.init(9, 10);
     }
 };
