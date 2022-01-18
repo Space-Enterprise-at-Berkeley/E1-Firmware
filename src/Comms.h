@@ -6,20 +6,21 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <map>
+#include <Common.h>     
 
 namespace Comms {
-    //https://github.com/sstaub/TeensyID/issues/3
-
     const int port = 42069;
-    const char* ssid = "eureka_cart";
-    const char* password = "Up_Dog69";
 
-    IPAddress local_IP(10, 0, 0, 31);
-    IPAddress gateway(10, 0, 0, 1);
+    const char * const ssid = "eureka_cart";
+    const char * const password = "Up_Dog69";
 
-    IPAddress subnet(255, 255, 255, 0);
+    const IPAddress local_IP(10, 0, 0, 31);
+    const IPAddress gateway(10, 0, 0, 1);
 
-    IPAddress ground(10, 0, 0, 70);
+    const IPAddress subnet(255, 255, 255, 0);
+
+    const IPAddress groundStation1(10, 0, 0, 69);
+    const IPAddress groundStation2(10, 0, 0, 70);
 
     struct Packet {
         uint8_t id;
