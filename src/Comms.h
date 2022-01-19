@@ -14,7 +14,7 @@ namespace Comms {
     const char * const ssid = "eureka_cart";
     const char * const password = "Up_Dog69";
 
-    const IPAddress local_IP(10, 0, 0, 31);
+    const IPAddress local_IP(10, 0, 0, IP_ADDRESS_END);
     const IPAddress gateway(10, 0, 0, 1);
 
     const IPAddress subnet(255, 255, 255, 0);
