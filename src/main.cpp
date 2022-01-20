@@ -38,6 +38,8 @@ void loop()
     float capValue = _capSens.readCapacitance();
 
     capPacket.len = 0;
+
+    //Serial.println(capValue);
     Comms::packetAddFloat(&capPacket, capValue);
     Comms::emitPacket(&capPacket);
   }
