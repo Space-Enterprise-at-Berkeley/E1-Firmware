@@ -21,6 +21,7 @@ namespace Comms {
 
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
+    const IPAddress ledIndicator(10, 0, 0, LED_ADDRESS_END);
 
     struct Packet {
         uint8_t id;

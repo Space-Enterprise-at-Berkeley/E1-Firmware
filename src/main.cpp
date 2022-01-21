@@ -10,8 +10,8 @@ FDC2214 _capSens;
 
 void setup()
 {
-  Comms::initComms();
   Serial.begin(115200);
+  Comms::initComms();
 
   Wire.begin();
   _capSens = FDC2214();
