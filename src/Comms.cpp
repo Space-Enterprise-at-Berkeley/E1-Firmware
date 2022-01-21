@@ -87,7 +87,7 @@ namespace Comms {
     void processWaitingPackets() {
         if(Udp.parsePacket()) {
             if(Udp.remotePort() != port) return; // make sure this packet is for the right port
-            if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2)) return; // make sure this packet is from a ground station computer
+            if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2) && !(Udp.remoteIP() == groundStation3) && !(Udp.remoteIP() == groundStation4)) return; // make sure this packet is from a ground station computer
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;

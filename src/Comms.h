@@ -21,6 +21,8 @@ namespace Comms {
 
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
+    const IPAddress groundStation3(10, 0, 0, 31);
+    const IPAddress groundStation4(10, 0, 0, 32);
 
     struct Packet {
         uint8_t id;
