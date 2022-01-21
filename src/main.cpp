@@ -9,9 +9,9 @@
 #define DATA_PIN 21
 
 #ifdef LOX
-CRGB led_color(0,0,255);
+CRGB led_color(0, 30, 255);
 #else 
-CRGB led_color(0,255,0);
+CRGB led_color(102, 255, 102);
 #endif
 
 CRGB leds[NUM_LEDS];
