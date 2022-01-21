@@ -1,8 +1,4 @@
-#pragma once
-
-#include <Arduino.h>
-#include <Comms.h>
-#include <Thermocouples.h>
+#include "Thermocouples.h"
 
 namespace Thermocouples {
     uint32_t tcUpdatePeriod = 100 * 1000;

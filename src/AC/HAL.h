@@ -12,16 +12,12 @@
 #include <Wire.h>
 
 namespace HAL {
-    extern ADS8167 adc1;
-    extern ADS8167 adc2;
-
     const float battShuntR = 0.002;
     const float battCurrMax = 8.0;
     const float supplyShuntR = 0.01;
     const float supplyCurrMax = 4.0;
     extern INA226 supplyBatt;
     extern INA219 supply12v;
-    extern INA219 supply8v;
 
     const float chanShuntR = 0.033;
     const float chanCurrMax = 4.0;
@@ -36,27 +32,28 @@ namespace HAL {
     extern INA219 chan8;
     extern INA219 chan9;
     extern INA219 chan10;
-    extern INA219 chan11;
-    extern INA219 chan12;
-    extern INA219 chan13;
-    extern INA219 chan14;
 
-    const uint8_t chan0Pin = 5;
-    const uint8_t chan1Pin = 4;
-    const uint8_t chan2Pin = 3;
-    const uint8_t chan3Pin = 2;
-    const uint8_t chan4Pin = 1;
-    const uint8_t chan5Pin = 0;
+    const uint8_t hBrg1Pin1 = 2;
+    const uint8_t hBrg1Pin2 = 3;
+    const uint8_t hBrg2Pin1 = 4;
+    const uint8_t hBrg2Pin2 = 5;
+    const uint8_t hBrg3Pin1 = 6;
+    const uint8_t hBrg3Pin2 = 7;
+    const uint8_t hBrg4Pin1 = 11;
+    const uint8_t hBrg4Pin2 = 12;
+    const uint8_t hBrg5Pin1 = 24;
+    const uint8_t hBrg5Pin2 = 25;
+    const uint8_t hBrg6Pin1 = 28;
+    const uint8_t hBrg6Pin2 = 29;
+    const uint8_t hBrg7Pin1 = 37;
+    const uint8_t hBrg7Pin2 = 36;
 
-    extern MCP9600 tcAmp0;
-    extern MCP9600 tcAmp1;
-    extern MCP9600 tcAmp2;
-    extern MCP9600 tcAmp3;
+    const uint8_t ctl12vChan1 = 14;
+    const uint8_t ctl12vChan2 = 15;
+    
+    const uint8_t ctl24vChan1 = 22;
+    const uint8_t ctl24vChan2 = 23;
 
-    // extern TCA6408A ioExpander0;
-    // extern TCA6408A ioExpander1;
-
-    // void setWireClockLow();
-    // void resetWireClock();
     void initHAL();
+    
 };

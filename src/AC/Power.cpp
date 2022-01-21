@@ -1,24 +1,19 @@
-#include <Power.h>
+#include "Power.h"
 
 namespace Power {
 
     // TODO: change this to appropriate value
     uint32_t powerUpdatePeriod = 100 * 1000;
 
-    Comms::Packet battPacket = {.id = 1};
+    Comms::Packet battPacket = {.id = 61};
     float battVoltage = 0.0;
     float battCurrent = 0.0;
     float battPower = 0.0;
 
-    Comms::Packet supply12Packet = {.id = 2};
+    Comms::Packet supply12Packet = {.id = 62};
     float supply12Voltage = 0.0;
     float supply12Current = 0.0;
     float supply12Power = 0.0;
-
-    Comms::Packet supply8Packet = {.id = 3};
-    float supply8Voltage = 0.0;
-    float supply8Current = 0.0;
-    float supply8Power = 0.0;
 
     void initPower(){
     }
@@ -52,17 +47,4 @@ namespace Power {
         return powerUpdatePeriod;
     }
 
-    uint32_t supply8Sample() {
-        supply8Voltage = HAL::supply8v.readBusVoltage();
-        supply8Current = HAL::supply8v.readShuntCurrent();
-        supply8Power = supply8Voltage * supply8Current;
-
-        supply8Packet.len = 0;
-        Comms::packetAddFloat(&supply8Packet, supply8Voltage);
-        Comms::packetAddFloat(&supply8Packet, supply8Current);
-        Comms::packetAddFloat(&supply8Packet, supply8Power);
-        Comms::emitPacket(&supply8Packet);
-
-        return powerUpdatePeriod;
-    }
 }

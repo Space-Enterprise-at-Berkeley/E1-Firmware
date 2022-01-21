@@ -1,16 +1,17 @@
 #pragma once
 
-#include <HAL.h>
+#include "HAL.h"
+#include <Comms.h>
 
 #include <Arduino.h>
 
 namespace Thermocouples {
     extern uint32_t tcUpdatePeriod;
 
+    extern float engineTC0Value;
     extern float engineTC1Value;
     extern float engineTC2Value;
     extern float engineTC3Value;
-    extern float engineTC4Value;
 
     void initThermocouples();
     uint32_t tcSample();
