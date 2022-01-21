@@ -13,7 +13,7 @@ namespace ADC {
     }
 
     uint32_t adcSample() {
-        // read from all 6 PTs in sequence
+        // read from all 8 ADC channels in sequence
         HAL::adc.readChannelOTF(0); // switch mux back to channel 0
 
         adcPacket.len = 0;
@@ -23,7 +23,7 @@ namespace ADC {
         Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(4));
         Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(5));
         Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(6));
-        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(7)));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(7))); // Fuel Dome PT
         Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(0));
 
         Comms::emitPacket(&adcPacket);

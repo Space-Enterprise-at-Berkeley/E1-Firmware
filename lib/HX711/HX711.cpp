@@ -60,7 +60,7 @@ HX711::HX711() {
 HX711::~HX711() {
 }
 
-void HX711::begin(uint8_t dout, uint8_t pd_sck, uint8_t gain) {
+void HX711::init(uint8_t dout, uint8_t pd_sck, uint8_t gain) {
 	PD_SCK = pd_sck;
 	DOUT = dout;
 
