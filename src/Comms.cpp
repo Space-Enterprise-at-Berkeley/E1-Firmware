@@ -21,6 +21,8 @@ namespace Comms {
             ESP.restart();
         }
 
+        Udp.begin(port);
+
         ArduinoOTA
             .onStart([]() {
             String type;
