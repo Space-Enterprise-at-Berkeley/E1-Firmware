@@ -40,10 +40,11 @@
 // Device Communications
 ////////////////////////////////////////////////////////////////////////////////
 
+// rewrote Comms to BMP_Comms because name conflict
 #if defined ARDUINO_ARCH_ESP8266 || defined ARDUINO_ARCH_ESP32
-enum Comms { I2C_COMMS, SPI_COMMS, I2C_COMMS_DEFINED_PINS };
+enum BMP_Comms { I2C_COMMS, SPI_COMMS, I2C_COMMS_DEFINED_PINS };
 #else						 
-enum Comms { I2C_COMMS, SPI_COMMS };		 
+enum BMP_Comms { I2C_COMMS, SPI_COMMS };		 
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +74,7 @@ class Device{
 		uint8_t readByte(uint8_t subAddress);												// I2C and SPI read byte wrapper function
 		void readBytes(uint8_t subAddress, uint8_t* dest, uint16_t count);		// I2C and SPI read bytes wrapper function	
 	private:
-		Comms comms;																								// Communications bus: I2C or SPI
+		BMP_Comms comms;																							// Communications bus: I2C or SPI
 		uint8_t address;																						// The device I2C address
 		uint8_t cs;																									// The SPI chip select pin
 #ifdef ARDUINO_ARCH_ESP32
