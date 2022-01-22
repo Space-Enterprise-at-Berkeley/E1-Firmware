@@ -21,9 +21,7 @@ void ledPacketHandler(Comms::Packet tmp);
 void setup()
 {
     Serial.begin(115200);
-    fill_solid(leds, NUM_LEDS, led_color);
     FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-    FastLED.show();
 
     Comms::initComms();
     Comms::registerCallback(220, ledPacketHandler);
@@ -32,35 +30,51 @@ void setup()
 unsigned long previousMillis = 0;  
 const long interval = 10; 
 
+bool capConnected = false;
+int startHue = 0;
+
 void loop()
 {
+    ArduinoOTA.handle();
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
-        ArduinoOTA.handle();
         Comms::processWaitingPackets();
+        if(!capConnected){
+            fill_rainbow(leds, NUM_LEDS, startHue, 255/NUM_LEDS);
+            startHue += 1;
+            startHue = startHue%256;
+            FastLED.show();
+            
+        }
     }
 }
 
 void ledPacketHandler(Comms::Packet tmp) {
+    capConnected = true;
     float capValue = Comms::packetGetFloat(&tmp, 0);
-    Serial.println(capValue);
-
     float scaledLED = (capValue - BOTTOM_LIMIT)/(TOP_LIMIT - BOTTOM_LIMIT) * NUM_LEDS;
-    if(scaledLED < 0) scaledLED = 0;
-    if(scaledLED > NUM_LEDS) scaledLED = NUM_LEDS;
-
-    int full_leds = floor(scaledLED);
-    fill_solid(leds, full_leds, led_color);
-    fill_solid(leds + full_leds, NUM_LEDS - full_leds, CRGB(0,0,0));
-
-    float overflow = scaledLED - full_leds;
-    leds[full_leds] = led_color;
-    leds[full_leds].nscale8(overflow * 256);
-
+    if(scaledLED < 0){
+      for(int i = 0; i< NUM_LEDS; i++){
+        leds[i] = CRGB(0,0,0);
+      }
+    }else if(scaledLED > NUM_LEDS){
+      for(int i = 0; i< NUM_LEDS; i++){
+        leds[i] = led_color;
+      }
+    }else{
+      int full_leds = floor(scaledLED);
+      for(int i = 0; i< full_leds; i++){
+        leds[i] = led_color;
+      }
+      for(int i = full_leds; i< NUM_LEDS; i++){
+        leds[i] = CRGB(0,0,0);
+      }
+      float overflow = scaledLED - full_leds;
+      leds[full_leds] = CRGB(scale8(led_color.r, overflow * 256), scale8(led_color.g, overflow * 256), scale8(led_color.b, overflow * 256));
+    }
     blur1d(leds, NUM_LEDS, 172); 
     blur1d(leds, NUM_LEDS, 172); 
     blur1d(leds, NUM_LEDS, 172); 
     blur1d(leds, NUM_LEDS, 172); 
-
     FastLED.show();
 }
