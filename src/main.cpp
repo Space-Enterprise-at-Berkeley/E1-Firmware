@@ -21,9 +21,11 @@ void ledPacketHandler(Comms::Packet tmp);
 void setup()
 {
     Serial.begin(115200);
-    Comms::initComms();
-
+    fill_solid(leds, NUM_LEDS, led_color);
     FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+    FastLED.show();
+
+    Comms::initComms();
     Comms::registerCallback(220, ledPacketHandler);
 }
 

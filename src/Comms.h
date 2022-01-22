@@ -11,10 +11,10 @@
 namespace Comms {
     const int port = 42069;
 
-    // const char * const ssid = "eureka_cart";
-    // const char * const password = "Up_Dog69";
-    const char * const ssid = "HUAWEI P30 lite";
-    const char * const password = "Hihihi123";
+    const char * const ssid = "eureka_cart";
+    const char * const password = "Up_Dog69";
+    // const char * const ssid = "HUAWEI P30 lite";
+    // const char * const password = "Hihihi123";
 
 
     const IPAddress local_IP(10, 0, 0, IP_ADDRESS_END);
