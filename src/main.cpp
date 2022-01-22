@@ -28,11 +28,28 @@ void setup()
 }
 
 Comms::Packet capPacket = {.id = 220};
+float capVal = 120;
+
+unsigned long previousMillis = 0;  
+const long interval = 10; 
 
 void loop()
 {
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+
+      previousMillis = currentMillis;
+      capVal += .1;
+      if(capVal > 220){
+        capVal = 120;
+      }
+      capPacket.len = 0;
+      Comms::packetAddFloat(&capPacket, capVal);
+      Comms::emitPacket(&capPacket);
+    }
     ArduinoOTA.handle();
     Comms::processWaitingPackets();
+    Serial.println(capVal);
 }
 
 void ledPacketHandler(Comms::Packet tmp) {
@@ -51,9 +68,15 @@ void ledPacketHandler(Comms::Packet tmp) {
       for(int i = 0; i< full_leds; i++){
         leds[i] = led_color;
       }
+      for(int i = full_leds; i< NUM_LEDS; i++){
+        leds[i] = CRGB(0,0,0);
+      }
       float overflow = scaledLED - full_leds;
-      leds[full_leds] = CRGB(scale8(led_color.r, overflow), scale8(led_color.g, overflow), scale8(led_color.b, overflow));
-      
+      leds[full_leds] = CRGB(scale8(led_color.r, overflow * 256), scale8(led_color.g, overflow * 256), scale8(led_color.b, overflow * 256));
     }
+    blur1d(leds, NUM_LEDS, 172); 
+    blur1d(leds, NUM_LEDS, 172); 
+    blur1d(leds, NUM_LEDS, 172); 
+    blur1d(leds, NUM_LEDS, 172); 
     FastLED.show();
 }
