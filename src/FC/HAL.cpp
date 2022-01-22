@@ -31,6 +31,8 @@ namespace HAL {
     MCP9600 tcAmp2;
     MCP9600 tcAmp3;
 
+    BNO055 imu0;
+
     void initChannel(INA219 *channel, uint8_t address) {
         channel->init(&Wire1, address, chanShuntR, chanCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
     }
@@ -105,5 +107,8 @@ namespace HAL {
         tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+
+        // TODO: imu chqnge to high g
+        imu0.init();
     }
 };

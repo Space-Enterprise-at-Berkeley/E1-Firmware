@@ -6,6 +6,7 @@
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
+#include "IMU.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -34,6 +35,9 @@ Task taskTable[] = {
     {Thermocouples::tc1Sample, 0},
     {Thermocouples::tc2Sample, 0},
     {Thermocouples::tc3Sample, 0},
+
+    // imu
+    {IMU::imuSample, 0},
 
     // valves
     {Valves::armValveSample, 0},
@@ -64,6 +68,7 @@ int main() {
     Power::initPower();
     Valves::initValves();
     Thermocouples::initThermocouples();
+    IMU::initIMU();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

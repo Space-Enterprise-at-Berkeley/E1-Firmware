@@ -7,6 +7,7 @@
 #include <INA226.h>
 #include <MCP9600.h>
 #include <TCA6408A.h>
+#include <Adafruit_BNO055.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -63,6 +64,8 @@ namespace HAL {
     extern MCP9600 tcAmp1;
     extern MCP9600 tcAmp2;
     extern MCP9600 tcAmp3;
+
+    extern BNO055 imu0;
 
     // extern TCA6408A ioExpander0;
     // extern TCA6408A ioExpander1;
