@@ -21,7 +21,7 @@ void setup()
 }
  
 unsigned long previousMillis = 0;  
-const long interval = 50;
+const long interval = 25;
 
 Comms::Packet capPacket = {.id = 220};
 
