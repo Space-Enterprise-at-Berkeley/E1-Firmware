@@ -6,16 +6,23 @@ namespace Automation {
     Task *checkForAbortTask = nullptr;
 
     float loxLead = 0.165;
-    float burnTime = 3.0;
+    float burnTime = 300.0; //3.0
 
     bool igniterEnabled = false;
     bool breakwireEnabled = false;
 
     bool igniterTriggered = false;
 
-    void initAutomation() {
+    float loadCellValue;
+
+    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask) {
+        Automation::flowTask = flowTask;
+        Automation::abortFlowTask = abortFlowTask;
+        Automation::checkForAbortTask = checkForAbortTask;
+
         Comms::registerCallback(150, beginFlow);
         Comms::registerCallback(151, beginAbortFlow);
+        Comms::registerCallback(120, readLoadCell);
     }
 
     Comms::Packet flowPacket = {.id = 50};
@@ -38,6 +45,9 @@ namespace Automation {
         Comms::emitPacket(&flowPacket);
     }
     uint32_t flow() {
+        DEBUG("STEP: ");
+        DEBUG(step);
+        DEBUG("\n");
         switch(step) {
             case 0: // step 0 (actuate igniter)
                 if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
@@ -79,33 +89,38 @@ namespace Automation {
                         && Valves::loxMainValve.current > currentThreshold) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
-                    checkForAbortTask->enabled = true;
+                    // checkForAbortTask->enabled = true;
                     sendFlowStatus(3);
+                    checkForAbortTask->enabled = true;
                     step++;
-                    return burnTime * 1000000; // delay by burn time
+                    return (burnTime / 2) * 1000000; // delay by burn time
                 } else {
                     beginAbortFlow();
                     return 0;
                 }
-            case 4: // step 4 (close fuel)
-                Valves::closeFuelMainValve();
-                checkForAbortTask->enabled = false;
+            case 4:
                 sendFlowStatus(4);
                 step++;
-                return 200 * 1000; // delay by burn time
-            case 5: // step 5 (close lox)
-                Valves::closeLoxMainValve();
+                return (burnTime / 2) * 1000000;
+            case 5: // step 5 (close fuel)
+                Valves::closeFuelMainValve();
+                checkForAbortTask->enabled = false;
                 sendFlowStatus(5);
                 step++;
-                return 500 * 1000; // delay by burn time
-            case 6: // step 6 (close arm valve)
-                Valves::closeArmValve();
+                return 200 * 1000; // delay by burn time
+            case 6: // step 6 (close lox)
+                Valves::closeLoxMainValve();
                 sendFlowStatus(6);
+                step++;
+                return 500 * 1000; // delay by burn time
+            case 7: // step 7 (close arm valve)
+                Valves::closeArmValve();
+                sendFlowStatus(7);
                 step++;
                 return 0; // delay by burn time
             default: // end
                 flowTask->enabled = false;
-                sendFlowStatus(7);
+                sendFlowStatus(8);
                 return 0;
         }
     }
@@ -115,7 +130,7 @@ namespace Automation {
     }
 
     void beginAbortFlow() {
-        sendFlowStatus(8); //abort status
+        sendFlowStatus(9); //abort status
         if(!abortFlowTask->enabled) {
             flowTask->enabled = false;
             abortFlowTask->nexttime = micros();
@@ -130,7 +145,7 @@ namespace Automation {
         Valves::closeArmValve();
         Valves::deactivateIgniter();
         abortFlowTask->enabled = false;
-        sendFlowStatus(9);
+        sendFlowStatus(10);
         return 0;
     }
 
@@ -139,14 +154,51 @@ namespace Automation {
         return 50 * 1000; //TODO determine appropriate sampling time
     }
 
+    void readLoadCell(Comms::Packet packet) {
+        float loadCell1Value = Comms::packetGetFloat(&packet, 0);
+        float loadCell2Value = Comms::packetGetFloat(&packet, 4);
+        float loadCellSum = Comms::packetGetFloat(&packet, 8);
+
+        loadCellValue = loadCellSum;
+    }
+
     uint32_t checkForAbort() {
         //check thermocouple temperatures to be below a threshold
-        if (Thermocouples::engineTC0Value > thermocoupleThreshold ||
-                Thermocouples::engineTC1Value > thermocoupleThreshold ||
-                Thermocouples::engineTC2Value > thermocoupleThreshold ||
-                Thermocouples::engineTC3Value > thermocoupleThreshold) {
+        float maxThermocoupleValue = max(max(Thermocouples::engineTC0Value, Thermocouples::engineTC1Value), 
+                                        max(Thermocouples::engineTC2Value, Thermocouples::engineTC3Value));
+
+        DEBUG("LOAD CELL VALUE: ");
+        DEBUG(loadCellValue);
+        DEBUG(" TC VALUE: ");
+        DEBUG(Thermocouples::engineTC1Value);
+        DEBUG(" TC ROC: ");
+        DEBUG(Thermocouples::engineTC1ROC);
+        DEBUG("\n");
+
+        if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
             beginAbortFlow();
         }
+
+        if (Thermocouples::engineTC0Value > thermocoupleThreshold && Thermocouples::engineTC0ROC > thermocoupleRateThreshold) {
+            beginAbortFlow();
+        }
+
+        if (Thermocouples::engineTC1Value > thermocoupleThreshold && Thermocouples::engineTC1ROC > thermocoupleRateThreshold) {
+            beginAbortFlow();
+        }
+        if (Thermocouples::engineTC2Value > thermocoupleThreshold && Thermocouples::engineTC2ROC > thermocoupleRateThreshold) {
+            beginAbortFlow();
+        }
+        if (Thermocouples::engineTC3Value > thermocoupleThreshold && Thermocouples::engineTC3ROC > thermocoupleRateThreshold) {
+            beginAbortFlow();
+        }
+
+        if (step == 5) {
+            if (loadCellValue < loadCellThreshold) {
+                beginAbortFlow();
+            }
+        }
+
         return 100 * 1000; //TODO determine appropriate sampling time
     }
 };

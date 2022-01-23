@@ -21,6 +21,7 @@ namespace LoadCells {
         Comms::packetAddFloat(&tmp, loadCell2Value);
         Comms::packetAddFloat(&tmp, loadCell1Value + loadCell2Value);
         Comms::emitPacket(&tmp);
+        Comms::sendToFlightComputer(&tmp);
 
         return samplePeriod;
     }

@@ -54,17 +54,13 @@ int main() {
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
-    Automation::initAutomation();
+    Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3]);
     HAL::initHAL();
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
     Valves::initValves();
     Thermocouples::initThermocouples();
-
-    Automation::flowTask = &taskTable[0];
-    Automation::abortFlowTask = &taskTable[1];
-    Automation::checkForAbortTask = &taskTable[3];
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

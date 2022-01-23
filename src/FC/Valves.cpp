@@ -201,8 +201,6 @@ namespace Valves {
 
     uint32_t breakWireSample() {
         sampleValve(&breakWire);
-        DEBUG(breakWire.voltage);
-        DEBUG('\n');
         return breakWire.period;
     }
 
