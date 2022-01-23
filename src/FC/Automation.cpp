@@ -6,10 +6,10 @@ namespace Automation {
     Task *checkForAbortTask = nullptr;
 
     float loxLead = 0.165;
-    float burnTime = 300.0; //3.0
+    float burnTime = 22.0; //22.0
 
-    bool igniterEnabled = false;
-    bool breakwireEnabled = false;
+    bool igniterEnabled = true;
+    bool breakwireEnabled = true;
 
     bool igniterTriggered = false;
 
