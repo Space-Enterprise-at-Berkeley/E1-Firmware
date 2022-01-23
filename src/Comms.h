@@ -21,8 +21,10 @@ namespace Comms {
     };
     const int port = 42069;
     const IPAddress ip(10, 0, 0, IP_ADDRESS_END);
+    const IPAddress FC(10, 0, 0, 42);
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
+    const IPAddress DAQ1(10, 0, 0, 11);
 
     struct Packet {
         uint8_t id;
@@ -49,6 +51,13 @@ namespace Comms {
     void packetAddFloat(Packet *packet, float value);
     void packetAddUint8(Packet *packet, uint8_t value);
 
+    /**
+     * @brief Interprets the packet data as a float.
+     * 
+     * @param packet 
+     * @param index The index of the byte array at which the float starts (0, 4, 8).
+     * @return float 
+     */
     float packetGetFloat(Packet *packet, uint8_t index);
     uint32_t packetGetUint32(Packet *packet, uint8_t index);
 
@@ -58,6 +67,13 @@ namespace Comms {
      * @param packet The packet in which the data is stored.
      */
     void emitPacket(Packet *packet);
+
+    /**
+     * @brief Sends the packet to the flight computer (used by DAQs).
+     * 
+     * @param packet Packet to be sent.
+     */
+    void sendToFlightComputer(Packet *packet);
 
     uint16_t computePacketChecksum(Packet *packet);
 };

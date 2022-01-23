@@ -13,6 +13,11 @@ namespace Thermocouples {
     extern float engineTC2Value;
     extern float engineTC3Value;
 
+    extern float engineTC0ROC;
+    extern float engineTC1ROC;
+    extern float engineTC2ROC;
+    extern float engineTC3ROC;
+
     void initThermocouples();
     uint32_t tcSample();
 

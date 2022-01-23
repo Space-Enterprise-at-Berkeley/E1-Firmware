@@ -23,16 +23,16 @@ namespace Comms {
     void evokeCallbackFunction(Packet *packet) {
         uint16_t checksum = *(uint16_t *)&packet->checksum;
         if (checksum == computePacketChecksum(packet)) {
-            DEBUG("Packet with ID ");
-            DEBUG(packet->id);
-            DEBUG(" has correct checksum!\n");
+            // DEBUG("Packet with ID ");
+            // DEBUG(packet->id);
+            // DEBUG(" has correct checksum!\n");
             //try to access function, checking for out of range exception
             if(callbackMap.count(packet->id)) {
                 callbackMap.at(packet->id)(*packet);
             } else {
-                DEBUG("ID ");
-                DEBUG(packet->id);
-                DEBUG(" does not have a registered callback function.\n");
+                // DEBUG("ID ");
+                // DEBUG(packet->id);
+                // DEBUG(" does not have a registered callback function.\n");
             }
         } else {
             DEBUG("Packet with ID ");
@@ -44,13 +44,13 @@ namespace Comms {
     void processWaitingPackets() {
         if(Udp.parsePacket()) {
             if(Udp.remotePort() != port) return; // make sure this packet is for the right port
-            if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2)) return; // make sure this packet is from a ground station computer
+            if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2) && !(Udp.remoteIP() == DAQ1)) return; // make sure this packet is from a ground station computer
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
-            DEBUG("Got unverified packet with ID ");
-            DEBUG(packet->id);
-            DEBUG('\n');
+            // DEBUG("Got unverified packet with ID ");
+            // DEBUG(packet->id);
+            // DEBUG('\n');
             evokeCallbackFunction(packet);
         } else if(Serial.available()) {
             int cnt = 0;
@@ -59,9 +59,9 @@ namespace Comms {
                 cnt++;
             }
             Packet *packet = (Packet *)&packetBuffer;
-            DEBUG("Got unverified packet with ID ");
-            DEBUG(packet->id);
-            DEBUG('\n');
+            // DEBUG("Got unverified packet with ID ");
+            // DEBUG(packet->id);
+            // DEBUG('\n');
             evokeCallbackFunction(packet);
         }
     }
@@ -102,6 +102,11 @@ namespace Comms {
         return rawData;
     }
 
+    /**
+     * @brief Sends packet to both groundstations.
+     * 
+     * @param packet Packet to be sent.
+     */
     void emitPacket(Packet *packet) {
         //add timestamp to struct
         uint32_t timestamp = millis();
@@ -135,6 +140,16 @@ namespace Comms {
         Udp.endPacket();
 
         Udp.beginPacket(groundStation2, port);
+        Udp.write(packet->id);
+        Udp.write(packet->len);
+        Udp.write(packet->timestamp, 4);
+        Udp.write(packet->checksum, 2);
+        Udp.write(packet->data, packet->len);
+        Udp.endPacket();
+    }
+
+    void sendToFlightComputer(Packet *packet) {
+        Udp.beginPacket(FC, port);
         Udp.write(packet->id);
         Udp.write(packet->len);
         Udp.write(packet->timestamp, 4);
