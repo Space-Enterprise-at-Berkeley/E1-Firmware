@@ -35,7 +35,8 @@ float MCP9600::readThermocouple(void) {
     wire->endTransmission();
 
     wire->requestFrom(address, 2);
-    return ((float) (wire->read() << 8 | wire->read())) * 0.0625;
+    int16_t tmp = (wire->read() << 8 | wire->read());
+    return ((float) tmp) * 0.0625;
 }
 
 void MCP9600::writeReg(uint8_t reg, uint8_t value) {
