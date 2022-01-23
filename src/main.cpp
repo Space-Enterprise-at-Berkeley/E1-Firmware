@@ -11,7 +11,7 @@
 #ifdef LOX
 CRGB led_color(0, 30, 255);
 #else 
-CRGB led_color(102, 255, 102);
+CRGB led_color(255, 50, 0);
 #endif
 
 CRGB leds[NUM_LEDS];
