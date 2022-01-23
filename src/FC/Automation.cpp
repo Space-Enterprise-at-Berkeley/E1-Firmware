@@ -10,6 +10,7 @@ namespace Automation {
 
     bool igniterEnabled = true;
     bool breakwireEnabled = true;
+    bool thrustEnabled = false;
 
     bool igniterTriggered = false;
 
@@ -56,6 +57,7 @@ namespace Automation {
                     step++;
                     return 2000 * 1000; // delay 2s
                 } else {
+                    sendFlowStatus(14);
                     beginAbortFlow();
                     return 0;
                 }
@@ -69,6 +71,7 @@ namespace Automation {
                     step++;
                     return 500 * 1000; // delay 0.5s
                 } else {
+                    sendFlowStatus(15);
                     beginAbortFlow();
                     return 0;
                 }
@@ -80,6 +83,7 @@ namespace Automation {
                     step++;
                     return loxLead * 1000000; // delay by lox lead
                 } else {
+                    sendFlowStatus(16);
                     beginAbortFlow();
                     return 0;
                 }
@@ -95,6 +99,7 @@ namespace Automation {
                     step++;
                     return (burnTime / 2) * 1000000; // delay by burn time
                 } else {
+                    sendFlowStatus(17);
                     beginAbortFlow();
                     return 0;
                 }
@@ -176,25 +181,31 @@ namespace Automation {
         DEBUG("\n");
 
         if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
+            sendFlowStatus(11);
             beginAbortFlow();
         }
 
         if (Thermocouples::engineTC0Value > thermocoupleThreshold && Thermocouples::engineTC0ROC > thermocoupleRateThreshold) {
+            sendFlowStatus(12);
             beginAbortFlow();
         }
 
         if (Thermocouples::engineTC1Value > thermocoupleThreshold && Thermocouples::engineTC1ROC > thermocoupleRateThreshold) {
+            sendFlowStatus(12);
             beginAbortFlow();
         }
         if (Thermocouples::engineTC2Value > thermocoupleThreshold && Thermocouples::engineTC2ROC > thermocoupleRateThreshold) {
+            sendFlowStatus(12);
             beginAbortFlow();
         }
         if (Thermocouples::engineTC3Value > thermocoupleThreshold && Thermocouples::engineTC3ROC > thermocoupleRateThreshold) {
+            sendFlowStatus(12);
             beginAbortFlow();
         }
 
         if (step == 5) {
-            if (loadCellValue < loadCellThreshold) {
+            if (loadCellValue < loadCellThreshold && thrustEnabled) {
+                sendFlowStatus(13);
                 beginAbortFlow();
             }
         }
