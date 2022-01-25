@@ -97,7 +97,7 @@ namespace Automation {
                     sendFlowStatus(3);
                     checkForAbortTask->enabled = true;
                     step++;
-                    return (burnTime / 2) * 1000000; // delay by burn time
+                    return 2 * 1000000; // delay by burn time
                 } else {
                     sendFlowStatus(17);
                     beginAbortFlow();
@@ -106,7 +106,7 @@ namespace Automation {
             case 4:
                 sendFlowStatus(4);
                 step++;
-                return (burnTime / 2) * 1000000;
+                return (burnTime - 2) * 1000000;
             case 5: // step 5 (close fuel)
                 Valves::closeFuelMainValve();
                 checkForAbortTask->enabled = false;
