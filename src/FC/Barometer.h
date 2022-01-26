@@ -9,12 +9,10 @@
  * @source: https://github.com/MartinL1/BMP388_DEV
  */
 
-#pragma once
+// #pragma once
 
 #include <Common.h>
-#include <Comms.h>
-
-#include <Arduino.h>
+// #include <Comms.h>
 #include "BMP388_DEV.h"
 
 namespace Barometer {
