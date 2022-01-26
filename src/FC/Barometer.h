@@ -16,11 +16,12 @@
 #include "BMP388_DEV.h"
 
 namespace Barometer {
-    extern float altitude, pressure, temperature;
-    extern BMP388_DEV bmp388;
     extern uint32_t bmUpdatePeriod;
 
+    extern float baroAltitude, baroPressure;
+    extern BMP388_DEV bmp388;
+
     void init();
-    // altitude in meters (m), pressure in hectoPascals/millibar (hPa), temperature in degrees celcius (°C)
-    uint32_t sampleAltPressTemp();
+    // altitude in meters (m), pressure in hectoPascals/millibar (hPa)
+    uint32_t sampleAltPress();
 }

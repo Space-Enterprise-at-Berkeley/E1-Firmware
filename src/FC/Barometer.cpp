@@ -1,33 +1,32 @@
 #include "Barometer.h"
 
 namespace Barometer {
-    float altitude, pressure, temperature;
-    BMP388_DEV bmp388;
-
     uint32_t bmUpdatePeriod = 100 * 1000; // TODO: Placeholder
-    Comms::Packet baroPacket = {.id = 13};
+    Comms::Packet baroPacket = {.id = 5};
+    
+    float baroAltitude, baroPressure;
+    BMP388_DEV bmp388;
 
     void init() {
         bmp388.begin();
     }
     
-    uint32_t sampleAltPressTemp() {
+    uint32_t sampleAltPress() {
+        float _ = 0;
         bmp388.startForcedConversion(); // Start a forced conversion (if in SLEEP_MODE)
         bool successfully_measured = false;
         while (!successfully_measured) {
-            successfully_measured = bmp388.getMeasurements(temperature, pressure, altitude);
+            successfully_measured = bmp388.getMeasurements(_, baroPressure, baroAltitude);
         }
         baroPacket.len = 0;
-        Comms::packetAddFloat(&baroPacket, altitude);
-        Comms::packetAddFloat(&baroPacket, pressure);
-        Comms::packetAddFloat(&baroPacket, temperature);
+        Comms::packetAddFloat(&baroPacket, baroAltitude);
+        Comms::packetAddFloat(&baroPacket, baroPressure);
         Comms::emitPacket(&baroPacket);
-        // Serial.print("temperature: ");
-        // Serial.print(temperature);
+        // Serial.print("altitude: ");
+        // Serial.print(altitude);
         // Serial.print(", pressure: ");
         // Serial.print(pressure);
-        // Serial.print(", altitude: ");
-        // Serial.println(altitude);
+        // Serial.println();
         return bmUpdatePeriod;
     }
 }
