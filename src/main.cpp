@@ -7,6 +7,8 @@
  
 #define NUM_LEDS 144
 #define DATA_PIN 21
+#define NUM_LEDS2 300
+#define DATA_PIN2 12
 
 #ifdef LOX
 CRGB led_color(0, 50, 98);
@@ -15,6 +17,7 @@ CRGB led_color(100, 60, 0);
 #endif
 
 CRGB leds[NUM_LEDS];
+CRGB leds2[NUM_LEDS2];
 
 void ledPacketHandler(Comms::Packet tmp);
 
@@ -22,6 +25,7 @@ void setup()
 {
     Serial.begin(115200);
     FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+    FastLED.addLeds<NEOPIXEL, DATA_PIN2>(leds2, NUM_LEDS2);
 
     Comms::initComms();
     Comms::registerCallback(220, ledPacketHandler);
@@ -39,13 +43,15 @@ void loop()
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
         Comms::processWaitingPackets();
+        startHue += 1;
+        startHue = startHue%256;
         if(!capConnected){
             fill_rainbow(leds, NUM_LEDS, startHue, 255/NUM_LEDS);
-            startHue += 1;
-            startHue = startHue%256;
-            FastLED.show();
-            
         }
+        #ifdef LOX
+        fill_rainbow(leds2, NUM_LEDS2, startHue, 255/NUM_LEDS);
+        #endif
+        FastLED.show();
     }
 }
 
