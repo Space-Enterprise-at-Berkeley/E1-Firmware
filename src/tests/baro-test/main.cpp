@@ -10,10 +10,11 @@ int main() {
     float altitude, pressure, temperature;
     BMP388_DEV bmp388;
     bmp388.begin();
+    bool successfully_measured;
 
     while(1) {
         bmp388.startForcedConversion(); // Start a forced conversion (if in SLEEP_MODE)
-        bool successfully_measured = false;
+        successfully_measured = false;
         while (!successfully_measured) {
             successfully_measured = bmp388.getMeasurements(temperature, pressure, altitude);
         }
