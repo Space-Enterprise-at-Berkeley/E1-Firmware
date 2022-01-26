@@ -6,6 +6,7 @@
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
+#include "Barometer.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -44,6 +45,9 @@ Task taskTable[] = {
     {Valves::loxTankBottomHtrSample, 0},
     {Valves::loxTankMidHtrSample, 0},
     {Valves::loxTankTopHtrSample, 0},
+
+    // Barometer
+    {Barometer::sampleAltPress, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -61,6 +65,7 @@ int main() {
     Power::initPower();
     Valves::initValves();
     Thermocouples::initThermocouples();
+    Barometer::init();
 
     Automation::flowTask = &taskTable[0];
     Automation::abortFlowTask = &taskTable[1];
