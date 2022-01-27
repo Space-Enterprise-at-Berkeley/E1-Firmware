@@ -65,7 +65,6 @@ int main() {
     Power::initPower();
     Valves::initValves();
     Thermocouples::initThermocouples();
-    Barometer::init();
 
     Automation::flowTask = &taskTable[0];
     Automation::abortFlowTask = &taskTable[1];

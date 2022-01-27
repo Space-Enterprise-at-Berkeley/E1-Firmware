@@ -11,15 +11,13 @@
 
 #pragma once
 
-#include <Common.h>
 #include <Comms.h>
-#include "BMP388_DEV.h"
+#include "HAL.h"
 
 namespace Barometer {
     extern uint32_t bmUpdatePeriod;
 
     extern float baroAltitude, baroPressure;
-    extern BMP388_DEV bmp388;
 
     void init();
     // altitude in meters (m), pressure in hectoPascals/millibar (hPa)
