@@ -37,11 +37,12 @@ namespace Thermocouples {
     }
 
     uint32_t tcSample(MCP9600 *amp, uint8_t packetID, float *value, float *thermocoupleValues, float *ROCValue) {
+        float reading = amp->readThermocouple();
         //calculate ROC TC value
         for (int i = 1; i < 10; i++) {
             thermocoupleValues[i] = thermocoupleValues[i-1];
         }
-        thermocoupleValues[0] = (amp->readThermocouple() - *value) / ((float)tcUpdatePeriod / 1e6);
+        thermocoupleValues[0] = (reading - *value) / ((float)tcUpdatePeriod / 1e6);
 
         float sum = 0;
         for (int i = 0; i < 10; i++) {
@@ -50,7 +51,7 @@ namespace Thermocouples {
         *ROCValue = sum / 10;
         
         // read from all TCs in sequence
-        *value = amp->readThermocouple();
+        *value = reading;
 
         
         tcPacket.id = packetID;
