@@ -99,7 +99,7 @@ namespace Automation {
                         && Valves::loxMainValve.current > currentThreshold) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
-                    // checkForAbortTask->enabled = true;
+                    checkForAbortTask->enabled = true;
                     sendFlowStatus(3);
                     step++;
                     return 2 * 1000000; // delay by burn time
@@ -109,7 +109,6 @@ namespace Automation {
                     return 0;
                 }
             case 4:
-                checkForAbortTask->enabled = true;
                 sendFlowStatus(4);
                 step++;
                 return (burnTime - 2) * 1000000;
