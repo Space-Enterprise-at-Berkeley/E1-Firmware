@@ -29,4 +29,5 @@ namespace Ducers {
     float interpolate1000(uint16_t rawValue);
     float interpolate5000(uint16_t rawValue);
     uint32_t ptSample();
+    uint32_t pressurantPTROCSample();
 };

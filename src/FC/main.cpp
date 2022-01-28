@@ -20,6 +20,7 @@ Task taskTable[] = {
 
     // ducers
     {Ducers::ptSample, 0},
+    {Ducers::pressurantPTROCSample, 0},
 
     // power
     {Power::battSample, 0},
