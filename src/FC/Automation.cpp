@@ -16,6 +16,10 @@ namespace Automation {
 
     float loadCellValue;
 
+    //each index maps to a check
+    uint8_t hysteresisValues[6];;
+    uint8_t hysteresisThreshold = 5;
+
     void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask) {
         Automation::flowTask = flowTask;
         Automation::abortFlowTask = abortFlowTask;
@@ -32,6 +36,8 @@ namespace Automation {
     void beginFlow(Comms::Packet packet) {
         if(!flowTask->enabled) {
             step = 0;
+            //reset values
+            memset(hysteresisValues, 0, sizeof(hysteresisValues));
             igniterTriggered = false;
             flowTask->nexttime = micros();
             flowTask->enabled = true;
@@ -181,32 +187,50 @@ namespace Automation {
         DEBUG("\n");
 
         if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
-            sendFlowStatus(11);
-            beginAbortFlow();
+            hysteresisValues[0] += 1;
+            if (hysteresisValues[0] >= 5) {
+                sendFlowStatus(11);
+                beginAbortFlow();
+            }
         }
 
         if (Thermocouples::engineTC0Value > thermocoupleThreshold && Thermocouples::engineTC0ROC > thermocoupleRateThreshold) {
-            sendFlowStatus(12);
-            beginAbortFlow();
+            hysteresisValues[1] += 1;
+            if (hysteresisValues[1] >= 5) {
+                sendFlowStatus(12);
+                beginAbortFlow();
+            }
         }
 
         if (Thermocouples::engineTC1Value > thermocoupleThreshold && Thermocouples::engineTC1ROC > thermocoupleRateThreshold) {
-            sendFlowStatus(12);
-            beginAbortFlow();
+            hysteresisValues[2] += 1;
+            if (hysteresisValues[2] >= 5) {
+                sendFlowStatus(12);
+                beginAbortFlow();
+            }
         }
         if (Thermocouples::engineTC2Value > thermocoupleThreshold && Thermocouples::engineTC2ROC > thermocoupleRateThreshold) {
-            sendFlowStatus(12);
-            beginAbortFlow();
+            hysteresisValues[3] += 1;
+            if (hysteresisValues[3] >= 5) {
+                sendFlowStatus(12);
+                beginAbortFlow();
+            }
         }
         if (Thermocouples::engineTC3Value > thermocoupleThreshold && Thermocouples::engineTC3ROC > thermocoupleRateThreshold) {
-            sendFlowStatus(12);
-            beginAbortFlow();
+            hysteresisValues[4] += 1;
+            if (hysteresisValues[4] >= 5) {
+                sendFlowStatus(12);
+                beginAbortFlow();
+            }
         }
 
         if (step == 5) {
             if (loadCellValue < loadCellThreshold && thrustEnabled) {
-                sendFlowStatus(13);
-                beginAbortFlow();
+                hysteresisValues[5] += 1;
+                if (hysteresisValues[5] >= 5) {
+                    sendFlowStatus(13);
+                    beginAbortFlow();
+                }
             }
         }
 
