@@ -95,7 +95,6 @@ namespace Automation {
                     //begin checking thermocouple values
                     // checkForAbortTask->enabled = true;
                     sendFlowStatus(3);
-                    checkForAbortTask->enabled = true;
                     step++;
                     return 2 * 1000000; // delay by burn time
                 } else {
@@ -104,6 +103,7 @@ namespace Automation {
                     return 0;
                 }
             case 4:
+                checkForAbortTask->enabled = true;
                 sendFlowStatus(4);
                 step++;
                 return (burnTime - 2) * 1000000;
