@@ -22,8 +22,8 @@ namespace Automation {
     extern Task *abortFlowTask;
     extern Task *checkForAbortTask;
 
-    extern float loxLead;
-    extern float burnTime;
+    extern uint32_t loxLead;
+    extern uint32_t burnTime;
 
     extern bool igniterEnabled;
     extern bool breakwireEnabled;

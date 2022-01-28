@@ -5,11 +5,11 @@ namespace Automation {
     Task *abortFlowTask = nullptr;
     Task *checkForAbortTask = nullptr;
 
-    float loxLead = 0.165;
-    float burnTime = 22.0; //22.0
+    uint32_t loxLead = 165 * 1000;
+    uint32_t burnTime = 22 * 1000 * 1000; //22.0 (total burntime - 2)
 
-    bool igniterEnabled = true;
-    bool breakwireEnabled = true;
+    bool igniterEnabled = false;
+    bool breakwireEnabled = false;
     bool thrustEnabled = false;
 
     bool igniterTriggered = false;
@@ -17,8 +17,8 @@ namespace Automation {
     float loadCellValue;
 
     //each index maps to a check
-    uint8_t hysteresisValues[6];;
-    uint8_t hysteresisThreshold = 5;
+    uint8_t hysteresisValues[6] = {0};
+    uint8_t hysteresisThreshold = 10;
 
     void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask) {
         Automation::flowTask = flowTask;
@@ -37,10 +37,10 @@ namespace Automation {
         if(!flowTask->enabled) {
             step = 0;
             //reset values
-            memset(hysteresisValues, 0, sizeof(hysteresisValues));
             igniterTriggered = false;
             flowTask->nexttime = micros();
             flowTask->enabled = true;
+            checkForAbortTask->enabled = false;
         }
     }
     inline void sendFlowStatus(uint8_t status) {
@@ -87,7 +87,7 @@ namespace Automation {
                     Valves::openLoxMainValve();
                     sendFlowStatus(2);
                     step++;
-                    return loxLead * 1000000; // delay by lox lead
+                    return loxLead; // delay by lox lead
                 } else {
                     sendFlowStatus(16);
                     beginAbortFlow();
@@ -102,32 +102,34 @@ namespace Automation {
                     checkForAbortTask->enabled = true;
                     sendFlowStatus(3);
                     step++;
-                    return 2 * 1000000; // delay by burn time
+                    return 2 * 1000 * 1000; // delay by 2 seconds
                 } else {
                     sendFlowStatus(17);
                     beginAbortFlow();
                     return 0;
                 }
             case 4:
+                DEBUG((uint32_t)((burnTime - 2) * 1e6));
+                DEBUG('\n');
                 sendFlowStatus(4);
                 step++;
-                return (burnTime - 2) * 1000000;
+                return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
             case 5: // step 5 (close fuel)
                 Valves::closeFuelMainValve();
                 checkForAbortTask->enabled = false;
                 sendFlowStatus(5);
                 step++;
-                return 200 * 1000; // delay by burn time
+                return 200 * 1000;
             case 6: // step 6 (close lox)
                 Valves::closeLoxMainValve();
                 sendFlowStatus(6);
                 step++;
-                return 500 * 1000; // delay by burn time
+                return 500 * 1000;
             case 7: // step 7 (close arm valve)
                 Valves::closeArmValve();
                 sendFlowStatus(7);
                 step++;
-                return 0; // delay by burn time
+                return 1 * 1000 * 1000; //delay for gap in status messages
             default: // end
                 flowTask->enabled = false;
                 sendFlowStatus(8);
@@ -140,7 +142,6 @@ namespace Automation {
     }
 
     void beginAbortFlow() {
-        sendFlowStatus(9); //abort status
         if(!abortFlowTask->enabled) {
             flowTask->enabled = false;
             abortFlowTask->nexttime = micros();
@@ -180,56 +181,72 @@ namespace Automation {
         DEBUG("LOAD CELL VALUE: ");
         DEBUG(loadCellValue);
         DEBUG(" TC VALUE: ");
-        DEBUG(Thermocouples::engineTC1Value);
+        DEBUG(Thermocouples::engineTC3Value);
         DEBUG(" TC ROC: ");
-        DEBUG(Thermocouples::engineTC1ROC);
+        DEBUG(Thermocouples::engineTC3ROC);
+        DEBUG(" Hysteresis TC3: ");
+        DEBUG(hysteresisValues[4]);
         DEBUG("\n");
 
         if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
             hysteresisValues[0] += 1;
-            if (hysteresisValues[0] >= 5) {
+            if (hysteresisValues[0] >= hysteresisThreshold) {
                 sendFlowStatus(11);
                 beginAbortFlow();
             }
+        } else {
+            hysteresisValues[0] = 0;
         }
 
         if (Thermocouples::engineTC0Value > thermocoupleThreshold && Thermocouples::engineTC0ROC > thermocoupleRateThreshold) {
             hysteresisValues[1] += 1;
-            if (hysteresisValues[1] >= 5) {
+            if (hysteresisValues[1] >= hysteresisThreshold) {
                 sendFlowStatus(12);
                 beginAbortFlow();
             }
+        } else {
+            hysteresisValues[1] = 0;
         }
 
         if (Thermocouples::engineTC1Value > thermocoupleThreshold && Thermocouples::engineTC1ROC > thermocoupleRateThreshold) {
             hysteresisValues[2] += 1;
-            if (hysteresisValues[2] >= 5) {
+            if (hysteresisValues[2] >= hysteresisThreshold) {
                 sendFlowStatus(12);
                 beginAbortFlow();
             }
+        } else {
+            hysteresisValues[2] = 0;
         }
+
         if (Thermocouples::engineTC2Value > thermocoupleThreshold && Thermocouples::engineTC2ROC > thermocoupleRateThreshold) {
             hysteresisValues[3] += 1;
-            if (hysteresisValues[3] >= 5) {
+            if (hysteresisValues[3] >= hysteresisThreshold) {
                 sendFlowStatus(12);
                 beginAbortFlow();
             }
+        } else {
+            hysteresisValues[3] = 0;
         }
+
         if (Thermocouples::engineTC3Value > thermocoupleThreshold && Thermocouples::engineTC3ROC > thermocoupleRateThreshold) {
             hysteresisValues[4] += 1;
-            if (hysteresisValues[4] >= 5) {
+            if (hysteresisValues[4] >= hysteresisThreshold) {
                 sendFlowStatus(12);
                 beginAbortFlow();
             }
+        } else {
+            hysteresisValues[4] = 0;
         }
 
         if (step == 5) {
             if (loadCellValue < loadCellThreshold && thrustEnabled) {
                 hysteresisValues[5] += 1;
-                if (hysteresisValues[5] >= 5) {
+                if (hysteresisValues[5] >= hysteresisThreshold) {
                     sendFlowStatus(13);
                     beginAbortFlow();
                 }
+            } else {
+                hysteresisValues[5] = 0;
             }
         }
 

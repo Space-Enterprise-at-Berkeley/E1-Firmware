@@ -2,7 +2,9 @@
 
 namespace Ducers {
     uint32_t ptUpdatePeriod = 100 * 1000;
+    uint32_t ptROCUpdatePeriod = 1e6;
     Comms::Packet ptPacket = {.id = 10};
+    Comms::Packet ptROCPacket = {.id = 9};
 
     float prevPressurantPTValue = 0.0;
 
@@ -66,6 +68,12 @@ namespace Ducers {
     uint32_t pressurantPTROCSample() {
         pressurantPTROC = (pressurantPTValue - prevPressurantPTValue) / 1e6;
         prevPressurantPTValue = pressurantPTValue;
-        return 1e6;
+
+        //emit a packet with data
+        ptROCPacket.len = 0;
+        Comms::packetAddFloat(&ptROCPacket, pressurantPTROC);
+        Comms::emitPacket(&ptROCPacket);
+
+        return ptROCUpdatePeriod;
     }
 };
