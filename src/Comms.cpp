@@ -9,6 +9,16 @@ namespace Comms {
     void initComms() {
         Ethernet.begin((uint8_t *)mac, ip);
         Udp.begin(port);
+
+        registerCallback(0, sendFirmwareVersionPacket);
+    }
+
+    void sendFirmwareVersionPacket(Packet unused) {
+        Packet version = {.id = 0, .len = 7};
+
+        char commit[] = FW_COMMIT;
+        memcpy(&(version.data), &commit, 7);
+        emitPacket(&version);
     }
 
     void registerCallback(uint8_t id, commFunction function) {
@@ -44,7 +54,6 @@ namespace Comms {
     void processWaitingPackets() {
         if(Udp.parsePacket()) {
             if(Udp.remotePort() != port) return; // make sure this packet is for the right port
-            if(!(Udp.remoteIP() == groundStation1) && !(Udp.remoteIP() == groundStation2) && !(Udp.remoteIP() == DAQ1)) return; // make sure this packet is from a ground station computer
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
@@ -75,6 +84,14 @@ namespace Comms {
         packet->len += 4;
     }
 
+    void packetAddUint32(Packet *packet, uint32_t value) {
+        packet->data[packet->len] = value & 0xFF;
+        packet->data[packet->len + 1] = value >> 8 & 0xFF;
+        packet->data[packet->len + 2] = value >> 16 & 0xFF;
+        packet->data[packet->len + 3] = value >> 24 & 0xFF;
+        packet->len += 4;
+    }
+
     void packetAddUint8(Packet *packet, uint8_t value) {
         packet->data[packet->len] = value;
         packet->len++;
@@ -100,6 +117,10 @@ namespace Comms {
         rawData <<= 8;
         rawData += packet->data[index];
         return rawData;
+    }
+
+    uint32_t packetGetUint8(Packet *packet, uint8_t index) {
+        return packet->data[index];
     }
 
     /**
@@ -148,8 +169,8 @@ namespace Comms {
         Udp.endPacket();
     }
 
-    void sendToFlightComputer(Packet *packet) {
-        Udp.beginPacket(FC, port);
+    void emitPacket(Packet *packet, uint8_t end) {
+        Udp.beginPacket(IPAddress(10, 0, 0, end), port);
         Udp.write(packet->id);
         Udp.write(packet->len);
         Udp.write(packet->timestamp, 4);

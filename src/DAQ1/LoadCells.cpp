@@ -5,8 +5,8 @@ namespace LoadCells {
     float loadCell2Value;
 
     void initLoadCells() {
-        HAL::lcAmp0.set_scale(-2520);
-        HAL::lcAmp1.set_scale(2660);
+        HAL::lcAmp0.set_scale(-2520); // measured imperically
+        HAL::lcAmp1.set_scale(2660); // measured imperically
 
         HAL::lcAmp0.tare();
         HAL::lcAmp1.tare();
@@ -21,7 +21,7 @@ namespace LoadCells {
         Comms::packetAddFloat(&tmp, loadCell2Value);
         Comms::packetAddFloat(&tmp, loadCell1Value + loadCell2Value);
         Comms::emitPacket(&tmp);
-        Comms::sendToFlightComputer(&tmp);
+        Comms::emitPacket(&tmp, 42); // send this packet to the flight computer as well
 
         return samplePeriod;
     }

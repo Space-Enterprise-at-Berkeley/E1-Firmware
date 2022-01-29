@@ -20,7 +20,8 @@ namespace Automation {
 
     extern Task *flowTask; // perform burn
     extern Task *abortFlowTask;
-    extern Task *checkForAbortTask;
+    extern Task *checkForTCAbortTask;
+    extern Task *checkForLCAbortTask;
 
     extern uint32_t loxLead;
     extern uint32_t burnTime;
@@ -29,7 +30,7 @@ namespace Automation {
     extern bool breakwireEnabled;
     extern bool igniterTriggered;
 
-    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask);
+    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask);
     void beginFlow(Comms::Packet packet);
     uint32_t flow();
     void beginAbortFlow(Comms::Packet packet);
@@ -37,5 +38,8 @@ namespace Automation {
     uint32_t abortFlow();
     uint32_t checkIgniter();
     void readLoadCell(Comms::Packet packet);
-    uint32_t checkForAbort();
+    uint32_t checkForTCAbort();
+    uint32_t checkForLCAbort();
+
+    void handleAutoSettings(Comms::Packet recv);
 };

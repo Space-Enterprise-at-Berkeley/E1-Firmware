@@ -66,7 +66,7 @@ namespace Ducers {
     }
 
     uint32_t pressurantPTROCSample() {
-        pressurantPTROC = (pressurantPTValue - prevPressurantPTValue) / 1e6;
+        pressurantPTROC = (pressurantPTValue - prevPressurantPTValue);
         prevPressurantPTValue = pressurantPTValue;
 
         //emit a packet with data

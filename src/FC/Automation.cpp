@@ -1,9 +1,11 @@
 #include "Automation.h"
+#include "Ducers.h"
 
 namespace Automation {
     Task *flowTask = nullptr;
     Task *abortFlowTask = nullptr;
-    Task *checkForAbortTask = nullptr;
+    Task *checkForTCAbortTask = nullptr;
+    Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = 165 * 1000;
     uint32_t burnTime = 22 * 1000 * 1000; //22.0 (total burntime - 2)
@@ -15,19 +17,40 @@ namespace Automation {
     bool igniterTriggered = false;
 
     float loadCellValue;
+    uint32_t lastLoadCellTime; // last time that load cell value was received
 
     //each index maps to a check
     uint8_t hysteresisValues[6] = {0};
     uint8_t hysteresisThreshold = 10;
 
-    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask) {
+    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask) {
         Automation::flowTask = flowTask;
         Automation::abortFlowTask = abortFlowTask;
-        Automation::checkForAbortTask = checkForAbortTask;
+        Automation::checkForTCAbortTask = checkForTCAbortTask;
+        Automation::checkForLCAbortTask = checkForLCAbortTask;
 
         Comms::registerCallback(150, beginFlow);
         Comms::registerCallback(151, beginAbortFlow);
         Comms::registerCallback(120, readLoadCell);
+        Comms::registerCallback(152, handleAutoSettings);
+    }
+
+    void handleAutoSettings(Comms::Packet recv) {
+        if(recv.len > 0) {
+            // set relavent settings
+            loxLead = Comms::packetGetUint32(&recv, 0);
+            burnTime = Comms::packetGetUint32(&recv, 4);
+            igniterEnabled = Comms::packetGetUint8(&recv, 8);
+            breakwireEnabled = Comms::packetGetUint8(&recv, 9);
+            thrustEnabled = Comms::packetGetUint8(&recv, 10);
+        }
+        Comms::Packet tmp = {.id = recv.id};
+        Comms::packetAddUint32(&tmp, loxLead);
+        Comms::packetAddUint32(&tmp, burnTime);
+        Comms::packetAddUint8(&tmp, igniterEnabled);
+        Comms::packetAddUint8(&tmp, breakwireEnabled);
+        Comms::packetAddUint8(&tmp, thrustEnabled);
+        Comms::emitPacket(&tmp);
     }
 
     Comms::Packet flowPacket = {.id = 50};
@@ -36,11 +59,13 @@ namespace Automation {
     void beginFlow(Comms::Packet packet) {
         if(!flowTask->enabled) {
             step = 0;
+            Ducers::ptUpdatePeriod = 1 * 1000;
             //reset values
             igniterTriggered = false;
             flowTask->nexttime = micros();
             flowTask->enabled = true;
-            checkForAbortTask->enabled = false;
+            checkForTCAbortTask->enabled = false;
+            checkForLCAbortTask->enabled = false;
         }
     }
     inline void sendFlowStatus(uint8_t status) {
@@ -99,7 +124,7 @@ namespace Automation {
                         && Valves::loxMainValve.current > currentThreshold) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
-                    checkForAbortTask->enabled = true;
+                    checkForTCAbortTask->enabled = true;
                     sendFlowStatus(3);
                     step++;
                     return 2 * 1000 * 1000; // delay by 2 seconds
@@ -109,14 +134,15 @@ namespace Automation {
                     return 0;
                 }
             case 4:
-                DEBUG((uint32_t)((burnTime - 2) * 1e6));
-                DEBUG('\n');
+                checkForLCAbortTask->enabled = true;
+                //begin checking loadcell values
                 sendFlowStatus(4);
                 step++;
                 return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
             case 5: // step 5 (close fuel)
                 Valves::closeFuelMainValve();
-                checkForAbortTask->enabled = false;
+                checkForTCAbortTask->enabled = false;
+                checkForLCAbortTask->enabled = false;
                 sendFlowStatus(5);
                 step++;
                 return 200 * 1000;
@@ -129,7 +155,7 @@ namespace Automation {
                 Valves::closeArmValve();
                 sendFlowStatus(7);
                 step++;
-                return 1 * 1000 * 1000; //delay for gap in status messages
+                return 1500; //delay for gap in status messages
             default: // end
                 flowTask->enabled = false;
                 sendFlowStatus(8);
@@ -144,9 +170,10 @@ namespace Automation {
     void beginAbortFlow() {
         if(!abortFlowTask->enabled) {
             flowTask->enabled = false;
-            abortFlowTask->nexttime = micros();
+            abortFlowTask->nexttime = micros() + 1500; // 1500 is a dirty hack to make sure flow status gets recorded. Ask @andy
             abortFlowTask->enabled = true;
-            checkForAbortTask->enabled = false;
+            checkForTCAbortTask->enabled = false;
+            checkForLCAbortTask->enabled = false;
         }
     }
 
@@ -162,7 +189,7 @@ namespace Automation {
 
     uint32_t checkIgniter() {
         igniterTriggered = Valves::igniter.current > igniterTriggerThreshold || igniterTriggered;
-        return 50 * 1000; //TODO determine appropriate sampling time
+        return Valves::igniter.period; //TODO determine appropriate sampling time
     }
 
     void readLoadCell(Comms::Packet packet) {
@@ -171,9 +198,10 @@ namespace Automation {
         float loadCellSum = Comms::packetGetFloat(&packet, 8);
 
         loadCellValue = loadCellSum;
+        lastLoadCellTime = millis();
     }
 
-    uint32_t checkForAbort() {
+    uint32_t checkForTCAbort() {
         //check thermocouple temperatures to be below a threshold
         float maxThermocoupleValue = max(max(Thermocouples::engineTC0Value, Thermocouples::engineTC1Value), 
                                         max(Thermocouples::engineTC2Value, Thermocouples::engineTC3Value));
@@ -238,18 +266,20 @@ namespace Automation {
             hysteresisValues[4] = 0;
         }
 
-        if (step == 5) {
-            if (loadCellValue < loadCellThreshold && thrustEnabled) {
-                hysteresisValues[5] += 1;
-                if (hysteresisValues[5] >= hysteresisThreshold) {
-                    sendFlowStatus(13);
-                    beginAbortFlow();
-                }
-            } else {
-                hysteresisValues[5] = 0;
+        return Thermocouples::tcUpdatePeriod; //TODO determine appropriate sampling time
+    }
+
+    uint32_t checkForLCAbort() {
+        if (loadCellValue < loadCellThreshold && millis() - lastLoadCellTime < 25 && thrustEnabled) {
+            hysteresisValues[5] += 1;
+            if (hysteresisValues[5] >= hysteresisThreshold) {
+                sendFlowStatus(13);
+                beginAbortFlow();
             }
+        } else {
+            hysteresisValues[5] = 0;
         }
 
-        return 100 * 1000; //TODO determine appropriate sampling time
+        return 12500; // load cells are sampled at 80 hz
     }
 };

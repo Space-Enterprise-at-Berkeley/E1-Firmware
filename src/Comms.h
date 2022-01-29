@@ -21,10 +21,8 @@ namespace Comms {
     };
     const int port = 42069;
     const IPAddress ip(10, 0, 0, IP_ADDRESS_END);
-    const IPAddress FC(10, 0, 0, 42);
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
-    const IPAddress DAQ1(10, 0, 0, 11);
 
     struct Packet {
         uint8_t id;
@@ -49,6 +47,7 @@ namespace Comms {
     void processWaitingPackets();
 
     void packetAddFloat(Packet *packet, float value);
+    void packetAddUint32(Packet *packet, uint32_t value);
     void packetAddUint8(Packet *packet, uint8_t value);
 
     /**
@@ -60,6 +59,7 @@ namespace Comms {
      */
     float packetGetFloat(Packet *packet, uint8_t index);
     uint32_t packetGetUint32(Packet *packet, uint8_t index);
+    uint32_t packetGetUint8(Packet *packet, uint8_t index);
 
     /**
      * @brief Sends packet data over ethernet and serial.
@@ -69,11 +69,19 @@ namespace Comms {
     void emitPacket(Packet *packet);
 
     /**
-     * @brief Sends the packet to the flight computer (used by DAQs).
+     * @brief Sends the packet to arbitrary address
      * 
      * @param packet Packet to be sent.
+     * @param custom IP address to send to
      */
-    void sendToFlightComputer(Packet *packet);
+    void emitPacket(Packet *packet, uint8_t end);
 
     uint16_t computePacketChecksum(Packet *packet);
+
+    /**
+     * @brief Sends the firmware version packet upon request
+     * 
+     * @param _ unused
+     */
+    void sendFirmwareVersionPacket(Packet unused);
 };
