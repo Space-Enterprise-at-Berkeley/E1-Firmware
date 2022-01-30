@@ -8,10 +8,10 @@ namespace Automation {
     Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = 165 * 1000;
-    uint32_t burnTime = 22 * 1000 * 1000; //22.0 (total burntime - 2)
+    uint32_t burnTime = 10 * 1000 * 1000; //22.0 (total burntime - 2)
 
-    bool igniterEnabled = false;
-    bool breakwireEnabled = false;
+    bool igniterEnabled = true;
+    bool breakwireEnabled = true;
     bool thrustEnabled = false;
 
     bool igniterTriggered = false;
@@ -199,6 +199,8 @@ namespace Automation {
 
         loadCellValue = loadCellSum;
         lastLoadCellTime = millis();
+        DEBUG(loadCellValue);
+        DEBUG("\n");
     }
 
     uint32_t checkForTCAbort() {

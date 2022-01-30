@@ -110,6 +110,7 @@ namespace Valves {
         }
         valveStates |= (0x01 << valve->valveID); // set bit <valveID> to 1
 
+
         Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offset of 40 (check the E-1 Design spreadsheet)
         Comms::packetAddUint8(&tmp, 1); // a value of 1 indicates the valve was turned on
         Comms::emitPacket(&tmp);
@@ -172,7 +173,6 @@ namespace Valves {
         if (valve->current > valve->ocThreshold) {
             closeValve(valve, 1);
         }
-
         Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->current);
         Comms::emitPacket(&tmp);

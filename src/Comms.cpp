@@ -57,6 +57,8 @@ namespace Comms {
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
+            DEBUG(packet->id);
+            DEBUG("\n");
             // DEBUG("Got unverified packet with ID ");
             // DEBUG(packet->id);
             // DEBUG('\n');
@@ -170,6 +172,20 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
+        DEBUG(end);
+        DEBUG('\n');
+        //add timestamp to struct
+        uint32_t timestamp = millis();
+        packet->timestamp[0] = timestamp & 0xFF;
+        packet->timestamp[1] = (timestamp >> 8) & 0xFF;
+        packet->timestamp[2] = (timestamp >> 16) & 0xFF;
+        packet->timestamp[3] = (timestamp >> 24) & 0xFF;
+
+        //calculate and append checksum to struct
+        uint16_t checksum = computePacketChecksum(packet);
+        packet->checksum[0] = checksum & 0xFF;
+        packet->checksum[1] = checksum >> 8;
+
         Udp.beginPacket(IPAddress(10, 0, 0, end), port);
         Udp.write(packet->id);
         Udp.write(packet->len);
