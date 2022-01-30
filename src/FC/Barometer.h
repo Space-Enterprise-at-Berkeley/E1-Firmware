@@ -17,9 +17,9 @@
 namespace Barometer {
     extern uint32_t bmUpdatePeriod;
 
-    extern float baroAltitude, baroPressure;
+    extern float baroAltitude, baroPressure, baroTemperature;
 
     void init();
-    // altitude in meters (m), pressure in hectoPascals/millibar (hPa)
-    uint32_t sampleAltPress();
+    // altitude in meters (m), pressure in hectoPascals/millibar (hPa), temperature in degrees Celsius (C)
+    uint32_t sampleAltPressTemp();
 }

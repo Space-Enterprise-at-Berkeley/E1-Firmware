@@ -47,7 +47,7 @@ Task taskTable[] = {
     {Valves::loxTankTopHtrSample, 0},
 
     // Barometer
-    {Barometer::sampleAltPress, 0},
+    {Barometer::sampleAltPressTemp, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -65,6 +65,7 @@ int main() {
     Power::initPower();
     Valves::initValves();
     Thermocouples::initThermocouples();
+    Barometer::init();
 
     Automation::flowTask = &taskTable[0];
     Automation::abortFlowTask = &taskTable[1];
