@@ -98,6 +98,7 @@ namespace Automation {
                 Valves::disableIgniter();
                 Valves::deactivateIgniter();
                 sendFlowStatus(STATE_DEACTIVATE_DISABLE_IGNITER);
+                step++;
                 return 1500 * 1000; // delay 1.5s
 
             case 2: // step 2
