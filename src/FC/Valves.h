@@ -33,6 +33,7 @@ namespace Valves {
     extern Valve loxTankBottomHtr;
     extern Valve loxTankMidHtr;
     extern Valve loxTankTopHtr;
+    extern Valve igniterEnableRelay;
     
     void initValves();
 
@@ -57,6 +58,12 @@ namespace Valves {
     void activateLoxTankTopHtr();
     void deavtivateLoxTankTopHtr(uint8_t OCShutoff = 0);
 
+    void activateLoxTankTopHtr();
+    void deavtivateLoxTankTopHtr(uint8_t OCShutoff = 0);
+
+    void enableIgniter();
+    void disableIgniter(uint8_t OCShutoff = 0);
+
     void sampleValve(Valve *valve);
     uint32_t armValveSample();
     uint32_t igniterSample();
@@ -66,4 +73,5 @@ namespace Valves {
     uint32_t loxTankBottomHtrSample();
     uint32_t loxTankMidHtrSample();
     uint32_t loxTankTopHtrSample();
+    uint32_t igniterEnableRelaySample();
 };

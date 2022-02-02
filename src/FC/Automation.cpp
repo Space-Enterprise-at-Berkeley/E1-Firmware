@@ -10,8 +10,8 @@ namespace Automation {
     uint32_t loxLead = 165 * 1000;
     uint32_t burnTime = 10 * 1000 * 1000; //22.0 (total burntime - 2)
 
-    bool igniterEnabled = true;
-    bool breakwireEnabled = true;
+    bool igniterEnabled = false;
+    bool breakwireEnabled = false;
     bool thrustEnabled = false;
 
     bool igniterTriggered = false;
@@ -81,22 +81,29 @@ namespace Automation {
         DEBUG(step);
         DEBUG("\n");
         switch(step) {
-            case 0: // step 0 (actuate igniter)
+            case 0: // step 0 (enable and actuate igniter)
+                //TODO: don't even turn on igniter if igniterEnabled = False
                 if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
+                    Valves::enableIgniter();
                     Valves::activateIgniter();
                     sendFlowStatus(0);
                     step++;
-                    return 2000 * 1000; // delay 2s
+                    return 500 * 1000; // delay 0.5s
                 } else {
                     sendFlowStatus(14);
                     beginAbortFlow();
                     return 0;
                 }
-            case 1: // step 1 
+            case 1: // step 1 after short period turn off igniter and disable igniter power
+                Valves::disableIgniter();
+                Valves::deactivateIgniter();
+                sendFlowStatus(STATE_DEACTIVATE_DISABLE_IGNITER);
+                return 1500 * 1000; // delay 1.5s
+
+            case 2: // step 2
                 // check igniter current trigger and break wire
                 if ((igniterTriggered || !igniterEnabled)
                         && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
-                    Valves::deactivateIgniter();
                     Valves::openArmValve();
                     sendFlowStatus(1);
                     step++;
@@ -106,7 +113,8 @@ namespace Automation {
                     beginAbortFlow();
                     return 0;
                 }
-            case 2: // step 2
+
+            case 3: // step 3
                 // check arm valve current, main valve continuity else abort
                 if (Valves::armValve.current > currentThreshold) {
                     Valves::openLoxMainValve();
@@ -118,7 +126,8 @@ namespace Automation {
                     beginAbortFlow();
                     return 0;
                 }
-            case 3: // step 3
+
+            case 4: // step 4
                 // check arm valve current, loxMain current, fuelMain continuity
                 if (Valves::armValve.current > currentThreshold
                         && Valves::loxMainValve.current > currentThreshold) {
@@ -133,29 +142,34 @@ namespace Automation {
                     beginAbortFlow();
                     return 0;
                 }
-            case 4:
+
+            case 5: // enable Load Cell abort
                 checkForLCAbortTask->enabled = true;
                 //begin checking loadcell values
                 sendFlowStatus(4);
                 step++;
                 return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
-            case 5: // step 5 (close fuel)
+
+            case 6: // step 6 (close fuel)
                 Valves::closeFuelMainValve();
                 checkForTCAbortTask->enabled = false;
                 checkForLCAbortTask->enabled = false;
                 sendFlowStatus(5);
                 step++;
                 return 200 * 1000;
-            case 6: // step 6 (close lox)
+
+            case 7: // step 7 (close lox)
                 Valves::closeLoxMainValve();
                 sendFlowStatus(6);
                 step++;
                 return 500 * 1000;
-            case 7: // step 7 (close arm valve)
+
+            case 8: // step 8 (close arm valve)
                 Valves::closeArmValve();
                 sendFlowStatus(7);
                 step++;
                 return 1500; //delay for gap in status messages
+
             default: // end
                 flowTask->enabled = false;
                 sendFlowStatus(8);
