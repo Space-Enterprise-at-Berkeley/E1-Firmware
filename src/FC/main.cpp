@@ -41,6 +41,7 @@ Task taskTable[] = {
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
     {Valves::breakWireSample, 0},
+    {Valves::igniterEnableRelaySample, 0},
 
     // heaters
     {Valves::loxTankBottomHtrSample, 0},

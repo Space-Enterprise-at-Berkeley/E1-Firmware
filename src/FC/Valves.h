@@ -58,9 +58,6 @@ namespace Valves {
     void activateLoxTankTopHtr();
     void deavtivateLoxTankTopHtr(uint8_t OCShutoff = 0);
 
-    void activateLoxTankTopHtr();
-    void deavtivateLoxTankTopHtr(uint8_t OCShutoff = 0);
-
     void enableIgniter();
     void disableIgniter(uint8_t OCShutoff = 0);
 
