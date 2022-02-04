@@ -86,11 +86,11 @@ namespace Automation {
                 if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
                     Valves::enableIgniter();
                     Valves::activateIgniter();
-                    sendFlowStatus(0);
+                    sendFlowStatus(STATE_ACTIVATE_IGNITER);
                     step++;
                     return 500 * 1000; // delay 0.5s
                 } else {
-                    sendFlowStatus(14);
+                    sendFlowStatus(STATE_ABORT_BREAKWIRE_BROKEN);
                     beginAbortFlow();
                     return 0;
                 }
@@ -106,11 +106,11 @@ namespace Automation {
                 if ((igniterTriggered || !igniterEnabled)
                         && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
                     Valves::openArmValve();
-                    sendFlowStatus(1);
+                    sendFlowStatus(STATE_OPEN_ARM_VALVE);
                     step++;
                     return 500 * 1000; // delay 0.5s
                 } else {
-                    sendFlowStatus(15);
+                    sendFlowStatus(STATE_ABORT_BREAKWIRE_UNBROKEN);
                     beginAbortFlow();
                     return 0;
                 }
@@ -119,11 +119,11 @@ namespace Automation {
                 // check arm valve current, main valve continuity else abort
                 if (Valves::armValve.current > currentThreshold) {
                     Valves::openLoxMainValve();
-                    sendFlowStatus(2);
+                    sendFlowStatus(STATE_OPEN_LOX_VALVE);
                     step++;
                     return loxLead; // delay by lox lead
                 } else {
-                    sendFlowStatus(16);
+                    sendFlowStatus(STATE_ABORT_ARM_VALVE_LOW_CURRENT);
                     beginAbortFlow();
                     return 0;
                 }
@@ -135,11 +135,11 @@ namespace Automation {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
                     checkForTCAbortTask->enabled = true;
-                    sendFlowStatus(3);
+                    sendFlowStatus(STATE_OPEN_FUEL_VALVE);
                     step++;
                     return 2 * 1000 * 1000; // delay by 2 seconds
                 } else {
-                    sendFlowStatus(17);
+                    sendFlowStatus(STATE_ABORT_ARM_OR_LOX_VALVE_LOW_CURRENT);
                     beginAbortFlow();
                     return 0;
                 }
@@ -147,7 +147,7 @@ namespace Automation {
             case 5: // enable Load Cell abort
                 checkForLCAbortTask->enabled = true;
                 //begin checking loadcell values
-                sendFlowStatus(4);
+                sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
                 step++;
                 return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
 
@@ -155,25 +155,25 @@ namespace Automation {
                 Valves::closeFuelMainValve();
                 checkForTCAbortTask->enabled = false;
                 checkForLCAbortTask->enabled = false;
-                sendFlowStatus(5);
+                sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
                 step++;
                 return 200 * 1000;
 
             case 7: // step 7 (close lox)
                 Valves::closeLoxMainValve();
-                sendFlowStatus(6);
+                sendFlowStatus(STATE_CLOSE_LOX_VALVE);
                 step++;
                 return 500 * 1000;
 
             case 8: // step 8 (close arm valve)
                 Valves::closeArmValve();
-                sendFlowStatus(7);
+                sendFlowStatus(STATE_CLOSE_ARM_VALVE);
                 step++;
                 return 1500; //delay for gap in status messages
 
             default: // end
                 flowTask->enabled = false;
-                sendFlowStatus(8);
+                sendFlowStatus(STATE_NOMINAL_END_FLOW);
                 return 0;
         }
     }
@@ -198,7 +198,7 @@ namespace Automation {
         Valves::closeArmValve();
         Valves::deactivateIgniter();
         abortFlowTask->enabled = false;
-        sendFlowStatus(10);
+        sendFlowStatus(STATE_ABORT_END_FLOW);
         return 0;
     }
 
@@ -236,7 +236,7 @@ namespace Automation {
         if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
             hysteresisValues[0] += 1;
             if (hysteresisValues[0] >= hysteresisThreshold) {
-                sendFlowStatus(11);
+                sendFlowStatus(STATE_ABORT_ENGINE_TEMP);
                 beginAbortFlow();
             }
         } else {
@@ -246,7 +246,7 @@ namespace Automation {
         if (Thermocouples::engineTC0Value > thermocoupleThreshold && Thermocouples::engineTC0ROC > thermocoupleRateThreshold) {
             hysteresisValues[1] += 1;
             if (hysteresisValues[1] >= hysteresisThreshold) {
-                sendFlowStatus(12);
+                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
                 beginAbortFlow();
             }
         } else {
@@ -256,7 +256,7 @@ namespace Automation {
         if (Thermocouples::engineTC1Value > thermocoupleThreshold && Thermocouples::engineTC1ROC > thermocoupleRateThreshold) {
             hysteresisValues[2] += 1;
             if (hysteresisValues[2] >= hysteresisThreshold) {
-                sendFlowStatus(12);
+                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
                 beginAbortFlow();
             }
         } else {
@@ -266,7 +266,7 @@ namespace Automation {
         if (Thermocouples::engineTC2Value > thermocoupleThreshold && Thermocouples::engineTC2ROC > thermocoupleRateThreshold) {
             hysteresisValues[3] += 1;
             if (hysteresisValues[3] >= hysteresisThreshold) {
-                sendFlowStatus(12);
+                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
                 beginAbortFlow();
             }
         } else {
@@ -276,7 +276,7 @@ namespace Automation {
         if (Thermocouples::engineTC3Value > thermocoupleThreshold && Thermocouples::engineTC3ROC > thermocoupleRateThreshold) {
             hysteresisValues[4] += 1;
             if (hysteresisValues[4] >= hysteresisThreshold) {
-                sendFlowStatus(12);
+                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
                 beginAbortFlow();
             }
         } else {
@@ -290,7 +290,7 @@ namespace Automation {
         if (loadCellValue < loadCellThreshold && millis() - lastLoadCellTime < 25 && thrustEnabled) {
             hysteresisValues[5] += 1;
             if (hysteresisValues[5] >= hysteresisThreshold) {
-                sendFlowStatus(13);
+                sendFlowStatus(STATE_ABORT_THRUST);
                 beginAbortFlow();
             }
         } else {

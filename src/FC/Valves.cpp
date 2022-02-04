@@ -96,8 +96,8 @@ namespace Valves {
                       .ina = &HAL::chan9};
   
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
-                      .statePacketID = 38,
-                      .statusPacketID = 48,
+                      .statePacketID = 48,
+                      .statusPacketID = 38,
                       .pin = 255, 
                       .expanderPin = HAL::chan10Pin,
                       .voltage = 0.0,
