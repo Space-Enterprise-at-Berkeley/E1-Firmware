@@ -8,11 +8,11 @@ namespace Automation {
     Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = 165 * 1000;
-    uint32_t burnTime = 10 * 1000 * 1000; //22.0 (total burntime - 2)
+    uint32_t burnTime = 18 * 1000 * 1000;
 
-    bool igniterEnabled = false;
-    bool breakwireEnabled = false;
-    bool thrustEnabled = false;
+    bool igniterEnabled = true;
+    bool breakwireEnabled = true;
+    bool thrustEnabled = true;
 
     bool igniterTriggered = false;
 
@@ -30,7 +30,7 @@ namespace Automation {
         Automation::checkForLCAbortTask = checkForLCAbortTask;
 
         Comms::registerCallback(150, beginFlow);
-        Comms::registerCallback(151, beginAbortFlow);
+        Comms::registerCallback(151, beginManualAbortFlow);
         Comms::registerCallback(120, readLoadCell);
         Comms::registerCallback(152, handleAutoSettings);
     }
@@ -178,8 +178,10 @@ namespace Automation {
         }
     }
 
-    void beginAbortFlow(Comms::Packet packet) {
-        beginAbortFlow();
+    void beginManualAbortFlow(Comms::Packet packet) {
+        // beginAbortFlow();
+        Valves::deactivateIgniter();
+        sendFlowStatus(STATE_MANUAL_SAFE_ABORT);
     }
 
     void beginAbortFlow() {

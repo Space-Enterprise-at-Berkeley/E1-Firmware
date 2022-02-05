@@ -33,7 +33,7 @@ namespace Automation {
     void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask);
     void beginFlow(Comms::Packet packet);
     uint32_t flow();
-    void beginAbortFlow(Comms::Packet packet);
+    void beginManualAbortFlow(Comms::Packet packet);
     void beginAbortFlow();
     uint32_t abortFlow();
     uint32_t checkIgniter();
