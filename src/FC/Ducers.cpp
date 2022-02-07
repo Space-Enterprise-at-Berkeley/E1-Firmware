@@ -36,15 +36,23 @@ namespace Ducers {
 
     uint32_t ptSample() {
         // read from all 6 PTs in sequence
-        HAL::adc1.readChannelOTF(0); // switch mux back to channel 0
-        loxTankPTValue = interpolate1000(HAL::adc1.readChannelOTF(1)); // read channel 0, setup channel 1 for next read
-        fuelTankPTValue = interpolate1000(HAL::adc1.readChannelOTF(2)); // read channel 1, setup channel 2 for next read
-        loxInjectorPTValue = interpolate1000(HAL::adc1.readChannelOTF(3)); // read channel 2, setup channel 3 for next read
-        fuelInjectorPTValue = interpolate1000(HAL::adc1.readChannelOTF(0)); // read channel 3, reset mux to channel 0
+        //HAL::adc1.readChannelOTF(0); // switch mux back to channel 0
+        // loxTankPTValue = interpolate1000(HAL::adc1.readChannelOTF(1)); // read channel 0, setup channel 1 for next read
+        // fuelTankPTValue = interpolate1000(HAL::adc1.readChannelOTF(2)); // read channel 1, setup channel 2 for next read
+        // loxInjectorPTValue = interpolate1000(HAL::adc1.readChannelOTF(3)); // read channel 2, setup channel 3 for next read
+        // fuelInjectorPTValue = interpolate1000(HAL::adc1.readChannelOTF(0)); // read channel 3, reset mux to channel 0
+        loxTankPTValue = random(1000000)/1000.0;
+        fuelTankPTValue = random(1000000)/1000.0;
+        loxInjectorPTValue = random(1000000)/1000.0;
+        fuelInjectorPTValue = random(1000000)/1000.0;
 
-        HAL::adc2.readChannelOTF(4); // switch mux back to channel 4
-        pressurantPTValue = interpolate5000(HAL::adc2.readChannelOTF(5)); // read channel 4, setup channel 5 for next read
-        loxDomePTValue = interpolate1000(HAL::adc2.readChannelOTF(0)); // read channel 5, reset mux to channel 0
+        //HAL::adc2.readChannelOTF(4); // switch mux back to channel 4
+        // pressurantPTValue = interpolate5000(HAL::adc2.readChannelOTF(5)); // read channel 4, setup channel 5 for next read
+        // loxDomePTValue = interpolate1000(HAL::adc2.readChannelOTF(0)); // read channel 5, reset mux to channel 0
+        pressurantPTValue = random(5000000)/1000.0;
+        loxDomePTValue = random(1000000)/1000.0;
+
+
         // emit a packet with data
         ptPacket.len = 0;
         Comms::packetAddFloat(&ptPacket, loxTankPTValue);

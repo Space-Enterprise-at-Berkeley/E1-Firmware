@@ -29,7 +29,7 @@ namespace Automation {
     extern bool breakwireEnabled;
     extern bool igniterTriggered;
 
-    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask);
+    void initAutomation(Task *flowTask);
     void beginFlow(Comms::Packet packet);
     uint32_t flow();
     void beginAbortFlow(Comms::Packet packet);

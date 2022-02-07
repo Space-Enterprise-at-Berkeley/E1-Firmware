@@ -122,12 +122,12 @@ namespace Comms {
 
         // Send over serial, but disable if in debug mode
         #ifndef DEBUG_MODE
-        Serial.write(packet->id);
-        Serial.write(packet->len);
-        Serial.write(packet->timestamp, 4);
-        Serial.write(packet->checksum, 2);
-        Serial.write(packet->data, packet->len);
-        Serial.write('\n');
+        // Serial.write(packet->id);
+        // Serial.write(packet->len);
+        // Serial.write(packet->timestamp, 4);
+        // Serial.write(packet->checksum, 2);
+        // Serial.write(packet->data, packet->len);
+        // Serial.write('\n');
         #endif
 
         //Send over ethernet to both ground stations

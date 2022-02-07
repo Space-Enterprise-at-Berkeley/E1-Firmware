@@ -21,7 +21,7 @@ namespace Valves {
     Valve igniter = {.valveID = 1,
                       .statePacketID = 41,
                       .statusPacketID = 31,
-                      .pin = HAL::chan4Pin,
+                      .pin = 23,
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
@@ -164,14 +164,17 @@ namespace Valves {
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
-        valve->voltage = valve->ina->readBusVoltage();
-        valve->current = valve->ina->readShuntCurrent();
+        // valve->voltage = valve->ina->readBusVoltage();
+        // valve->current = valve->ina->readShuntCurrent();
+        valve->voltage = random(12000)/1000.0;
+        valve->current = random(500)/1000.0;
+
         
         Comms::Packet tmp = {.id = valve->statusPacketID};
         //IDS: Arming valve, igniter, lox main valve, fuel main valve
-        if (valve->current > valve->ocThreshold) {
-            closeValve(valve, 1);
-        }
+        // if (valve->current > valve->ocThreshold) {
+        //     closeValve(valve, 1);
+        // }
 
         Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->current);
@@ -230,6 +233,8 @@ namespace Valves {
         Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
         Comms::registerCallback(136, loxTankMidHtrPacketHandler);
         Comms::registerCallback(137, loxTankTopHtrPacketHandler);
+
+        pinMode(23, OUTPUT);
     }
 
 };

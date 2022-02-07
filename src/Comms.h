@@ -23,7 +23,7 @@ namespace Comms {
     const IPAddress ip(10, 0, 0, IP_ADDRESS_END);
     const IPAddress FC(10, 0, 0, 42);
     const IPAddress groundStation1(10, 0, 0, 69);
-    const IPAddress groundStation2(10, 0, 0, 70);
+    const IPAddress groundStation2(10, 0, 0, 100);
     const IPAddress DAQ1(10, 0, 0, 11);
 
     struct Packet {

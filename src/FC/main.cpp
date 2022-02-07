@@ -14,9 +14,6 @@
 Task taskTable[] = {
     //automation
     {Automation::flow, 0, false},
-    {Automation::abortFlow, 0, false},
-    {Automation::checkIgniter, 0},
-    {Automation::checkForAbort, 0, false},
 
     // ducers
     {Ducers::ptSample, 0},
@@ -51,11 +48,9 @@ Task taskTable[] = {
 int main() {
     // hardware setup
     Serial.begin(115200);
-    #ifdef DEBUG_MODE
-    while(!Serial) {} // wait for user to open serial port (debugging only)
-    #endif
-    Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3]);
-    HAL::initHAL();
+
+    Automation::initAutomation(&taskTable[0]);
+    // HAL::initHAL();
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
@@ -67,6 +62,7 @@ int main() {
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
+                Serial.println(i);
             }
         }
         Comms::processWaitingPackets();

@@ -25,8 +25,11 @@ namespace Power {
 
     uint32_t battSample() {
         // Reads current, voltage, power values for battery supply
-        battVoltage = HAL::supplyBatt.readBusVoltage();
-        battCurrent = HAL::supplyBatt.readShuntCurrent();
+        // battVoltage = HAL::supplyBatt.readBusVoltage();
+        // battCurrent = HAL::supplyBatt.readShuntCurrent();
+        battVoltage = random(23500, 24500)/1000.0;
+        battCurrent = random(3000)/1000.0;
+
         battPower = battVoltage * battCurrent;
 
         battPacket.len = 0;
@@ -39,8 +42,11 @@ namespace Power {
     }
 
     uint32_t supply12Sample() {
-        supply12Voltage = HAL::supply12v.readBusVoltage();
-        supply12Current = HAL::supply12v.readShuntCurrent();
+        // supply12Voltage = HAL::supply12v.readBusVoltage();
+        // supply12Current = HAL::supply12v.readShuntCurrent();
+        supply12Voltage = random(11500, 12500)/1000.0;
+        supply12Current = random(1000)/1000.0;
+
         supply12Power = supply12Voltage * supply12Current;
 
         supply12Packet.len = 0;
@@ -53,8 +59,11 @@ namespace Power {
     }
 
     uint32_t supply8Sample() {
-        supply8Voltage = HAL::supply8v.readBusVoltage();
-        supply8Current = HAL::supply8v.readShuntCurrent();
+        // supply8Voltage = HAL::supply8v.readBusVoltage();
+        // supply8Current = HAL::supply8v.readShuntCurrent();
+        supply8Voltage = random(8500, 9500)/1000.0;
+        supply8Current = random(1000)/1000.0;
+
         supply8Power = supply8Voltage * supply8Current;
 
         supply8Packet.len = 0;

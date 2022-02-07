@@ -15,14 +15,9 @@ namespace Automation {
 
     float loadCellValue;
 
-    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForAbortTask) {
+    void initAutomation(Task *flowTask) {
         Automation::flowTask = flowTask;
-        Automation::abortFlowTask = abortFlowTask;
-        Automation::checkForAbortTask = checkForAbortTask;
-
         Comms::registerCallback(150, beginFlow);
-        Comms::registerCallback(151, beginAbortFlow);
-        Comms::registerCallback(120, readLoadCell);
     }
 
     Comms::Packet flowPacket = {.id = 50};
@@ -50,75 +45,12 @@ namespace Automation {
         DEBUG("\n");
         switch(step) {
             case 0: // step 0 (actuate igniter)
-                if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
-                    Valves::activateIgniter();
-                    sendFlowStatus(0);
-                    step++;
-                    return 2000 * 1000; // delay 2s
-                } else {
-                    beginAbortFlow();
-                    return 0;
-                }
-            case 1: // step 1 
-                // check igniter current trigger and break wire
-                if ((igniterTriggered || !igniterEnabled)
-                        && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
-                    Valves::deactivateIgniter();
-                    Valves::openArmValve();
-                    sendFlowStatus(1);
-                    step++;
-                    return 500 * 1000; // delay 0.5s
-                } else {
-                    beginAbortFlow();
-                    return 0;
-                }
-            case 2: // step 2
-                // check arm valve current, main valve continuity else abort
-                if (Valves::armValve.current > currentThreshold) {
-                    Valves::openLoxMainValve();
-                    sendFlowStatus(2);
-                    step++;
-                    return loxLead * 1000000; // delay by lox lead
-                } else {
-                    beginAbortFlow();
-                    return 0;
-                }
-            case 3: // step 3
-                // check arm valve current, loxMain current, fuelMain continuity
-                if (Valves::armValve.current > currentThreshold
-                        && Valves::loxMainValve.current > currentThreshold) {
-                    Valves::openFuelMainValve();
-                    //begin checking thermocouple values
-                    // checkForAbortTask->enabled = true;
-                    sendFlowStatus(3);
-                    checkForAbortTask->enabled = true;
-                    step++;
-                    return (burnTime / 2) * 1000000; // delay by burn time
-                } else {
-                    beginAbortFlow();
-                    return 0;
-                }
-            case 4:
-                sendFlowStatus(4);
+                Valves::activateIgniter();
+                sendFlowStatus(0);
                 step++;
-                return (burnTime / 2) * 1000000;
-            case 5: // step 5 (close fuel)
-                Valves::closeFuelMainValve();
-                checkForAbortTask->enabled = false;
-                sendFlowStatus(5);
-                step++;
-                return 200 * 1000; // delay by burn time
-            case 6: // step 6 (close lox)
-                Valves::closeLoxMainValve();
-                sendFlowStatus(6);
-                step++;
-                return 500 * 1000; // delay by burn time
-            case 7: // step 7 (close arm valve)
-                Valves::closeArmValve();
-                sendFlowStatus(7);
-                step++;
-                return 0; // delay by burn time
+                return 2000 * 1000; // delay 2s
             default: // end
+                Valves::deactivateIgniter();
                 flowTask->enabled = false;
                 sendFlowStatus(8);
                 return 0;
