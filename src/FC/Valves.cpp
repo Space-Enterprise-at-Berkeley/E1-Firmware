@@ -4,7 +4,7 @@ namespace Valves {
     // state of each valve is stored in each bit
     // bit 0 is armValve, bit 1 is igniter, etc
     // the order of bits is the same as the order of valves on the E-1 Design spreadsheet
-    uint8_t valveStates = 0x00; //TODO - change to uint16_t, since there are more than 8 power channels on FC
+    uint8_t valveStates = 0x00;
 
     // info for each individual valve
     Valve armValve = {.valveID = 0,
@@ -51,7 +51,7 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan3};
 
-    Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used. 
+    Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
                       .statusPacketID = 34,
                       .pin = HAL::chan5Pin,
@@ -94,17 +94,46 @@ namespace Valves {
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
                       .ina = &HAL::chan9};
-  
+
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
                       .statusPacketID = 38,
-                      .pin = 255, 
+                      .pin = 255,
                       .expanderPin = HAL::chan10Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 100 * 1000,
                       .ina = &HAL::chan10};
+
+    //TODO fill in with actual GEM pin values
+    Valve loxGemValve = {.valveID = 8,
+                      .statePacketID = 48,
+                      .statusPacketID = 38,
+                      .pin = 255, // dont use pin
+                      .expanderPin = HAL::chan11Pin,
+                      .voltage = 0.0,
+                      .current = 0.0,
+                      .ocThreshold = 3.0,
+                      .period = 50 * 1000,
+                      .ina = &HAL::chan11};
+
+    Valve fuelGemValve = {.valveID = 9,
+                      .statePacketID = 49,
+                      .statusPacketID = 39,
+                      .pin = 255, // dont use pin
+                      .expanderPin = HAL::chan9Pin,
+                      .voltage = 0.0,
+                      .current = 0.0,
+                      .ocThreshold = 3.0,
+                      .period = 50 * 1000,
+                      .ina = &HAL::chan9};
+
+    Task *_toggleFuelGemValve;
+    Task *_toggleLoxGemValve;
+
+    bool fuelGemOpen = false;
+    bool loxGemOpen = false;
 
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
@@ -161,6 +190,14 @@ namespace Valves {
     void openFuelMainValve() { openValve(&fuelMainValve); }
     void closeFuelMainValve(uint8_t OCShutoff = 0) { closeValve(&fuelMainValve, OCShutoff); }
     void fuelMainValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openFuelMainValve() : closeFuelMainValve(); }
+
+    void openFuelGemValve() { openValve(&fuelGemValve); }
+    void closeFuelGemValve(uint8_t OCShutoff = 0) { closeValve(&fuelGemValve, OCShutoff); }
+    void fuelGemValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openFuelGemValve() : closeFuelGemValve(); }
+
+    void openLoxGemValve() { openValve(&loxGemValve); }
+    void closeLoxGemValve(uint8_t OCShutoff = 0) { closeValve(&loxGemValve, OCShutoff); }
+    void loxGemValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openLoxGemValve() : closeLoxGemValve(); }
 
     void activateLoxTankBottomHtr() { openValve(&loxTankBottomHtr); }
     void deactivateLoxTankBottomHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankBottomHtr, OCShutoff); }
@@ -239,19 +276,57 @@ namespace Valves {
         return igniterEnableRelay.period;
     }
 
+    void toggleFuelGemValve(Comms::Packet packet) {
+        _toggleFuelGemValve->enabled = (bool) packet.data[0];
+    }
+
+    void toggleLoxGemValve(Comms::Packet packet) {
+        _toggleLoxGemValve->enabled = (bool) packet.data[0];
+    }
+
+    uint32_t toggleFuelGemValveTask() {
+        if (fuelGemOpen) {
+            closeFuelGemValve();
+            fuelGemOpen = false;
+        } else {
+            openFuelGemValve();
+            fuelGemOpen = true;
+        }
+        return 1e6; //toggle every second
+    }
+
+    uint32_t toggleLoxGemValveTask() {
+        if (loxGemOpen) {
+            closeLoxGemValve();
+            loxGemOpen = false;
+        } else {
+            openLoxGemValve();
+            loxGemOpen = true;
+        }
+        return 1e6; //toggle every second
+    }
+
     // init function for valves namespace
-    void initValves() {
+    void initValves(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask) {
         // link the right packet IDs to the valve open/close handler functions
         Comms::registerCallback(130, armValvePacketHandler);
         Comms::registerCallback(131, igniterPacketHandler);
         Comms::registerCallback(132, loxMainValvePacketHandler);
         Comms::registerCallback(133, fuelMainValvePacketHandler);
+        Comms::registerCallback(124, fuelGemValvePacketHandler);
+        Comms::registerCallback(125, loxGemValvePacketHandler);
 
         Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
         Comms::registerCallback(136, loxTankMidHtrPacketHandler);
         Comms::registerCallback(137, loxTankTopHtrPacketHandler);
 
         Comms::registerCallback(138, igniterEnableRelayPacketHandler);
+
+        Comms::registerCallback(128, toggleLoxGemValve);
+        Comms::registerCallback(129, toggleFuelGemValve);
+
+        _toggleFuelGemValve = toggleFuelGemValveTask;
+        _toggleLoxGemValve = toggleLoxGemValveTask;
     }
 
 };
