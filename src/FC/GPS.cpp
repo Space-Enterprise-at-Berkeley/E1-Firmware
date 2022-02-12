@@ -7,12 +7,12 @@ namespace GPS {
     SFE_UBLOX_GNSS myGNSS;
     uint32_t gpsUpdatePeriod = 40 * 1000;
 
-    Comms::Packet latLongPacket = {.id = 11};
+    // Comms::Packet latLongPacket = {.id = 11};
     long latitude = 0;
     long longitude = 0;
 
 
-    Comms::Packet auxPacket = {.id = 12};
+    // Comms::Packet auxPacket = {.id = 12};
     long altitude = 0;
     byte SIV = 0;
 
@@ -21,8 +21,6 @@ namespace GPS {
 
         Serial.begin(9600);
         Serial.println("GPS setup");
-        
-
 
 
         // Version 1 - NMEA 
@@ -40,44 +38,46 @@ namespace GPS {
         // myGNSS.setHighPrecisionMode(true);
 
         // Version 2 - UBX
-        myGNSS.setI2COutput(COM_TYPE_UBX);   //Set the I2C port to output UBX only (turn off NMEA noise)
-        myGNSS.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
+        // myGNSS.setI2COutput(COM_TYPE_UBX);   //Set the I2C port to output UBX only (turn off NMEA noise)
+        // myGNSS.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
         
     }
 
     void loop() {
-        NMEA_GGA_data_t data; 
-        uint8_t result = myGNSS.getLatestNMEAGPGGA(&data);
 
-        //Get Longtitude
-        latitude = myGNSS.getLatitude();
-        Serial.print(F("Lat: "));
-        Serial.print(latitude);
+        Serial.println(123);
+        // NMEA_GGA_data_t data; 
+        // uint8_t result = myGNSS.getLatestNMEAGPGGA(&data);
 
-        //Get Latitude
-        longitude = myGNSS.getLongitude();
-        Serial.print(F(" Long: "));
-        Serial.print(longitude);
-        Serial.print(F(" (degrees * 10^-7)"));
+        // //Get Longtitude
+        // latitude = myGNSS.getLatitude();
+        // Serial.print(F("Lat: "));
+        // Serial.print(latitude);
 
-        Comms::packetAddFloat(&latLongPacket, latitude);
-        Comms::packetAddFloat(&latLongPacket, longitude);
-        Comms::emitPacket(&latLongPacket);
+        // //Get Latitude
+        // longitude = myGNSS.getLongitude();
+        // Serial.print(F(" Long: "));
+        // Serial.print(longitude);
+        // Serial.print(F(" (degrees * 10^-7)"));
 
-        //Get Altitude
-        altitude = myGNSS.getAltitude();
-        Serial.print(F(" Alt: "));
-        Serial.print(altitude);
-        Serial.print(F(" (mm)"));
+        // Comms::packetAddFloat(&latLongPacket, latitude);
+        // Comms::packetAddFloat(&latLongPacket, longitude);
+        // Comms::emitPacket(&latLongPacket);
 
-        //Get SIV
-        SIV = myGNSS.getSIV();
-        Serial.print(F(" SIV: "));
-        Serial.print(SIV);
+        // //Get Altitude
+        // altitude = myGNSS.getAltitude();
+        // Serial.print(F(" Alt: "));
+        // Serial.print(altitude);
+        // Serial.print(F(" (mm)"));
 
-        Comms::packetAddFloat(&auxPacket, altitude);
-        Comms::packetAddFloat(&auxPacket, SIV);
-        Comms::emitPacket(&auxPacket);
+        // //Get SIV
+        // SIV = myGNSS.getSIV();
+        // Serial.print(F(" SIV: "));
+        // Serial.print(SIV);
+
+        // Comms::packetAddFloat(&auxPacket, altitude);
+        // Comms::packetAddFloat(&auxPacket, SIV);
+        // Comms::emitPacket(&auxPacket);
         
         // return gpsUpdatePeriod;
 
