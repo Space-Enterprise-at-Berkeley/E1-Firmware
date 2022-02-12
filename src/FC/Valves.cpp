@@ -4,7 +4,7 @@ namespace Valves {
     // state of each valve is stored in each bit
     // bit 0 is armValve, bit 1 is igniter, etc
     // the order of bits is the same as the order of valves on the E-1 Design spreadsheet
-    uint8_t valveStates = 0x00;
+    uint8_t valveStates = 0x00; //TODO - change to uint16_t, since there are more than 8 power channels on FC
 
     // info for each individual valve
     Valve armValve = {.valveID = 0,
@@ -51,7 +51,7 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan3};
 
-    Valve breakWire = {.valveID = 255, // break wire can't be actuated
+    Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used. 
                       .statePacketID = 0,
                       .statusPacketID = 34,
                       .pin = HAL::chan5Pin,
@@ -62,7 +62,7 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan5};
     
-    Valve loxTankBottomHtr = {.valveID = 5, // this valve is actuated from the IO Expander
+    Valve loxTankBottomHtr = {.valveID = 5, // actuated from the IO Expander
                       .statePacketID = 45,
                       .statusPacketID = 35,
                       .pin = 255, // dont use pin
@@ -73,7 +73,7 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan7};
 
-    Valve loxTankMidHtr = {.valveID = 6,
+    Valve loxTankMidHtr = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
                       .statusPacketID = 36,
                       .pin = 255, // dont use pin
@@ -84,7 +84,7 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan8};
 
-    Valve loxTankTopHtr = {.valveID = 7,
+    Valve loxTankTopHtr = {.valveID = 7, // actuated from the IO Expander
                       .statePacketID = 47,
                       .statusPacketID = 37,
                       .pin = 255, // dont use pin
@@ -94,6 +94,17 @@ namespace Valves {
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
                       .ina = &HAL::chan9};
+  
+    Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
+                      .statePacketID = 48,
+                      .statusPacketID = 38,
+                      .pin = 255, 
+                      .expanderPin = HAL::chan10Pin,
+                      .voltage = 0.0,
+                      .current = 0.0,
+                      .ocThreshold = 3.0,
+                      .period = 100 * 1000,
+                      .ina = &HAL::chan10};
 
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
@@ -163,6 +174,10 @@ namespace Valves {
     void deactivateLoxTankTopHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankTopHtr, OCShutoff); }
     void loxTankTopHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankTopHtr() : deactivateLoxTankTopHtr(); }
 
+    void enableIgniter() { openValve(&igniterEnableRelay); }
+    void disableIgniter(uint8_t OCShutoff = 0) { closeValve(&igniterEnableRelay, OCShutoff); }
+    void igniterEnableRelayPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? enableIgniter() : disableIgniter(); }
+
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
         valve->voltage = valve->ina->readBusVoltage();
@@ -219,6 +234,11 @@ namespace Valves {
         return loxTankTopHtr.period;
     }
 
+    uint32_t igniterEnableRelaySample() {
+        sampleValve(&igniterEnableRelay);
+        return igniterEnableRelay.period;
+    }
+
     // init function for valves namespace
     void initValves() {
         // link the right packet IDs to the valve open/close handler functions
@@ -230,6 +250,8 @@ namespace Valves {
         Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
         Comms::registerCallback(136, loxTankMidHtrPacketHandler);
         Comms::registerCallback(137, loxTankTopHtrPacketHandler);
+
+        Comms::registerCallback(138, igniterEnableRelayPacketHandler);
     }
 
 };

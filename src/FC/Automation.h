@@ -33,7 +33,7 @@ namespace Automation {
     void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask);
     void beginFlow(Comms::Packet packet);
     uint32_t flow();
-    void beginAbortFlow(Comms::Packet packet);
+    void beginManualAbortFlow(Comms::Packet packet);
     void beginAbortFlow();
     uint32_t abortFlow();
     uint32_t checkIgniter();
@@ -43,3 +43,23 @@ namespace Automation {
 
     void handleAutoSettings(Comms::Packet recv);
 };
+
+#define STATE_ACTIVATE_IGNITER 0
+#define STATE_DEACTIVATE_DISABLE_IGNITER 18
+#define STATE_OPEN_ARM_VALVE 1
+#define STATE_OPEN_LOX_VALVE 2
+#define STATE_OPEN_FUEL_VALVE 3
+#define STATE_BEGIN_THRUST_CHECK 4
+#define STATE_CLOSE_FUEL_VALVE 5
+#define STATE_CLOSE_LOX_VALVE 6
+#define STATE_CLOSE_ARM_VALVE 7
+#define STATE_NOMINAL_END_FLOW 8
+#define STATE_ABORT_END_FLOW 10
+#define STATE_ABORT_ENGINE_TEMP 11
+#define STATE_ABORT_ENGINE_TEMP_ROC 12
+#define STATE_ABORT_THRUST 13
+#define STATE_ABORT_BREAKWIRE_BROKEN 14
+#define STATE_ABORT_BREAKWIRE_UNBROKEN 15
+#define STATE_ABORT_ARM_VALVE_LOW_CURRENT 16
+#define STATE_ABORT_ARM_OR_LOX_VALVE_LOW_CURRENT 17
+#define STATE_MANUAL_SAFE_ABORT 19
