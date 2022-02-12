@@ -12,6 +12,18 @@ namespace ADC {
         return tmp / 51.7;
     }
 
+    uint32_t fastADCSample() {
+        Comms::Packet tmp = {.id = 121};
+
+        HAL::adc.readChannelOTF(4);
+        Comms::packetAddFloat(&tmp, HAL::adc.readChannelOTF(5));
+        Comms::packetAddFloat(&tmp, HAL::adc.readChannelOTF(6));
+
+        Comms::emitPacket(&tmp);
+
+        return 1 * 1000;
+    }
+
     uint32_t adcSample() {
         // read from all 8 ADC channels in sequence
         HAL::adc.readChannelOTF(0); // switch mux back to channel 0

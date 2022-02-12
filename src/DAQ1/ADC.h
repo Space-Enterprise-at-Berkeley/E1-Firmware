@@ -10,5 +10,6 @@ namespace ADC {
     extern uint32_t adcUpdatePeriod;
     
     void initADC();
+    uint32_t fastADCSample();
     uint32_t adcSample();
 };
