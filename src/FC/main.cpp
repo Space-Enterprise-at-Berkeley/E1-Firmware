@@ -1,7 +1,7 @@
 #include <Common.h>
 #include <Comms.h>
 #include "HAL.h"
-
+#include "BlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"

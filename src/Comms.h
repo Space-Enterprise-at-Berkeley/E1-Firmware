@@ -6,6 +6,7 @@
 #include <NativeEthernet.h>
 #include <NativeEthernetUdp.h>
 #include <map>
+#include <vector>
 
 namespace Comms {
     //https://github.com/sstaub/TeensyID/issues/3
@@ -84,4 +85,11 @@ namespace Comms {
      * @param _ unused
      */
     void sendFirmwareVersionPacket(Packet unused);
+
+    /**
+     * @brief Each time a packet is emmited, the function passed in will be called.
+     * 
+     * @param func Function that recieves a packet each time one is emitted.
+     */
+    void registerPacketSubscriber(commFunction func);
 };
