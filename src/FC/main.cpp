@@ -11,21 +11,13 @@
 #include <Wire.h>
 #include <SPI.h>
 
-//Tasks that are passed into namespaces
-Task flowTask = {Automation::flow, 0, false};
-Task abortFlowTask = {Automation::abortFlow, 0, false};
-Task checkForTCAbortTask = {Automation::checkForTCAbort, 0, false};
-Task checkForLCAbortTask = {Automation::checkForLCAbort, 0, false};
-Task toggleLoxGemValveTask = {Valves::toggleLoxGemValveTask, 0, false};
-Task toggleFuelGemValveTask = {Valves::toggleFuelGemValveTask, 0, false};
-
 Task taskTable[] = {
     //automation
-    flowTask,
-    abortFlowTask,
+    {Automation::flow, 0, false},
+    {Automation::abortFlow, 0, false},
     {Automation::checkIgniter, 0},
-    checkForTCAbortTask,
-    checkForLCAbortTask,
+    {Automation::checkForTCAbort, 0, false},
+    {Automation::checkForLCAbort, 0, false},
     {Automation::autoventFuelGemValveTask, 0},
     {Automation::autoventLoxGemValveTask, 0},
 
@@ -53,8 +45,8 @@ Task taskTable[] = {
     {Valves::loxGemValveSample, 0},
     {Valves::fuelGemValveSample, 0},
     {Valves::breakWireSample, 0},
-    toggleFuelGemValveTask,
-    toggleLoxGemValveTask,
+    {Valves::toggleLoxGemValveTask, 0, false},
+    {Valves::toggleFuelGemValveTask, 0, false},
     {Valves::igniterEnableRelaySample, 0},
 
     // heaters
@@ -71,12 +63,12 @@ int main() {
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
-    Automation::initAutomation(&flowTask, &abortFlowTask, &checkForTCAbortTask, &checkForLCAbortTask);
+    Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3], &taskTable[4]);
     HAL::initHAL();
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
-    Valves::initValves(&toggleLoxGemValveTask, &toggleFuelGemValveTask);
+    Valves::initValves(&taskTable[23], &taskTable[24]);
     Thermocouples::initThermocouples();
 
     while(1) {

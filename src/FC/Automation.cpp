@@ -10,9 +10,9 @@ namespace Automation {
     uint32_t loxLead = 165 * 1000;
     uint32_t burnTime = 25 * 1000 * 1000;
 
-    bool igniterEnabled = true;
-    bool breakwireEnabled = true;
-    bool thrustEnabled = true;
+    bool igniterEnabled = false;
+    bool breakwireEnabled = false;
+    bool thrustEnabled = false;
 
     bool igniterTriggered = false;
 
