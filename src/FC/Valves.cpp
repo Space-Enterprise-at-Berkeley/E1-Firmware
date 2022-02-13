@@ -287,33 +287,49 @@ namespace Valves {
     }
 
     void toggleFuelGemValve(Comms::Packet packet) {
-        _toggleFuelGemValve->enabled = (bool) packet.data[0];
+        bool toggle = packet.data[0];
+
+        if (toggle) {
+            _toggleFuelGemValve->enabled = true;
+        } else {
+            _toggleFuelGemValve->enabled = false;
+            closeFuelGemValve();
+        }
     }
 
     void toggleLoxGemValve(Comms::Packet packet) {
-        _toggleLoxGemValve->enabled = (bool) packet.data[0];
+        bool toggle = packet.data[0];
+
+        if (toggle) {
+            _toggleLoxGemValve->enabled = true;
+        } else {
+            _toggleLoxGemValve->enabled = false;
+            closeLoxGemValve();
+        }
     }
 
     uint32_t toggleFuelGemValveTask() {
         if (fuelGemOpen) {
             closeFuelGemValve();
             fuelGemOpen = false;
+            return 5e6;
         } else {
             openFuelGemValve();
             fuelGemOpen = true;
+            return 1e6; //toggle every second
         }
-        return 1e6; //toggle every second
     }
 
     uint32_t toggleLoxGemValveTask() {
         if (loxGemOpen) {
             closeLoxGemValve();
             loxGemOpen = false;
+            return 5e6;
         } else {
             openLoxGemValve();
             loxGemOpen = true;
+            return 1e6; //toggle every second
         }
-        return 1e6; //toggle every second
     }
 
     // init function for valves namespace
@@ -323,8 +339,8 @@ namespace Valves {
         Comms::registerCallback(131, igniterPacketHandler);
         Comms::registerCallback(132, loxMainValvePacketHandler);
         Comms::registerCallback(133, fuelMainValvePacketHandler);
-        Comms::registerCallback(126, fuelGemValvePacketHandler);
-        Comms::registerCallback(127, loxGemValvePacketHandler);
+        Comms::registerCallback(126, loxGemValvePacketHandler);
+        Comms::registerCallback(127, fuelGemValvePacketHandler);
 
         Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
         Comms::registerCallback(136, loxTankMidHtrPacketHandler);
@@ -334,9 +350,9 @@ namespace Valves {
 
         Comms::registerCallback(128, toggleLoxGemValve);
         Comms::registerCallback(129, toggleFuelGemValve);
-
-        _toggleFuelGemValve = toggleFuelGemValveTask;
+       
         _toggleLoxGemValve = toggleLoxGemValveTask;
+        _toggleFuelGemValve = toggleFuelGemValveTask;
     }
 
 };
