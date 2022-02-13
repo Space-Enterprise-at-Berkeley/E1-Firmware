@@ -316,12 +316,17 @@ namespace Automation {
         return 12500; // load cells are sampled at 80 hz
     }
 
+    Comms::Packet autoventPacket = {.id = 51};
     uint32_t autoventFuelGemValveTask() {
         float fuelPresure = Ducers::fuelTankPTValue;
 
         if (fuelPresure > autoVentUpperThreshold) {
             Valves::openFuelGemValve();
             fuelGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 1;
+            Comms::emitPacket(&autoventPacket);
         } else if (fuelPresure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
             Valves::closeFuelGemValve();
             fuelGemValveAbovePressure = false;
@@ -336,6 +341,10 @@ namespace Automation {
         if (loxPressure > autoVentUpperThreshold) {
             Valves::openLoxGemValve();
             loxGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 0;
+            Comms::emitPacket(&autoventPacket);
         } else if (loxPressure < autoVentLowerThreshold && loxGemValveAbovePressure) {
             Valves::closeLoxGemValve();
             loxGemValveAbovePressure = false;

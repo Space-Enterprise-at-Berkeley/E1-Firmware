@@ -4,7 +4,7 @@ namespace Valves {
     // state of each valve is stored in each bit
     // bit 0 is armValve, bit 1 is igniter, etc
     // the order of bits is the same as the order of valves on the E-1 Design spreadsheet
-    uint8_t valveStates = 0x00;
+    uint16_t valveStates = 0x00;
 
     // info for each individual valve
     Valve armValve = {.valveID = 0,
@@ -108,8 +108,8 @@ namespace Valves {
 
     //TODO fill in with actual GEM pin values
     Valve loxGemValve = {.valveID = 8,
-                      .statePacketID = 48,
-                      .statusPacketID = 38,
+                      .statePacketID = 52,
+                      .statusPacketID = 28,
                       .pin = 255, // dont use pin
                       .expanderPin = HAL::chan11Pin,
                       .voltage = 0.0,
@@ -119,8 +119,8 @@ namespace Valves {
                       .ina = &HAL::chan11};
 
     Valve fuelGemValve = {.valveID = 9,
-                      .statePacketID = 49,
-                      .statusPacketID = 39,
+                      .statePacketID = 53,
+                      .statusPacketID = 29,
                       .pin = 255, // dont use pin
                       .expanderPin = HAL::chan9Pin,
                       .voltage = 0.0,
@@ -137,7 +137,7 @@ namespace Valves {
 
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
-        Comms::packetAddUint8(&tmp, valveStates);
+        Comms::packetAddUint16(&tmp, valveStates);
         Comms::emitPacket(&tmp);
     }
 
@@ -251,6 +251,16 @@ namespace Valves {
         return fuelMainValve.period;
     }
 
+    uint32_t loxGemValveSample() {
+        sampleValve(&loxGemValve);
+        return fuelGemValve.period;
+    }
+
+    uint32_t fuelGemValveSample() {
+        sampleValve(&fuelGemValve);
+        return loxGemValve.period;
+    }
+
     uint32_t breakWireSample() {
         sampleValve(&breakWire);
         return breakWire.period;
@@ -313,8 +323,8 @@ namespace Valves {
         Comms::registerCallback(131, igniterPacketHandler);
         Comms::registerCallback(132, loxMainValvePacketHandler);
         Comms::registerCallback(133, fuelMainValvePacketHandler);
-        Comms::registerCallback(124, fuelGemValvePacketHandler);
-        Comms::registerCallback(125, loxGemValvePacketHandler);
+        Comms::registerCallback(126, fuelGemValvePacketHandler);
+        Comms::registerCallback(127, loxGemValvePacketHandler);
 
         Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
         Comms::registerCallback(136, loxTankMidHtrPacketHandler);
