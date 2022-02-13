@@ -72,6 +72,8 @@ namespace Valves {
     uint32_t igniterSample();
     uint32_t loxMainValveSample();
     uint32_t fuelMainValveSample();
+    uint32_t loxGemValveSample();
+    uint32_t fuelGemValveSample();
     uint32_t breakWireSample();
     uint32_t loxTankBottomHtrSample();
     uint32_t loxTankMidHtrSample();

@@ -50,6 +50,8 @@ Task taskTable[] = {
     {Valves::igniterSample, 0},
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
+    {Valves::loxGemValveSample, 0},
+    {Valves::fuelGemValveSample, 0},
     {Valves::breakWireSample, 0},
     toggleFuelGemValveTask,
     toggleLoxGemValveTask,
