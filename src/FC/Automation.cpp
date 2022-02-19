@@ -184,8 +184,10 @@ namespace Automation {
         sendFlowStatus(STATE_MANUAL_SAFE_ABORT);
     }
 
+    uint8_t abortStep;
     void beginAbortFlow() {
         if(!abortFlowTask->enabled) {
+            abortStep = 0;
             flowTask->enabled = false;
             abortFlowTask->nexttime = micros() + 1500; // 1500 is a dirty hack to make sure flow status gets recorded. Ask @andy
             abortFlowTask->enabled = true;
@@ -195,13 +197,22 @@ namespace Automation {
     }
 
     uint32_t abortFlow() {
-        Valves::closeFuelMainValve();
-        Valves::closeLoxMainValve();
-        Valves::closeArmValve();
-        Valves::deactivateIgniter();
-        abortFlowTask->enabled = false;
-        sendFlowStatus(STATE_ABORT_END_FLOW);
-        return 0;
+        switch(abortStep) {
+            case 0:
+                Valves::closeFuelMainValve();
+                Valves::closeLoxMainValve();
+                Valves::deactivateIgniter();
+                abortStep++;
+                return 2 * 1000 * 1000; //delay by 2 seconds for valves to close
+            case 1:
+                Valves::closeArmValve();
+                abortStep++;
+                return 1 * 1000 * 1000; //delay by 1 second for arming valve to close
+            default:
+                abortFlowTask->enabled = false;
+                sendFlowStatus(STATE_ABORT_END_FLOW);
+                return 0;
+        }
     }
 
     uint32_t checkIgniter() {
