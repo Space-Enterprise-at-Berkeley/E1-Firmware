@@ -10,11 +10,14 @@ namespace Automation {
     uint32_t loxLead = 165 * 1000;
     uint32_t burnTime = 25 * 1000 * 1000;
 
-    bool igniterEnabled = true;
-    bool breakwireEnabled = true;
-    bool thrustEnabled = true;
+    bool igniterEnabled = false;
+    bool breakwireEnabled = false;
+    bool thrustEnabled = false;
 
     bool igniterTriggered = false;
+
+    bool loxGemValveAbovePressure = false;
+    bool fuelGemValveAbovePressure = false;
 
     float loadCellValue;
     uint32_t lastLoadCellTime; // last time that load cell value was received
@@ -300,5 +303,42 @@ namespace Automation {
         }
 
         return 12500; // load cells are sampled at 80 hz
+    }
+
+    Comms::Packet autoventPacket = {.id = 51};
+    uint32_t autoventFuelGemValveTask() {
+        float fuelPresure = Ducers::fuelTankPTValue;
+
+        if (fuelPresure > autoVentUpperThreshold) {
+            Valves::openFuelGemValve();
+            fuelGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 1;
+            Comms::emitPacket(&autoventPacket);
+        } else if (fuelPresure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
+            Valves::closeFuelGemValve();
+            fuelGemValveAbovePressure = false;
+        }
+
+        return 0.25 * 1e6;
+    }
+
+    uint32_t autoventLoxGemValveTask() {
+        float loxPressure = Ducers::loxTankPTValue;
+
+        if (loxPressure > autoVentUpperThreshold) {
+            Valves::openLoxGemValve();
+            loxGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 0;
+            Comms::emitPacket(&autoventPacket);
+        } else if (loxPressure < autoVentLowerThreshold && loxGemValveAbovePressure) {
+            Valves::closeLoxGemValve();
+            loxGemValveAbovePressure = false;
+        }
+
+        return 0.25 * 1e6;
     }
 };

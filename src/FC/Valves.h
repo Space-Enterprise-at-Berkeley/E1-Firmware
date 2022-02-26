@@ -34,8 +34,8 @@ namespace Valves {
     extern Valve loxTankMidHtr;
     extern Valve loxTankTopHtr;
     extern Valve igniterEnableRelay;
-    
-    void initValves();
+
+    void initValves(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask);
 
     void openArmValve();
     void closeArmValve(uint8_t OCShutoff = 0);
@@ -48,6 +48,12 @@ namespace Valves {
 
     void openFuelMainValve();
     void closeFuelMainValve(uint8_t OCShutoff = 0);
+
+    void openFuelGemValve();
+    void closeFuelGemValve(uint8_t OCShutoff = 0);
+
+    void openLoxGemValve();
+    void closeLoxGemValve(uint8_t OCShutoff = 0);
 
     void activateLoxTankBottomHtr();
     void deavtivateLoxTankBottomHtr(uint8_t OCShutoff = 0);
@@ -66,9 +72,13 @@ namespace Valves {
     uint32_t igniterSample();
     uint32_t loxMainValveSample();
     uint32_t fuelMainValveSample();
+    uint32_t loxGemValveSample();
+    uint32_t fuelGemValveSample();
     uint32_t breakWireSample();
     uint32_t loxTankBottomHtrSample();
     uint32_t loxTankMidHtrSample();
     uint32_t loxTankTopHtrSample();
+    uint32_t toggleFuelGemValveTask();
+    uint32_t toggleLoxGemValveTask();
     uint32_t igniterEnableRelaySample();
 };

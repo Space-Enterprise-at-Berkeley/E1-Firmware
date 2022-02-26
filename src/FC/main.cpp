@@ -18,6 +18,8 @@ Task taskTable[] = {
     {Automation::checkIgniter, 0},
     {Automation::checkForTCAbort, 0, false},
     {Automation::checkForLCAbort, 0, false},
+    {Automation::autoventFuelGemValveTask, 0},
+    {Automation::autoventLoxGemValveTask, 0},
 
     // ducers
     {Ducers::ptSample, 0},
@@ -40,7 +42,11 @@ Task taskTable[] = {
     {Valves::igniterSample, 0},
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
+    {Valves::loxGemValveSample, 0},
+    {Valves::fuelGemValveSample, 0},
     {Valves::breakWireSample, 0},
+    {Valves::toggleLoxGemValveTask, 0, false},
+    {Valves::toggleFuelGemValveTask, 0, false},
     {Valves::igniterEnableRelaySample, 0},
 
     // heaters
@@ -62,7 +68,7 @@ int main() {
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
-    Valves::initValves();
+    Valves::initValves(&taskTable[23], &taskTable[24]);
     Thermocouples::initThermocouples();
 
     while(1) {

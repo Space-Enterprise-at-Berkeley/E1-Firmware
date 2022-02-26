@@ -94,6 +94,12 @@ namespace Comms {
         packet->len += 4;
     }
 
+    void packetAddUint16(Packet *packet, uint16_t value) {
+        packet->data[packet->len] = value & 0xFF;
+        packet->data[packet->len + 1] = value >> 8 & 0xFF;
+        packet->len += 2;
+    }
+
     void packetAddUint8(Packet *packet, uint8_t value) {
         packet->data[packet->len] = value;
         packet->len++;
