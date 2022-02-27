@@ -6,6 +6,7 @@
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
+#include "OCHandler.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -64,6 +65,7 @@ int main() {
     Power::initPower();
     Valves::initValves();
     Thermocouples::initThermocouples();
+    OCHandler::initOCHandler();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
