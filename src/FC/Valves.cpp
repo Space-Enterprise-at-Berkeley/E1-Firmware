@@ -10,46 +10,46 @@ namespace Valves {
     Valve armValve = {.valveID = 0,
                       .statePacketID = 40,
                       .statusPacketID = 30,
-                      .pin = HAL::chan0Pin,
-                      .expanderPin = 255,
+                      .pin = 255,
+                      .expanderPin = HAL::chan11Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan0};
+                      .ina = &HAL::chan11};
 
     Valve igniter = {.valveID = 1,
                       .statePacketID = 41,
                       .statusPacketID = 31,
-                      .pin = HAL::chan4Pin,
-                      .expanderPin = 255,
+                      .pin = 255,
+                      .expanderPin = HAL::chan7Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan4};
+                      .ina = &HAL::chan7};
     
     Valve loxMainValve = {.valveID = 2,
                       .statePacketID = 42,
                       .statusPacketID = 32,
-                      .pin = HAL::chan2Pin,
-                      .expanderPin = 255,
+                      .pin = 255,
+                      .expanderPin = HAL::chan8Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan2};
+                      .ina = &HAL::chan8};
 
     Valve fuelMainValve = {.valveID = 3,
                       .statePacketID = 43,
                       .statusPacketID = 33,
-                      .pin = HAL::chan3Pin,
-                      .expanderPin = 255,
+                      .pin = 255,
+                      .expanderPin = HAL::chan10Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan3};
+                      .ina = &HAL::chan10};
 
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
@@ -65,69 +65,69 @@ namespace Valves {
     Valve loxTankBottomHtr = {.valveID = 5, // actuated from the IO Expander
                       .statePacketID = 45,
                       .statusPacketID = 35,
-                      .pin = 255, // dont use pin
-                      .expanderPin = HAL::chan7Pin,
+                      .pin = HAL::chan4Pin, // dont use pin
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan7};
+                      .ina = &HAL::chan4};
 
     Valve loxTankMidHtr = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
                       .statusPacketID = 36,
-                      .pin = 255, // dont use pin
-                      .expanderPin = HAL::chan8Pin,
+                      .pin = HAL::chan3Pin, // dont use pin
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan8};
+                      .ina = &HAL::chan3};
 
     Valve loxTankTopHtr = {.valveID = 7, // actuated from the IO Expander
                       .statePacketID = 47,
                       .statusPacketID = 37,
-                      .pin = 255, // dont use pin
-                      .expanderPin = HAL::chan9Pin,
+                      .pin = HAL::chan2Pin, // dont use pin
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan9};
+                      .ina = &HAL::chan2};
 
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
                       .statusPacketID = 38,
-                      .pin = 255,
-                      .expanderPin = HAL::chan10Pin,
+                      .pin = HAL::chan1Pin,
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 100 * 1000,
-                      .ina = &HAL::chan10};
+                      .ina = &HAL::chan1};
 
     //TODO fill in with actual GEM pin values
     Valve loxGemValve = {.valveID = 8,
                       .statePacketID = 52,
                       .statusPacketID = 28,
                       .pin = 255, // dont use pin
-                      .expanderPin = HAL::chan11Pin,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .ocThreshold = 3.0,
-                      .period = 50 * 1000,
-                      .ina = &HAL::chan11};
-
-    Valve fuelGemValve = {.valveID = 9,
-                      .statePacketID = 53,
-                      .statusPacketID = 29,
-                      .pin = 255, // dont use pin
                       .expanderPin = HAL::chan9Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
                       .ina = &HAL::chan9};
+
+    Valve fuelGemValve = {.valveID = 9,
+                      .statePacketID = 53,
+                      .statusPacketID = 29,
+                      .pin = 255, // dont use pin
+                      .expanderPin = HAL::chan6Pin,
+                      .voltage = 0.0,
+                      .current = 0.0,
+                      .ocThreshold = 3.0,
+                      .period = 50 * 1000,
+                      .ina = &HAL::chan6};
 
     Task *_toggleFuelGemValve;
     Task *_toggleLoxGemValve;
