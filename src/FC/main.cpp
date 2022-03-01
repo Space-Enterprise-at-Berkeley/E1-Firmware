@@ -3,7 +3,7 @@
 #include <Comms.h>
 #include "Ducers.h"
 #include "Power.h"
-#include "Valves.h"
+#include "Actuators.h"
 #include "HAL.h"
 #include "Thermocouples.h"
 #include "OCHandler.h"
@@ -39,20 +39,39 @@ Task taskTable[] = {
     {Thermocouples::tc3Sample, 0},
 
     // valves
-    {Valves::armValveSample, 0},
-    {Valves::igniterSample, 0},
-    {Valves::loxMainValveSample, 0},
-    {Valves::fuelMainValveSample, 0},
-    {Valves::loxGemValveSample, 0},
-    {Valves::fuelGemValveSample, 0},
-    {Valves::breakWireSample, 0},
-    {Valves::toggleLoxGemValveTask, 0, false},
-    {Valves::toggleFuelGemValveTask, 0, false},
-    {Valves::igniterEnableRelaySample, 0},
+    {Actuators::armValveSample, 0},
+    {Actuators::igniterSample, 0},
+    {Actuators::loxMainValveSample, 0},
+    {Actuators::fuelMainValveSample, 0},
+    {Actuators::loxGemValveSample, 0},
+    {Actuators::fuelGemValveSample, 0},
+    {Actuators::breakWireSample, 0},
+    {Actuators::toggleLoxGemValveTask, 0, false},
+    {Actuators::toggleFuelGemValveTask, 0, false},
+    {Actuators::igniterEnableRelaySample, 0},
 
     // heaters
-    {Valves::RQDSample, 0},
-    {Valves::mainValveVentSample, 0},
+    {Actuators::RQDSample, 0},
+    {Actuators::mainValveVentSample, 0},
+
+    // current sense mux
+    {Actuators::chute1Sample, 0},
+    {Actuators::chute2Sample, 0},
+    {Actuators::cam1Sample, 0},
+    {Actuators::rfAmpSample, 0},
+    {Actuators::cam2Sample, 0},
+    {Actuators::radioSample, 0},
+    {Actuators::valve1Sample, 0},
+    {Actuators::valve2Sample, 0},
+    {Actuators::valve3Sample, 0},
+    {Actuators::valve4Sample, 0},
+    {Actuators::valve5Sample, 0},
+    {Actuators::valve6Sample, 0},
+    {Actuators::hBridge1Sample, 0},
+    {Actuators::hBridge2Sample, 0},
+    {Actuators::hBridge3Sample, 0},
+    {Actuators::break1Sample, 0},
+    {Actuators::break2Sample, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -68,7 +87,7 @@ int main() {
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
-    Valves::initValves(&taskTable[23], &taskTable[24]);
+    Valves::initActuators(&taskTable[23], &taskTable[24]);
     Thermocouples::initThermocouples();
     OCHandler::initOCHandler();
 
