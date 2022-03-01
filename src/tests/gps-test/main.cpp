@@ -1,12 +1,16 @@
+#include <Arduino.h>
 #include "GPS.h"
 #include <Wire.h>
 
+
 SFE_UBLOX_GNSS myGNSS;
 uint32_t gpsUpdatePeriod = 40 * 1000;
-long latitude = 0;
-long longitude = 0;
-long altitude = 0;
-byte SIV = 0;
+double latitude;
+double longitude;
+double altitude;
+double speed;
+double degree;
+byte SIV;
 
 int main() {
     Serial.begin(9600);
@@ -23,16 +27,18 @@ int main() {
 
     while (1)   {
         Serial.println();
+
         //Get Longtitude
-        latitude = myGNSS.getLatitude();
+        latitude = myGNSS.getLatitude() / 10000000;
         Serial.print(F("Lat: "));
         Serial.print(latitude);
 
         //Get Latitude
-        longitude = myGNSS.getLongitude();
+        longitude = myGNSS.getLongitude() / 10000000;
         Serial.print(F(" Long: "));
-        Serial.print(longitude / 10000000);
-        Serial.print(F(" (degrees"));
+        Serial.print(longitude);
+
+        // Serial.print(F(" (degrees"));
 
         //Get Altitude
         altitude = myGNSS.getAltitude();
@@ -44,5 +50,19 @@ int main() {
         SIV = myGNSS.getSIV();
         Serial.print(F(" SIV: "));
         Serial.print(SIV);
+
+        //Get Speed
+        speed = myGNSS.getGroundSpeed();
+        Serial.print(F(" speed: "));    
+        Serial.print(speed / 1000); 
+        Serial.print(F(" m/s"));
+
+        //Get Degree
+        degree = myGNSS.getHeading() / 100000;
+        Serial.print(F(" Angle: "));    
+        Serial.print(degree); 
+
+
+
     }
 }
