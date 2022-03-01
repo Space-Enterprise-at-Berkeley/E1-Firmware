@@ -1,4 +1,3 @@
-// #include "HAL.h"
 #include <Comms.h>
 #include <Wire.h>
 

@@ -8,13 +8,15 @@ namespace GPS {
     uint32_t gpsUpdatePeriod = 40 * 1000;
 
     Comms::Packet latLongPacket = {.id = 11};
-    long latitude = 0;
-    long longitude = 0;
+    double latitude;
+    double longitude;
 
 
     Comms::Packet auxPacket = {.id = 12};
-    long altitude = 0;
-    byte SIV = 0;
+    double altitude;
+    double speed;
+    double angle;
+    byte SIV;
 
     //
     void initGPS() {
@@ -35,14 +37,14 @@ namespace GPS {
 
         Serial.println();
         //Get Longtitude
-        latitude = myGNSS.getLatitude();
+        latitude = myGNSS.getLatitude() / 10000000;
         Serial.print(F("Lat: "));
         Serial.print(latitude);
 
         //Get Latitude
-        longitude = myGNSS.getLongitude();
+        longitude = myGNSS.getLongitude() / 10000000;
         Serial.print(F(" Long: "));
-        Serial.print(longitude / 10000000);
+        Serial.print(longitude);
         Serial.print(F(" (degrees"));
 
         Comms::packetAddFloat(&latLongPacket, latitude);
@@ -64,6 +66,11 @@ namespace GPS {
         SIV = myGNSS.getSIV();
         Serial.print(F(" SIV: "));
         Serial.print(SIV);
+
+        //Get Angle
+
+
+        //Get Speed
 
         Comms::packetAddFloat(&auxPacket, altitude);
         Comms::packetAddFloat(&auxPacket, SIV);
