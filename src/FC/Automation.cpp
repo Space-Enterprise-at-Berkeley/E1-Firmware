@@ -1,5 +1,4 @@
 #include "Automation.h"
-#include "Ducers.h"
 
 namespace Automation {
     Task *flowTask = nullptr;
@@ -83,9 +82,9 @@ namespace Automation {
         switch(step) {
             case 0: // step 0 (enable and actuate igniter)
                 //TODO: don't even turn on igniter if igniterEnabled = False
-                if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
-                    Valves::enableIgniter();
-                    Valves::activateIgniter();
+                if(Actuators::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
+                    Actuators::enableIgniter();
+                    Actuators::activateIgniter();
                     sendFlowStatus(STATE_ACTIVATE_IGNITER);
                     step++;
                     return 500 * 1000; // delay 0.5s
@@ -95,8 +94,8 @@ namespace Automation {
                     return 0;
                 }
             case 1: // step 1 after short period turn off igniter and disable igniter power
-                Valves::disableIgniter();
-                Valves::deactivateIgniter();
+                Actuators::disableIgniter();
+                Actuators::deactivateIgniter();
                 sendFlowStatus(STATE_DEACTIVATE_DISABLE_IGNITER);
                 step++;
                 return 1500 * 1000; // delay 1.5s
@@ -104,8 +103,8 @@ namespace Automation {
             case 2: // step 2
                 // check igniter current trigger and break wire
                 if ((igniterTriggered || !igniterEnabled)
-                        && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
-                    Valves::openArmValve();
+                        && (Actuators::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
+                    Actuators::openArmValve();
                     sendFlowStatus(STATE_OPEN_ARM_VALVE);
                     step++;
                     return 500 * 1000; // delay 0.5s
@@ -117,8 +116,8 @@ namespace Automation {
 
             case 3: // step 3
                 // check arm valve current, main valve continuity else abort
-                if (Valves::armValve.current > currentThreshold) {
-                    Valves::openLoxMainValve();
+                if (Actuators::armValve.current > currentThreshold) {
+                    Actuators::openLoxMainValve();
                     sendFlowStatus(STATE_OPEN_LOX_VALVE);
                     step++;
                     return loxLead; // delay by lox lead
@@ -130,9 +129,9 @@ namespace Automation {
 
             case 4: // step 4
                 // check arm valve current, loxMain current, fuelMain continuity
-                if (Valves::armValve.current > currentThreshold
-                        && Valves::loxMainValve.current > currentThreshold) {
-                    Valves::openFuelMainValve();
+                if (Actuators::armValve.current > currentThreshold
+                        && Actuators::loxMainValve.current > currentThreshold) {
+                    Actuators::openFuelMainValve();
                     //begin checking thermocouple values
                     checkForTCAbortTask->enabled = true;
                     sendFlowStatus(STATE_OPEN_FUEL_VALVE);
@@ -152,7 +151,7 @@ namespace Automation {
                 return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
 
             case 6: // step 6 (close fuel)
-                Valves::closeFuelMainValve();
+                Actuators::closeFuelMainValve();
                 checkForTCAbortTask->enabled = false;
                 checkForLCAbortTask->enabled = false;
                 sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
@@ -160,13 +159,13 @@ namespace Automation {
                 return 200 * 1000;
 
             case 7: // step 7 (close lox)
-                Valves::closeLoxMainValve();
+                Actuators::closeLoxMainValve();
                 sendFlowStatus(STATE_CLOSE_LOX_VALVE);
                 step++;
                 return 500 * 1000;
 
             case 8: // step 8 (close arm valve)
-                Valves::closeArmValve();
+                Actuators::closeArmValve();
                 sendFlowStatus(STATE_CLOSE_ARM_VALVE);
                 step++;
                 return 1500; //delay for gap in status messages
@@ -180,7 +179,7 @@ namespace Automation {
 
     void beginManualAbortFlow(Comms::Packet packet) {
         // beginAbortFlow();
-        Valves::deactivateIgniter();
+        Actuators::deactivateIgniter();
         sendFlowStatus(STATE_MANUAL_SAFE_ABORT);
     }
 
@@ -199,13 +198,13 @@ namespace Automation {
     uint32_t abortFlow() {
         switch(abortStep) {
             case 0:
-                Valves::closeFuelMainValve();
-                Valves::closeLoxMainValve();
-                Valves::deactivateIgniter();
+                Actuators::closeFuelMainValve();
+                ActuatorsLoxMainValve();
+                Actuators::deactivateIgniter();
                 abortStep++;
                 return 2 * 1000 * 1000; //delay by 2 seconds for valves to close
             case 1:
-                Valves::closeArmValve();
+                Actuators::closeArmValve();
                 abortStep++;
                 return 1 * 1000 * 1000; //delay by 1 second for arming valve to close
             default:
@@ -216,8 +215,8 @@ namespace Automation {
     }
 
     uint32_t checkIgniter() {
-        igniterTriggered = Valves::igniter.current > igniterTriggerThreshold || igniterTriggered;
-        return Valves::igniter.period; //TODO determine appropriate sampling time
+        igniterTriggered = Actuators::igniter.current > igniterTriggerThreshold || igniterTriggered;
+        return Actuators::igniter.period; //TODO determine appropriate sampling time
     }
 
     void readLoadCell(Comms::Packet packet) {
