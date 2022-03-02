@@ -6,7 +6,8 @@
 #include "Comms.h"
 
 namespace OCHandler {
-    PCA9539 ioOCExpander(0x74);
-
-    void initOCHandler();
+    extern PCA9539 ioOCExpander;
+    
+    void initOCHandler(uint8_t interruptPin);
+    void OCInterrupt();
 }

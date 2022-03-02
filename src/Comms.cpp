@@ -5,6 +5,7 @@ namespace Comms {
     std::map<uint8_t, commFunction> callbackMap;
     EthernetUDP Udp;
     char packetBuffer[sizeof(Packet)];
+    std::vector<commFunction> subscriberList;
 
     void initComms() {
         Ethernet.begin((uint8_t *)mac, ip);
@@ -75,6 +76,10 @@ namespace Comms {
             // DEBUG('\n');
             evokeCallbackFunction(packet, Udp.remoteIP()[3]);
         }
+    }
+
+    void registerPacketSubscriber(commFunction func) {
+        subscriberList.push_back(func);
     }
 
     void packetAddFloat(Packet *packet, float value) {
@@ -199,6 +204,11 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+
+        //pass packet to all subscribers
+        for (commFunction func: subscriberList) {
+            func(*packet);
+        }
     }
 
     /**

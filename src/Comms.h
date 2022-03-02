@@ -6,6 +6,7 @@
 #include <NativeEthernet.h>
 #include <NativeEthernetUdp.h>
 #include <map>
+#include <vector>
 
 namespace Comms {
     //https://github.com/sstaub/TeensyID/issues/3
