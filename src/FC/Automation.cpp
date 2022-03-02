@@ -199,7 +199,7 @@ namespace Automation {
         switch(abortStep) {
             case 0:
                 Actuators::closeFuelMainValve();
-                ActuatorsLoxMainValve();
+                Actuators::closeLoxMainValve();
                 Actuators::deactivateIgniter();
                 abortStep++;
                 return 2 * 1000 * 1000; //delay by 2 seconds for valves to close

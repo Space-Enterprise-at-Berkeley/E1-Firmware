@@ -16,8 +16,9 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan0};
+                      .muxChannel = &HAL::muxChan7};
 
+    //TODO what is this on?
     Valve igniter = {.valveID = 1,
                       .statePacketID = 41,
                       .statusPacketID = 31,
@@ -27,7 +28,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan4};
+                      .muxChannel = &HAL::muxChan8};
     
     Valve loxMainValve = {.valveID = 2,
                       .statePacketID = 42,
@@ -38,7 +39,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan2};
+                      .muxChannel = &HAL::muxChan9};
 
     Valve fuelMainValve = {.valveID = 3,
                       .statePacketID = 43,
@@ -49,7 +50,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan3};
+                      .muxChannel = &HAL::muxChan10};
 
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used. 
                       .statePacketID = 0,
@@ -60,7 +61,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 0.1,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan5};
+                      .muxChannel = &HAL::muxChan5};
     
     Valve loxTankBottomHtr = {.valveID = 5, // actuated from the IO Expander
                       .statePacketID = 45,
@@ -71,7 +72,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan7};
+                      .muxChannel = &HAL::muxChan7};
 
     Valve loxTankMidHtr = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
@@ -82,7 +83,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan8};
+                      .muxChannel = &HAL::muxChan8};
 
     Valve loxTankTopHtr = {.valveID = 7, // actuated from the IO Expander
                       .statePacketID = 47,
@@ -93,7 +94,7 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan9};
+                      .muxChannel = &HAL::muxChan9};
   
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
@@ -104,112 +105,87 @@ namespace Actuators {
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 100 * 1000,
-                      .ina = &HAL::chan10};
+                      .muxChannel = &HAL::muxChan8};
 
-    //info for each input on the mux
-    MuxActuator chute1 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 0,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator chute1 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan0};
 
-    MuxActuator chute2 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 1,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator chute2 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan1};
 
-    MuxActuator cam1 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 2,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-    
-    MuxActuator rfAmp = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 3,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator cam1 = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan2};
 
-    MuxActuator cam2 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 4,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator rfAmp = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan3};
 
-    MuxActuator radio = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 5,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator cam2 = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan4};
 
-    MuxActuator valve1 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 7,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator radio = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan5};
 
-    MuxActuator valve2 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 8,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator hBridge1 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan13};
 
-    MuxActuator valve3 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 9,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator hBridge2 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan14};
 
-    MuxActuator valve4 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 10,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
+    Actuator hBridge3 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan15};
 
-    MuxActuator valve5 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 11,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-
-    MuxActuator valve6 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 12,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-
-    MuxActuator hBridge1 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 13,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-
-    MuxActuator hBridge2 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 14,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-
-    MuxActuator hBridge3 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 15,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-
-    MuxActuator break1 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 5,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-
-    MuxActuator break2 = {.statusPacketID = -1, //TODO make actual value
-                      .channel = 6,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .period = 50 * 1000};
-    
-    
+    Actuator break2 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = false,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan6};
 
 
     void sendStatusPacket() {
@@ -286,8 +262,8 @@ namespace Actuators {
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
-        valve->voltage = valve->ina->readBusVoltage();
-        valve->current = valve->ina->readShuntCurrent();
+        valve->voltage = valve->muxChannel->readChannel1();
+        valve->current = valve->muxChannel->readChannel2();
         
         Comms::Packet tmp = {.id = valve->statusPacketID};
         //IDS: Arming valve, igniter, lox main valve, fuel main valve
@@ -296,6 +272,22 @@ namespace Actuators {
         }
         Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->current);
+        Comms::emitPacket(&tmp);
+    }
+
+    //common function for sampling non valves on the mux
+    void sampleActuator(Actuator *actuator) {
+        if (actuator->hasVoltage) {
+            actuator->voltage = actuator->muxChannel->readChannel1();
+        }
+        if (actuator->hasCurrent) {
+            actuator->current = actuator->muxChannel->readChannel2();
+        }
+
+        Comms::Packet tmp = {.id = actuator->statusPacketID};
+
+        Comms::packetAddFloat(&tmp, actuator->voltage);
+        Comms::packetAddFloat(&tmp, actuator->current);
         Comms::emitPacket(&tmp);
     }
 
@@ -345,6 +337,56 @@ namespace Actuators {
         return igniterEnableRelay.period;
     }
 
+    uint32_t chute1Sample() {
+        sampleActuator(&chute1);
+        return chute1.period;
+    }
+
+    uint32_t chute2Sample() {
+        sampleActuator(&chute2);
+        return chute2.period;
+    }
+
+    uint32_t cam1Sample() {
+        sampleActuator(&cam1);
+        return cam1.period;
+    }
+
+    uint32_t rfAmpSample() {
+        sampleActuator(&rfAmp);
+        return rfAmp.period;
+    }
+
+    uint32_t cam2Sample() {
+        sampleActuator(&cam2);
+        return cam2.period;
+    }
+
+    uint32_t radioSample() {
+        sampleActuator(&radio);
+        return radio.period;
+    }
+
+    uint32_t hBridge1Sample() {
+        sampleActuator(&hBridge1);
+        return hBridge1.period;
+    }
+
+    uint32_t hBridge2Sample() {
+        sampleActuator(&hBridge2);
+        return hBridge2.period;
+    }
+
+    uint32_t hBridge3Sample() {
+        sampleActuator(&hBridge3);
+        return hBridge3.period;
+    }
+
+    uint32_t break2Sample() {
+        sampleActuator(&break2);
+        return break2.period;
+    }
+
     // init function for valves namespace
     void initActuators() {
         // link the right packet IDs to the valve open/close handler functions
@@ -359,110 +401,4 @@ namespace Actuators {
 
         Comms::registerCallback(138, igniterEnableRelayPacketHandler);
     }
-
-    void sampleMuxActuator(MuxActuator *muxActuator) {
-        //set mux select
-        digitalWrite(muxSelect1Pin, muxActuator->channel & 1);
-        digitalWrite(muxSelect2Pin, muxActuator->channel >> 1 & 1);
-        digitalWrite(muxSelect3Pin, muxActuator->channel >> 2 & 1);
-        digitalWrite(muxSelect4Pin, muxActuator->channel >> 3 & 1);
-
-        muxActuator->continuity = digitalRead(muxContinuityPin);
-
-        int currentReading = analogRead(muxCurrentPin);
-        //TODO figure out how to convert reading to current/voltage
-
-        //TODO for nonvalves one of the values will be garbage :(
-        Comms::Packet packet = {.id = muxActuator->statusPacketID};
-        Comms::packetAddFloat(&packet, muxActuator->voltage);
-        Comms::packetAddFloat(&packet, muxActuator->current);
-        Comms::packetAddUint8(&packet, muxActuator->continuity);
-        Comms::emitPacket(&packet);
-    }
-
-    uint32_t chute1Sample() {
-        sampleMuxActuator(&chute1);
-        return chute1.period;
-    }
-
-    uint32_t chute2Sample() {
-        sampleMuxActuator(&chute2);
-        return chute2.period;
-    }
-
-    uint32_t cam1Sample() {
-        sampleMuxActuator(&cam1);
-        return cam1.period;
-    }
-
-    uint32_t rfAmpSample() {
-        sampleMuxActuator(&rfAmp);
-        return rfAmp.period;
-    }
-
-    uint32_t cam2Sample() {
-        sampleMuxActuator(&cam2);
-        return cam2.period;
-    }
-
-    uint32_t radioSample() {
-        sampleMuxActuator(&radio);
-        return radio.period;
-    }
-
-    uint32_t valve1Sample() {
-        sampleMuxActuator(&valve1);
-        return valve1.period;
-    }
-
-    uint32_t valve2Sample() {
-        sampleMuxActuator(&valve2);
-        return valve2.period;
-    }
-
-    uint32_t valve3Sample() {
-        sampleMuxActuator(&valve3);
-        return valve3.period;
-    }
-
-    uint32_t valve4Sample() {
-        sampleMuxActuator(&valve4);
-        return valve4.period;
-    }
-
-    uint32_t valve5Sample() {
-        sampleMuxActuator(&valve5);
-        return valve5.period;
-    }
-
-    uint32_t valve6Sample() {
-        sampleMuxActuator(&valve6);
-        return valve6.period;
-    }
-
-    uint32_t hBridge1Sample() {
-        sampleMuxActuator(&hBridge1);
-        return hBridge1.period;
-    }
-
-    uint32_t hBridge2Sample() {
-        sampleMuxActuator(&hBridge2);
-        return hBridge2.period;
-    }
-
-    uint32_t hBridge3Sample() {
-        sampleMuxActuator(&hBridge3);
-        return hBridge3.period;
-    }
-
-    uint32_t break1Sample() {
-        sampleMuxActuator(&break1);
-        return break1.period;
-    }
-
-    uint32_t break2Sample() {
-        sampleMuxActuator(&break2);
-        return break2.period;
-    }
-
 };

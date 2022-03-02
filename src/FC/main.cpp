@@ -7,6 +7,7 @@
 #include "HAL.h"
 #include "Thermocouples.h"
 #include "OCHandler.h"
+#include "BlackBox.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -56,16 +57,9 @@ Task taskTable[] = {
     {Actuators::rfAmpSample, 0},
     {Actuators::cam2Sample, 0},
     {Actuators::radioSample, 0},
-    {Actuators::valve1Sample, 0},
-    {Actuators::valve2Sample, 0},
-    {Actuators::valve3Sample, 0},
-    {Actuators::valve4Sample, 0},
-    {Actuators::valve5Sample, 0},
-    {Actuators::valve6Sample, 0},
     {Actuators::hBridge1Sample, 0},
     {Actuators::hBridge2Sample, 0},
     {Actuators::hBridge3Sample, 0},
-    {Actuators::break1Sample, 0},
     {Actuators::break2Sample, 0},
 };
 
@@ -84,7 +78,8 @@ int main() {
     Power::initPower();
     Actuators::initActuators();
     Thermocouples::initThermocouples();
-    OCHandler::initOCHandler();
+    OCHandler::initOCHandler(20);
+    BlackBox::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

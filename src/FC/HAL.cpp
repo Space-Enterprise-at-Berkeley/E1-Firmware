@@ -26,6 +26,31 @@ namespace HAL {
     INA219 chan13;
     INA219 chan14;
 
+    //Voltage and Current Sense Mux
+    Mux valveMux = {.muxSelect1Pin = 3,
+                    .muxSelect2Pin = 4,
+                    .muxSelect3Pin = 5,
+                    .muxSelect4Pin = 6,
+                    .muxInput1Pin = 40,
+                    .muxInput2Pin = 16};
+
+    MuxChannel muxChan0;
+    MuxChannel muxChan1;
+    MuxChannel muxChan2;
+    MuxChannel muxChan3;
+    MuxChannel muxChan4;
+    MuxChannel muxChan5;
+    MuxChannel muxChan6;
+    MuxChannel muxChan7;
+    MuxChannel muxChan8;
+    MuxChannel muxChan9;
+    MuxChannel muxChan10;
+    MuxChannel muxChan11;
+    MuxChannel muxChan12;
+    MuxChannel muxChan13;
+    MuxChannel muxChan14;
+    MuxChannel muxChan15;
+
     MCP9600 tcAmp0;
     MCP9600 tcAmp1;
     MCP9600 tcAmp2;
@@ -105,5 +130,22 @@ namespace HAL {
         tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+
+        muxChan0.init(&valveMux, 0);
+        muxChan1.init(&valveMux, 1);
+        muxChan2.init(&valveMux, 2);
+        muxChan3.init(&valveMux, 3);
+        muxChan4.init(&valveMux, 4);
+        muxChan5.init(&valveMux, 5);
+        muxChan6.init(&valveMux, 6);
+        muxChan7.init(&valveMux, 7);
+        muxChan8.init(&valveMux, 8);
+        muxChan9.init(&valveMux, 9);
+        muxChan10.init(&valveMux, 10);
+        muxChan11.init(&valveMux, 11);
+        muxChan12.init(&valveMux, 12);
+        muxChan13.init(&valveMux, 13);
+        muxChan14.init(&valveMux, 14);
+        muxChan15.init(&valveMux, 15);
     }
 };

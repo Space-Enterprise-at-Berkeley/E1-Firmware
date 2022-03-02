@@ -2,6 +2,8 @@
 
 namespace OCHandler {
 
+    PCA9539 ioOCExpander(0x74);
+
     void initOCHandler(uint8_t interruptPin) {
         //setup IO Expander pins
         ioOCExpander.pinMode(1, INPUT); //TODO check this implementation
