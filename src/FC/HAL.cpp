@@ -6,7 +6,7 @@ namespace HAL {
 
     void initHAL() {
         Wire.begin();
-        Wire.setClock(100000);
+        Wire.setClock(400000);
 
         // barometer
         bmp388.begin(0x76);

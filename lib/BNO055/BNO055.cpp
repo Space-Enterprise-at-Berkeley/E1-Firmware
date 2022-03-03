@@ -69,22 +69,22 @@ bool BNO055::begin(bno055_opmode_t mode) {
   write8(BNO055_PAGE_ID_ADDR, 1);
 
   //set to high g mode
-  write8(BNO055_ACC_CONFIG_ADDR, 0x03);
+  write8(BNO055_ACC_CONFIG_ADDR, 0b00010111);
   delay(10);
 
   /* Section 4.4.11 specify which axis(es) to use for detection */
   //Adafruit_BNO055::ACCEL_HIGH_G_X_AXIS_MSK | Adafruit_BNO055::ACCEL_HIGH_G_Y_AXIS_MSK | Adafruit_BNO055::ACCEL_HIGH_G_Z_AXIS_MSK
-  write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_X_AXIS_MSK);
-  write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_Y_AXIS_MSK);
-  write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_Z_AXIS_MSK);
+//   write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_X_AXIS_MSK);
+//   write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_Y_AXIS_MSK);
+//   write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_Z_AXIS_MSK);
               
   //Section 4.4.12 Set threshold  --  threshold is a portion of the range set in the lines above, 128 should be 1/2 way ?
-  write8(ACCEL_HIGH_G_THRES_ADDR,128); 
-  delay(10);
+//   write8(ACCEL_HIGH_G_THRES_ADDR,128); 
+//   delay(10);
 
   //Section 4.4.13  Set duration -- value between 0 and 255, how long must the high-G threshold be exceeded?
-  write8(ACCEL_HIGH_G_DURN_ADDR, 0);//0 is 2 mS (arguement + 1) * 2 mS
-  delay(10);
+//   write8(ACCEL_HIGH_G_DURN_ADDR, 0);//0 is 2 mS (arguement + 1) * 2 mS
+//   delay(10);
 
   // /* Reset */
   // write8(BNO055_SYS_TRIGGER_ADDR, 0x20);
@@ -111,7 +111,7 @@ bool BNO055::begin(bno055_opmode_t mode) {
   setMode(OPERATION_MODE_IMUPLUS);
   delay(20);
 
-  write8(BNO055_ACC_CONFIG_ADDR, 16);
+//   write8(BNO055_ACC_CONFIG_ADDR, 16);
 
   //To setup a HW interupt trigger
   setExtCrystalUse(true);
