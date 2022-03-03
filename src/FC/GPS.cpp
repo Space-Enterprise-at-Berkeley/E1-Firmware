@@ -1,5 +1,6 @@
 #include "GPS.h"
 #include <Wire.h>
+#define spiPort SPI  //TODO: Update this to right pin 
 
 
 namespace GPS {
@@ -7,45 +8,48 @@ namespace GPS {
     SFE_UBLOX_GNSS myGNSS;
     uint32_t gpsUpdatePeriod = 40 * 1000;
 
-    Comms::Packet latLongPacket = {.id = 11};
+    Comms::Packet latLongPacket = {.id = 6};
     double latitude;
     double longitude;
 
 
-    Comms::Packet auxPacket = {.id = 12};
+    Comms::Packet auxPacket = {.id = 7};
     double altitude;
     double speed;
     double angle;
     byte SIV;
 
+    const uint8_t csPin = 10;  //TODO: Update this to right pin
+
     //
     void initGPS() {
-        Serial.begin(9600);
         Wire.begin();
-        Serial.println("GPS setup");
-        if (!myGNSS.begin()) {
-            Serial.println("GPS failed to start");
+        DEBUG("GPS setup");
+        // Connect to the u-blox module using SPI port, csPin and speed setting
+        if (!myGNSS.begin(spiPort, csPin, 5000000)){
+            DEBUG("GPS failed to start");
         } else {
-            Serial.println("GPS started");
+           DEBUG("GPS started");
         }
-        // Version 2 - UBX
-        myGNSS.setI2COutput(COM_TYPE_UBX);   //Set the I2C port to output UBX only (turn off NMEA noise)
+        
+        // myGNSS.setI2COutput(COM_TYPE_UBX);   //Set the I2C port to output UBX only (turn off NMEA noise)
+        myGNSS.setPortOutput(COM_PORT_SPI, COM_TYPE_UBX);
         myGNSS.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
+
     }
 
     uint32_t latLongSample() {
 
-        Serial.println();
         //Get Longtitude
         latitude = myGNSS.getLatitude() / 10000000;
-        Serial.print(F("Lat: "));
-        Serial.print(latitude);
+        DEBUG(F("Lat: "));
+        DEBUG(latitude);
 
         //Get Latitude
         longitude = myGNSS.getLongitude() / 10000000;
-        Serial.print(F(" Long: "));
-        Serial.print(longitude);
-        Serial.print(F(" (degrees"));
+        DEBUG(F(" Long: "));
+        DEBUG(longitude);
+        DEBUG(F(" (degrees"));
 
         Comms::packetAddFloat(&latLongPacket, latitude);
         Comms::packetAddFloat(&latLongPacket, longitude);
@@ -58,19 +62,27 @@ namespace GPS {
     uint32_t auxSample() {
         //Get Altitude
         altitude = myGNSS.getAltitude();
-        Serial.print(F(" Alt: "));
-        Serial.print(altitude);
-        Serial.print(F(" (mm)"));
+        DEBUG(F(" Alt: "));
+        DEBUG(altitude);
+        DEBUG(F(" (mm)"));
 
         //Get SIV
         SIV = myGNSS.getSIV();
-        Serial.print(F(" SIV: "));
-        Serial.print(SIV);
+        DEBUG(F(" SIV: "));
+        DEBUG(SIV);
 
         //Get Angle
+        angle = myGNSS.getHeading() / 100000;
+        DEBUG(F(" Angle: "));    
+        DEBUG(degree); 
 
 
         //Get Speed
+        speed = myGNSS.getGroundSpeed();
+        DEBUG(F(" Speed: "));
+        DEBUG(speed);
+
+
 
         Comms::packetAddFloat(&auxPacket, altitude);
         Comms::packetAddFloat(&auxPacket, SIV);

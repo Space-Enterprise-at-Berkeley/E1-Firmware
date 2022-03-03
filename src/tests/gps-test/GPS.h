@@ -1,8 +1,7 @@
 // #include "HAL.h"
 #include <Wire.h>
-
-#include "SparkFun_u-blox_GNSS_Arduino_Library.h"
-
+#include "NEOM9N.h"
+#include <SPI.h>
 
 namespace GPS {
     extern SFE_UBLOX_GNSS myGNSS;
