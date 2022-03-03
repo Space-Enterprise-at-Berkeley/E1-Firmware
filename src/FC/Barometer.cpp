@@ -1,7 +1,7 @@
 #include "Barometer.h"
 
 namespace Barometer {
-    uint32_t bmUpdatePeriod = 40 * 1000; // TODO: Placeholder
+    uint32_t bmUpdatePeriod = 30 * 1000; // TODO: Placeholder
     Comms::Packet baroPacket = {.id = 5};
     
     float baroAltitude, baroPressure, baroTemperature;
