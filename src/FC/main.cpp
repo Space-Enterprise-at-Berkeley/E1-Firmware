@@ -1,52 +1,15 @@
-#include "Automation.h"
 #include <Common.h>
 #include <Comms.h>
-#include "Ducers.h"
-#include "Power.h"
-#include "Valves.h"
 #include "HAL.h"
-#include "Thermocouples.h"
+#include "Barometer.h"
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 
 Task taskTable[] = {
-    //automation
-    {Automation::flow, 0, false},
-    {Automation::abortFlow, 0, false},
-    {Automation::checkIgniter, 0},
-    {Automation::checkForTCAbort, 0, false},
-    {Automation::checkForLCAbort, 0, false},
-
-    // ducers
-    {Ducers::ptSample, 0},
-    {Ducers::pressurantPTROCSample, 0},
-
-    // power
-    {Power::battSample, 0},
-    {Power::supply12Sample, 0},
-    {Power::supply8Sample, 0},
-
-    // thermocouples
-    // {Thermocouples::tcSample, 0},
-    {Thermocouples::tc0Sample, 0},
-    {Thermocouples::tc1Sample, 0},
-    {Thermocouples::tc2Sample, 0},
-    {Thermocouples::tc3Sample, 0},
-
-    // valves
-    {Valves::armValveSample, 0},
-    {Valves::igniterSample, 0},
-    {Valves::loxMainValveSample, 0},
-    {Valves::fuelMainValveSample, 0},
-    {Valves::breakWireSample, 0},
-    {Valves::igniterEnableRelaySample, 0},
-
-    // heaters
-    {Valves::loxTankBottomHtrSample, 0},
-    {Valves::loxTankMidHtrSample, 0},
-    {Valves::loxTankTopHtrSample, 0},
+    // Barometer
+    {Barometer::sampleAltPressTemp, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -57,13 +20,9 @@ int main() {
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
-    Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3], &taskTable[4]);
     HAL::initHAL();
     Comms::initComms();
-    Ducers::initDucers();
-    Power::initPower();
-    Valves::initValves();
-    Thermocouples::initThermocouples();
+    Barometer::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
