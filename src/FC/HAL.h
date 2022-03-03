@@ -63,7 +63,7 @@ namespace HAL {
     extern MCP9600 tcAmp1;
     extern MCP9600 tcAmp2;
     extern MCP9600 tcAmp3;
-
+    
     // extern TCA6408A ioExpander0;
     // extern TCA6408A ioExpander1;
 
