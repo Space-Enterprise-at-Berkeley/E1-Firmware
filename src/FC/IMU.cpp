@@ -13,9 +13,12 @@
 
 #include "IMU.h"
 
+
 namespace IMU {
     uint32_t imuUpdatePeriod = 10000 * 1000;
     Comms::Packet imuPacket = {.id = 4};
+
+    BNO055 imu;
 
     float qW = 0.0;
     float qX = 0.0;
@@ -28,7 +31,7 @@ namespace IMU {
     void initIMU() {
     }
 
-    uint32_t imuSample(Adafruit_BNO055 *imu_ptr, uint8_t packetID, float *value) {
+    uint32_t imuSample() {
         /*
             getVector (adafruit_vector_type_t vector_type)
             getQuat (void)
@@ -41,16 +44,14 @@ namespace IMU {
             VECTOR_LINEARACCEL (values in m/s^2)
             VECTOR_GRAVITY (values in m/s^2)
         */ 
-        imuPacket.id = packetID;
-        imuPacket.len = 0;
 
-        qW = (float) imu_ptr->getQuat().w();
-        qX = (float) imu_ptr->getQuat().x();
-        qY = (float) imu_ptr->getQuat().y();
-        qZ = (float) imu_ptr->getQuat().z();
-        accelX = (float) imu_ptr->getVector(Adafruit_BNO055::VECTOR_LINEARACCEL).x();
-        accelY = (float) imu_ptr->getVector(Adafruit_BNO055::VECTOR_LINEARACCEL).y();
-        accelZ = (float) imu_ptr->getVector(Adafruit_BNO055::VECTOR_LINEARACCEL).z();
+        qW = (float) imu.getQuat().w();
+        qX = (float) imu.getQuat().x();
+        qY = (float) imu.getQuat().y();
+        qZ = (float) imu.getQuat().z();
+        accelX = (float) imu.getVector(BNO055::VECTOR_LINEARACCEL).x();
+        accelY = (float) imu.getVector(BNO055::VECTOR_LINEARACCEL).y();
+        accelZ = (float) imu.getVector(BNO055::VECTOR_LINEARACCEL).z();
 
         Comms::packetAddFloat(&imuPacket, qW);
         Comms::packetAddFloat(&imuPacket, qX);
@@ -59,7 +60,7 @@ namespace IMU {
         Comms::packetAddFloat(&imuPacket, accelX);
         Comms::packetAddFloat(&imuPacket, accelY);
         Comms::packetAddFloat(&imuPacket, accelZ);
-        
+                
         Comms::emitPacket(&imuPacket);
 
         return imuUpdatePeriod;

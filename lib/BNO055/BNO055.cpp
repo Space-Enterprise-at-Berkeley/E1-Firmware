@@ -68,12 +68,8 @@ bool BNO055::begin(bno055_opmode_t mode) {
   //Switch to page 1 so we can configure high g detection
   write8(BNO055_PAGE_ID_ADDR, 1);
 
-  //Section 4.4.8 -- Make interrupt pin go high when high G is detected
-  write8(INT_MASK_ADDR, B00100000);
-  delay(10);
-  
-  //Section 4.4.9 Turn high g detection on
-  write8(INT_ADDR, B00100000);
+  //set to high g mode
+  write8(BNO055_ACC_CONFIG_ADDR, 0x03);
   delay(10);
 
   /* Section 4.4.11 specify which axis(es) to use for detection */
@@ -81,10 +77,6 @@ bool BNO055::begin(bno055_opmode_t mode) {
   write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_X_AXIS_MSK);
   write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_Y_AXIS_MSK);
   write8(ACCEL_INTR_SETTINGS_ADDR, ACCEL_HIGH_G_Z_AXIS_MSK);
-
-  /* set configuration to 2G range */ //**note: default is +/- 4 g, other settings available in Bosch datasheet
-  //write8(BNO055::BNO055_ACC_CONFIG_ADDR, 0X0C);
-  //delay(10);
               
   //Section 4.4.12 Set threshold  --  threshold is a portion of the range set in the lines above, 128 should be 1/2 way ?
   write8(ACCEL_HIGH_G_THRES_ADDR,128); 
@@ -110,24 +102,6 @@ bool BNO055::begin(bno055_opmode_t mode) {
   //Switch back to page 0
   write8(BNO055_PAGE_ID_ADDR, 0);
 
-  /* Set the output units */
-  /*
-  uint8_t unitsel = (0 << 7) | // Orientation = Android
-                    (0 << 4) | // Temperature = Celsius
-                    (0 << 2) | // Euler = Degrees
-                    (1 << 1) | // Gyro = Rads
-                    (0 << 0);  // Accelerometer = m/s^2
-  write8(BNO055_UNIT_SEL_ADDR, unitsel);
-  */
-
-  /* Configure axis mapping (see section 3.4) */
-  /*
-  write8(BNO055_AXIS_MAP_CONFIG_ADDR, REMAP_CONFIG_P2); // P0-P7, Default is P1
-  delay(10);
-  write8(BNO055_AXIS_MAP_SIGN_ADDR, REMAP_SIGN_P2); // P0-P7, Default is P1
-  delay(10);
-  */
-
   write8(BNO055_SYS_TRIGGER_ADDR, 0x0);
   delay(10);
   /* Set the requested operating mode (see section 3.3) */
@@ -137,21 +111,12 @@ bool BNO055::begin(bno055_opmode_t mode) {
   setMode(OPERATION_MODE_IMUPLUS);
   delay(20);
 
+  write8(BNO055_ACC_CONFIG_ADDR, 16);
+
   //To setup a HW interupt trigger
-  pinMode(INTERUPT_PIN, INPUT);
   setExtCrystalUse(true);
 
   return true;
-}
-
-//HW interrupt handler
-volatile boolean m_highGDetected = false;
-
-void highGInterrupt()
-{
-  //Do very little in this handler
-  m_highGDetected = true;
-  Serial.println("High-G Event!");
 }
 
 /*!
