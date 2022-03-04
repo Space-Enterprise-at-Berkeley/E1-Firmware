@@ -1,5 +1,4 @@
 #include "GPS.h"
-#include <Wire.h>
 
 
 namespace GPS {

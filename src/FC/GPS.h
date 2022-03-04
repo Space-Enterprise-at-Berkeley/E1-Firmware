@@ -1,5 +1,6 @@
 #include "HAL.h"
 
+#include <Wire.h>
 #include <NEOM9N.h>
 
 #include <Common.h>
