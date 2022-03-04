@@ -13,6 +13,8 @@ namespace BlackBox {
 
     bool writeEnabled = false;
 
+    Comms::Packet dataDumpPacket = {.id = 54};
+
     void init() {
         Comms::registerPacketSubscriber(&writePacket);
         Comms::registerCallback(153, &getData);
@@ -43,13 +45,8 @@ namespace BlackBox {
 
             //check if buffer full
             if (bufferIndex + 8 + packet.len > 256) {
-                DEBUG("WRITING BYTES TO BOX");
-                DEBUG("\n");
                 writeBuffer();
             }
-
-            DEBUG("WRITING PACKET TO BUFFER");
-            DEBUG("\n");
 
             //write metadata
             buffer[bufferIndex] = packet.id;
@@ -76,8 +73,6 @@ namespace BlackBox {
      */
     void writeBuffer() {
         File dataFile = blackBox.open(filePath, FILE_WRITE);
-        DEBUG("BLACKBOX: WRITING TO BLACKBOX");
-        DEBUG("\n");
         dataFile.write(buffer, 256);
         dataFile.close();
         //reset buffer
@@ -93,20 +88,33 @@ namespace BlackBox {
     }
 
     void getData(Comms::Packet packet) {
-        
-        uint8_t readBuffer[256] = {0};
-        //UDP BEGIN
         if (blackBox.exists(filePath)) {
+
+            uint8_t readBuffer[256] = {0};
+
+            // signal beginning of data dump
+            dataDumpPacket.len = 0;
+            Comms::packetAddUint8(&dataDumpPacket, 0);
+            Comms::emitPacket(&dataDumpPacket);
+
+            Udp.beginPacket(Comms::groundStation1, Comms::port);
+
             File dataFile = blackBox.open(filePath, FILE_READ);
             while(dataFile.read(readBuffer, 256) > 0) {
                 for (int i = 0; i < 256; i++) {
                     Serial.write(readBuffer[i]);
-                    // Udp.write(readBuffer[i]);
+                    Udp.write(readBuffer[i]);
                 }
             }
-            // Udp.endPacket();
+            
+            Udp.endPacket();
             dataFile.close();
             writeEnabled = false;
+
+            // signal ending of data dump
+            dataDumpPacket.len = 0;
+            Comms::packetAddUint8(&dataDumpPacket, 1);
+            Comms::emitPacket(&dataDumpPacket);
         } else {
             DEBUG("BLACKBOX: FILE DOESN'T EXIST");
             DEBUG("\n");

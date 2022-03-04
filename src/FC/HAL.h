@@ -11,6 +11,10 @@
 #include <Wire.h>
 
 namespace HAL {
+
+    const uint8_t breakWire1Pin = 40;
+    const uint8_t breakWire2Pin = 16;
+
     extern BMP388_DEV bmp388; // barometer
     extern BNO055 bno055; // imu
     extern SFE_UBLOX_GNSS neom9n; // gps

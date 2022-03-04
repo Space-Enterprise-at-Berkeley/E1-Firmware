@@ -5,6 +5,8 @@
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
+#include "BreakWire.h"
+#include "Camera.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -19,6 +21,9 @@ Task taskTable[] = {
     //GPS
     {GPS::latLongSample, 0},
     // {GPS::auxSample, 0},
+
+    //Break Wire
+    {BreakWire::sampleBreakWires, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -36,6 +41,8 @@ int main() {
     IMU::initIMU();
     GPS::initGPS();
     BlackBox::init();
+    BreakWire::init();
+    Camera::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

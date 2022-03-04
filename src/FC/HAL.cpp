@@ -6,6 +6,10 @@ namespace HAL {
     SFE_UBLOX_GNSS neom9n;
 
     void initHAL() {
+        //intialize pins
+        pinMode(breakWire1Pin, INPUT);
+        pinMode(breakWire2Pin, INPUT);
+
         // Initialize I2C buses
         Wire.begin();
         Wire.setClock(100000);
