@@ -3,6 +3,7 @@
 namespace HAL {
     BMP388_DEV bmp388;
     BNO055 bno055;
+    SFE_UBLOX_GNSS neom9n;
 
     void initHAL() {
         Wire.begin();
@@ -13,5 +14,14 @@ namespace HAL {
 
         // imu
         bno055.begin();
+
+        // gps
+        if(!neom9n.begin()) {
+            DEBUG("GPS DIDN'T INIT");
+            DEBUG("\n");
+        } else {
+            DEBUG("GPS INIT SUCCESSFUL");
+            DEBUG("\n");
+        }
     }
 };
