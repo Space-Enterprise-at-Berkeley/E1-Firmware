@@ -174,6 +174,10 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+
+        for (commFunction func: subscriberList) {
+            func(*packet);
+        }
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
