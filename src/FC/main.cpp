@@ -1,7 +1,7 @@
 #include <Common.h>
 #include <Comms.h>
 #include "HAL.h"
-
+#include "BlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -35,6 +35,7 @@ int main() {
     Barometer::init();
     IMU::initIMU();
     GPS::initGPS();
+    BlackBox::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

@@ -6,7 +6,10 @@ namespace HAL {
     SFE_UBLOX_GNSS neom9n;
 
     void initHAL() {
+        // Initialize I2C buses
         Wire.begin();
+        Wire.setClock(100000);
+
         Wire.setClock(400000);
 
         // barometer
