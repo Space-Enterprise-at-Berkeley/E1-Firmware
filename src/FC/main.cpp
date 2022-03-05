@@ -6,6 +6,7 @@
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
+#include "Apogee.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -17,6 +18,9 @@ Task taskTable[] = {
     {Automation::abortFlow, 0, false},
     {Automation::checkIgniter, 0},
     {Automation::checkForAbort, 0, false},
+
+    // apogee
+    {Apogee::apogeeDetectionTask,0},
 
     // ducers
     {Ducers::ptSample, 0},
@@ -55,6 +59,7 @@ int main() {
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
     Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3]);
+    Apogee::initApogee();
     HAL::initHAL();
     Comms::initComms();
     Ducers::initDucers();
