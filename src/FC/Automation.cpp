@@ -14,6 +14,8 @@ namespace Automation {
     bool igniterEnabled = false;
     bool breakwireEnabled = false;
     bool thrustEnabled = false;
+    bool chamberTempAbortEnabled = false;
+    bool thrustAbortEnabled = false;
 
     bool igniterTriggered = false;
 
@@ -100,6 +102,7 @@ namespace Automation {
                         return 0;
                     }
                 } else {
+                    step++;
                     return 500 * 1000; // even if step is disabled use same delay
                 }
             case 1: // turn off igniter and disable igniter power after short period
@@ -110,6 +113,7 @@ namespace Automation {
                     step++;
                     return 1500 * 1000; // delay 1.5s
                 } else {
+                    step++;
                     return 1500 * 1000; // even if step is disabled use same delay
                 }
 
@@ -129,10 +133,13 @@ namespace Automation {
                         return 0;
                     }
                 } else {
+                    Valves::openArmValve();
+                    sendFlowStatus(STATE_OPEN_ARM_VALVE);
+                    step++;
                     return 500 * 1000; // even if step is disabled use same delay
                 }
 
-            case 3: // step 3
+            case 3: // step 3 open Lox Main
                 // check arm valve current, main valve continuity else abort
                 if (Valves::armValve.current > currentThreshold) {
                     Valves::openLoxMainValve();
@@ -145,13 +152,16 @@ namespace Automation {
                     return 0;
                 }
 
-            case 4: // step 4
+            case 4: // step 4 open Fuel Main
                 // check arm valve current, loxMain current, fuelMain continuity
                 if (Valves::armValve.current > currentThreshold
                         && Valves::loxMainValve.current > currentThreshold) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
-                    checkForTCAbortTask->enabled = true;
+                    if (chamberTempAbortEnabled) {
+                        checkForTCAbortTask->enabled = chamberTempAbortEnabled;
+                        sendFlowStatus(STATE_ENABLE_CHAMBER_TEMP_ABORT);
+                    }
                     sendFlowStatus(STATE_OPEN_FUEL_VALVE);
                     step++;
                     return 2 * 1000 * 1000; // delay by 2 seconds
@@ -162,9 +172,11 @@ namespace Automation {
                 }
 
             case 5: // enable Load Cell abort
-                checkForLCAbortTask->enabled = true;
-                //begin checking loadcell values
-                sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
+                if (thrustAbortEnabled) {
+                    checkForLCAbortTask->enabled = true;
+                    //begin checking loadcell values
+                    sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
+                }
                 step++;
                 return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
 
