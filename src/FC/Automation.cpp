@@ -7,9 +7,9 @@ namespace Automation {
     Task *checkForTCAbortTask = nullptr;
     Task *checkForLCAbortTask = nullptr;
 
-    uint32_t loxOpenLead = 165 * 1000;
-    uint32_t burnTime = 25 * 1000 * 1000;
-    uint32_t fuelCloseLead = 500 * 1000;
+    uint32_t loxOpenLead = 0 * 1000;
+    uint32_t burnTime = 3 * 1000 * 1000;
+    uint32_t fuelCloseLead = 0 * 1000;
 
     bool igniterEnabled = false;
     bool breakwireEnabled = false;
@@ -44,14 +44,14 @@ namespace Automation {
     void handleAutoSettings(Comms::Packet recv) {
         if(recv.len > 0) {
             // set relavent settings
-            loxLead = Comms::packetGetUint32(&recv, 0);
+            loxOpenLead = Comms::packetGetUint32(&recv, 0);
             burnTime = Comms::packetGetUint32(&recv, 4);
             igniterEnabled = Comms::packetGetUint8(&recv, 8);
             breakwireEnabled = Comms::packetGetUint8(&recv, 9);
             thrustEnabled = Comms::packetGetUint8(&recv, 10);
         }
         Comms::Packet tmp = {.id = recv.id};
-        Comms::packetAddUint32(&tmp, loxLead);
+        Comms::packetAddUint32(&tmp, loxOpenLead);
         Comms::packetAddUint32(&tmp, burnTime);
         Comms::packetAddUint8(&tmp, igniterEnabled);
         Comms::packetAddUint8(&tmp, breakwireEnabled);
@@ -145,7 +145,7 @@ namespace Automation {
                     Valves::openLoxMainValve();
                     sendFlowStatus(STATE_OPEN_LOX_VALVE);
                     step++;
-                    return loxLead; // delay by lox lead
+                    return loxOpenLead; // delay by lox lead
                 } else {
                     sendFlowStatus(STATE_ABORT_ARM_VALVE_LOW_CURRENT);
                     beginAbortFlow();
@@ -154,8 +154,7 @@ namespace Automation {
 
             case 4: // step 4 open Fuel Main
                 // check arm valve current, loxMain current, fuelMain continuity
-                if (Valves::armValve.current > currentThreshold
-                        && Valves::loxMainValve.current > currentThreshold) {
+                if (true) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
                     if (chamberTempAbortEnabled) {
@@ -164,7 +163,7 @@ namespace Automation {
                     }
                     sendFlowStatus(STATE_OPEN_FUEL_VALVE);
                     step++;
-                    return 2 * 1000 * 1000; // delay by 2 seconds
+                    return 500 * 1000; // delay by 2 seconds
                 } else {
                     sendFlowStatus(STATE_ABORT_ARM_OR_LOX_VALVE_LOW_CURRENT);
                     beginAbortFlow();
@@ -177,20 +176,22 @@ namespace Automation {
                     //begin checking loadcell values
                     sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
                 }
+                Valves::closeArmValve();
+                Valves::activateIgniter(); // main valve vent
                 step++;
-                return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
+                return burnTime; //delay by burn time - 0.5 seconds
 
             case 6: // step 6 (close fuel)
                 Valves::closeFuelMainValve();
-                checkForTCAbortTask->enabled = false;
-                checkForLCAbortTask->enabled = false;
+                Valves::closeLoxMainValve();
                 sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
+                sendFlowStatus(STATE_CLOSE_LOX_VALVE);
+                Valves::deactivateIgniter(); // main valve vent
                 step++;
-                return fuelCloseLead; 
+                return 50 * 1000; 
 
             case 7: // step 7 (close lox)
-                Valves::closeLoxMainValve();
-                sendFlowStatus(STATE_CLOSE_LOX_VALVE);
+                Valves::openArmValve();
                 step++;
                 return 500 * 1000;
 
