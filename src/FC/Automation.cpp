@@ -7,8 +7,9 @@ namespace Automation {
     Task *checkForTCAbortTask = nullptr;
     Task *checkForLCAbortTask = nullptr;
 
-    uint32_t loxLead = 165 * 1000;
+    uint32_t loxOpenLead = 165 * 1000;
     uint32_t burnTime = 25 * 1000 * 1000;
+    uint32_t fuelCloseLead = 500 * 1000;
 
     bool igniterEnabled = false;
     bool breakwireEnabled = false;
@@ -86,36 +87,49 @@ namespace Automation {
         switch(step) {
             case 0: // step 0 (enable and actuate igniter)
                 //TODO: don't even turn on igniter if igniterEnabled = False
-                if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
-                    Valves::enableIgniter();
-                    Valves::activateIgniter();
-                    sendFlowStatus(STATE_ACTIVATE_IGNITER);
-                    step++;
-                    return 500 * 1000; // delay 0.5s
+                if (igniterEnabled) {
+                    if(Valves::breakWire.voltage > breakWireThreshold || !breakwireEnabled) {
+                        Valves::enableIgniter();
+                        Valves::activateIgniter();
+                        sendFlowStatus(STATE_ACTIVATE_IGNITER);
+                        step++;
+                        return 500 * 1000; // delay 0.5s
+                    } else {
+                        sendFlowStatus(STATE_ABORT_BREAKWIRE_BROKEN);
+                        beginAbortFlow();
+                        return 0;
+                    }
                 } else {
-                    sendFlowStatus(STATE_ABORT_BREAKWIRE_BROKEN);
-                    beginAbortFlow();
-                    return 0;
+                    return 500 * 1000; // even if step is disabled use same delay
                 }
-            case 1: // step 1 after short period turn off igniter and disable igniter power
-                Valves::disableIgniter();
-                Valves::deactivateIgniter();
-                sendFlowStatus(STATE_DEACTIVATE_DISABLE_IGNITER);
-                step++;
-                return 1500 * 1000; // delay 1.5s
-
-            case 2: // step 2
-                // check igniter current trigger and break wire
-                if ((igniterTriggered || !igniterEnabled)
-                        && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
-                    Valves::openArmValve();
-                    sendFlowStatus(STATE_OPEN_ARM_VALVE);
+            case 1: // turn off igniter and disable igniter power after short period
+                if (igniterEnabled) {
+                    Valves::disableIgniter();
+                    Valves::deactivateIgniter();
+                    sendFlowStatus(STATE_DEACTIVATE_DISABLE_IGNITER);
                     step++;
-                    return 500 * 1000; // delay 0.5s
+                    return 1500 * 1000; // delay 1.5s
                 } else {
-                    sendFlowStatus(STATE_ABORT_BREAKWIRE_UNBROKEN);
-                    beginAbortFlow();
-                    return 0;
+                    return 1500 * 1000; // even if step is disabled use same delay
+                }
+
+            case 2: // step 2: turn on arm valve, dependent on igniter current & breakwire
+
+                if (igniterEnabled) {
+                // check igniter current trigger and break wire
+                    if ((igniterTriggered)
+                            && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
+                        Valves::openArmValve();
+                        sendFlowStatus(STATE_OPEN_ARM_VALVE);
+                        step++;
+                        return 500 * 1000; // delay 0.5s
+                    } else {
+                        sendFlowStatus(STATE_ABORT_BREAKWIRE_UNBROKEN);
+                        beginAbortFlow();
+                        return 0;
+                    }
+                } else {
+                    return 500 * 1000; // even if step is disabled use same delay
                 }
 
             case 3: // step 3
@@ -160,7 +174,7 @@ namespace Automation {
                 checkForLCAbortTask->enabled = false;
                 sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
                 step++;
-                return 200 * 1000;
+                return fuelCloseLead; 
 
             case 7: // step 7 (close lox)
                 Valves::closeLoxMainValve();
