@@ -19,6 +19,8 @@ namespace OCHandler {
         ioOCExpander.pinMode(11, INPUT);
         ioOCExpander.pinMode(12, INPUT);
         ioOCExpander.pinMode(13, INPUT);
+        ioOCExpander.pinMode(14, INPUT);
+        ioOCExpander.pinMode(15, INPUT);
 
         pinMode(interruptPin, INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
