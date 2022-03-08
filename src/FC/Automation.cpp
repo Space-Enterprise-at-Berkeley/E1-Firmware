@@ -8,7 +8,7 @@ namespace Automation {
     Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = 165 * 1000;
-    uint32_t burnTime = 25 * 1000 * 1000;
+    uint32_t burnTime = 3 * 1000 * 1000;
 
     bool igniterEnabled = false;
     bool breakwireEnabled = false;
@@ -148,6 +148,9 @@ namespace Automation {
                 }
 
             case 5: // enable Load Cell abort
+                Valves::closeArmValve();
+                Valves::activateLoxTankMidHtr();
+                Valves::activateLoxTankBottomHtr();
                 checkForLCAbortTask->enabled = true;
                 //begin checking loadcell values
                 sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
@@ -156,6 +159,7 @@ namespace Automation {
 
             case 6: // step 6 (close fuel)
                 Valves::closeFuelMainValve();
+                Valves::closeLoxMainValve();
                 checkForTCAbortTask->enabled = false;
                 checkForLCAbortTask->enabled = false;
                 sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
@@ -163,12 +167,17 @@ namespace Automation {
                 return 200 * 1000;
 
             case 7: // step 7 (close lox)
-                Valves::closeLoxMainValve();
+                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateLoxTankBottomHtr();
+                Valves::openArmValve();
+                
                 sendFlowStatus(STATE_CLOSE_LOX_VALVE);
                 step++;
                 return 500 * 1000;
 
             case 8: // step 8 (close arm valve)
+                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateLoxTankBottomHtr();
                 Valves::closeArmValve();
                 sendFlowStatus(STATE_CLOSE_ARM_VALVE);
                 step++;

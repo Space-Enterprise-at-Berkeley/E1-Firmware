@@ -56,10 +56,10 @@ namespace Valves {
     void closeLoxGemValve(uint8_t OCShutoff = 0);
 
     void activateLoxTankBottomHtr();
-    void deavtivateLoxTankBottomHtr(uint8_t OCShutoff = 0);
+    void deactivateLoxTankBottomHtr(uint8_t OCShutoff = 0);
     
     void activateLoxTankMidHtr();
-    void deavtivateLoxTankMidHtr(uint8_t OCShutoff = 0);
+    void deactivateLoxTankMidHtr(uint8_t OCShutoff = 0);
 
     void activateLoxTankTopHtr();
     void deavtivateLoxTankTopHtr(uint8_t OCShutoff = 0);

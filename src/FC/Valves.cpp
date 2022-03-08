@@ -54,13 +54,13 @@ namespace Valves {
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
                       .statusPacketID = 34,
-                      .pin = HAL::chan5Pin,
+                      .pin = HAL::chan3Pin,
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 0.1,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan5};
+                      .ina = &HAL::chan3};
     
     Valve loxTankBottomHtr = {.valveID = 5, // actuated from the IO Expander
                       .statePacketID = 45,
@@ -76,13 +76,13 @@ namespace Valves {
     Valve loxTankMidHtr = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
                       .statusPacketID = 36,
-                      .pin = HAL::chan3Pin, // dont use pin
+                      .pin = HAL::chan5Pin, // dont use pin
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan3};
+                      .ina = &HAL::chan5};
 
     Valve loxTankTopHtr = {.valveID = 7, // actuated from the IO Expander
                       .statePacketID = 47,
