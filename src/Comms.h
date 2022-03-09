@@ -13,6 +13,8 @@ namespace Comms {
 
     const char * const ssid = "eureka_cart";
     const char * const password = "Up_Dog69";
+    // const char * const ssid = "cap";
+    // const char * const password = "Hihihi123";
 
     const IPAddress local_IP(10, 0, 0, IP_ADDRESS_END);
     const IPAddress gateway(10, 0, 0, 1);
