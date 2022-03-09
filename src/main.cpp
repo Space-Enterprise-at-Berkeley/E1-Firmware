@@ -34,7 +34,7 @@ void setup()
 unsigned long previousMillis = 0;  
 const long interval = 25;
 
-Comms::Packet capPacket = {.id = 220};
+Comms::Packet capPacket = {.id = PACKET_ID};
 
 void loop()
 {
