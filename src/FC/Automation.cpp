@@ -9,6 +9,7 @@ namespace Automation {
 
     uint32_t loxLead = 165 * 1000;
     uint32_t burnTime = 3 * 1000 * 1000;
+    uint32_t ventTime = 200 * 1000;
 
     bool igniterEnabled = false;
     bool breakwireEnabled = false;
@@ -148,37 +149,40 @@ namespace Automation {
                 }
 
             case 5: // enable Load Cell abort
-                Valves::closeArmValve();
-                Valves::activateLoxTankMidHtr();
-                Valves::activateLoxTankBottomHtr();
                 checkForLCAbortTask->enabled = true;
                 //begin checking loadcell values
                 sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
                 step++;
-                return burnTime - (2 * 1000 * 1000); //delay by burn time - 2 seconds
+                return burnTime - (2 * 1000 * 1000 + ventTime + 50*1000); //delay by burn time - 2 seconds - 200 ms
 
-            case 6: // step 6 (close fuel)
-                Valves::closeFuelMainValve();
+            case 6: // step 6 (vent pneumatic line)
+                Valves::closeArmValve(); //close arm to allow vent
+                Valves::activateLoxTankMidHtr(); //vent 1
+                Valves::activateLoxTankBottomHtr(); //vent 2
+                step++;
+                return ventTime;
+
+            case 7: // step 7 (close 5ways and close pneumatic line vents)
                 Valves::closeLoxMainValve();
+                Valves::closeFuelMainValve();
+                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateLoxTankBottomHtr(); 
+
+                step++;
+                return 50 * 1000; //delay to allow solenoid actuation before re-arm
+
+            case 8: // step 8 (arm main to close valves)
+                Valves::openArmValve(); // reopen arm to close valves
+                
                 checkForTCAbortTask->enabled = false;
                 checkForLCAbortTask->enabled = false;
                 sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
-                step++;
-                return 200 * 1000;
-
-            case 7: // step 7 (close lox)
-                Valves::deactivateLoxTankMidHtr();
-                Valves::deactivateLoxTankBottomHtr();
-                Valves::openArmValve();
-                
                 sendFlowStatus(STATE_CLOSE_LOX_VALVE);
                 step++;
                 return 500 * 1000;
 
-            case 8: // step 8 (close arm valve)
-                Valves::deactivateLoxTankMidHtr();
-                Valves::deactivateLoxTankBottomHtr();
-                Valves::closeArmValve();
+            case 9: // step 9 (close arm valve)
+                Valves::closeArmValve(); 
                 sendFlowStatus(STATE_CLOSE_ARM_VALVE);
                 step++;
                 return 1500; //delay for gap in status messages
@@ -196,10 +200,9 @@ namespace Automation {
         sendFlowStatus(STATE_MANUAL_SAFE_ABORT);
     }
 
-    uint8_t abortStep;
     void beginAbortFlow() {
         if(!abortFlowTask->enabled) {
-            abortStep = 0;
+            step = 0;
             flowTask->enabled = false;
             abortFlowTask->nexttime = micros() + 1500; // 1500 is a dirty hack to make sure flow status gets recorded. Ask @andy
             abortFlowTask->enabled = true;
@@ -209,18 +212,34 @@ namespace Automation {
     }
 
     uint32_t abortFlow() {
-        switch(abortStep) {
-            case 0:
-                Valves::closeFuelMainValve();
-                Valves::closeLoxMainValve();
+        DEBUG("ABORT STEP: ");
+        DEBUG(step);
+        DEBUG("\n");
+        switch(step) {
+            case 0: // deactivate igniter and vent pneumatics
                 Valves::deactivateIgniter();
-                abortStep++;
-                return 2 * 1000 * 1000; //delay by 2 seconds for valves to close
-            case 1:
-                Valves::closeArmValve();
-                abortStep++;
-                return 1 * 1000 * 1000; //delay by 1 second for arming valve to close
-            default:
+
+                Valves::closeArmValve(); //close arm to allow vent
+                Valves::activateLoxTankMidHtr(); //vent 1
+                Valves::activateLoxTankBottomHtr(); //vent 2
+
+                step++;
+                return ventTime;
+            case 1: // close 5ways
+                Valves::closeLoxMainValve();
+                Valves::closeFuelMainValve();
+                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateLoxTankBottomHtr(); 
+
+                step++;
+                return 50 * 1000; //delay to allow solenoid actuation before re-arm
+            case 2: // physically close valves
+                Valves::openArmValve(); // reopen arm to close valves
+
+                step++;
+                return 500 * 1000;
+            default: // end
+                Valves::closeArmValve(); 
                 abortFlowTask->enabled = false;
                 sendFlowStatus(STATE_ABORT_END_FLOW);
                 return 0;
