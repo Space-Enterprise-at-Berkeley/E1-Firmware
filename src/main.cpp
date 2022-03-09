@@ -26,7 +26,6 @@ void setup()
 
   _tempSens.init();
 
-  pinMode(STATUS_LED, OUTPUT);
   pinMode(EN_485, OUTPUT);
   pinMode(STATUS_LED, OUTPUT);
   pinMode(17, OUTPUT);
@@ -39,21 +38,21 @@ Comms::Packet capPacket = {.id = 220};
 
 void loop()
 {
-  digitalWrite(STATUS_LED, LOW);
   digitalWrite(EN_485, HIGH);
+  digitalWrite(STATUS_LED, LOW);
   digitalWrite(17, LOW);
-
 
   unsigned long currentMillis = millis();
   
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
+
     float capValue = _capSens.readCapacitance();
+    float tempValue = _tempSens.readTemperature();
+
     capPacket.len = 0;
-
-    Serial.println(capValue);
-
     Comms::packetAddFloat(&capPacket, capValue);
+    Comms::packetAddFloat(&capPacket, tempValue);
     Comms::emitPacket(&capPacket);
   }
 }
