@@ -135,7 +135,7 @@ namespace Automation {
             case 4: // step 4
                 // check arm valve current, loxMain current, fuelMain continuity
                 if (Valves::armValve.current > currentThreshold
-                        && Valves::loxMainValve.current > currentThreshold) {
+                        && Valves::loxMainValve.current > mainValveCurrentThreshold) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
                     checkForTCAbortTask->enabled = true;
