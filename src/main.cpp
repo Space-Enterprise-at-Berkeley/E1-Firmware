@@ -12,15 +12,12 @@
 
 #define NUM_LEDS 144
 #define LOX_DATA_PIN 21
-#define FUEL_DATA_PIN 20
+#define FUEL_DATA_PIN 17
 #define NUM_LEDS2 300
 #define DATA_PIN2 12
 
-#ifdef LOX
-CRGB led_color(0, 50, 98);
-#else
-CRGB led_color(100, 60, 0);
-#endif
+CRGB lox_color(0, 50, 98);
+CRGB fuel_color(100, 60, 0);
 
 CRGB loxLed[NUM_LEDS];
 CRGB fuelLed[NUM_LEDS];
@@ -77,7 +74,7 @@ void loxLedPacketHandler(Comms::Packet tmp)
   loxCapConnected = true;
   float capValue = Comms::packetGetFloat(&tmp, 0);
 
-  float scaledLED = (capValue - LOX_BOT) / (LOX_BOT - LOX_BOT) * NUM_LEDS;
+  float scaledLED = (capValue - LOX_BOT) / (LOX_TOP - LOX_BOT) * NUM_LEDS;
   if (scaledLED < 0)
   {
     for (int i = 0; i < NUM_LEDS; i++)
@@ -89,7 +86,7 @@ void loxLedPacketHandler(Comms::Packet tmp)
   {
     for (int i = 0; i < NUM_LEDS; i++)
     {
-      loxLed[i] = led_color;
+      loxLed[i] = lox_color;
     }
   }
   else
@@ -97,14 +94,14 @@ void loxLedPacketHandler(Comms::Packet tmp)
     int full_leds = floor(scaledLED);
     for (int i = 0; i < full_leds; i++)
     {
-      loxLed[i] = led_color;
+      loxLed[i] = lox_color;
     }
     for (int i = full_leds; i < NUM_LEDS; i++)
     {
       loxLed[i] = CRGB(0, 0, 0);
     }
     float overflow = scaledLED - full_leds;
-    loxLed[full_leds] = CRGB(scale8(led_color.r, overflow * 256), scale8(led_color.g, overflow * 256), scale8(led_color.b, overflow * 256));
+    loxLed[full_leds] = CRGB(scale8(lox_color.r, overflow * 256), scale8(lox_color.g, overflow * 256), scale8(lox_color.b, overflow * 256));
   }
   blur1d(loxLed, NUM_LEDS, 172);
   blur1d(loxLed, NUM_LEDS, 172);
@@ -118,7 +115,7 @@ void fuelLedPacketHandler(Comms::Packet tmp)
   fuelCapConnected = true;
   float capValue = Comms::packetGetFloat(&tmp, 0);
 
-  float scaledLED = (capValue - FUEL_BOT) / (FUEL_BOT - FUEL_BOT) * NUM_LEDS;
+  float scaledLED = (capValue - FUEL_BOT) / (FUEL_TOP - FUEL_BOT) * NUM_LEDS;
   if (scaledLED < 0)
   {
     for (int i = 0; i < NUM_LEDS; i++)
@@ -130,7 +127,7 @@ void fuelLedPacketHandler(Comms::Packet tmp)
   {
     for (int i = NUM_LEDS - 1; i >= 0; i--)
     {
-      fuelLed[i] = led_color;
+      fuelLed[i] = fuel_color;
     }
   }
   else
@@ -138,14 +135,14 @@ void fuelLedPacketHandler(Comms::Packet tmp)
     int full_leds = floor(scaledLED);
     for (int i = NUM_LEDS - 1; i > NUM_LEDS - 1 - full_leds; i--)
     {
-      fuelLed[i] = led_color;
+      fuelLed[i] = fuel_color;
     }
     for (int i = NUM_LEDS - 1 - full_leds; i >= 0; i--)
     {
       fuelLed[i] = CRGB(0, 0, 0);
     }
     float overflow = scaledLED - full_leds;
-    fuelLed[NUM_LEDS - 1 - full_leds] = CRGB(scale8(led_color.r, overflow * 256), scale8(led_color.g, overflow * 256), scale8(led_color.b, overflow * 256));
+    fuelLed[NUM_LEDS - 1 - full_leds] = CRGB(scale8(fuel_color.r, overflow * 256), scale8(fuel_color.g, overflow * 256), scale8(fuel_color.b, overflow * 256));
   }
   blur1d(fuelLed, NUM_LEDS, 172);
   blur1d(fuelLed, NUM_LEDS, 172);
