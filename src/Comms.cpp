@@ -13,6 +13,11 @@ namespace Comms {
         registerCallback(0, sendFirmwareVersionPacket);
     }
 
+    uint32_t queryRS485() {
+        Serial485.write();
+        return rs485QueryPeriod/rs485SlaveCount;
+    }
+
     void sendFirmwareVersionPacket(Packet unused) {
         Packet version = {.id = 0, .len = 7};
 

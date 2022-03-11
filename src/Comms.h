@@ -7,6 +7,8 @@
 #include <NativeEthernetUdp.h>
 #include <map>
 
+#define Serial485 Serial8
+
 namespace Comms {
     //https://github.com/sstaub/TeensyID/issues/3
     const uint32_t __m1 = HW_OCOTP_MAC1;
@@ -23,6 +25,10 @@ namespace Comms {
     const IPAddress ip(10, 0, 0, IP_ADDRESS_END);
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
+
+    const uint8_t rs485SlaveCount = 2;
+    const byte rs485Addr[] = {0x00, 0x01};
+    const uint32_t rs485QueryPeriod = 25*1000;
 
     struct Packet {
         uint8_t id;
