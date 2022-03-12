@@ -47,10 +47,11 @@ void loop()
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
 
-    float capValue = _capSens.readCapacitance();
+    float capValue = _capSens.readDiffCapacitance();
     float tempValue = _tempSens.readTemperature();
 
     capPacket.len = 0;
+    Comms::packetAddFloat(&capPacket, capValue);
     Comms::packetAddFloat(&capPacket, capValue);
     Comms::packetAddFloat(&capPacket, tempValue);
     Comms::emitPacket(&capPacket);

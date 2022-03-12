@@ -49,8 +49,8 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
     //clockdiv_regch0.write(0x1001); 
 
     Adafruit_I2CRegister drive_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2, MSBFIRST);
-    // .264mA sensor drive current
-    drive_regch0.write(0xD800);
+    // Sensor drive current
+    drive_regch0.write(0xF000);
     //drive_regch0.write(0xA800);
 
     return true;
@@ -80,9 +80,9 @@ unsigned long FDC2214::readSensor(int channel){
 float FDC2214::readCapacitance(){
     const double fixedL = 0.000010; // 10 μH
     #ifdef LOX
-    const double diffC = .000000000034356; // 34.356 pF
+    const double diffC = .00000000002555; // 34.356 pF
     #elif FUEL
-    const double diffC = .000000000034904; // 34.904 pF
+    const double diffC = .00000000002674; // 34.904 pF
     #endif
 
     const double fRef = 40000000; //40 MHz
