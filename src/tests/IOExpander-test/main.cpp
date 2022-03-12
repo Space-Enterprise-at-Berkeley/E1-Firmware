@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include <PCA9539.h>
 
 PCA9539 ioOCExpander(0x74);
@@ -17,21 +18,22 @@ void printPinStatus() {
     //print expander pins
     for (int i = 0; i <= 15; i++) {
         uint8_t status = ioOCExpander.digitalRead(i);
-        Serial.print("Pin ");
-        Serial.print(i);
+        Serial.print(status);
         Serial.print(" ");
-        Serial.println(status);
     }
-
-    //print interrupt pin
-    Serial.print("Interrupt Pin: ");
-    Serial.println(digitalRead(interruptPin));
+    Serial.print(" - ");
+    Serial.print(digitalRead(interruptPin));
+    Serial.println();
 }
 
 int main() {
     Serial.begin(115200);
+    while(!Serial);
+    Wire.begin();
+    Serial.println("---BEGIN---");
 
-    ioOCExpander.pinMode(1, INPUT);
+    ioOCExpander.pinMode(0, INPUT);
+    ioOCExpander.pinMode(1, INPUT );
     ioOCExpander.pinMode(2, INPUT);
     ioOCExpander.pinMode(3, INPUT);
     ioOCExpander.pinMode(4, INPUT);
@@ -48,11 +50,11 @@ int main() {
     ioOCExpander.pinMode(15, INPUT);
 
     pinMode(interruptPin, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
+    // attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
 
     while(1) {
         printPinStatus();
-        delay(50);
+        delay(500);
     }
     
     return 0;
