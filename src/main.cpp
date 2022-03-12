@@ -5,10 +5,10 @@
 #include <Comms.h>
 #include <Common.h>
 
-#define LOX_BOT 100
-#define LOX_TOP 125
-#define FUEL_BOT 100
-#define FUEL_TOP 125
+#define LOX_BOT 331
+#define LOX_TOP 356
+#define FUEL_BOT 320
+#define FUEL_TOP 345
 
 #define NUM_LEDS 144
 #define LOX_DATA_PIN 21
@@ -56,11 +56,11 @@ void loop()
     startHue = startHue % 256;
     if (!loxCapConnected)
     {
-      fill_rainbow(loxLed, NUM_LEDS, startHue, 255 / NUM_LEDS);
+      fill_rainbow(loxLed, NUM_LEDS, (startHue*-1)%256, 1);
     }
     if (!fuelCapConnected)
     {
-      fill_rainbow(fuelLed, NUM_LEDS, startHue, 255 / NUM_LEDS);
+      fill_rainbow(fuelLed, NUM_LEDS, startHue, 1);
     }
 #ifdef LOX
     fill_rainbow(leds2, NUM_LEDS2, startHue, 255 / NUM_LEDS);
