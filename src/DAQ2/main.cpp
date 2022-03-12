@@ -1,6 +1,7 @@
 #include <Common.h>
 #include <Comms.h>
 #include "HAL.h"
+#include "LoadCells.h"
 
 #include <Arduino.h>
 
@@ -64,6 +65,9 @@ Task taskTable[] = {
     {&tc2Sample, 0},
     {&tc3Sample, 0},
     {&tc4Sample, 0},
+
+    // load cells
+    {&LoadCells::sampleLoadCells, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -80,6 +84,8 @@ int main() {
     DEBUG("AFTER HAL\n");
     Comms::initComms();
     DEBUG("AFTER COMMS");
+    LoadCells::initLoadCells();
+    DEBUG("LOAD CELLS INITIALIZED");
 
     while(1) {
         uint32_t ticks = micros(); // current time in microseconds
