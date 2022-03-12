@@ -44,6 +44,9 @@ Comms::Packet capPacket = {.id = PACKET_ID};
 
 void loop()
 {
+
+  ArduinoOTA.handle();
+
   digitalWrite(EN_485, HIGH);
   digitalWrite(STATUS_LED, LOW);
   digitalWrite(17, LOW);
