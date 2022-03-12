@@ -5,6 +5,7 @@
 
 #include <Common.h>
 #include <Comms.h>
+#include "BlackBox.h"
 #include <Wire.h>
 
 

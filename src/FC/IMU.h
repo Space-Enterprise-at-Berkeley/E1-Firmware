@@ -3,6 +3,7 @@
 #include "HAL.h"
 
 #include <Comms.h>
+#include "BlackBox.h"
 #include <BNO055.h>
 
 #include <Arduino.h>

@@ -11,12 +11,25 @@ namespace BlackBox {
     int bufferIndex = 0;
     uint8_t buffer[256] = {0};
 
+    std::vector<Comms::PacketEmitter> emitters;
+
     bool writeEnabled = false;
 
     Comms::Packet dataDumpPacket = {.id = 54};
-
+    
+    /**
+     * @brief writes and clears the packet buffer
+     * 
+     */
+    void writeBuffer() {
+        File dataFile = blackBox.open(filePath, FILE_WRITE);
+        dataFile.write(buffer, 256);
+        dataFile.close();
+        //reset buffer
+        std::fill_n(buffer, 256, 0);
+        bufferIndex = 0;
+    }
     void init() {
-        Comms::registerPacketSubscriber(&writePacket);
         Comms::registerCallback(153, &getData);
         Comms::registerCallback(154, &beginWrite);
         Comms::registerCallback(155, &erase);
@@ -67,19 +80,6 @@ namespace BlackBox {
         }
     }
 
-    /**
-     * @brief writes and clears the packet buffer
-     * 
-     */
-    void writeBuffer() {
-        File dataFile = blackBox.open(filePath, FILE_WRITE);
-        dataFile.write(buffer, 256);
-        dataFile.close();
-        //reset buffer
-        std::fill_n(buffer, 256, 0);
-        bufferIndex = 0;
-    }
-
     void erase(Comms::Packet packet) {
         blackBox.remove(filePath);
         writeEnabled = false;
@@ -119,5 +119,20 @@ namespace BlackBox {
             DEBUG("BLACKBOX: FILE DOESN'T EXIST");
             DEBUG("\n");
         }
+    }
+
+
+    void writePackets() {
+        uint32_t currTime = micros();
+        for (Comms::PacketEmitter emitter: emitters) {
+            if (currTime - emitter.lastTime > emitter.updatePeriod) {
+                writePacket(*emitter.packet);
+                emitter.lastTime = currTime;
+            }
+        }
+    }
+
+    void registerEmitter(Comms::PacketEmitter packetEmitter) {
+        emitters.push_back(packetEmitter);
     }
 }

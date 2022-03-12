@@ -7,6 +7,8 @@ namespace Barometer {
     float baroAltitude, baroPressure, baroTemperature;
 
     void init() {
+        Comms::registerEmitter({.packet = &baroPacket, .updatePeriod = bmUpdatePeriod});
+        BlackBox::registerEmitter({.packet = &baroPacket, .updatePeriod = bmUpdatePeriod});
     }
     
     uint32_t sampleAltPressTemp() {
@@ -15,11 +17,13 @@ namespace Barometer {
         while (!successfully_measured) {
             successfully_measured = HAL::bmp388.getMeasurements(baroTemperature, baroPressure, baroAltitude);
         }
+
+        //update packet
         baroPacket.len = 0;
         Comms::packetAddFloat(&baroPacket, baroAltitude);
         Comms::packetAddFloat(&baroPacket, baroPressure);
         Comms::packetAddFloat(&baroPacket, baroTemperature);
-        Comms::emitPacket(&baroPacket);
+
         return bmUpdatePeriod;
     }
 }

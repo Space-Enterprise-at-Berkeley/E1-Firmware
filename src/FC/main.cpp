@@ -52,6 +52,8 @@ int main() {
             }
         }
         Comms::processWaitingPackets();
+        Comms::sendPackets();
+        BlackBox::writePackets();
     }
     return 0;
 }

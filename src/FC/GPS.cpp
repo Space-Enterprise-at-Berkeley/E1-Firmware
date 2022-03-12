@@ -23,6 +23,12 @@ namespace GPS {
         HAL::neom9n.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
         HAL::neom9n.setNavigationFrequency(10);
         HAL::neom9n.setAutoPVT(true);
+
+        Comms::registerEmitter({.packet = &latLongPacket, .updatePeriod = gpsUpdatePeriod});
+        BlackBox::registerEmitter({.packet = &latLongPacket, .updatePeriod = gpsUpdatePeriod});
+
+        // Comms::registerEmitter({.packet = &auxPacket, .updatePeriod = gpsUpdatePeriod});
+        // BlackBox::registerEmitter({.packet = &auxPacket, .updatePeriod = gpsUpdatePeriod});
     }
 
     uint32_t latLongSample() {

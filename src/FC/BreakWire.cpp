@@ -5,6 +5,8 @@ namespace BreakWire {
     Comms::Packet breakWirePacket = {.id = 39};
 
     void init() {
+        Comms::registerEmitter({.packet = &breakWirePacket, .updatePeriod = samplingPeriod});
+        BlackBox::registerEmitter({.packet = &breakWirePacket, .updatePeriod = samplingPeriod});
     }
 
     uint32_t sampleBreakWires() {
@@ -14,7 +16,6 @@ namespace BreakWire {
         breakWirePacket.len = 0;
         Comms::packetAddFloat(&breakWirePacket, breakWire1Sample);
         Comms::packetAddFloat(&breakWirePacket, breakWire2Sample);
-        Comms::emitPacket(&breakWirePacket);
 
         return samplingPeriod;
     }

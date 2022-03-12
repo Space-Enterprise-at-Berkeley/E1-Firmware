@@ -12,6 +12,7 @@
 #pragma once
 
 #include <Comms.h>
+#include "BlackBox.h"
 #include "HAL.h"
 
 namespace Barometer {

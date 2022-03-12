@@ -27,6 +27,8 @@ namespace IMU {
     float accelZ = 0.0;
 
     void initIMU() {
+        Comms::registerEmitter({.packet = &imuPacket, .updatePeriod = imuUpdatePeriod});
+        BlackBox::registerEmitter({.packet = &imuPacket, .updatePeriod = imuUpdatePeriod});
     }
 
     uint32_t imuSample() {

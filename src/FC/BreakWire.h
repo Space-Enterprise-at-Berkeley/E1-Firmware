@@ -2,6 +2,7 @@
 
 #include "Arduino.h"
 #include "Comms.h"
+#include "BlackBox.h"
 #include "HAL.h"
 
 namespace BreakWire {

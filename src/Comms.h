@@ -33,6 +33,12 @@ namespace Comms {
         uint8_t data[256];
     };
 
+    struct PacketEmitter {
+        Packet *packet;
+        uint32_t updatePeriod;
+        uint32_t lastTime = 0;
+    };
+
     void initComms();
 
     typedef void (*commFunction)(Packet);
@@ -62,6 +68,29 @@ namespace Comms {
     uint32_t packetGetUint32(Packet *packet, uint8_t index);
     uint32_t packetGetUint8(Packet *packet, uint8_t index);
 
+
+    uint16_t computePacketChecksum(Packet *packet);
+
+    /**
+     * @brief Sends the firmware version packet upon request
+     * 
+     * @param _ unused
+     */
+    void sendFirmwareVersionPacket(Packet unused);
+
+    /**
+     * @brief Registers a packet to be sent every update period.
+     * 
+     * @param packetEmitter A struct consisting of the packet to be sent, the update period, and the last time the packet was sent.
+     */
+    void registerEmitter(PacketEmitter packetEmitter);
+
+    /**
+     * @brief Sends all packets registered by emitters according to their update period.
+     * 
+     */
+    void sendPackets();
+
     /**
      * @brief Sends packet data over ethernet and serial.
      * 
@@ -76,20 +105,4 @@ namespace Comms {
      * @param custom IP address to send to
      */
     void emitPacket(Packet *packet, uint8_t end);
-
-    uint16_t computePacketChecksum(Packet *packet);
-
-    /**
-     * @brief Sends the firmware version packet upon request
-     * 
-     * @param _ unused
-     */
-    void sendFirmwareVersionPacket(Packet unused);
-
-    /**
-     * @brief Each time a packet is emmited, the function passed in will be called.
-     * 
-     * @param func Function that recieves a packet each time one is emitted.
-     */
-    void registerPacketSubscriber(commFunction func);
 };

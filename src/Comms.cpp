@@ -5,7 +5,7 @@ namespace Comms {
     std::map<uint8_t, commFunction> callbackMap;
     EthernetUDP Udp;
     char packetBuffer[sizeof(Packet)];
-    std::vector<commFunction> subscriberList;
+    std::vector<PacketEmitter> emitters;
 
     void initComms() {
         Ethernet.begin((uint8_t *)mac, ip);
@@ -19,7 +19,7 @@ namespace Comms {
 
         char commit[] = FW_COMMIT;
         memcpy(&(version.data), &commit, 7);
-        emitPacket(&version);
+        Comms::emitPacket(&version);
     }
 
     void registerCallback(uint8_t id, commFunction function) {
@@ -76,10 +76,6 @@ namespace Comms {
             // DEBUG('\n');
             evokeCallbackFunction(packet);
         }
-    }
-
-    void registerPacketSubscriber(commFunction func) {
-        subscriberList.push_back(func);
     }
 
     void packetAddFloat(Packet *packet, float value) {
@@ -174,10 +170,6 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
-
-        for (commFunction func: subscriberList) {
-            func(*packet);
-        }
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
@@ -202,11 +194,6 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
-
-        //pass packet to all subscribers
-        for (commFunction func: subscriberList) {
-            func(*packet);
-        }
     }
 
     /**
@@ -236,5 +223,19 @@ namespace Comms {
             sum2 = sum2 + sum1;
         }
         return (((uint16_t)sum2) << 8) | (uint16_t) sum1;
+    }
+
+    void registerEmitter(PacketEmitter packetEmitter) {
+        emitters.push_back(packetEmitter);
+    }
+
+    void sendPackets() {
+        uint32_t currTime = micros();
+        for (PacketEmitter emitter: emitters) {
+            if (currTime - emitter.lastTime > emitter.updatePeriod) {
+                emitPacket(emitter.packet);
+                emitter.lastTime = currTime;
+            }
+        }
     }
 };

@@ -7,10 +7,7 @@
 
 namespace BlackBox {
     void init();
-    void writePacket(Comms::Packet packet);
-    bool hasData();
     void erase(Comms::Packet packet);
-    void writeBuffer();
     void beginWrite(Comms::Packet packet);
 
     /**
@@ -18,4 +15,17 @@ namespace BlackBox {
      * 
      */
     void getData(Comms::Packet packet);
+
+    /**
+     * @brief Registers a packet to be written to the blackbox as specified by its update period.
+     * 
+     * @param packetEmitter A struct containing the packet to be sent and the update period.
+     */
+    void registerEmitter(Comms::PacketEmitter packetEmitter);
+
+    /**
+     * @brief Write all packets registered by emitters as specified by update period.
+     * 
+     */
+    void writePackets();
 }
