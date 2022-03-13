@@ -158,7 +158,6 @@ namespace Automation {
             case 6: // step 6 (vent pneumatic line)
                 Valves::closeArmValve(); //close arm to allow vent
                 Valves::activateLoxTankMidHtr(); //vent 1
-                Valves::activateLoxTankBottomHtr(); //vent 2
                 step++;
                 return ventTime;
 
@@ -166,7 +165,6 @@ namespace Automation {
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
                 Valves::deactivateLoxTankMidHtr();
-                Valves::deactivateLoxTankBottomHtr(); 
 
                 step++;
                 return 50 * 1000; //delay to allow solenoid actuation before re-arm
@@ -221,7 +219,6 @@ namespace Automation {
 
                 Valves::closeArmValve(); //close arm to allow vent
                 Valves::activateLoxTankMidHtr(); //vent 1
-                Valves::activateLoxTankBottomHtr(); //vent 2
 
                 step++;
                 return ventTime;
@@ -229,7 +226,6 @@ namespace Automation {
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
                 Valves::deactivateLoxTankMidHtr();
-                Valves::deactivateLoxTankBottomHtr(); 
 
                 step++;
                 return 50 * 1000; //delay to allow solenoid actuation before re-arm

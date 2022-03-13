@@ -19,8 +19,8 @@ namespace Automation {
     const float loadCellThreshold = 100.0; //TODO actual value 100
     const float loadCellSampleRate = 0.0125;
 
-    const float autoVentUpperThreshold = 600; //TODO actual value 650 - 620
-    const float autoVentLowerThreshold = 580;
+    const float autoVentUpperThreshold = 630; //TODO actual value 650 - 620
+    const float autoVentLowerThreshold = 610;
 
     extern Task *flowTask; // perform burn
     extern Task *abortFlowTask;
