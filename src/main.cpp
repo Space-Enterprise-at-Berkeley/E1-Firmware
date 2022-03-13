@@ -5,10 +5,10 @@
 #include <Comms.h>
 #include <Common.h>
 
-#define LOX_BOT 331
-#define LOX_TOP 356
-#define FUEL_BOT 320
-#define FUEL_TOP 345
+#define LOX_BOT 148
+#define LOX_TOP 178
+#define FUEL_BOT 135
+#define FUEL_TOP 165
 
 #define NUM_LEDS 144
 #define LOX_DATA_PIN 21
