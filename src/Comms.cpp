@@ -6,6 +6,7 @@ namespace Comms {
     EthernetUDP Udp;
     char packetBuffer[sizeof(Packet)];
     std::vector<commFunction> subscriberList;
+    bool telemetryEnabled = true;
 
     void initComms() {
         Ethernet.begin((uint8_t *)mac, ip);
@@ -24,6 +25,10 @@ namespace Comms {
 
     void registerCallback(uint8_t id, commFunction function) {
         callbackMap.insert(std::pair<int, commFunction>(id, function));
+    }
+
+    void disableTelemetry(bool state) {
+        telemetryEnabled = state;
     }
 
     /**
@@ -149,31 +154,33 @@ namespace Comms {
         packet->checksum[1] = checksum >> 8;
 
         // Send over serial, but disable if in debug mode
-        #ifndef DEBUG_MODE
-        Serial.write(packet->id);
-        Serial.write(packet->len);
-        Serial.write(packet->timestamp, 4);
-        Serial.write(packet->checksum, 2);
-        Serial.write(packet->data, packet->len);
-        Serial.write('\n');
-        #endif
+        if (telemetryEnabled) {
+            #ifndef DEBUG_MODE
+            Serial.write(packet->id);
+            Serial.write(packet->len);
+            Serial.write(packet->timestamp, 4);
+            Serial.write(packet->checksum, 2);
+            Serial.write(packet->data, packet->len);
+            Serial.write('\n');
+            #endif
 
-        //Send over ethernet to both ground stations
-        Udp.beginPacket(groundStation1, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
+            //Send over ethernet to both ground stations
+            Udp.beginPacket(groundStation1, port);
+            Udp.write(packet->id);
+            Udp.write(packet->len);
+            Udp.write(packet->timestamp, 4);
+            Udp.write(packet->checksum, 2);
+            Udp.write(packet->data, packet->len);
+            Udp.endPacket();
 
-        Udp.beginPacket(groundStation2, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
+            Udp.beginPacket(groundStation2, port);
+            Udp.write(packet->id);
+            Udp.write(packet->len);
+            Udp.write(packet->timestamp, 4);
+            Udp.write(packet->checksum, 2);
+            Udp.write(packet->data, packet->len);
+            Udp.endPacket();
+        }
 
         for (commFunction func: subscriberList) {
             func(*packet);
@@ -195,13 +202,15 @@ namespace Comms {
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
 
-        Udp.beginPacket(IPAddress(10, 0, 0, end), port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
+        if (telemetryEnabled) {
+            Udp.beginPacket(IPAddress(10, 0, 0, end), port);
+            Udp.write(packet->id);
+            Udp.write(packet->len);
+            Udp.write(packet->timestamp, 4);
+            Udp.write(packet->checksum, 2);
+            Udp.write(packet->data, packet->len);
+            Udp.endPacket();
+        }
 
         //pass packet to all subscribers
         for (commFunction func: subscriberList) {
