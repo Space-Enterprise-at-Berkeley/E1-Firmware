@@ -4,8 +4,5 @@
 #include "Barometer.h"
 
 namespace Apogee {
-    void init(Task *disableCommsTask);
-
-    void startAltitudeDetection();
-    uint32_t disableCommsTask();
+    void init();
 }

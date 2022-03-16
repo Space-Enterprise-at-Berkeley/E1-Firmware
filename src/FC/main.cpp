@@ -15,9 +15,6 @@
 #include <SPI.h>
 
 Task taskTable[] = {
-    //Apogee
-    {Apogee::disableCommsTask, 0, false},
-
     // Barometer
     {Barometer::sampleAltPressTemp, 0},
     {Barometer::zeroAltitude, 0},
@@ -49,7 +46,7 @@ int main() {
     BlackBox::init();
     BreakWire::init();
     Camera::init();
-    Apogee::init(&taskTable[0]);
+    Apogee::init();
     Automation::init();
 
     while(1) {

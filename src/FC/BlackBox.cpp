@@ -37,6 +37,9 @@ namespace BlackBox {
 
     void beginWrite(Comms::Packet packet) {
         DEBUG("BLACKBOX: WRITE ENABLED");
+        DEBUG(" WITH USED SPACE: ");
+        DEBUG(blackBox.usedSize());
+        DEBUG("\n");
         writeEnabled = true;
     }
 
@@ -55,8 +58,8 @@ namespace BlackBox {
             buffer[bufferIndex + 3] = packet.timestamp[1];
             buffer[bufferIndex + 4] = packet.timestamp[2];
             buffer[bufferIndex + 5] = packet.timestamp[3];
-            buffer[bufferIndex + 6] = packet.checksum[1];
-            buffer[bufferIndex + 7] = packet.checksum[2];
+            buffer[bufferIndex + 6] = packet.checksum[0];
+            buffer[bufferIndex + 7] = packet.checksum[1];
 
             bufferIndex += 8;
 

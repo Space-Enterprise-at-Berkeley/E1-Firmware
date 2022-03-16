@@ -7,7 +7,6 @@ namespace Automation {
     }
 
     void configureLaunch(Comms::Packet packet) {
-        Apogee::startAltitudeDetection();
         BlackBox::beginWrite(packet);
     }
 
