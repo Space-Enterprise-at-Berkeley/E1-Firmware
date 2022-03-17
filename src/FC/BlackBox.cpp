@@ -8,8 +8,9 @@ namespace BlackBox {
 
     EthernetUDP Udp;
 
+    const int bufferSize = 2048;
     int bufferIndex = 0;
-    uint8_t buffer[256] = {0};
+    uint8_t buffer[bufferSize] = {0};
 
     bool writeEnabled = false;
 
@@ -47,7 +48,7 @@ namespace BlackBox {
         if (writeEnabled && blackBox.usedSize() + 50 <= blackBox.totalSize()) {
 
             //check if buffer full
-            if (bufferIndex + 8 + packet.len > 256) {
+            if (bufferIndex + 8 + packet.len > bufferSize) {
                 writeBuffer();
             }
 
@@ -76,10 +77,10 @@ namespace BlackBox {
      */
     void writeBuffer() {
         File dataFile = blackBox.open(filePath, FILE_WRITE);
-        dataFile.write(buffer, 256);
+        dataFile.write(buffer, bufferIndex + 1);
         dataFile.close();
         //reset buffer
-        std::fill_n(buffer, 256, 0);
+        std::fill_n(buffer, bufferSize, 0);
         bufferIndex = 0;
     }
 
@@ -91,27 +92,35 @@ namespace BlackBox {
     }
 
     void getData(Comms::Packet packet) {
+        DEBUG("BLACKBOX: IN GET DATA");
+        DEBUG("\n");
         if (blackBox.exists(filePath)) {
 
             uint8_t readBuffer[256] = {0};
 
+            DEBUG("BLACKBOX: EMITTING DATA DUMP PACKET");
+            DEBUG("\n");
             // signal beginning of data dump
             dataDumpPacket.len = 0;
             Comms::packetAddUint8(&dataDumpPacket, 0);
             Comms::emitPacket(&dataDumpPacket);
 
-            Udp.beginPacket(Comms::groundStation1, Comms::port);
-
             File dataFile = blackBox.open(filePath, FILE_READ);
+            DEBUG("BLACKBOX: READING FROM FILE");
+            DEBUG("\n");
             while(dataFile.read(readBuffer, 256) > 0) {
                 for (int i = 0; i < 256; i++) {
+                // DEBUG("BLACKBOX: WRITING OVER ETHERNET");
+                // DEBUG("\n");
                     Serial.write(readBuffer[i]);
-                    Udp.write(readBuffer[i]);
+                    Serial.flush();
+                    // Udp.write(readBuffer[i]);
                 }
             }
             
-            Udp.endPacket();
             dataFile.close();
+            DEBUG("BLACKBOX: DUMP END");
+            DEBUG("\n");
             writeEnabled = false;
 
             // signal ending of data dump

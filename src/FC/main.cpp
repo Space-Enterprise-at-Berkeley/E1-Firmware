@@ -27,6 +27,9 @@ Task taskTable[] = {
 
     //Break Wire
     {BreakWire::sampleBreakWires, 0},
+
+    //Automation
+    {Automation::sendFlightModePacket, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -40,7 +43,7 @@ int main() {
 
     HAL::initHAL();
     Comms::initComms();
-    Barometer::init(&taskTable[2]);
+    Barometer::init(&taskTable[1]);
     IMU::initIMU();
     GPS::initGPS();
     BlackBox::init();

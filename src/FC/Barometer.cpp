@@ -36,6 +36,8 @@ namespace Barometer {
         //if offset calculation is done, disable the task.
         if (samples >= zeroSamples) {
             _zeroAltitudeTask->enabled = false;
+            DEBUG("STOPPED ZEROING");
+            DEBUG("\n");
         } 
 
         // get readings

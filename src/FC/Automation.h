@@ -7,4 +7,5 @@
 namespace Automation {
     void init();
     void configureLaunch(Comms::Packet packet);
+    uint32_t sendFlightModePacket();
 }
