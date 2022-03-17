@@ -1,8 +1,16 @@
 #pragma once
 
-#include "Comms.h"
-#include "Barometer.h"
+#include <Common.h>
+#include "HAL.h"
+#include <Comms.h>
 
-namespace Apogee {
-    void init();
-}
+#include <Arduino.h>
+
+namespace Apogee {    
+    void initApogee();
+
+    void startApogeeDetection();
+    float altitudeToVelocity(float altitude);
+    uint32_t apogeeDetectionTask();
+
+};

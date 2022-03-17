@@ -10,6 +10,7 @@ namespace Automation {
     }
 
     void configureLaunch(Comms::Packet packet) {
+        Apogee::startApogeeDetection();
         BlackBox::beginWrite(packet);
         flightMode = 1;
     }

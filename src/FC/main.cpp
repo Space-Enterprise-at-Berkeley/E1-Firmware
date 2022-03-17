@@ -30,6 +30,9 @@ Task taskTable[] = {
 
     //Automation
     {Automation::sendFlightModePacket, 0},
+
+    //Apogee
+    {Apogee::apogeeDetectionTask, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -49,7 +52,7 @@ int main() {
     BlackBox::init();
     BreakWire::init();
     Camera::init();
-    Apogee::init();
+    Apogee::initApogee();
     Automation::init();
 
     while(1) {
