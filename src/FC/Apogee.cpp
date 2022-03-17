@@ -44,7 +44,7 @@ namespace Apogee {
         }
         velocityAvg = runningSum / stepAvg;
 
-        if ((velocityAvg < 0) && (apogeeCheck == 0) && (launchCheck == 1))  {
+        if ((velocityAvg < 0) && (apogeeCheck == 0) && (launchCheck == 1) && Barometer::baroAltitude > 100)  {
             apogeeCheck = 1;
             apogeeTime = millis();
         }
