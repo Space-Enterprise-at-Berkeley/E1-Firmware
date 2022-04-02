@@ -34,9 +34,9 @@ void setup()
 }
 
 unsigned long previousMillis = 0;
-const long interval = 25;
+const long interval = 15;
 
-const uint8_t logSecs = 8;
+const uint8_t logSecs = 5;
 
 CircularBuffer<float, (logSecs * 1000 / interval)> capBuffer;
 
@@ -44,9 +44,6 @@ Comms::Packet capPacket = {.id = PACKET_ID};
 
 void loop()
 {
-
-  ArduinoOTA.handle();
-
   digitalWrite(EN_485, HIGH);
   digitalWrite(STATUS_LED, LOW);
   digitalWrite(17, LOW);
@@ -61,16 +58,17 @@ void loop()
 
     capBuffer.push(capValue);
 
-    float maxCap = 0;
+    float avgCap = 0;
     for (int i = 0; i < capBuffer.size(); i++){
-      if(maxCap < capBuffer[i]) maxCap = capBuffer[i];
+      avgCap += capBuffer[i];
     }
+    avgCap /= capBuffer.size();
 
     float tempValue = _tempSens.readTemperature();
 
     capPacket.len = 0;
     Comms::packetAddFloat(&capPacket, capValue);
-    Comms::packetAddFloat(&capPacket, maxCap);
+    Comms::packetAddFloat(&capPacket, avgCap);
     Comms::packetAddFloat(&capPacket, tempValue);
     Comms::emitPacket(&capPacket);
   }

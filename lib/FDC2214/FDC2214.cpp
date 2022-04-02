@@ -41,7 +41,7 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
 
     Adafruit_I2CRegister rcount_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH0, 2, MSBFIRST);
     // 8192 RCount
-    rcount_regch0.write(0xFFFF);
+    rcount_regch0.write(0xA800);
 
     Adafruit_I2CRegister clockdiv_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH0, 2, MSBFIRST);
     // Single-ended configuration; 1x Clock divider for differential; 2x for single ended
@@ -50,8 +50,8 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
 
     Adafruit_I2CRegister drive_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2, MSBFIRST);
     // Sensor drive current
-    drive_regch0.write(0xF000);
     //drive_regch0.write(0xA800);
+    drive_regch0.write(0xF800);
 
     return true;
 }
@@ -80,9 +80,9 @@ unsigned long FDC2214::readSensor(int channel){
 float FDC2214::readCapacitance(){
     const double fixedL = 0.000010; // 10 μH
     #ifdef LOX
-    const double diffC = .00000000002555; // 34.356 pF
+    const double diffC = .000000000038; 
     #elif FUEL
-    const double diffC = .00000000002674; // 34.904 pF
+    const double diffC = .000000000038; 
     #endif
 
     const double fRef = 40000000; //40 MHz
