@@ -38,6 +38,13 @@ namespace Comms {
     typedef void (*commFunction)(Packet);
 
     /**
+     * @brief Turns on or off telemetry over radio, always sends packets to subscribers.
+     * 
+     * @param state Whether to turn radio telemetry on or off. 
+     */
+    void toggleTelemetry(bool state);
+
+    /**
      * @brief Registers methods to be called when Comms receives a packet with a specific ID.
      * 
      * @param id The ID of the packet associated with a specific command.

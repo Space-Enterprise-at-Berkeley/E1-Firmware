@@ -1,6 +1,8 @@
 #include <Common.h>
 #include <Comms.h>
 #include "HAL.h"
+#include "Automation.h"
+#include "Apogee.h"
 #include "BlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
@@ -15,6 +17,7 @@
 Task taskTable[] = {
     // Barometer
     {Barometer::sampleAltPressTemp, 0},
+    {Barometer::zeroAltitude, 0},
 
     {IMU::imuSample, 0},
 
@@ -24,6 +27,12 @@ Task taskTable[] = {
 
     //Break Wire
     {BreakWire::sampleBreakWires, 0},
+
+    //Automation
+    {Automation::sendFlightModePacket, 0},
+
+    //Apogee
+    {Apogee::apogeeDetectionTask, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -37,12 +46,14 @@ int main() {
 
     HAL::initHAL();
     Comms::initComms();
-    Barometer::init();
+    Barometer::init(&taskTable[1]);
     IMU::initIMU();
     GPS::initGPS();
     BlackBox::init();
     BreakWire::init();
     Camera::init();
+    Apogee::initApogee();
+    Automation::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

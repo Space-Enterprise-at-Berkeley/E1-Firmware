@@ -28,8 +28,6 @@ namespace GPS {
     uint32_t latLongSample() {
         //Get Longtitude
         latitude = (float)HAL::neom9n.getLatitude() / 10000000.0;
-        DEBUG(latitude);
-        DEBUG("\n");
 
         //Get Latitude
         longitude = (float)HAL::neom9n.getLongitude() / 10000000.0;

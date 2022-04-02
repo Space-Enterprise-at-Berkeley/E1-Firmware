@@ -9,8 +9,8 @@ namespace BlackBox {
     void init();
     void writePacket(Comms::Packet packet);
     bool hasData();
-    void erase(Comms::Packet packet);
     void writeBuffer();
+    void erase(Comms::Packet packet);
     void beginWrite(Comms::Packet packet);
 
     /**

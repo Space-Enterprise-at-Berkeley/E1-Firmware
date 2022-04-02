@@ -19,7 +19,9 @@ namespace Barometer {
 
     extern float baroAltitude, baroPressure, baroTemperature;
 
-    void init();
+    void init(Task *zeroAltitudeTask);
     // altitude in meters (m), pressure in hectoPascals/millibar (hPa), temperature in degrees Celsius (C)
     uint32_t sampleAltPressTemp();
+
+    uint32_t zeroAltitude();
 }
