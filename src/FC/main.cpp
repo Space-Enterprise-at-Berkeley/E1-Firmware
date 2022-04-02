@@ -50,9 +50,8 @@ Task taskTable[] = {
     {Valves::igniterEnableRelaySample, 0},
 
     // heaters
-    {Valves::loxTankBottomHtrSample, 0},
-    {Valves::loxTankMidHtrSample, 0},
-    {Valves::loxTankTopHtrSample, 0},
+    {Valves::RQDSample, 0},
+    {Valves::mainValveVentSample, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))

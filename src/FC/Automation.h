@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Valves.h"
+#include "Ducers.h"
 #include "Thermocouples.h"
 
 #include <Arduino.h>
