@@ -6,7 +6,7 @@ namespace LoadCells {
 
     void initLoadCells() {
         HAL::lcAmp0.set_scale(3889); // measured imperically
-        HAL::lcAmp1.set_scale(3941); // measured imperically
+        HAL::lcAmp1.set_scale(-3941); // measured imperically
 
         HAL::lcAmp0.tare();
         HAL::lcAmp1.tare();

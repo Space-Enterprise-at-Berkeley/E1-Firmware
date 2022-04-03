@@ -29,7 +29,7 @@ int main() {
     Serial.println(tcSample(&tcAmp2));
     Serial.println("TC3");
     Serial.println(tcSample(&tcAmp3));
-    delay(50);
+    delay(150);
   }
   return 0;
 }
