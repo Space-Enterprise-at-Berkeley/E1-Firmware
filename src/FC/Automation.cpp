@@ -80,6 +80,7 @@ namespace Automation {
         flowPacket.data[0] = status;
         Comms::emitPacket(&flowPacket);
     }
+
     uint32_t flow() {
         DEBUG("STEP: ");
         DEBUG(step);
@@ -141,33 +142,34 @@ namespace Automation {
                     checkForTCAbortTask->enabled = true;
                     sendFlowStatus(STATE_OPEN_FUEL_VALVE);
                     step++;
-                    return 2 * 1000 * 1000; // delay by 2 seconds
+                    return ventTime;
                 } else {
                     sendFlowStatus(STATE_ABORT_ARM_OR_LOX_VALVE_LOW_CURRENT);
                     beginAbortFlow();
                     return 0;
                 }
 
-            case 5: // enable Load Cell abort
+            case 5:
+                Valves::closeArmValve(); //close arm to allow vent
+                Valves::activateLoxTankMidHtr(); //vent 1
+
+                step++;
+                return 2 * 1000 * 1000 - ventTime;
+
+            case 6: // enable Load Cell abort
                 checkForLCAbortTask->enabled = true;
                 //begin checking loadcell values
                 sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
                 step++;
-                return burnTime - (2 * 1000 * 1000 + ventTime + 50*1000); //delay by burn time - 2 seconds - 200 ms
+                return burnTime - (50 * 1000) - (2 * 1000 * 1000); //delay by burn time - 2 seconds - 200 ms
 
-            case 6: // step 6 (vent pneumatic line)
-                Valves::closeArmValve(); //close arm to allow vent
-                Valves::activateLoxTankMidHtr(); //vent 1
-                step++;
-                return ventTime;
-
-            case 7: // step 7 (close 5ways and close pneumatic line vents)
+            case 7:
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
                 Valves::deactivateLoxTankMidHtr();
 
                 step++;
-                return 50 * 1000; //delay to allow solenoid actuation before re-arm
+                return 50 * 1000;
 
             case 8: // step 8 (arm main to close valves)
                 Valves::openArmValve(); // reopen arm to close valves
@@ -191,6 +193,7 @@ namespace Automation {
                 return 0;
         }
     }
+
 
     void beginManualAbortFlow(Comms::Packet packet) {
         // beginAbortFlow();
