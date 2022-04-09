@@ -152,7 +152,7 @@ namespace Automation {
             case 5:
                 if (Valves::fuelMainValve.current > mainValveCurrentThreshold) {
                     Valves::closeArmValve(); //close arm to allow vent
-                    Valves::activateLoxTankMidHtr(); //vent 1
+                    Valves::activateMainValveVent(); //vent 1
 
                     step++;
                     return 2 * 1000 * 1000 - ventTime;
@@ -161,7 +161,6 @@ namespace Automation {
                     beginAbortFlow();
                     return 0;
                 }
-
 
             case 6: // enable Load Cell abort
                 checkForLCAbortTask->enabled = true;
@@ -173,7 +172,7 @@ namespace Automation {
             case 7:
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
-                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateMainValveVent();
 
                 step++;
                 return 50 * 1000;
@@ -228,14 +227,14 @@ namespace Automation {
                 Valves::deactivateIgniter();
 
                 Valves::closeArmValve(); //close arm to allow vent
-                Valves::activateLoxTankMidHtr(); //vent 1
+                Valves::activateMainValveVent(); //vent 1
 
                 step++;
                 return ventTime;
             case 1: // close 5ways
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
-                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateMainValveVent();
 
                 step++;
                 return 50 * 1000; //delay to allow solenoid actuation before re-arm
