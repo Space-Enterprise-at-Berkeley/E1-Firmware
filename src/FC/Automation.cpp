@@ -8,7 +8,7 @@ namespace Automation {
     Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = 165 * 1000;
-    uint32_t burnTime = 3 * 1000 * 1000;
+    uint32_t burnTime = 40 * 1000 * 1000;
     uint32_t ventTime = 200 * 1000;
 
     bool igniterEnabled = false;
@@ -34,7 +34,7 @@ namespace Automation {
         Automation::checkForLCAbortTask = checkForLCAbortTask;
 
         Comms::registerCallback(150, beginFlow);
-        Comms::registerCallback(151, beginManualAbortFlow);
+        Comms::registerCallback(151, beginAbortFlow);
         Comms::registerCallback(120, readLoadCell);
         Comms::registerCallback(152, handleAutoSettings);
     }

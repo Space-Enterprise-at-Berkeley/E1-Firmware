@@ -87,24 +87,24 @@ namespace Valves {
     Valve loxTankTopHtr = {.valveID = 7, // actuated from the IO Expander
                       .statePacketID = 47,
                       .statusPacketID = 37,
-                      .pin = HAL::chan2Pin, // dont use pin
+                      .pin = HAL::chan1Pin, // dont use pin
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan2};
+                      .ina = &HAL::chan1};
 
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
                       .statusPacketID = 38,
-                      .pin = HAL::chan1Pin,
+                      .pin = HAL::chan2Pin,
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 100 * 1000,
-                      .ina = &HAL::chan1};
+                      .ina = &HAL::chan2};
 
     //TODO fill in with actual GEM pin values
     Valve loxGemValve = {.valveID = 8,
