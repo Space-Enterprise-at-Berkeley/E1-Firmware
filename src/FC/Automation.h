@@ -8,7 +8,7 @@
 
 namespace Automation {
     const float igniterTriggerThreshold = 0.06;
-    const float breakWireThreshold = 23;
+    const float breakWireThreshold = 11;
     const float currentThreshold = 0.2;
     const float mainValveCurrentThreshold = 0.08;
 
@@ -68,4 +68,5 @@ namespace Automation {
 #define STATE_ABORT_BREAKWIRE_UNBROKEN 15
 #define STATE_ABORT_ARM_VALVE_LOW_CURRENT 16
 #define STATE_ABORT_ARM_OR_LOX_VALVE_LOW_CURRENT 17
+#define STATE_ABORT_FUEL_VALVE_LOW_CURRENT 18
 #define STATE_MANUAL_SAFE_ABORT 19

@@ -8,7 +8,7 @@ namespace Automation {
     Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = 165 * 1000;
-    uint32_t burnTime = 40 * 1000 * 1000;
+    uint32_t burnTime = 20 * 1000 * 1000;
     uint32_t ventTime = 200 * 1000;
 
     bool igniterEnabled = false;
@@ -150,11 +150,18 @@ namespace Automation {
                 }
 
             case 5:
-                Valves::closeArmValve(); //close arm to allow vent
-                Valves::activateLoxTankMidHtr(); //vent 1
+                if (Valves::fuelMainValve.current > mainValveCurrentThreshold) {
+                    Valves::closeArmValve(); //close arm to allow vent
+                    Valves::activateLoxTankMidHtr(); //vent 1
 
-                step++;
-                return 2 * 1000 * 1000 - ventTime;
+                    step++;
+                    return 2 * 1000 * 1000 - ventTime;
+                } else {
+                    sendFlowStatus(STATE_ABORT_FUEL_VALVE_LOW_CURRENT);
+                    beginAbortFlow();
+                    return 0;
+                }
+
 
             case 6: // enable Load Cell abort
                 checkForLCAbortTask->enabled = true;
