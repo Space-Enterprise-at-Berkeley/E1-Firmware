@@ -1,5 +1,4 @@
 #include "Automation.h"
-#include "Ducers.h"
 
 namespace Automation {
     Task *flowTask = nullptr;
@@ -7,9 +6,9 @@ namespace Automation {
     Task *checkForTCAbortTask = nullptr;
     Task *checkForLCAbortTask = nullptr;
 
-    uint32_t loxLead = 85 * 1000;
-    uint32_t burnTime = 20 * 1000 * 1000;
-    uint32_t ventTime = 200 * 1000;
+    uint32_t loxLead = Util::millisToMicros(85);
+    uint32_t burnTime = Util::secondsToMicros(20);
+    uint32_t ventTime = Util::millisToMicros(200);
 
     bool igniterEnabled = true;
     bool breakwireEnabled = true;
@@ -34,7 +33,7 @@ namespace Automation {
         Automation::checkForLCAbortTask = checkForLCAbortTask;
 
         Comms::registerCallback(150, beginFlow);
-        Comms::registerCallback(151, beginAbortFlow);
+        Comms::registerCallback(151, beginManualAbortFlow);
         Comms::registerCallback(120, readLoadCell);
         Comms::registerCallback(152, handleAutoSettings);
     }
