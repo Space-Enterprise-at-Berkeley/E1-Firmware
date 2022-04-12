@@ -62,18 +62,18 @@ namespace Valves {
                       .period = 50 * 1000,
                       .ina = &HAL::chan3};
     
-    Valve loxTankBottomHtr = {.valveID = 5, // actuated from the IO Expander
-                      .statePacketID = 45,
-                      .statusPacketID = 35,
-                      .pin = HAL::chan4Pin, // dont use pin
-                      .expanderPin = 255,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .ocThreshold = 3.0,
-                      .period = 50 * 1000,
-                      .ina = &HAL::chan4};
+    Valve RQD = {.valveID = 5, // actuated from the IO Expander
+                .statePacketID = 45,
+                .statusPacketID = 35,
+                .pin = HAL::chan4Pin, // dont use pin
+                .expanderPin = 255,
+                .voltage = 0.0,
+                .current = 0.0,
+                .ocThreshold = 3.0,
+                .period = 50 * 1000,
+                .ina = &HAL::chan4};
 
-    Valve loxTankMidHtr = {.valveID = 6, // actuated from the IO Expander
+    Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
                       .statusPacketID = 36,
                       .pin = HAL::chan5Pin, // dont use pin
@@ -83,17 +83,6 @@ namespace Valves {
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
                       .ina = &HAL::chan5};
-
-    Valve loxTankTopHtr = {.valveID = 7, // actuated from the IO Expander
-                      .statePacketID = 47,
-                      .statusPacketID = 37,
-                      .pin = HAL::chan1Pin, // dont use pin
-                      .expanderPin = 255,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .ocThreshold = 3.0,
-                      .period = 50 * 1000,
-                      .ina = &HAL::chan1};
 
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
@@ -199,17 +188,13 @@ namespace Valves {
     void closeLoxGemValve(uint8_t OCShutoff = 0) { closeValve(&loxGemValve, OCShutoff); }
     void loxGemValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openLoxGemValve() : closeLoxGemValve(); }
 
-    void activateLoxTankBottomHtr() { openValve(&loxTankBottomHtr); }
-    void deactivateLoxTankBottomHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankBottomHtr, OCShutoff); }
-    void loxTankBottomHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankBottomHtr() : deactivateLoxTankBottomHtr(); }
+    void activateRQD() { openValve(&RQD); }
+    void deactivateRQD(uint8_t OCShutoff = 0) { closeValve(&RQD, OCShutoff); }
+    void RQDPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateRQD() : deactivateRQD(); }
 
-    void activateLoxTankMidHtr() { openValve(&loxTankMidHtr); }
-    void deactivateLoxTankMidHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankMidHtr, OCShutoff); }
-    void loxTankMidHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankMidHtr() : deactivateLoxTankMidHtr(); }
-
-    void activateLoxTankTopHtr() { openValve(&loxTankTopHtr); }
-    void deactivateLoxTankTopHtr(uint8_t OCShutoff = 0) { closeValve(&loxTankTopHtr, OCShutoff); }
-    void loxTankTopHtrPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateLoxTankTopHtr() : deactivateLoxTankTopHtr(); }
+    void activateMainValveVent() { openValve(&mainValveVent); }
+    void deactivateMainValveVent(uint8_t OCShutoff = 0) { closeValve(&mainValveVent, OCShutoff); }
+    void mainValveVentPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateMainValveVent() : deactivateMainValveVent(); }
 
     void enableIgniter() { openValve(&igniterEnableRelay); }
     void disableIgniter(uint8_t OCShutoff = 0) { closeValve(&igniterEnableRelay, OCShutoff); }
@@ -266,19 +251,14 @@ namespace Valves {
         return breakWire.period;
     }
 
-    uint32_t loxTankBottomHtrSample() {
-        sampleValve(&loxTankBottomHtr);
-        return loxTankBottomHtr.period;
+    uint32_t RQDSample() {
+        sampleValve(&RQD);
+        return RQD.period;
     }
 
-    uint32_t loxTankMidHtrSample() {
-        sampleValve(&loxTankMidHtr);
-        return loxTankMidHtr.period;
-    }
-
-    uint32_t loxTankTopHtrSample() {
-        sampleValve(&loxTankTopHtr);
-        return loxTankTopHtr.period;
+    uint32_t mainValveVentSample() {
+        sampleValve(&mainValveVent);
+        return mainValveVent.period;
     }
 
     uint32_t igniterEnableRelaySample() {
@@ -342,9 +322,8 @@ namespace Valves {
         Comms::registerCallback(126, loxGemValvePacketHandler);
         Comms::registerCallback(127, fuelGemValvePacketHandler);
 
-        Comms::registerCallback(135, loxTankBottomHtrPacketHandler);
-        Comms::registerCallback(136, loxTankMidHtrPacketHandler);
-        Comms::registerCallback(137, loxTankTopHtrPacketHandler);
+        Comms::registerCallback(135, RQDPacketHandler);
+        Comms::registerCallback(136, mainValveVentPacketHandler);
 
         Comms::registerCallback(138, igniterEnableRelayPacketHandler);
 

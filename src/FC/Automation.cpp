@@ -1,5 +1,4 @@
 #include "Automation.h"
-#include "Ducers.h"
 
 namespace Automation {
     Task *flowTask = nullptr;
@@ -7,9 +6,9 @@ namespace Automation {
     Task *checkForTCAbortTask = nullptr;
     Task *checkForLCAbortTask = nullptr;
 
-    uint32_t loxLead = 85 * 1000;
-    uint32_t burnTime = 20 * 1000 * 1000;
-    uint32_t ventTime = 200 * 1000;
+    uint32_t loxLead = Util::millisToMicros(85);
+    uint32_t burnTime = Util::secondsToMicros(20);
+    uint32_t ventTime = Util::millisToMicros(200);
 
     bool igniterEnabled = true;
     bool breakwireEnabled = true;
@@ -34,7 +33,7 @@ namespace Automation {
         Automation::checkForLCAbortTask = checkForLCAbortTask;
 
         Comms::registerCallback(150, beginFlow);
-        Comms::registerCallback(151, beginAbortFlow);
+        Comms::registerCallback(151, beginManualAbortFlow);
         Comms::registerCallback(120, readLoadCell);
         Comms::registerCallback(152, handleAutoSettings);
     }
@@ -152,7 +151,7 @@ namespace Automation {
             case 5:
                 if (Valves::fuelMainValve.current > mainValveCurrentThreshold) {
                     Valves::closeArmValve(); //close arm to allow vent
-                    Valves::activateLoxTankMidHtr(); //vent 1
+                    Valves::activateMainValveVent(); //vent 1
 
                     step++;
                     return 2 * 1000 * 1000 - ventTime;
@@ -161,7 +160,6 @@ namespace Automation {
                     beginAbortFlow();
                     return 0;
                 }
-
 
             case 6: // enable Load Cell abort
                 checkForLCAbortTask->enabled = true;
@@ -173,7 +171,7 @@ namespace Automation {
             case 7:
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
-                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateMainValveVent();
 
                 step++;
                 return 50 * 1000;
@@ -228,14 +226,14 @@ namespace Automation {
                 Valves::deactivateIgniter();
 
                 Valves::closeArmValve(); //close arm to allow vent
-                Valves::activateLoxTankMidHtr(); //vent 1
+                Valves::activateMainValveVent(); //vent 1
 
                 step++;
                 return ventTime;
             case 1: // close 5ways
                 Valves::closeLoxMainValve();
                 Valves::closeFuelMainValve();
-                Valves::deactivateLoxTankMidHtr();
+                Valves::deactivateMainValveVent();
 
                 step++;
                 return 50 * 1000; //delay to allow solenoid actuation before re-arm
