@@ -4,7 +4,9 @@
 #include "MicroNMEA.h"
 #include "I2Cdev.h"
 #include "MPU6050.h"
-
+#include "Comms.h"
+using namespace Comms;
+#include "Common.h"
 #define P0 1013.25
 #define SERIAL_BAUD      115200
 #define LED_BUILTIN 2
@@ -13,8 +15,9 @@
 #define BMP_CS 22
 
 #define GPS_FREQUENCY 5
-#define BAROMETER_FREQUENCY 50
-#define ACCELEROMETER_FREQUENCY 200
+#define BAROMETER_FREQUENCY 30
+#define ACCELEROMETER_FREQUENCY 30
+#define BREAKWIRE_FREQUENCY 30
 
 
 uint16_t expectedDeviceID=0xEF40;
@@ -30,8 +33,22 @@ int16_t ax, ay, az;
 int16_t gx, gy, gz;
 char MPUString[50];
 
+uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead = 0;
+
+Packet MPU;
+Packet BMP;
+Packet GPS;
+Packet BW;
+Packet Gyro;
+
 char bmpString[100];
 double Te, Pr, Al;
+
+void initMPU() {
+  mpu.initialize();
+  mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
+  mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+}
 
 void initFlash() {
   pinMode(SS, OUTPUT); digitalWrite(SS, HIGH);
@@ -88,14 +105,26 @@ void initGPS() {
   GPSString = (char*) malloc(sizeof(char) * 200);
   GPSCtr = 0;
 
+  GPS.id = 6;
+  GPS.len = 0;
+
+  packetAddFloat(&GPS, 27.9881f);
+  packetAddFloat(&GPS, 86.9250f);
+  packetAddFloat(&GPS, 69.0f);
+  packetAddFloat(&GPS, 420.0f);
+  packetAddUint8(&GPS, 0);
+  packetAddUint8(&GPS, 0);
+
 }
+
+
 void log(char* s) {
   Serial2.printf("Radio log: %s\n", s);
-  Serial.printf("Serial log: %s\n", s);
+  //Serial.printf("Serial log: %s\n", s);
 }
 void log(String s) {
-  Serial2.printf("Radio log: %s", s);
-  Serial.printf("Serial log: %s", s);
+  Serial2.println("Radio log: " + s);
+  //Serial.println("Serial log: " + s);
 }
 void processGPSLine() {
   GPSString[GPSCtr] = 0;
@@ -124,37 +153,116 @@ void GPSToNMEA() {
           (float) nmea.getLatitude() /1000000.0f, (float) nmea.getLongitude() / 1000000.0f, alt/1000.0f,
           (float) nmea.getSpeed() / 1000.0f, (float)nmea.getCourse() / 1000.0f);
 }
-void doGPS() {
-  GPSToNMEA(); 
-  log(NMEAString); 
+
+void doGPS(Packet* f) {
+  if (nmea.isValid()) {
+    f->id = 6;
+    f->len = 0;
+    packetAddFloat(f, (float) nmea.getLatitude() / 1000000.0f);
+    packetAddFloat(f, (float) nmea.getLongitude() / 1000000.0f);
+    long alt;
+    nmea.getAltitude(alt);
+    packetAddFloat(f, (float) alt/1000.0f);
+    packetAddFloat(f, (float) nmea.getSpeed() / 1000.0f);
+    packetAddFloat(f, (float) nmea.getCourse() / 1000.0f);
+    packetAddUint8(f, nmea.isValid() ? 1 : 0);
+    packetAddUint8(f, nmea.getNumSatellites());
+  } 
+  emitPacket(f);
+  //GPSToNMEA(); 
+  //log(NMEAString); 
 }
-void doMPU() {
-   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-   Serial2.printf("Radio log: ax: %d, ay: %d, az: %d, gx: %d, gy: %d, gz %d\n", ax, ay, az, gx, gy, gz);
-   Serial.printf("Serial log: ax: %d, ay: %d, az: %d, gx: %d, gy: %d, gz %d\n", ax, ay, az, gx, gy, gz);
- 
+
+void doBW(Packet* f) {
+  f->id = 39;
+  f->len = 0;
+  packetAddFloat(f, (3.3 * (float)analogRead(36))/4096);
+  packetAddFloat(f, (3.3 * (float)analogRead(39))/4096);
+  emitPacket(f);
 }
-void doBMP() {
+void doGyro(Packet* f) {
+
+  f->id = 57;
+  f->len = 0;
+  packetAddFloat(f, (float) gx);
+  packetAddFloat(f, (float) gy);
+  packetAddFloat(f, (float) gz);
+  emitPacket(f);
+}
+void doMPU(Packet* f) {
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  float scale = 0.1 * sqrt(ax*ax + ay*ay + az*az);
+
+  //accel
+  f->id = 4;
+  f->len = 0;
+  packetAddFloat(f, (float) 0);
+  packetAddFloat(f, (float) 0);
+  packetAddFloat(f, (float) 0);
+  packetAddFloat(f, (float) 0);
+  packetAddFloat(f, (float) ax);
+  packetAddFloat(f, (float) ay);
+  packetAddFloat(f, (float) az);
+  emitPacket(f);
+
+  doGyro(&Gyro);
+
+}
+
+
+void doBMP(Packet* f) {
+
   readBMP(&Te, &Pr, &Al);
-  Serial.printf("Serial log: t: %.2f, p: %.2f, a: %.2f\n", Te, Pr, Al);
-  Serial2.printf("Radio log: t: %.2f, p: %.2f, a: %.2f\n", Te, Pr, Al);
+
+  f->id = 5;
+  f->len = 0;
+  packetAddFloat(f, (float) Al);
+  packetAddFloat(f, (float) Pr);
+  packetAddFloat(f, (float) Te);
+  emitPacket(f);
+
+  //char buffer[60];
+  //sprintf(buffer, "t: %.2f, p: %.2f, a: %.2f", Te, Pr, Al);
+  //log(String(buffer));
 }
+Packet g;
 void setup() {
   Serial.begin(115200); //set up serial over usb
-  Serial2.begin(57600); // set up radio
+  Serial2.begin(57600, 134217756U, 17, 16); // set up radio
   initBMP();
   initGPS();
-  //initFlash();
-  // Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  initMPU();
+  pinMode(36, PULLDOWN);
+  pinMode(39, PULLDOWN);
 }
+
+
 void loop() {
 
   if (Serial1.available()) { //scan for GPS input
     SerialEvent1();
   }
-  doGPS();
-  doMPU();
-  doBMP();
-  delay(100);
+
+  // if (Serial2.available()) {
+  //   Serial.printf("got %c over the radio\n", Serial2.read()); 
+  // }
+
+  if ((micros() - lastAccelRead) > (1000000 / ACCELEROMETER_FREQUENCY)) {
+    lastAccelRead = micros();
+    doMPU(&MPU);
+  }
+  if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
+    lastGPSRead = micros();
+    doGPS(&GPS);
+  }
+  if ((micros() - lastBaroRead) > (1000000 / BAROMETER_FREQUENCY)) {
+    lastBaroRead = micros();
+    doBMP(&BMP);
+  }
+
+  if ((micros() - lastBreakwireRead) > (1000000 / BREAKWIRE_FREQUENCY)) {
+    lastBreakwireRead = micros();
+    doBW(&BW);
+  }
 
 }
