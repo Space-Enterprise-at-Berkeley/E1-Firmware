@@ -46,8 +46,15 @@ double Te, Pr, Al;
 
 void initMPU() {
   mpu.initialize();
-  mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
-  mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+  // mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
+  // mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+
+  // mpu.setXAccelOffset(5729);
+  // mpu.setYAccelOffset(-5925);
+  // mpu.setZAccelOffset(8020);
+  // mpu.setXGyroOffset(65);
+  // mpu.setYGyroOffset(-98);
+  // mpu.setZGyroOffset(1);
 }
 
 void initFlash() {
@@ -200,9 +207,9 @@ void doMPU(Packet* f) {
   packetAddFloat(f, (float) 0);
   packetAddFloat(f, (float) 0);
   packetAddFloat(f, (float) 0);
-  packetAddFloat(f, (float) ax);
-  packetAddFloat(f, (float) ay);
-  packetAddFloat(f, (float) az);
+  packetAddFloat(f, ((float) ax) / 1000);
+  packetAddFloat(f, ((float) ay) / 1000);
+  packetAddFloat(f, ((float) az) / 1000);
   emitPacket(f);
 
   doGyro(&Gyro);
