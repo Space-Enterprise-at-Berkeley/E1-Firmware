@@ -11,8 +11,8 @@
 namespace Comms {
     const int port = 42069;
 
-    const char * const ssid = "eureka_cart";
-    const char * const password = "Up_Dog69";
+    const char * const ssid = "eureka";
+    const char * const password = "gobears!";
     // const char * const ssid = "cap";
     // const char * const password = "Hihihi123";
 

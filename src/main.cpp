@@ -30,11 +30,10 @@ void setup()
 
   pinMode(EN_485, OUTPUT);
   pinMode(STATUS_LED, OUTPUT);
-  pinMode(17, OUTPUT);
 }
 
 unsigned long previousMillis = 0;
-const long interval = 15;
+const long interval = 25;
 
 const uint8_t logSecs = 5;
 
@@ -46,7 +45,6 @@ void loop()
 {
   digitalWrite(EN_485, HIGH);
   digitalWrite(STATUS_LED, LOW);
-  digitalWrite(17, LOW);
 
   unsigned long currentMillis = millis();
 
@@ -65,6 +63,8 @@ void loop()
     avgCap /= capBuffer.size();
 
     float tempValue = _tempSens.readTemperature();
+
+    Serial.println(capValue);
 
     capPacket.len = 0;
     Comms::packetAddFloat(&capPacket, capValue);

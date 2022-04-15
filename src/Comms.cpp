@@ -132,6 +132,7 @@ namespace Comms {
         #endif
 
         //Send over ethernet to both ground stations
+        
         Udp.beginPacket(groundStation1, port);
         Udp.write(packet->id);
         Udp.write(packet->len);
