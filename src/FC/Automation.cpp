@@ -6,8 +6,8 @@ namespace Automation {
     Task *checkForTCAbortTask = nullptr;
     Task *checkForLCAbortTask = nullptr;
 
-    uint32_t loxLead = Util::millisToMicros(85);
-    uint32_t burnTime = Util::secondsToMicros(20);
+    uint32_t loxLead = Util::millisToMicros(165);
+    uint32_t burnTime = Util::secondsToMicros(25);
     uint32_t ventTime = Util::millisToMicros(200);
 
     bool igniterEnabled = true;
@@ -19,8 +19,10 @@ namespace Automation {
     bool loxGemValveAbovePressure = false;
     bool fuelGemValveAbovePressure = false;
 
-    float loadCellValue;
-    uint32_t lastLoadCellTime; // last time that load cell value was received
+    float loadCell12Value;
+    float loadCell34Value;
+    uint32_t lastLoadCell12Time; // last time that load cell value was received
+    uint32_t lastLoadCell34Time; // last time that load cell value was received
 
     //each index maps to a check
     uint8_t hysteresisValues[6] = {0};
@@ -38,7 +40,7 @@ namespace Automation {
         Comms::registerCallback(152, handleAutoSettings);
     }
 
-    void handleAutoSettings(Comms::Packet recv) {
+    void handleAutoSettings(Comms::Packet recv, uint8_t ip) {
         if(recv.len > 0) {
             // set relavent settings
             loxLead = Comms::packetGetUint32(&recv, 0);
@@ -59,7 +61,7 @@ namespace Automation {
     Comms::Packet flowPacket = {.id = 50};
     int step = 0;
 
-    void beginFlow(Comms::Packet packet) {
+    void beginFlow(Comms::Packet packet, uint8_t ip) {
         if(!flowTask->enabled) {
             step = 0;
             Ducers::ptUpdatePeriod = 1 * 1000;
@@ -166,7 +168,7 @@ namespace Automation {
                 //begin checking loadcell values
                 sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
                 step++;
-                return burnTime - (50 * 1000) - (2 * 1000 * 1000); //delay by burn time - 2 seconds - 200 ms
+                return burnTime - (50 * 1000) - (2 * 1000 * 1000) - ventTime; //delay by burn time - 2 seconds - 200 ms
 
             case 7:
                 Valves::closeLoxMainValve();
@@ -200,9 +202,11 @@ namespace Automation {
     }
 
 
-    void beginManualAbortFlow(Comms::Packet packet) {
+    void beginManualAbortFlow(Comms::Packet packet, uint8_t ip) {
         // beginAbortFlow();
         Valves::deactivateIgniter();
+        Valves::openLoxGemValve();
+        Valves::openFuelGemValve();
         sendFlowStatus(STATE_MANUAL_SAFE_ABORT);
     }
 
@@ -222,7 +226,10 @@ namespace Automation {
         DEBUG(step);
         DEBUG("\n");
         switch(step) {
-            case 0: // deactivate igniter and vent pneumatics
+            case 0: // deactivate igniter and vent pneumatics and tanks
+                Valves::openLoxGemValve();
+                Valves::openFuelGemValve();
+
                 Valves::deactivateIgniter();
 
                 Valves::closeArmValve(); //close arm to allow vent
@@ -255,14 +262,16 @@ namespace Automation {
         return Valves::igniter.period; //TODO determine appropriate sampling time
     }
 
-    void readLoadCell(Comms::Packet packet) {
-        float loadCell1Value = Comms::packetGetFloat(&packet, 0);
-        float loadCell2Value = Comms::packetGetFloat(&packet, 4);
+    void readLoadCell(Comms::Packet packet, uint8_t ip) {
         float loadCellSum = Comms::packetGetFloat(&packet, 8);
-
-        loadCellValue = loadCellSum;
-        lastLoadCellTime = millis();
-        DEBUG(loadCellValue);
+        if(ip == 11) {
+            loadCell12Value = loadCellSum;
+            lastLoadCell12Time = millis();
+        } else if(ip == 12) {
+            loadCell34Value = loadCellSum;
+            lastLoadCell34Time = millis();
+        }
+        DEBUG(loadCell12Value);
         DEBUG("\n");
     }
 
@@ -272,7 +281,7 @@ namespace Automation {
                                         max(Thermocouples::engineTC2Value, Thermocouples::engineTC3Value));
 
         DEBUG("LOAD CELL VALUE: ");
-        DEBUG(loadCellValue);
+        DEBUG(loadCell12Value);
         DEBUG(" TC VALUE: ");
         DEBUG(Thermocouples::engineTC3Value);
         DEBUG(" TC ROC: ");
@@ -335,7 +344,7 @@ namespace Automation {
     }
 
     uint32_t checkForLCAbort() {
-        if (loadCellValue < loadCellThreshold && millis() - lastLoadCellTime < 25 && thrustEnabled) {
+        if (loadCell12Value+loadCell34Value < loadCellThreshold && millis() - lastLoadCell12Time < 25 && millis() - lastLoadCell34Time < 25 && thrustEnabled) {
             hysteresisValues[5] += 1;
             if (hysteresisValues[5] >= hysteresisThreshold) {
                 sendFlowStatus(STATE_ABORT_THRUST);

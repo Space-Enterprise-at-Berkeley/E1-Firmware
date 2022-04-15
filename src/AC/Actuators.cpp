@@ -76,43 +76,43 @@ namespace Actuators {
     void retractAct1(){ driveBackwards(act1Pin1, act1Pin2, &act1State, 0); }
     uint32_t stopAct1(){ stopAct(act1Pin1, act1Pin2, &act1State, 0); stop1->enabled = false; return 0;}
     void brakeAct1(){ brakeAct(act1Pin1, act1Pin2, &act1State, 0); }
-    void act1PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct1, &retractAct1, stop1); }
+    void act1PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct1, &retractAct1, stop1); }
 
     void extendAct2(){ driveForwards(act2Pin1, act2Pin2, &act2State, 1); }
     void retractAct2(){ driveBackwards(act2Pin1, act2Pin2, &act2State, 1); }
     uint32_t stopAct2(){ stopAct(act2Pin1, act2Pin2, &act2State, 1); stop2->enabled = false; return 0;}
     void brakeAct2(){ brakeAct(act2Pin1, act2Pin2, &act2State, 1); }
-    void act2PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct2, &retractAct2, stop2); }
+    void act2PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct2, &retractAct2, stop2); }
 
     void extendAct3(){ driveForwards(act3Pin1, act3Pin2, &act3State, 2); }
     void retractAct3(){ driveBackwards(act3Pin1, act3Pin2, &act3State, 2); }
     uint32_t stopAct3(){ stopAct(act3Pin1, act3Pin2, &act3State, 2); stop3->enabled = false; return 0;}
     void brakeAct3(){ brakeAct(act3Pin1, act3Pin2, &act3State, 2); }
-    void act3PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct3, &retractAct3, stop3); }
+    void act3PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct3, &retractAct3, stop3); }
 
     void extendAct4(){ driveForwards(act4Pin1, act4Pin2, &act4State, 3); }
     void retractAct4(){ driveBackwards(act4Pin1, act4Pin2, &act4State, 3); }
     uint32_t stopAct4(){ stopAct(act4Pin1, act4Pin2, &act4State, 3); stop4->enabled = false; return 0;}
     void brakeAct4(){ brakeAct(act4Pin1, act4Pin2, &act4State, 3); }
-    void act4PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct4, &retractAct4, stop4); }
+    void act4PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct4, &retractAct4, stop4); }
 
     void extendAct5(){ driveForwards(act5Pin1, act5Pin2, &act5State, 4); }
     void retractAct5(){ driveBackwards(act5Pin1, act5Pin2, &act5State, 4); }
     uint32_t stopAct5(){ stopAct(act5Pin1, act5Pin2, &act5State, 4); stop5->enabled = false; return 0;}
     void brakeAct5(){ brakeAct(act5Pin1, act5Pin2, &act5State, 4); }
-    void act5PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct5, &retractAct5, stop5); }
+    void act5PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct5, &retractAct5, stop5); }
 
     void extendAct6(){ driveForwards(act6Pin1, act6Pin2, &act6State, 5); }
     void retractAct6(){ driveBackwards(act6Pin1, act6Pin2, &act6State, 5); }
     uint32_t stopAct6(){ stopAct(act6Pin1, act6Pin2, &act6State, 5); stop6->enabled = false; return 0;}
     void brakeAct6(){ brakeAct(act6Pin1, act6Pin2, &act6State, 5); }
-    void act6PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct6, &retractAct6, stop6); }
+    void act6PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct6, &retractAct6, stop6); }
 
     void extendAct7(){ driveForwards(act7Pin1, act7Pin2, &act7State, 6); }
     void retractAct7(){ driveBackwards(act7Pin1, act7Pin2, &act7State, 6); }
     uint32_t stopAct7(){ stopAct(act7Pin1, act7Pin2, &act7State, 6); stop7->enabled = false; return 0;}
     void brakeAct7(){ brakeAct(act7Pin1, act7Pin2, &act7State, 6); }
-    void act7PacketHandler(Comms::Packet tmp){ actPacketHandler(tmp, &extendAct7, &retractAct7, stop7); }
+    void act7PacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendAct7, &retractAct7, stop7); }
 
     void actPacketHandler(Comms::Packet tmp, void (*extend)(), void (*retract)(), Task *stopTask){
 /*         switch(tmp.data[0]){

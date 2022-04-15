@@ -166,39 +166,39 @@ namespace Valves {
     // functions for each individual valve
     void openArmValve() { openValve(&armValve); }
     void closeArmValve(uint8_t OCShutoff = 0) { closeValve(&armValve, OCShutoff); }
-    void armValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openArmValve() : closeArmValve(); }
+    void armValvePacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? openArmValve() : closeArmValve(); }
 
     void activateIgniter() { openValve(&igniter); }
     void deactivateIgniter(uint8_t OCShutoff = 0) { closeValve(&igniter, OCShutoff); }
-    void igniterPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateIgniter() : deactivateIgniter(); }
+    void igniterPacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? activateIgniter() : deactivateIgniter(); }
 
     void openLoxMainValve() { openValve(&loxMainValve); }
     void closeLoxMainValve(uint8_t OCShutoff = 0) { closeValve(&loxMainValve, OCShutoff); }
-    void loxMainValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openLoxMainValve() : closeLoxMainValve(); }
+    void loxMainValvePacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? openLoxMainValve() : closeLoxMainValve(); }
 
     void openFuelMainValve() { openValve(&fuelMainValve); }
     void closeFuelMainValve(uint8_t OCShutoff = 0) { closeValve(&fuelMainValve, OCShutoff); }
-    void fuelMainValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openFuelMainValve() : closeFuelMainValve(); }
+    void fuelMainValvePacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? openFuelMainValve() : closeFuelMainValve(); }
 
     void openFuelGemValve() { openValve(&fuelGemValve); }
     void closeFuelGemValve(uint8_t OCShutoff = 0) { closeValve(&fuelGemValve, OCShutoff); }
-    void fuelGemValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openFuelGemValve() : closeFuelGemValve(); }
+    void fuelGemValvePacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? openFuelGemValve() : closeFuelGemValve(); }
 
     void openLoxGemValve() { openValve(&loxGemValve); }
     void closeLoxGemValve(uint8_t OCShutoff = 0) { closeValve(&loxGemValve, OCShutoff); }
-    void loxGemValvePacketHandler(Comms::Packet tmp) { return tmp.data[0] ? openLoxGemValve() : closeLoxGemValve(); }
+    void loxGemValvePacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? openLoxGemValve() : closeLoxGemValve(); }
 
     void activateRQD() { openValve(&RQD); }
     void deactivateRQD(uint8_t OCShutoff = 0) { closeValve(&RQD, OCShutoff); }
-    void RQDPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateRQD() : deactivateRQD(); }
+    void RQDPacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? activateRQD() : deactivateRQD(); }
 
     void activateMainValveVent() { openValve(&mainValveVent); }
     void deactivateMainValveVent(uint8_t OCShutoff = 0) { closeValve(&mainValveVent, OCShutoff); }
-    void mainValveVentPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? activateMainValveVent() : deactivateMainValveVent(); }
+    void mainValveVentPacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? activateMainValveVent() : deactivateMainValveVent(); }
 
     void enableIgniter() { openValve(&igniterEnableRelay); }
     void disableIgniter(uint8_t OCShutoff = 0) { closeValve(&igniterEnableRelay, OCShutoff); }
-    void igniterEnableRelayPacketHandler(Comms::Packet tmp) { return tmp.data[0] ? enableIgniter() : disableIgniter(); }
+    void igniterEnableRelayPacketHandler(Comms::Packet tmp, uint8_t ip) { return tmp.data[0] ? enableIgniter() : disableIgniter(); }
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
@@ -266,7 +266,7 @@ namespace Valves {
         return igniterEnableRelay.period;
     }
 
-    void toggleFuelGemValve(Comms::Packet packet) {
+    void toggleFuelGemValve(Comms::Packet packet, uint8_t ip) {
         bool toggle = packet.data[0];
 
         if (toggle) {
@@ -277,7 +277,7 @@ namespace Valves {
         }
     }
 
-    void toggleLoxGemValve(Comms::Packet packet) {
+    void toggleLoxGemValve(Comms::Packet packet, uint8_t ip) {
         bool toggle = packet.data[0];
 
         if (toggle) {

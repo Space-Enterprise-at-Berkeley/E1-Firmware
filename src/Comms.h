@@ -34,7 +34,7 @@ namespace Comms {
 
     void initComms();
 
-    typedef void (*commFunction)(Packet);
+    typedef void (*commFunction)(Packet, uint8_t);
 
     /**
      * @brief Registers methods to be called when Comms receives a packet with a specific ID.
@@ -84,5 +84,5 @@ namespace Comms {
      * 
      * @param _ unused
      */
-    void sendFirmwareVersionPacket(Packet unused);
+    void sendFirmwareVersionPacket(Packet unused, uint8_t ip);
 };

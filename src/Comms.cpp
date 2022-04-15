@@ -13,7 +13,7 @@ namespace Comms {
         registerCallback(0, sendFirmwareVersionPacket);
     }
 
-    void sendFirmwareVersionPacket(Packet unused) {
+    void sendFirmwareVersionPacket(Packet unused, uint8_t ip) {
         Packet version = {.id = 0, .len = 7};
 
         char commit[] = FW_COMMIT;
@@ -30,7 +30,7 @@ namespace Comms {
      * 
      * @param packet Packet to be processed.
      */
-    void evokeCallbackFunction(Packet *packet) {
+    void evokeCallbackFunction(Packet *packet, uint8_t ip) {
         uint16_t checksum = *(uint16_t *)&packet->checksum;
         if (checksum == computePacketChecksum(packet)) {
             // DEBUG("Packet with ID ");
@@ -38,7 +38,7 @@ namespace Comms {
             // DEBUG(" has correct checksum!\n");
             //try to access function, checking for out of range exception
             if(callbackMap.count(packet->id)) {
-                callbackMap.at(packet->id)(*packet);
+                callbackMap.at(packet->id)(*packet, ip);
             } else {
                 // DEBUG("ID ");
                 // DEBUG(packet->id);
@@ -62,7 +62,7 @@ namespace Comms {
             // DEBUG("Got unverified packet with ID ");
             // DEBUG(packet->id);
             // DEBUG('\n');
-            evokeCallbackFunction(packet);
+            evokeCallbackFunction(packet, Udp.remoteIP()[3]);
         } else if(Serial.available()) {
             int cnt = 0;
             while(Serial.available() && cnt < sizeof(Packet)) {
@@ -73,7 +73,7 @@ namespace Comms {
             // DEBUG("Got unverified packet with ID ");
             // DEBUG(packet->id);
             // DEBUG('\n');
-            evokeCallbackFunction(packet);
+            evokeCallbackFunction(packet, Udp.remoteIP()[3]);
         }
     }
 

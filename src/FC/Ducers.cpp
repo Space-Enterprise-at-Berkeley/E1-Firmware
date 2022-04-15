@@ -18,7 +18,7 @@ namespace Ducers {
 
     float pressurantPTROC = 0.0;
 
-    void handleFastReadPacket(Comms::Packet tmp) {
+    void handleFastReadPacket(Comms::Packet tmp, uint8_t ip) {
         if(tmp.data[0]) {
             ptUpdatePeriod = 1 * 1000;
         } else {
