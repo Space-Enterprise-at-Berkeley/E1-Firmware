@@ -74,18 +74,18 @@ namespace Automation {
         }
     }
     inline void sendFlowStatus(uint8_t status) {
-        DEBUG("FLOW STATUS: ");
-        DEBUG(status);
-        DEBUG("\n");
+        // DEBUG("FLOW STATUS: ");
+        // DEBUG(status);
+        // DEBUG("\n");
         flowPacket.len = 1;
         flowPacket.data[0] = status;
         Comms::emitPacket(&flowPacket);
     }
 
     uint32_t flow() {
-        DEBUG("STEP: ");
-        DEBUG(step);
-        DEBUG("\n");
+        // DEBUG("STEP: ");
+        // DEBUG(step);
+        // DEBUG("\n");
         switch(step) {
             case 0: // step 0 (enable and actuate igniter)
                 //TODO: don't even turn on igniter if igniterEnabled = False
@@ -222,9 +222,9 @@ namespace Automation {
     }
 
     uint32_t abortFlow() {
-        DEBUG("ABORT STEP: ");
-        DEBUG(step);
-        DEBUG("\n");
+        // DEBUG("ABORT STEP: ");
+        // DEBUG(step);
+        // DEBUG("\n");
         switch(step) {
             case 0: // deactivate igniter and vent pneumatics and tanks
                 Valves::openLoxGemValve();
@@ -271,8 +271,8 @@ namespace Automation {
             loadCell34Value = loadCellSum;
             lastLoadCell34Time = millis();
         }
-        DEBUG(loadCell12Value);
-        DEBUG("\n");
+        // DEBUG(loadCell12Value);
+        // DEBUG("\n");
     }
 
     uint32_t checkForTCAbort() {
@@ -280,15 +280,15 @@ namespace Automation {
         float maxThermocoupleValue = max(max(Thermocouples::engineTC0Value, Thermocouples::engineTC1Value), 
                                         max(Thermocouples::engineTC2Value, Thermocouples::engineTC3Value));
 
-        DEBUG("LOAD CELL VALUE: ");
-        DEBUG(loadCell12Value);
-        DEBUG(" TC VALUE: ");
-        DEBUG(Thermocouples::engineTC3Value);
-        DEBUG(" TC ROC: ");
-        DEBUG(Thermocouples::engineTC3ROC);
-        DEBUG(" Hysteresis TC3: ");
-        DEBUG(hysteresisValues[4]);
-        DEBUG("\n");
+        // DEBUG("LOAD CELL VALUE: ");
+        // DEBUG(loadCell12Value);
+        // DEBUG(" TC VALUE: ");
+        // DEBUG(Thermocouples::engineTC3Value);
+        // DEBUG(" TC ROC: ");
+        // DEBUG(Thermocouples::engineTC3ROC);
+        // DEBUG(" Hysteresis TC3: ");
+        // DEBUG(hysteresisValues[4]);
+        // DEBUG("\n");
 
         if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
             hysteresisValues[0] += 1;
@@ -344,6 +344,14 @@ namespace Automation {
     }
 
     uint32_t checkForLCAbort() {
+        DEBUG(loadCell12Value+loadCell34Value);
+        DEBUG(" : ");
+        DEBUG(millis() - lastLoadCell12Time);
+        DEBUG(" : ");
+        DEBUG(millis() - lastLoadCell34Time);
+        DEBUG(" : ");
+        DEBUG(thrustEnabled);
+        DEBUG("\n");
         if (loadCell12Value+loadCell34Value < loadCellThreshold && millis() - lastLoadCell12Time < 25 && millis() - lastLoadCell34Time < 25 && thrustEnabled) {
             hysteresisValues[5] += 1;
             if (hysteresisValues[5] >= hysteresisThreshold) {
