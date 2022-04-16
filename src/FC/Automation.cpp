@@ -12,7 +12,7 @@ namespace Automation {
 
     bool igniterEnabled = true;
     bool breakwireEnabled = true;
-    bool thrustEnabled = false;
+    bool thrustEnabled = true;
 
     bool igniterTriggered = false;
 
