@@ -10,7 +10,7 @@ using namespace Comms;
 #define P0 1013.25
 #define SERIAL_BAUD      115200
 #define LED_BUILTIN 2
-#define SS_FLASHMEM -1
+#define SS_FLASHMEM   25
 #define SEALEVELPRESSURE_HPA (1013.25)
 #define BMP_CS 22
 
@@ -18,7 +18,12 @@ using namespace Comms;
 #define BAROMETER_FREQUENCY 30
 #define ACCELEROMETER_FREQUENCY 30
 #define BREAKWIRE_FREQUENCY 30
+#define MAX_FLASH_CAPACITY 15990000
+#define RECORDING_METADATA_FREQUENCY 1
 
+int validPackets[] = {154, 155};
+int numValidPackets = 2;
+#define COMMAND_PACKET_LENGTH 8
 
 uint16_t expectedDeviceID=0xEF40;
 SPIFlash flash(SS_FLASHMEM, expectedDeviceID);
@@ -32,29 +37,36 @@ MPU6050 mpu;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
 char MPUString[50];
+int serialCommandCountdown;
+int commandBuffer[COMMAND_PACKET_LENGTH];
+uint32_t cumBytes = 0;
+bool dirtyFlash = true;
+bool recording = false;
+uint8_t packetStoreBuffer[250];
 
-uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead = 0;
+uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead, lastSerialCheck, lastRecordingRead = 0;
 
 Packet MPU;
 Packet BMP;
 Packet GPS;
 Packet BW;
 Packet Gyro;
+Packet RRP;
 
 char bmpString[100];
 double Te, Pr, Al;
 
 void initMPU() {
   mpu.initialize();
-  // mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
-  // mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+  mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
+  mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 
-  // mpu.setXAccelOffset(5729);
-  // mpu.setYAccelOffset(-5925);
-  // mpu.setZAccelOffset(8020);
-  // mpu.setXGyroOffset(65);
-  // mpu.setYGyroOffset(-98);
-  // mpu.setZGyroOffset(1);
+  mpu.setXAccelOffset(-5700);
+  mpu.setYAccelOffset(-6020);
+  mpu.setZAccelOffset(8050);
+  mpu.setXGyroOffset(60);
+  mpu.setYGyroOffset(-93);
+  mpu.setZGyroOffset(1);
 }
 
 void initFlash() {
@@ -70,12 +82,37 @@ void initFlash() {
     Serial.print(") mismatched the read value: 0x");
     Serial.println(flash.readDeviceId(), HEX);
   }
+  dirtyFlash = true;
+   
 }
 void eraseFlash() {
+  recording = false;
   Serial.print("erasing entire flash... ");
   flash.chipErase();
   while (flash.busy());
   Serial.println("done");
+  dirtyFlash = false;
+}
+void startBlackboxRecord() {
+  if (!dirtyFlash) {
+    Serial.print("started recording!");
+    dirtyFlash = true;
+    recording = true;
+  }
+}
+void stopBlackboxRecord() {
+  recording = false;
+}
+void saveToFlash(uint8_t* buf, int len) {
+  if ((!recording) || cumBytes > MAX_FLASH_CAPACITY) return;
+
+  for (int i = 0; i < len; i++) {
+    Serial.printf("%x, ", buf[i]);
+    flash.writeBytes(cumBytes, buf, len);
+    while (flash.busy()) {}
+  }
+  Serial.println();
+  cumBytes += len;
 }
 void initBMP() {
   if (!bmp.begin()) {
@@ -107,6 +144,7 @@ void readBMP(double* Te, double *Pr, double *Al) {
     *Pr = *Al = *Te = 0;
   }
 }
+
 void initGPS() {
   Serial1.begin(9600, 134217756U, 18, 19);
   GPSString = (char*) malloc(sizeof(char) * 200);
@@ -175,7 +213,8 @@ void doGPS(Packet* f) {
     packetAddUint8(f, nmea.isValid() ? 1 : 0);
     packetAddUint8(f, nmea.getNumSatellites());
   } 
-  emitPacket(f);
+  int len = emitPacket(f, packetStoreBuffer);
+  saveToFlash(packetStoreBuffer, len);
   //GPSToNMEA(); 
   //log(NMEAString); 
 }
@@ -185,19 +224,22 @@ void doBW(Packet* f) {
   f->len = 0;
   packetAddFloat(f, (3.3 * (float)analogRead(36))/4096);
   packetAddFloat(f, (3.3 * (float)analogRead(39))/4096);
-  emitPacket(f);
+  int len = emitPacket(f, packetStoreBuffer);
+  saveToFlash(packetStoreBuffer, len);
 }
 void doGyro(Packet* f) {
 
   f->id = 57;
   f->len = 0;
-  packetAddFloat(f, (float) gx);
-  packetAddFloat(f, (float) gy);
-  packetAddFloat(f, (float) gz);
-  emitPacket(f);
+  packetAddFloat(f, ((float) gx)/16.384f);
+  packetAddFloat(f, ((float) gy)/16.384f);
+  packetAddFloat(f, ((float) gz)/16.384f);
+  int len = emitPacket(f, packetStoreBuffer);
+  saveToFlash(packetStoreBuffer, len);
 }
 void doMPU(Packet* f) {
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  
   float scale = 0.1 * sqrt(ax*ax + ay*ay + az*az);
 
   //accel
@@ -207,10 +249,12 @@ void doMPU(Packet* f) {
   packetAddFloat(f, (float) 0);
   packetAddFloat(f, (float) 0);
   packetAddFloat(f, (float) 0);
-  packetAddFloat(f, ((float) ax) / 1000);
-  packetAddFloat(f, ((float) ay) / 1000);
-  packetAddFloat(f, ((float) az) / 1000);
-  emitPacket(f);
+  packetAddFloat(f, ((float) ax) / 4096.0f);
+  packetAddFloat(f, ((float) ay) / 4096.0f);
+  packetAddFloat(f, ((float) az) / -4096.0f);
+
+  int len = emitPacket(f, packetStoreBuffer);
+  saveToFlash(packetStoreBuffer, len);
 
   doGyro(&Gyro);
 
@@ -226,23 +270,53 @@ void doBMP(Packet* f) {
   packetAddFloat(f, (float) Al);
   packetAddFloat(f, (float) Pr);
   packetAddFloat(f, (float) Te);
-  emitPacket(f);
+  int len = emitPacket(f, packetStoreBuffer);
+  saveToFlash(packetStoreBuffer, len);
 
   //char buffer[60];
   //sprintf(buffer, "t: %.2f, p: %.2f, a: %.2f", Te, Pr, Al);
   //log(String(buffer));
 }
+
+void doSerial() {
+  int f = Serial2.available();
+  Serial.println(f);
+  for (int i = 0; i < f; i++) {
+    Serial2.read();
+  }
+}
+
+void doRecordingRead(Packet* f) {
+  f->id = 84;
+  f->len = 0;
+  packetAddUint8(f, recording ? 1 : 0);
+  packetAddUint8(f, dirtyFlash ? 0 : 1);
+  packetAddUint32(f, cumBytes / 1000);
+  emitPacket(f, packetStoreBuffer);
+}
+
 Packet g;
+uint32_t lastSerialMsg;
+char serialBuffer[8];
+int serialBufferPtr;
 void setup() {
   Serial.begin(115200); //set up serial over usb
   Serial2.begin(57600, 134217756U, 17, 16); // set up radio
   initBMP();
   initGPS();
+  initFlash();
   initMPU();
-  pinMode(36, PULLDOWN);
+  pinMode(36, PULLDOWN); //breakwire pins, idt it does anything though
   pinMode(39, PULLDOWN);
-}
+  Serial.println("bruh");
+  for (int i = 0; i < 200; i+=20) {
+    for (int j = i; j < i+20; j++) {
+      Serial.printf("%x ", flash.readByte(j));
+    }
+    Serial.println();
+  }
 
+}
 
 void loop() {
 
@@ -250,13 +324,35 @@ void loop() {
     SerialEvent1();
   }
 
-  // if (Serial2.available()) {
-  //   Serial.printf("got %c over the radio\n", Serial2.read()); 
-  // }
+  if (Serial2.available() > 8) {
+    char byte1 = Serial2.read();
+    char byte2 = Serial2.peek();
+    if (byte1 == 105 && ((byte2 == 155)||(byte2 == 154))) {
+
+      Serial2.readBytes((uint8_t*) &serialBuffer, 8);
+      //Serial.printf("got packet! %x..%x\n", serialBuffer[0], serialBuffer[7]);
+      Packet* p = (Packet*)&serialBuffer;
+      uint16_t checksum = *(uint16_t *)&p->checksum;
+      if (checksum == computePacketChecksum(p)) {
+        if (p->id == 155) {
+          eraseFlash();
+        } else if (p->id == 154) {
+          startBlackboxRecord();
+        } else {
+          Serial.println("wtf");
+        }
+      }
+    }
+  }
+
 
   if ((micros() - lastAccelRead) > (1000000 / ACCELEROMETER_FREQUENCY)) {
     lastAccelRead = micros();
     doMPU(&MPU);
+  }
+  if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
+    lastRecordingRead = micros();
+    doRecordingRead(&RRP);
   }
   if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
     lastGPSRead = micros();

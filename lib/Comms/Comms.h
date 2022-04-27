@@ -62,7 +62,7 @@ namespace Comms {
      * 
      * @param packet The packet in which the data is stored.
      */
-    void emitPacket(Packet *packet);
+    int emitPacket(Packet *packet, uint8_t* buffer);
 
     /**
      * @brief Sends the packet to arbitrary address
@@ -70,7 +70,6 @@ namespace Comms {
      * @param packet Packet to be sent.
      * @param custom IP address to send to
      */
-    void emitPacket(Packet *packet, uint8_t end);
 
     uint16_t computePacketChecksum(Packet *packet);
 
@@ -80,4 +79,6 @@ namespace Comms {
      * @param _ unused
      */
     void sendFirmwareVersionPacket(Packet unused);
+
+    void evokeCallbackFunction(Packet* packet);
 };
