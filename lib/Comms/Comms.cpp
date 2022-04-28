@@ -146,14 +146,14 @@ namespace Comms {
         // Serial.print('\n', HEX);
 
         //Serial.printf("p%d\n", packet->id);
-        Serial2.write(packet->id);
-        Serial2.write(packet->len);
-        Serial2.write(packet->timestamp, 4);
-        Serial2.write(packet->checksum, 2);
-        Serial2.write(packet->data, packet->len);
-        Serial2.write('\r');
-        Serial2.write('\n');
-        Serial2.write('\n');
+        Serial.write(packet->id);
+        Serial.write(packet->len);
+        Serial.write(packet->timestamp, 4);
+        Serial.write(packet->checksum, 2);
+        Serial.write(packet->data, packet->len);
+        Serial.write('\r');
+        Serial.write('\n');
+        Serial.write('\n');
 
         int numBytes = 1 + 1 + 4 + 2 + packet->len + 1;
 

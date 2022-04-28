@@ -58,12 +58,16 @@ double Te, Pr, Al;
 
 void initMPU() {
   mpu.initialize();
-  mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
+  mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
   mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 
-  mpu.setXAccelOffset(-5700);
-  mpu.setYAccelOffset(-6020);
-  mpu.setZAccelOffset(8050);
+  // mpu.setXAccelOffset(-5700);
+  // mpu.setYAccelOffset(-6020);
+  // mpu.setZAccelOffset(8050);
+  mpu.setXAccelOffset(-3790);
+  mpu.setYAccelOffset(460);
+  mpu.setZAccelOffset(880);
+  mpu.setXGyroOffset(60);
   mpu.setXGyroOffset(60);
   mpu.setYGyroOffset(-93);
   mpu.setZGyroOffset(1);
@@ -74,28 +78,28 @@ void initFlash() {
 
   if (flash.initialize())
   {
-    Serial.println("Init OK!");
+    //Serial.println("Init OK!");
   }
   else {
-    Serial.print("Init FAIL, expectedDeviceID(0x");
-    Serial.print(expectedDeviceID, HEX);
-    Serial.print(") mismatched the read value: 0x");
-    Serial.println(flash.readDeviceId(), HEX);
+    //Serial.print("Init FAIL, expectedDeviceID(0x");
+    //Serial.print(expectedDeviceID, HEX);
+    //Serial.print(") mismatched the read value: 0x");
+    //Serial.println(flash.readDeviceId(), HEX);
   }
   dirtyFlash = true;
    
 }
 void eraseFlash() {
   recording = false;
-  Serial.print("erasing entire flash... ");
+  //Serial.print("erasing entire flash... ");
   flash.chipErase();
   while (flash.busy());
-  Serial.println("done");
+  //Serial.println("done");
   dirtyFlash = false;
 }
 void startBlackboxRecord() {
   if (!dirtyFlash) {
-    Serial.print("started recording!");
+    //Serial.print("started recording!");
     dirtyFlash = true;
     recording = true;
   }
@@ -107,18 +111,18 @@ void saveToFlash(uint8_t* buf, int len) {
   if ((!recording) || cumBytes > MAX_FLASH_CAPACITY) return;
 
   for (int i = 0; i < len; i++) {
-    Serial.printf("%x, ", buf[i]);
+    //Serial.printf("%x, ", buf[i]);
     flash.writeBytes(cumBytes, buf, len);
     while (flash.busy()) {}
   }
-  Serial.println();
+  //Serial.println();
   cumBytes += len;
 }
 void initBMP() {
   if (!bmp.begin()) {
-    Serial.println("BMP init failed");
+    //Serial.println("BMP init failed");
   }
-  else Serial.println("BMP init success!");
+  else //Serial.println("BMP init success!");
   bmp.setOversampling(2);
 }
 boolean doubleEqualsZero(double f) {
@@ -136,7 +140,7 @@ void readBMP(double* Te, double *Pr, double *Al) {
     *Te = T;
   } else {
     *Al = *Pr = *Te = 0;
-    Serial.println("Error.");
+    //Serial.println("Error.");
   }
   bmp.startMeasurment();
   if (doubleEqualsZero(*Pr) || doubleEqualsZero(*Al) || (*Pr > 100000) || (*Pr < -100000) 
@@ -165,11 +169,11 @@ void initGPS() {
 
 void log(char* s) {
   Serial2.printf("Radio log: %s\n", s);
-  //Serial.printf("Serial log: %s\n", s);
+  ////Serial.printf("Serial log: %s\n", s);
 }
 void log(String s) {
   Serial2.println("Radio log: " + s);
-  //Serial.println("Serial log: " + s);
+  ////Serial.println("Serial log: " + s);
 }
 void processGPSLine() {
   GPSString[GPSCtr] = 0;
@@ -240,7 +244,6 @@ void doGyro(Packet* f) {
 void doMPU(Packet* f) {
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
   
-  float scale = 0.1 * sqrt(ax*ax + ay*ay + az*az);
 
   //accel
   f->id = 4;
@@ -249,9 +252,12 @@ void doMPU(Packet* f) {
   packetAddFloat(f, (float) 0);
   packetAddFloat(f, (float) 0);
   packetAddFloat(f, (float) 0);
-  packetAddFloat(f, ((float) ax) / 4096.0f);
-  packetAddFloat(f, ((float) ay) / 4096.0f);
-  packetAddFloat(f, ((float) az) / -4096.0f);
+  packetAddFloat(f, ((float) ax) / 2048.0f);
+  packetAddFloat(f, ((float) ay) / 2048.0f);
+  packetAddFloat(f, ((float) az) / 2048.0f);
+  // packetAddFloat(f, ((float) ax) / 1.0f);
+  // packetAddFloat(f, ((float) ay) / 1.0f);
+  // packetAddFloat(f, ((float) az) / 1.0f);
 
   int len = emitPacket(f, packetStoreBuffer);
   saveToFlash(packetStoreBuffer, len);
@@ -280,7 +286,7 @@ void doBMP(Packet* f) {
 
 void doSerial() {
   int f = Serial2.available();
-  Serial.println(f);
+  //Serial.println(f);
   for (int i = 0; i < f; i++) {
     Serial2.read();
   }
@@ -308,12 +314,13 @@ void setup() {
   initMPU();
   pinMode(36, PULLDOWN); //breakwire pins, idt it does anything though
   pinMode(39, PULLDOWN);
-  Serial.println("bruh");
+  Serial.println("hi  i work");
+  ////Serial.println("bruh");
   for (int i = 0; i < 200; i+=20) {
     for (int j = i; j < i+20; j++) {
-      Serial.printf("%x ", flash.readByte(j));
+      ////Serial.printf("%x ", flash.readByte(j));
     }
-    Serial.println();
+    ////Serial.println();
   }
 
 }
@@ -330,7 +337,7 @@ void loop() {
     if (byte1 == 105 && ((byte2 == 155)||(byte2 == 154))) {
 
       Serial2.readBytes((uint8_t*) &serialBuffer, 8);
-      //Serial.printf("got packet! %x..%x\n", serialBuffer[0], serialBuffer[7]);
+      //////Serial.printf("got packet! %x..%x\n", serialBuffer[0], serialBuffer[7]);
       Packet* p = (Packet*)&serialBuffer;
       uint16_t checksum = *(uint16_t *)&p->checksum;
       if (checksum == computePacketChecksum(p)) {
@@ -339,7 +346,7 @@ void loop() {
         } else if (p->id == 154) {
           startBlackboxRecord();
         } else {
-          Serial.println("wtf");
+          //Serial.println("wtf");
         }
       }
     }
@@ -350,14 +357,14 @@ void loop() {
     lastAccelRead = micros();
     doMPU(&MPU);
   }
-  if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
-    lastRecordingRead = micros();
-    doRecordingRead(&RRP);
-  }
-  if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
-    lastGPSRead = micros();
-    doGPS(&GPS);
-  }
+  // if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
+  //   lastRecordingRead = micros();
+  //   doRecordingRead(&RRP);
+  // }
+  // if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
+  //   lastGPSRead = micros();
+  //   doGPS(&GPS);
+  // }
   if ((micros() - lastBaroRead) > (1000000 / BAROMETER_FREQUENCY)) {
     lastBaroRead = micros();
     doBMP(&BMP);
