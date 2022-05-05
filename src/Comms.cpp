@@ -121,41 +121,50 @@ namespace Comms {
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
 
-        // Send over serial, but disable if in debug mode
-        #ifndef DEBUG_MODE
+        // Send over serial
         Serial.write(packet->id);
         Serial.write(packet->len);
         Serial.write(packet->timestamp, 4);
         Serial.write(packet->checksum, 2);
         Serial.write(packet->data, packet->len);
+        Serial.write('\r');
         Serial.write('\n');
-        #endif
+        Serial.write('\n');
+
+        Serial1.write(packet->id);
+        Serial1.write(packet->len);
+        Serial1.write(packet->timestamp, 4);
+        Serial1.write(packet->checksum, 2);
+        Serial1.write(packet->data, packet->len);
+        Serial1.write('\r');
+        Serial1.write('\n');
+        Serial1.write('\n');
 
         //Send over ethernet to both ground stations
         
-        Udp.beginPacket(groundStation1, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
+        // Udp.beginPacket(groundStation1, port);
+        // Udp.write(packet->id);
+        // Udp.write(packet->len);
+        // Udp.write(packet->timestamp, 4);
+        // Udp.write(packet->checksum, 2);
+        // Udp.write(packet->data, packet->len);
+        // Udp.endPacket();
 
-        Udp.beginPacket(groundStation2, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
+        // Udp.beginPacket(groundStation2, port);
+        // Udp.write(packet->id);
+        // Udp.write(packet->len);
+        // Udp.write(packet->timestamp, 4);
+        // Udp.write(packet->checksum, 2);
+        // Udp.write(packet->data, packet->len);
+        // Udp.endPacket();
 
-        Udp.beginPacket(ledIndicator, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
+        // Udp.beginPacket(ledIndicator, port);
+        // Udp.write(packet->id);
+        // Udp.write(packet->len);
+        // Udp.write(packet->timestamp, 4);
+        // Udp.write(packet->checksum, 2);
+        // Udp.write(packet->data, packet->len);
+        // Udp.endPacket();
     }
 
     /**
