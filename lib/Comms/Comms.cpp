@@ -146,6 +146,7 @@ namespace Comms {
         // Serial.print('\n', HEX);
 
         //Serial.printf("p%d\n", packet->id);
+        //TRANSMITTING CODE BELOW
         Serial.write(packet->id);
         Serial.write(packet->len);
         Serial.write(packet->timestamp, 4);

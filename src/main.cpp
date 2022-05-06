@@ -66,7 +66,7 @@ void initMPU() {
   // mpu.setZAccelOffset(8050);
   mpu.setXAccelOffset(-3790);
   mpu.setYAccelOffset(460);
-  mpu.setZAccelOffset(880);
+  mpu.setZAccelOffset(920);
   mpu.setXGyroOffset(60);
   mpu.setXGyroOffset(60);
   mpu.setYGyroOffset(-93);
@@ -78,13 +78,13 @@ void initFlash() {
 
   if (flash.initialize())
   {
-    //Serial.println("Init OK!");
+    Serial.println("Init OK!");
   }
   else {
-    //Serial.print("Init FAIL, expectedDeviceID(0x");
-    //Serial.print(expectedDeviceID, HEX);
-    //Serial.print(") mismatched the read value: 0x");
-    //Serial.println(flash.readDeviceId(), HEX);
+    Serial.print("Init FAIL, expectedDeviceID(0x");
+    Serial.print(expectedDeviceID, HEX);
+    Serial.print(") mismatched the read value: 0x");
+    Serial.println(flash.readDeviceId(), HEX);
   }
   dirtyFlash = true;
    
@@ -150,7 +150,7 @@ void readBMP(double* Te, double *Pr, double *Al) {
 }
 
 void initGPS() {
-  Serial1.begin(9600, 134217756U, 18, 19);
+  Serial1.begin(38400, SERIAL_8N1, 19, 18);
   GPSString = (char*) malloc(sizeof(char) * 200);
   GPSCtr = 0;
 
@@ -227,6 +227,7 @@ void doBW(Packet* f) {
   f->id = 39;
   f->len = 0;
   packetAddFloat(f, (3.3 * (float)analogRead(36))/4096);
+  //packetAddFloat(f, 0.5);
   packetAddFloat(f, (3.3 * (float)analogRead(39))/4096);
   int len = emitPacket(f, packetStoreBuffer);
   saveToFlash(packetStoreBuffer, len);
@@ -306,6 +307,7 @@ uint32_t lastSerialMsg;
 char serialBuffer[8];
 int serialBufferPtr;
 void setup() {
+  delay(1000);
   Serial.begin(115200); //set up serial over usb
   Serial2.begin(57600, 134217756U, 17, 16); // set up radio
   initBMP();
@@ -316,11 +318,11 @@ void setup() {
   pinMode(39, PULLDOWN);
   Serial.println("hi  i work");
   ////Serial.println("bruh");
-  for (int i = 0; i < 200; i+=20) {
+  for (int i = 0; i < 2000000; i+=20) {
     for (int j = i; j < i+20; j++) {
-      ////Serial.printf("%x ", flash.readByte(j));
+      Serial.printf("%x ", flash.readByte(j));
     }
-    ////Serial.println();
+    Serial.println();
   }
 
 }
@@ -330,13 +332,13 @@ void loop() {
   if (Serial1.available()) { //scan for GPS input
     SerialEvent1();
   }
-
-  if (Serial2.available() > 8) {
-    char byte1 = Serial2.read();
-    char byte2 = Serial2.peek();
+// MAKE SERIAL2 OR WHATEVER FOR RADIO IN
+  if (Serial.available() > 8) {
+    char byte1 = Serial.read();
+    char byte2 = Serial.peek();
     if (byte1 == 105 && ((byte2 == 155)||(byte2 == 154))) {
 
-      Serial2.readBytes((uint8_t*) &serialBuffer, 8);
+      Serial.readBytes((uint8_t*) &serialBuffer, 8);
       //////Serial.printf("got packet! %x..%x\n", serialBuffer[0], serialBuffer[7]);
       Packet* p = (Packet*)&serialBuffer;
       uint16_t checksum = *(uint16_t *)&p->checksum;
@@ -357,14 +359,14 @@ void loop() {
     lastAccelRead = micros();
     doMPU(&MPU);
   }
-  // if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
-  //   lastRecordingRead = micros();
-  //   doRecordingRead(&RRP);
-  // }
-  // if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
-  //   lastGPSRead = micros();
-  //   doGPS(&GPS);
-  // }
+  if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
+    lastRecordingRead = micros();
+    doRecordingRead(&RRP);
+  }
+  if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
+    lastGPSRead = micros();
+    doGPS(&GPS);
+  }
   if ((micros() - lastBaroRead) > (1000000 / BAROMETER_FREQUENCY)) {
     lastBaroRead = micros();
     doBMP(&BMP);
