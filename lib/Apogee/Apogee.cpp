@@ -1,12 +1,15 @@
 #include "Apogee.h"
+#include "Comms.h"
 
-
+#define APOGEE_THRESHOLD_ALTITUDE 700 //FAR altitude (600) + 100meters
+#define MAIN_PARACHUTE_ALTITUDE 1500 //FAR altitude(600) + 3k ft (900m)
+#define UPDATE_PERIOD 100000 //100ms, 10hz
 
 namespace Apogee {
-    uint32_t apogeeUpdatePeriod = 100 * 1000;
-    //Comms::Packet apogeePacket = {.id = 158};
+    uint32_t apogeeUpdatePeriod = UPDATE_PERIOD;
+    Comms::Packet apogeePacket = {.id = 158};
     
-    float mainParachuteAltitude = 950; // feet altitude for deployment of main? 
+    float mainParachuteAltitude = MAIN_PARACHUTE_ALTITUDE;
 
     uint32_t apogeeTime = 0;
 
@@ -32,8 +35,8 @@ namespace Apogee {
         launchCheck = 1;
     }
     
-    void apogeeDetectionTask(Packet* apogeePacket) {
-        //barometerVelocity = altitudeToVelocity(Barometer::baroAltitude);
+    void apogeeDetectionTask(Comms::Packet* aP, float baroAltitude) {
+        barometerVelocity = altitudeToVelocity(baroAltitude);
         barometerVelocity = 1;
         velocitySamples[velocityIndex] = barometerVelocity;
         velocityIndex = (velocityIndex + 1) % stepAvg;
@@ -44,30 +47,30 @@ namespace Apogee {
         }
         velocityAvg = runningSum / stepAvg;
 
-        // if ((velocityAvg < 0) && (apogeeCheck == 0) && (launchCheck == 1) && Barometer::baroAltitude > 100)  {
-        if (1)  {
+        if ((velocityAvg < 0) && (apogeeCheck == 0) && (launchCheck == 1) && baroAltitude > APOGEE_THRESHOLD_ALTITUDE)  {
+        
             apogeeCheck = 1;
             apogeeTime = millis();
         }
 
-        //if ((Barometer::baroAltitude < mainParachuteAltitude) && (mainChuteDeploy == 0) && apogeeCheck){
-        if (1){
+        if ((baroAltitude < mainParachuteAltitude) && (mainChuteDeploy == 0) && apogeeCheck){
             // deploy main chute
             mainChuteDeploy = 1;
             mainChuteDeployTime = millis();
         }
 
-        apogeePacket.len = 0;
-        Comms::packetAddUint32(&apogeePacket, apogeeTime);
-        Comms::packetAddUint32(&apogeePacket, mainChuteDeployTime);
-        //Comms::emitPacket(&apogeePacket);
+        aP->len = 0;
+        Comms::packetAddUint32(aP, apogeeTime);
+        Comms::packetAddUint32(aP, mainChuteDeployTime);
+
+        
 
     }
 
     
     float altitudeToVelocity(float altitude) {
-        //float velocity = (altitude - previousAltitude) / Barometer::bmUpdatePeriod;
-        float velocity = 0;
+
+        float velocity = (altitude - previousAltitude) / UPDATE_PERIOD;
 
         previousAltitude = altitude;
         previousVelocity = velocity;

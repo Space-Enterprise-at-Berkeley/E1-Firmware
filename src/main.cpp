@@ -4,6 +4,7 @@
 #include "MicroNMEA.h"
 #include "I2Cdev.h"
 #include "MPU6050.h"
+#include "Apogee.h"
 #include "Comms.h"
 using namespace Comms;
 #include "Common.h"
@@ -45,7 +46,7 @@ bool dirtyFlash = true;
 bool recording = false;
 uint8_t packetStoreBuffer[250];
 
-uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead, lastSerialCheck, lastRecordingRead = 0;
+uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead, lastSerialCheck, lastRecordingRead, lastApogeeRead = 0;
 
 Packet MPU;
 Packet BMP;
@@ -53,6 +54,7 @@ Packet GPS;
 Packet BW;
 Packet Gyro;
 Packet RRP;
+Packet AP;
 
 char bmpString[100];
 double Te, Pr, Al;
@@ -233,8 +235,8 @@ void doBW(Packet* f) {
   int len = emitPacket(f, packetStoreBuffer);
   saveToFlash(packetStoreBuffer, len);
 }
-void doGyro(Packet* f) {
 
+void doGyro(Packet* f) {
   f->id = 57;
   f->len = 0;
   packetAddFloat(f, ((float) gx)/16.384f);
@@ -243,6 +245,7 @@ void doGyro(Packet* f) {
   int len = emitPacket(f, packetStoreBuffer);
   saveToFlash(packetStoreBuffer, len);
 }
+
 void doMPU(Packet* f) {
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
   
@@ -270,9 +273,7 @@ void doMPU(Packet* f) {
 
 
 void doBMP(Packet* f) {
-
   readBMP(&Te, &Pr, &Al);
-
   f->id = 5;
   f->len = 0;
   packetAddFloat(f, (float) Al);
@@ -301,6 +302,15 @@ void doRecordingRead(Packet* f) {
   packetAddUint8(f, dirtyFlash ? 0 : 1);
   packetAddUint32(f, cumBytes / 1000);
   emitPacket(f, packetStoreBuffer);
+}
+
+void doApogee(Packet* f) {
+  f->id = 158;
+  Apogee::apogeeDetectionTask(f, (float) Al);
+
+  int len = emitPacket(f, packetStoreBuffer);
+  saveToFlash(packetStoreBuffer, len);
+
 }
 
 Packet g;
@@ -376,6 +386,11 @@ void loop() {
   if ((micros() - lastBreakwireRead) > (1000000 / BREAKWIRE_FREQUENCY)) {
     lastBreakwireRead = micros();
     doBW(&BW);
+  }
+
+  if ((micros() - lastApogeeRead) > (1000000 / APOGEE_FREQUENCY)) {
+    lastApogeeRead = micros();
+    doApogee(&AP);
   }
 
 }

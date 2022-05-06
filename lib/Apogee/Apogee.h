@@ -1,4 +1,3 @@
-#pragma once
 
 
 
@@ -12,6 +11,6 @@ namespace Apogee {
 
     void startApogeeDetection();
     float altitudeToVelocity(float altitude);
-    void apogeeDetectionTask(Packet* apogeePacket);
+    void apogeeDetectionTask(Comms::Packet* apogeePacket, float baroAltitude);
 
 };
