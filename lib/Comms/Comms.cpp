@@ -156,6 +156,15 @@ namespace Comms {
         Serial.write('\n');
         Serial.write('\n');
 
+        Serial2.write(packet->id);
+        Serial2.write(packet->len);
+        Serial2.write(packet->timestamp, 4);
+        Serial2.write(packet->checksum, 2);
+        Serial2.write(packet->data, packet->len);
+        Serial2.write('\r');
+        Serial2.write('\n');
+        Serial2.write('\n');
+
         int numBytes = 1 + 1 + 4 + 2 + packet->len + 1;
 
         buffer[0] = packet->id;

@@ -309,7 +309,7 @@ int serialBufferPtr;
 void setup() {
   delay(1000);
   Serial.begin(115200); //set up serial over usb
-  Serial2.begin(57600, 134217756U, 17, 16); // set up radio
+  Serial2.begin(115200); // set up radio
   initBMP();
   initGPS();
   initFlash();
@@ -318,7 +318,7 @@ void setup() {
   pinMode(39, PULLDOWN);
   Serial.println("hi  i work");
   ////Serial.println("bruh");
-  for (int i = 0; i < 2000000; i+=20) {
+  for (int i = 0; i < 200; i+=20) {
     for (int j = i; j < i+20; j++) {
       Serial.printf("%x ", flash.readByte(j));
     }
