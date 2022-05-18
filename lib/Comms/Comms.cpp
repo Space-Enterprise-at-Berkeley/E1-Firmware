@@ -147,14 +147,14 @@ namespace Comms {
 
         //Serial.printf("p%d\n", packet->id);
         //TRANSMITTING CODE BELOW
-        Serial.write(packet->id);
-        Serial.write(packet->len);
-        Serial.write(packet->timestamp, 4);
-        Serial.write(packet->checksum, 2);
-        Serial.write(packet->data, packet->len);
-        Serial.write('\r');
-        Serial.write('\n');
-        Serial.write('\n');
+        // Serial.write(packet->id);
+        // Serial.write(packet->len);
+        // Serial.write(packet->timestamp, 4);
+        // Serial.write(packet->checksum, 2);
+        // Serial.write(packet->data, packet->len);
+        // Serial.write('\r');
+        // Serial.write('\n');
+        // Serial.write('\n');
 
         Serial2.write(packet->id);
         Serial2.write(packet->len);
