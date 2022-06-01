@@ -1,3 +1,10 @@
+//#define FLIGHT
+//#define ERASE_BLACK_BOX
+//#define DUMP_BLACK_BOX
+
+
+
+
 #include <SPIFlash.h>    //get it here: https://github.com/LowPowerLab/SPIFlash
 #include "Wire.h"
 #include "BMP280.h"
@@ -104,10 +111,10 @@ void initFlash() {
 }
 void eraseFlash() {
   recording = false;
-  //Serial.print("erasing entire flash... ");
+  Serial.print("erasing entire flash... ");
   flash.chipErase();
   while (flash.busy());
-  //Serial.println("done");
+  Serial.println("done");
   dirtyFlash = false;
 }
 void eraseFlashForLAD8() {
@@ -349,6 +356,8 @@ Packet g;
 uint32_t lastSerialMsg;
 char serialBuffer[8];
 int serialBufferPtr;
+
+#ifdef FLIGHT
 void setup() {
   delay(1000);
   Serial.begin(115200); //set up serial over usb
@@ -374,7 +383,6 @@ void setup() {
 }
 
 void loop() {
-
   if (Serial1.available()) { //scan for GPS input
     SerialEvent1();
   }
@@ -429,3 +437,35 @@ void loop() {
   }
 
 }
+#endif
+
+#ifdef ERASE_BLACK_BOX
+void setup() {
+  delay(1000);
+  Serial.begin(115200);
+  initFlash();
+  Serial.printf("Current write pointer: %d\n\n", cumBytes);
+  eraseFlash();
+}
+void loop() {}
+#endif
+
+#ifdef DUMP_BLACK_BOX
+void setup() {
+
+  delay(1000);
+  Serial.begin(115200);
+
+  initFlash();
+
+  Serial.printf("Current write pointer: %d\n\n", cumBytes);
+
+  for (int i = 0; i < MAX_FLASH_CAPACITY; i+=20) {
+    for (int j = i; j < i+20; j++) {
+      Serial.printf("%x ", flash.readByte(j));
+    }
+    Serial.println();
+  }
+}
+void loop() {};
+#endif
