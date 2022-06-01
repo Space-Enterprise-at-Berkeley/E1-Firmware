@@ -1,6 +1,6 @@
 #include "Apogee.h"
 #include "Comms.h"
-//baro altitudes all in meters
+
 #define APOGEE_THRESHOLD_ALTITUDE 700 //FAR altitude (600) + 100meters
 #define MAIN_PARACHUTE_ALTITUDE 1500 //FAR altitude(600) + 3k ft (900m)
 #define UPDATE_PERIOD 100000 //100ms, 10hz

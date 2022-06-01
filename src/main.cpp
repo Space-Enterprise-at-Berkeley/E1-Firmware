@@ -41,11 +41,10 @@ int16_t gx, gy, gz;
 char MPUString[50];
 int serialCommandCountdown;
 int commandBuffer[COMMAND_PACKET_LENGTH];
-uint32_t cumBytes = 1000;
+uint32_t cumBytes = 0;
 bool dirtyFlash = true;
 bool recording = false;
 uint8_t packetStoreBuffer[250];
-uint32_t prevStoredCumBytes;
 
 uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead, lastSerialCheck, lastRecordingRead, lastApogeeRead = 0;
 
@@ -91,16 +90,6 @@ void initFlash() {
     Serial.println(flash.readDeviceId(), HEX);
   }
   dirtyFlash = true;
-  //changed for lad8:
-  dirtyFlash = false;
-  recording = true;
-  cumBytes = 0;
-  for (int i = 0; i < 4; i++) {
-    cumBytes += flash.readByte(i) << 8;
-  }
-  cumBytes += 1;
-  cumBytes *= 1000;
-  prevStoredCumBytes = -1;
    
 }
 void eraseFlash() {
@@ -110,9 +99,6 @@ void eraseFlash() {
   while (flash.busy());
   //Serial.println("done");
   dirtyFlash = false;
-  //changed for lad8:
-  startBlackboxRecord();
-  cumBytes = 1000;
 }
 void startBlackboxRecord() {
   if (!dirtyFlash) {
@@ -125,9 +111,7 @@ void stopBlackboxRecord() {
   recording = false;
 }
 void saveToFlash(uint8_t* buf, int len) {
-  //if ((!recording) || cumBytes > MAX_FLASH_CAPACITY) return;
-  //CHANGED FOR LAD8:
-  if (cumBytes > MAX_FLASH_CAPACITY) return;
+  if ((!recording) || cumBytes > MAX_FLASH_CAPACITY) return;
 
   for (int i = 0; i < len; i++) {
     //Serial.printf("%x, ", buf[i]);
@@ -136,17 +120,6 @@ void saveToFlash(uint8_t* buf, int len) {
   }
   //Serial.println();
   cumBytes += len;
-
-  if (cumBytes > 1000 + prevStoredCumBytes) {
-    uint32_t toStore = (uint32_t) cumBytes / 1000;
-  
-    for (int i = 3; i >= 0; i--) {
-      flash.writeByte(i, 0xFF);
-      flash.writeByte(i, (uint8_t) (toStore & 0xFF));
-      toStore >> 8;
-    }
-    prevStoredCumBytes = cumBytes;
-  }
 }
 void initBMP() {
   if (!bmp.begin()) {
@@ -370,15 +343,23 @@ void loop() {
   if (Serial1.available()) { //scan for GPS input
     SerialEvent1();
   }
-  if (Serial.available()) {
-    if (Serial.read() == (int) 'E') {
-      delayMicroseconds(10000);
-      if (Serial.available()) {
-        if (Serial.read() == (int) 'R') {
-          //erase
-          Serial.print("erasing... ");
+// MAKE SERIAL2 OR WHATEVER FOR RADIO IN
+  if (Serial.available() > 8) {
+    char byte1 = Serial.read();
+    char byte2 = Serial.peek();
+    if (byte1 == 105 && ((byte2 == 155)||(byte2 == 154))) {
+
+      Serial.readBytes((uint8_t*) &serialBuffer, 8);
+      //////Serial.printf("got packet! %x..%x\n", serialBuffer[0], serialBuffer[7]);
+      Packet* p = (Packet*)&serialBuffer;
+      uint16_t checksum = *(uint16_t *)&p->checksum;
+      if (checksum == computePacketChecksum(p)) {
+        if (p->id == 155) {
           eraseFlash();
-          Serial.print("done.\n");
+        } else if (p->id == 154) {
+          startBlackboxRecord();
+        } else {
+          //Serial.println("wtf");
         }
       }
     }
