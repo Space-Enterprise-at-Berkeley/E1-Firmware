@@ -45,6 +45,8 @@ uint32_t cumBytes = 0;
 bool dirtyFlash = true;
 bool recording = false;
 uint8_t packetStoreBuffer[250];
+uint32_t prevStoredCumBytes;
+
 
 uint32_t lastBaroRead, lastAccelRead, lastGPSRead, lastBreakwireRead, lastSerialCheck, lastRecordingRead, lastApogeeRead = 0;
 
@@ -90,6 +92,14 @@ void initFlash() {
     Serial.println(flash.readDeviceId(), HEX);
   }
   dirtyFlash = true;
+
+  cumBytes = 0;
+   for (int i = 0; i < 4; i++) {
+     cumBytes += flash.readByte(i) << 8;
+   }
+   cumBytes += 1;
+   cumBytes *= 1000;
+   prevStoredCumBytes = -1;
    
 }
 void eraseFlash() {
@@ -98,6 +108,11 @@ void eraseFlash() {
   flash.chipErase();
   while (flash.busy());
   //Serial.println("done");
+  dirtyFlash = false;
+}
+void eraseFlashForLAD8() {
+  // just to not modify functions - enables recording w/o actually erasing flash
+  recording = false;
   dirtyFlash = false;
 }
 void startBlackboxRecord() {
@@ -111,7 +126,13 @@ void stopBlackboxRecord() {
   recording = false;
 }
 void saveToFlash(uint8_t* buf, int len) {
-  if ((!recording) || cumBytes > MAX_FLASH_CAPACITY) return;
+  if ((!recording)) {
+    return;
+  }
+
+  if (cumBytes > (MAX_FLASH_CAPACITY - 1000)) {
+    cumBytes = 1000;
+  }
 
   for (int i = 0; i < len; i++) {
     //Serial.printf("%x, ", buf[i]);
@@ -120,6 +141,17 @@ void saveToFlash(uint8_t* buf, int len) {
   }
   //Serial.println();
   cumBytes += len;
+
+    if (cumBytes > 1000 + prevStoredCumBytes) {
+     uint32_t toStore = (uint32_t) cumBytes / 1000;
+
+     for (int i = 3; i >= 0; i--) {
+       flash.writeByte(i, 0xFF);
+       flash.writeByte(i, (uint8_t) (toStore & 0xFF));
+       toStore >> 8;
+     }
+     prevStoredCumBytes = cumBytes;
+   }
 }
 void initBMP() {
   if (!bmp.begin()) {
@@ -336,6 +368,9 @@ void setup() {
     Serial.println();
   }
 
+  eraseFlashForLAD8();
+  startBlackboxRecord();
+
 }
 
 void loop() {
@@ -383,10 +418,10 @@ void loop() {
     doBMP(&BMP);
   }
 
-  if ((micros() - lastBreakwireRead) > (1000000 / BREAKWIRE_FREQUENCY)) {
-    lastBreakwireRead = micros();
-    doBW(&BW);
-  }
+  // if ((micros() - lastBreakwireRead) > (1000000 / BREAKWIRE_FREQUENCY)) {
+  //   lastBreakwireRead = micros();
+  //   doBW(&BW);
+  // }
 
   if ((micros() - lastApogeeRead) > (1000000 / APOGEE_FREQUENCY)) {
     lastApogeeRead = micros();
