@@ -10,13 +10,13 @@ void initFlash() {
 
   if (flash.initialize())
   {
-    Serial.println("Init OK! Starting flash dump");
+    // Serial.println("Init OK! Starting flash dump");
   }
   else {
-    Serial.print("Init FAIL, expectedDeviceID(0x");
-    Serial.print(expectedDeviceID, HEX);
-    Serial.print(") mismatched the read value: 0x");
-    Serial.println(flash.readDeviceId(), HEX);
+    // Serial.print("Init FAIL, expectedDeviceID(0x");
+    // Serial.print(expectedDeviceID, HEX);
+    // Serial.print(") mismatched the read value: 0x");
+    // Serial.println(flash.readDeviceId(), HEX);
   }
    
 }
@@ -24,10 +24,9 @@ void initFlash() {
 void setup() {
   delay(5000);
   Serial.begin(115200); //set up serial over usb
-  Serial.println("---FLASH DUMP---");
   initFlash();
-  for (int i = 0; i < 20000000; i++) {
-    Serial.print(flash.readByte(i), 16);
+  for (int i = 0; i < 200000; i++) {
+    Serial.write(flash.readByte(i));
     Serial.flush();
   }
 }
