@@ -62,7 +62,7 @@ namespace Comms {
      * 
      * @param packet The packet in which the data is stored.
      */
-    int emitPacket(Packet *packet, uint8_t* buffer);
+    void emitPacket(Packet *packet);
 
     /**
      * @brief Sends the packet to arbitrary address
