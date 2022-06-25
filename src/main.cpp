@@ -25,7 +25,7 @@ void setup() {
   delay(5000);
   Serial.begin(115200); //set up serial over usb
   initFlash();
-  for (int i = 0; i < 200000; i++) {
+  for (int i = 0; i < 100000000; i++) {
     Serial.write(flash.readByte(i));
     Serial.flush();
   }
