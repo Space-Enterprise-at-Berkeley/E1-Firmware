@@ -72,7 +72,7 @@ namespace Actuators {
                 .current = 0.0,
                 .ocThreshold = 3.0,
                 .period = 50 * 1000,
-                .ina = &HAL::chan4};
+                .muxChannel = &HAL::muxChan4};
 
     Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
@@ -107,17 +107,17 @@ namespace Actuators {
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
                       .muxChannel = &HAL::muxChan9};
-  
-    Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
-                      .statePacketID = 48,
-                      .statusPacketID = 38,
-                      .pin = 255, 
-                      .expanderPin = HAL::chan10Pin,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .ocThreshold = 3.0,
-                      .period = 100 * 1000,
-                      .muxChannel = &HAL::muxChan8};
+    
+    Valve fuelGemValve = {.valveID = 9,
+                  .statePacketID = 53,
+                  .statusPacketID = 29,
+                  .pin = 255, // dont use pin
+                  .expanderPin = HAL::chan6Pin,
+                  .voltage = 0.0,
+                  .current = 0.0,
+                  .ocThreshold = 3.0,
+                  .period = 50 * 1000,
+                  .muxChannel = &HAL::muxChan9};
 
     Actuator chute1 = {.statusPacketID = 0,
                     .hasVoltage = true,
@@ -199,6 +199,11 @@ namespace Actuators {
                     .period = 100 * 1000,
                     .muxChannel = &HAL::muxChan6};
 
+    Task *_toggleFuelGemValve;
+    Task *_toggleLoxGemValve;
+
+    bool fuelGemOpen = false;
+    bool loxGemOpen = false;
 
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
@@ -424,26 +429,6 @@ namespace Actuators {
        
         _toggleLoxGemValve = toggleLoxGemValveTask;
         _toggleFuelGemValve = toggleFuelGemValveTask;
-    }
-
-    void sampleMuxActuator(MuxActuator *muxActuator) {
-        //set mux select
-        digitalWrite(muxSelect1Pin, muxActuator->channel & 1);
-        digitalWrite(muxSelect2Pin, muxActuator->channel >> 1 & 1);
-        digitalWrite(muxSelect3Pin, muxActuator->channel >> 2 & 1);
-        digitalWrite(muxSelect4Pin, muxActuator->channel >> 3 & 1);
-
-        muxActuator->continuity = digitalRead(muxContinuityPin);
-
-        int currentReading = analogRead(muxCurrentPin);
-        //TODO figure out how to convert reading to current/voltage
-
-        //TODO for nonvalves one of the values will be garbage :(
-        Comms::Packet packet = {.id = muxActuator->statusPacketID};
-        Comms::packetAddFloat(&packet, muxActuator->voltage);
-        Comms::packetAddFloat(&packet, muxActuator->current);
-        Comms::packetAddUint8(&packet, muxActuator->continuity);
-        Comms::emitPacket(&packet);
     }
 
     uint32_t chute1Sample() {

@@ -7,7 +7,6 @@
 #include "HAL.h"
 #include "Thermocouples.h"
 #include "OCHandler.h"
-#include "BlackBox.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -81,10 +80,9 @@ int main() {
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
-    Valves::initActuators(&taskTable[23], &taskTable[24]);
+    Actuators::initActuators(&taskTable[23], &taskTable[24]);
     Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20);
-    BlackBox::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

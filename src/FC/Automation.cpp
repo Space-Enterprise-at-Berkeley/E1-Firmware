@@ -151,9 +151,9 @@ namespace Automation {
                 }
 
             case 5:
-                if (Valves::fuelMainValve.current > mainValveCurrentThreshold) {
-                    Valves::closeArmValve(); //close arm to allow vent
-                    Valves::activateMainValveVent(); //vent 1
+                if (Actuators::fuelMainValve.current > mainValveCurrentThreshold) {
+                    Actuators::closeArmValve(); //close arm to allow vent
+                    Actuators::activateMainValveVent(); //vent 1
 
                     step++;
                     return 2 * 1000 * 1000 - ventTime;
@@ -370,14 +370,14 @@ namespace Automation {
         float fuelPresure = Ducers::fuelTankPTValue;
 
         if (fuelPresure > autoVentUpperThreshold) {
-            Valves::openFuelGemValve();
+            Actuators::openFuelGemValve();
             fuelGemValveAbovePressure = true;
 
             autoventPacket.len = 1;
             autoventPacket.data[0] = 1;
             Comms::emitPacket(&autoventPacket);
         } else if (fuelPresure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
-            Valves::closeFuelGemValve();
+            Actuators::closeFuelGemValve();
             fuelGemValveAbovePressure = false;
         }
 
@@ -388,14 +388,14 @@ namespace Automation {
         float loxPressure = Ducers::loxTankPTValue;
 
         if (loxPressure > autoVentUpperThreshold) {
-            Valves::openLoxGemValve();
+            Actuators::openLoxGemValve();
             loxGemValveAbovePressure = true;
 
             autoventPacket.len = 1;
             autoventPacket.data[0] = 0;
             Comms::emitPacket(&autoventPacket);
         } else if (loxPressure < autoVentLowerThreshold && loxGemValveAbovePressure) {
-            Valves::closeLoxGemValve();
+            Actuators::closeLoxGemValve();
             loxGemValveAbovePressure = false;
         }
 
