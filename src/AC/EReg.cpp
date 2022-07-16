@@ -4,10 +4,10 @@ namespace EReg {
 
     char packetBuffer[sizeof(Comms::Packet)];
 
-    float pt1Value = 0;
-    float pt2Value = 0;
-    float pt3Value = 0;
-    float motorPosition = 0;
+    float hpPT = 0;
+    float lpPT = 0;
+    float injectorPT = 0;
+    float motorAngle = 0;
 
     void initEReg() {
         // EReg board connected to Serial8 of AC Teensy
@@ -53,10 +53,10 @@ namespace EReg {
 
     uint32_t sampleEregReadings() {
         Comms::Packet tmp = {.id = 85};
-        Comms::packetAddFloat(&tmp, pt1Value);
-        Comms::packetAddFloat(&tmp, pt2Value);
-        Comms::packetAddFloat(&tmp, pt3Value);
-        Comms::packetAddFloat(&tmp, motorPosition);
+        Comms::packetAddFloat(&tmp, hpPT);
+        Comms::packetAddFloat(&tmp, lpPT);
+        Comms::packetAddFloat(&tmp, injectorPT);
+        Comms::packetAddFloat(&tmp, motorAngle);
         Comms::emitPacket(&tmp);
 
         return samplePeriod;
@@ -93,10 +93,10 @@ namespace EReg {
             }
             Comms::Packet *packet = (Comms::Packet *)&packetBuffer;
             
-            pt1Value = Comms::packetGetFloat(packet, 0);
-            pt2Value = Comms::packetGetFloat(packet, 4);
-            pt3Value = Comms::packetGetFloat(packet, 8);
-            motorPosition = Comms::packetGetFloat(packet, 12);
+            hpPT = Comms::packetGetFloat(packet, 0);
+            lpPT = Comms::packetGetFloat(packet, 4);
+            injectorPT = Comms::packetGetFloat(packet, 8);
+            motorAngle = Comms::packetGetFloat(packet, 12);
         }
 
         return samplePeriod;
