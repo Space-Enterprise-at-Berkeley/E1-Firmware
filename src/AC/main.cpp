@@ -2,6 +2,7 @@
 #include <Comms.h>
 #include "Actuators.h"
 #include "Power.h"
+#include "Ereg.h"
 #include "HAL.h"
 
 #include <Arduino.h>
@@ -28,7 +29,11 @@ Task taskTable[] = {
 
     // power
     {Power::battSample, 0},
-    {Power::supply12Sample, 0}
+    {Power::supply12Sample, 0},
+
+    // ereg
+    {EReg::sampleEregReadings, 0},
+    {EReg::receiveFromEreg, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -51,6 +56,7 @@ int main() {
     Comms::initComms();
     Actuators::initActuators();
     Power::initPower();
+    EReg::initEReg();
 
     while(1) {
         uint32_t ticks = micros(); // current time in microseconds
