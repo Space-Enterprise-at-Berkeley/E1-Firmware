@@ -31,48 +31,29 @@ int main() {
 
     delay(1);
 
-    digitalWriteFast(sel0, 1);
-    digitalWriteFast(sel1, 1);
-    digitalWriteFast(sel2, 1);
-    digitalWriteFast(sel3, 0);
-
-    delay(1);
-
-    digitalWriteFast(wr, 1);
-
     while(1) {
-        // for(uint8_t i = 0; i < 16; i++) {
-        //     Serial.print(i & 0x1);
-        //     Serial.print((i >> 1) & 0x1);
-        //     Serial.print((i >> 2) & 0x1);
-        //     Serial.print((i >> 3) & 0x1);
-        //     Serial.print(" ");
-        //     digitalWriteFast(sel0, i & 0x1);
-        //     digitalWriteFast(sel1, (i >> 1) & 0x1);
-        //     digitalWriteFast(sel2, (i >> 2) & 0x1);
-        //     digitalWriteFast(sel3, (i >> 3) & 0x1);
-        //     delay(1);
-        //     float a0 = (float)analogRead(aPin0) * 3.3 / 4096.0;
-        //     float a1 = (float)analogRead(aPin1) * 3.3 / 4096.0;
-        //     Serial.print(a0);
-        //     Serial.print(":");
-        //     Serial.print(a1);
-        //     Serial.print(" ");
-        //     Serial.println();
-        // }
-
-        digitalWriteFast(sel0, 1);
-        digitalWriteFast(sel1, 1);
-        digitalWriteFast(sel2, 1);
-        digitalWriteFast(sel3, 0);
-
-        float a0 = ((float)analogRead(aPin0)) * 3.3 / 4096.0;
-        float a1 = ((float)analogRead(aPin1)) * 3.3 / 4096.0;
-        Serial.print(a0);
-        Serial.print(":");
-        Serial.print(a1);
-        Serial.print(" ");
-
+        Serial.println("-----Taking sample-----");
+        for(uint8_t i = 0; i < 16; i++) {
+            Serial.print(i & 0x1);
+            Serial.print((i >> 1) & 0x1);
+            Serial.print((i >> 2) & 0x1);
+            Serial.print((i >> 3) & 0x1);
+            Serial.print(" (");
+            Serial.print(i);
+            Serial.print(") ");
+            digitalWriteFast(sel0, i & 0x1);
+            digitalWriteFast(sel1, (i >> 1) & 0x1);
+            digitalWriteFast(sel2, (i >> 2) & 0x1);
+            digitalWriteFast(sel3, (i >> 3) & 0x1);
+            delay(1);
+            float a0 = (float)analogRead(aPin0) * 3.3 / 4096.0;
+            float a1 = (float)analogRead(aPin1) * 3.3 / 4096.0;
+            Serial.print(a0);
+            Serial.print(":");
+            Serial.print(a1);
+            Serial.print(" ");
+            Serial.println();
+        }
         Serial.println();
         delay(500);
     }
