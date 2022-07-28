@@ -11,8 +11,10 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <MuxChannel.h>
 
-namespace HAL {
+namespace HAL {    
+    
     extern ADS8167 adc1;
     extern ADS8167 adc2;
 
@@ -28,6 +30,8 @@ namespace HAL {
 
     const float chanShuntR = 0.033;
     const float chanCurrMax = 4.0;
+
+    //TODO are these still in the system?
     extern INA219 chan0;
     extern INA219 chan1;
     extern INA219 chan2;
@@ -63,6 +67,23 @@ namespace HAL {
     extern MCP9600 tcAmp1;
     extern MCP9600 tcAmp2;
     extern MCP9600 tcAmp3;
+
+    extern MuxChannel muxChan0;
+    extern MuxChannel muxChan1;
+    extern MuxChannel muxChan2;
+    extern MuxChannel muxChan3;
+    extern MuxChannel muxChan4;
+    extern MuxChannel muxChan5;
+    extern MuxChannel muxChan6;
+    extern MuxChannel muxChan7;
+    extern MuxChannel muxChan8;
+    extern MuxChannel muxChan9;
+    extern MuxChannel muxChan10;
+    extern MuxChannel muxChan11;
+    extern MuxChannel muxChan12;
+    extern MuxChannel muxChan13;
+    extern MuxChannel muxChan14;
+    extern MuxChannel muxChan15;
 
     // extern TCA6408A ioExpander0;
     // extern TCA6408A ioExpander1;

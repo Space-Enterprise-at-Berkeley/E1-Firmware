@@ -1,6 +1,6 @@
-#include "Valves.h"
+#include "Actuators.h"
 
-namespace Valves {
+namespace Actuators {
     // state of each valve is stored in each bit
     // bit 0 is armValve, bit 1 is igniter, etc
     // the order of bits is the same as the order of valves on the E-1 Design spreadsheet
@@ -16,8 +16,9 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan11};
+                      .muxChannel = &HAL::muxChan7};
 
+    //TODO what is this on?
     Valve igniter = {.valveID = 1,
                       .statePacketID = 41,
                       .statusPacketID = 31,
@@ -27,7 +28,7 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan7};
+                      .muxChannel = &HAL::muxChan8};
     
     Valve loxMainValve = {.valveID = 2,
                       .statePacketID = 42,
@@ -38,7 +39,7 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan8};
+                      .muxChannel = &HAL::muxChan9};
 
     Valve fuelMainValve = {.valveID = 3,
                       .statePacketID = 43,
@@ -49,7 +50,7 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan10};
+                      .muxChannel = &HAL::muxChan10};
 
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
@@ -60,7 +61,7 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 0.1,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan3};
+                      .muxChannel = &HAL::muxChan5};
     
     Valve RQD = {.valveID = 5, // actuated from the IO Expander
                 .statePacketID = 45,
@@ -71,7 +72,7 @@ namespace Valves {
                 .current = 0.0,
                 .ocThreshold = 3.0,
                 .period = 50 * 1000,
-                .ina = &HAL::chan4};
+                .muxChannel = &HAL::muxChan4};
 
     Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
@@ -82,7 +83,7 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan5};
+                      .muxChannel = &HAL::muxChan7};
 
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
@@ -92,8 +93,8 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
-                      .period = 100 * 1000,
-                      .ina = &HAL::chan2};
+                      .period = 50 * 1000,
+                      .muxChannel = &HAL::muxChan8};
 
     //TODO fill in with actual GEM pin values
     Valve loxGemValve = {.valveID = 8,
@@ -105,18 +106,98 @@ namespace Valves {
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan9};
-
+                      .muxChannel = &HAL::muxChan9};
+    
     Valve fuelGemValve = {.valveID = 9,
-                      .statePacketID = 53,
-                      .statusPacketID = 29,
-                      .pin = 255, // dont use pin
-                      .expanderPin = HAL::chan6Pin,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .ocThreshold = 3.0,
-                      .period = 50 * 1000,
-                      .ina = &HAL::chan6};
+                  .statePacketID = 53,
+                  .statusPacketID = 29,
+                  .pin = 255, // dont use pin
+                  .expanderPin = HAL::chan6Pin,
+                  .voltage = 0.0,
+                  .current = 0.0,
+                  .ocThreshold = 3.0,
+                  .period = 50 * 1000,
+                  .muxChannel = &HAL::muxChan9};
+
+    Actuator chute1 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan0};
+
+    Actuator chute2 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan1};
+
+    Actuator cam1 = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan2};
+
+    Actuator rfAmp = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan3};
+
+    Actuator cam2 = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan4};
+
+    Actuator radio = {.statusPacketID = 0,
+                    .hasVoltage = false,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan5};
+
+    Actuator hBridge1 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan13};
+
+    Actuator hBridge2 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan14};
+
+    Actuator hBridge3 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = true,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan15};
+
+    Actuator break2 = {.statusPacketID = 0,
+                    .hasVoltage = true,
+                    .hasCurrent = false,
+                    .voltage = 0.0,
+                    .current = 0.0,
+                    .period = 100 * 1000,
+                    .muxChannel = &HAL::muxChan6};
 
     Task *_toggleFuelGemValve;
     Task *_toggleLoxGemValve;
@@ -202,8 +283,8 @@ namespace Valves {
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
-        valve->voltage = valve->ina->readBusVoltage();
-        valve->current = valve->ina->readShuntCurrent();
+        valve->voltage = valve->muxChannel->readChannel1();
+        valve->current = valve->muxChannel->readChannel2();
         
         Comms::Packet tmp = {.id = valve->statusPacketID};
         //IDS: Arming valve, igniter, lox main valve, fuel main valve
@@ -212,6 +293,22 @@ namespace Valves {
         }
         Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->current);
+        Comms::emitPacket(&tmp);
+    }
+
+    //common function for sampling non valves on the mux
+    void sampleActuator(Actuator *actuator) {
+        if (actuator->hasVoltage) {
+            actuator->voltage = actuator->muxChannel->readChannel1();
+        }
+        if (actuator->hasCurrent) {
+            actuator->current = actuator->muxChannel->readChannel2();
+        }
+
+        Comms::Packet tmp = {.id = actuator->statusPacketID};
+
+        Comms::packetAddFloat(&tmp, actuator->voltage);
+        Comms::packetAddFloat(&tmp, actuator->current);
         Comms::emitPacket(&tmp);
     }
 
@@ -313,7 +410,7 @@ namespace Valves {
     }
 
     // init function for valves namespace
-    void initValves(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask) {
+    void initActuators(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask) {
         // link the right packet IDs to the valve open/close handler functions
         Comms::registerCallback(130, armValvePacketHandler);
         Comms::registerCallback(131, igniterPacketHandler);
@@ -332,6 +429,56 @@ namespace Valves {
        
         _toggleLoxGemValve = toggleLoxGemValveTask;
         _toggleFuelGemValve = toggleFuelGemValveTask;
+    }
+
+    uint32_t chute1Sample() {
+        sampleActuator(&chute1);
+        return chute1.period;
+    }
+
+    uint32_t chute2Sample() {
+        sampleActuator(&chute2);
+        return chute2.period;
+    }
+
+    uint32_t cam1Sample() {
+        sampleActuator(&cam1);
+        return cam1.period;
+    }
+
+    uint32_t rfAmpSample() {
+        sampleActuator(&rfAmp);
+        return rfAmp.period;
+    }
+
+    uint32_t cam2Sample() {
+        sampleActuator(&cam2);
+        return cam2.period;
+    }
+
+    uint32_t radioSample() {
+        sampleActuator(&radio);
+        return radio.period;
+    }
+
+    uint32_t hBridge1Sample() {
+        sampleActuator(&hBridge1);
+        return hBridge1.period;
+    }
+
+    uint32_t hBridge2Sample() {
+        sampleActuator(&hBridge2);
+        return hBridge2.period;
+    }
+
+    uint32_t hBridge3Sample() {
+        sampleActuator(&hBridge3);
+        return hBridge3.period;
+    }
+
+    uint32_t break2Sample() {
+        sampleActuator(&break2);
+        return break2.period;
     }
 
 };

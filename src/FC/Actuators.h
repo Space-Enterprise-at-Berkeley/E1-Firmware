@@ -7,8 +7,9 @@
 
 #include <Arduino.h>
 #include <INA219.h>
+#include <MuxChannel.h>
 
-namespace Valves {
+namespace Actuators {
 
     struct Valve {
         uint8_t valveID;
@@ -22,7 +23,20 @@ namespace Valves {
         float ocThreshold;
         uint32_t period;
 
-        INA219 *ina;
+        MuxChannel *muxChannel;
+    };
+
+    struct Actuator {
+        uint8_t statusPacketID;
+
+        bool hasVoltage = true;
+        bool hasCurrent = true;
+
+        float voltage;
+        float current;
+        uint32_t period;
+
+        MuxChannel *muxChannel;
     };
 
     extern Valve armValve;
@@ -34,7 +48,8 @@ namespace Valves {
     extern Valve mainValveVent;
     extern Valve igniterEnableRelay;
 
-    void initValves(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask);
+    
+    void initActuators(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask);
 
     void openArmValve();
     void closeArmValve(uint8_t OCShutoff = 0);
@@ -76,4 +91,15 @@ namespace Valves {
     uint32_t toggleFuelGemValveTask();
     uint32_t toggleLoxGemValveTask();
     uint32_t igniterEnableRelaySample();
+
+    uint32_t chute1Sample();
+    uint32_t chute2Sample();
+    uint32_t cam1Sample();
+    uint32_t rfAmpSample();
+    uint32_t cam2Sample();
+    uint32_t radioSample();
+    uint32_t hBridge1Sample();
+    uint32_t hBridge2Sample();
+    uint32_t hBridge3Sample();
+    uint32_t break2Sample();
 };
