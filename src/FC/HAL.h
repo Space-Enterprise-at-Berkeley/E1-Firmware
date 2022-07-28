@@ -31,23 +31,6 @@ namespace HAL {
     const float chanShuntR = 0.033;
     const float chanCurrMax = 4.0;
 
-    //TODO are these still in the system?
-    extern INA219 chan0;
-    extern INA219 chan1;
-    extern INA219 chan2;
-    extern INA219 chan3;
-    extern INA219 chan4;
-    extern INA219 chan5;
-    extern INA219 chan6;
-    extern INA219 chan7;
-    extern INA219 chan8;
-    extern INA219 chan9;
-    extern INA219 chan10;
-    extern INA219 chan11;
-    extern INA219 chan12;
-    extern INA219 chan13;
-    extern INA219 chan14;
-
     const uint8_t chan0Pin = 5;
     const uint8_t chan1Pin = 4;
     const uint8_t chan2Pin = 3;
@@ -63,10 +46,11 @@ namespace HAL {
     const uint8_t chan10Pin = 4;
     const uint8_t chan11Pin = 5;
 
-    extern MCP9600 tcAmp0;
-    extern MCP9600 tcAmp1;
-    extern MCP9600 tcAmp2;
-    extern MCP9600 tcAmp3;
+    // These dont work at the moment
+    // extern MCP9600 tcAmp0;
+    // extern MCP9600 tcAmp1;
+    // extern MCP9600 tcAmp2;
+    // extern MCP9600 tcAmp3;
 
     extern MuxChannel muxChan0;
     extern MuxChannel muxChan1;
