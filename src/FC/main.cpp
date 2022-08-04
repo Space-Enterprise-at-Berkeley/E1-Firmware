@@ -5,7 +5,7 @@
 #include "Power.h"
 #include "Actuators.h"
 #include "HAL.h"
-#include "Thermocouples.h"
+//#include "Thermocouples.h"
 #include "OCHandler.h"
 
 #include <Arduino.h>
@@ -33,10 +33,10 @@ Task taskTable[] = {
 
     // thermocouples
     // {Thermocouples::tcSample, 0},
-    {Thermocouples::tc0Sample, 0},
-    {Thermocouples::tc1Sample, 0},
-    {Thermocouples::tc2Sample, 0},
-    {Thermocouples::tc3Sample, 0},
+    // {Thermocouples::tc0Sample, 0},
+    // {Thermocouples::tc1Sample, 0},
+    // {Thermocouples::tc2Sample, 0},
+    // {Thermocouples::tc3Sample, 0},
 
     // valves
     {Actuators::armValveSample, 0},
@@ -81,7 +81,7 @@ int main() {
     Ducers::initDucers();
     Power::initPower();
     Actuators::initActuators(&taskTable[23], &taskTable[24]);
-    Thermocouples::initThermocouples();
+    //Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20);
 
     while(1) {
