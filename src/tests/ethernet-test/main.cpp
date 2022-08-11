@@ -6,7 +6,7 @@
 
 int port = 42069;
 IPAddress ip(10, 0, 0, 42);
-IPAddress remote(10, 0, 0, 70);
+IPAddress remote(10, 0, 0, 69);
 EthernetUDP Udp;
 
 const uint32_t __m1 = HW_OCOTP_MAC1;
