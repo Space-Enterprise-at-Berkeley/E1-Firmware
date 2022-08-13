@@ -82,27 +82,6 @@ namespace HAL {
         // IO Expander
         ioExpander.init(0x24, &Wire);
 
-        // todo: channels now don't have ina219's
-        // valves
-        // initChannel(&chan0, 0x40);
-        // initChannel(&chan1, 0x41);
-        // initChannel(&chan2, 0x42);
-        // initChannel(&chan3, 0x43);
-        // initChannel(&chan4, 0x44);
-        // initChannel(&chan5, 0x45);
-        // heaters
-        // initChannel(&chan6, 0x49);
-        // initChannel(&chan7, 0x4A);
-        // initChannel(&chan8, 0x4B);
-        // initChannel(&chan9, 0x4C);
-        // initChannel(&chan10, 0x4D);
-        // initChannel(&chan11, 0x4E);
-        // chute
-        // initChannel(&chan12, 0x48);
-        // initChannel(&chan13, 0x47);
-        // spare
-        // initChannel(&chan14, 0x46);
-
         // channels
         pinMode(chan0Pin, OUTPUT);
         pinMode(chan1Pin, OUTPUT);

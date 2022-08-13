@@ -47,28 +47,52 @@ namespace HAL {
     const uint8_t chan10Pin = 4;
     const uint8_t chan11Pin = 5;
 
+    // New Pin Mappings for Flight Stack
+    // Flight v3 Channels
+    const uint8_t ; 
+    const uint8_t ;
+    const uint8_t ;
+    const uint8_t ;
+    const uint8_t ;
+
+    // E-1 Extension Channels
+    const uint8_t valve1Pin = 7;
+    const uint8_t valve2Pin = 24;
+    const uint8_t valve3Pin = 2;
+    const uint8_t valve4Pin = 23;
+    const uint8_t valve5Pin = 9;
+    const uint8_t valve6Pin = 14;
+    const uint8_t hBridge1Pin1 = 0;
+    const uint8_t hBridge1Pin2 = 1;
+    const uint8_t hBridge2Pin1 = 15;
+    const uint8_t hBridge2Pin2 = 36;
+    const uint8_t hBridge3Pin1 = 21;
+    const uint8_t hBridge3Pin2 = 22;
+    
+
+
     // These dont work at the moment
     // extern MCP9600 tcAmp0;
     // extern MCP9600 tcAmp1;
     // extern MCP9600 tcAmp2;
     // extern MCP9600 tcAmp3;
 
-    extern MuxChannel muxChan0;
-    extern MuxChannel muxChan1;
-    extern MuxChannel muxChan2;
-    extern MuxChannel muxChan3;
-    extern MuxChannel muxChan4;
-    extern MuxChannel muxChan5;
-    extern MuxChannel muxChan6;
-    extern MuxChannel muxChan7;
-    extern MuxChannel muxChan8;
-    extern MuxChannel muxChan9;
-    extern MuxChannel muxChan10;
-    extern MuxChannel muxChan11;
-    extern MuxChannel muxChan12;
-    extern MuxChannel muxChan13;
-    extern MuxChannel muxChan14;
-    extern MuxChannel muxChan15;
+    extern MuxChannel muxChan0; // Chute1
+    extern MuxChannel muxChan1; // Chute2
+    extern MuxChannel muxChan2; // Cam1/NA
+    extern MuxChannel muxChan3; // Amp/NA
+    extern MuxChannel muxChan4; // Cam2/Break1
+    extern MuxChannel muxChan5; // Radio/Break2
+    extern MuxChannel muxChan6; // NA/Break3
+    extern MuxChannel muxChan7; // Valve1
+    extern MuxChannel muxChan8; // Valve2
+    extern MuxChannel muxChan9; // Valve3
+    extern MuxChannel muxChan10; // Valve4
+    extern MuxChannel muxChan11; // Valve5
+    extern MuxChannel muxChan12; // Valve6
+    extern MuxChannel muxChan13; // HBridge1
+    extern MuxChannel muxChan14; // HBridge2
+    extern MuxChannel muxChan15; // HBridge3
 
     // extern TCA6408A ioExpander0;
     // extern TCA6408A ioExpander1;
