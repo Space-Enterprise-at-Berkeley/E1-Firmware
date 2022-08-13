@@ -53,16 +53,20 @@ namespace Power {
     }
 
     uint32_t supply8Sample() {
+        DEBUG("Reading Voltage\n");
         supply8Voltage = HAL::supply8v.readBusVoltage();
+        DEBUG("Reading Current\n");
         supply8Current = HAL::supply8v.readShuntCurrent();
+        DEBUG("Power\n");
         supply8Power = supply8Voltage * supply8Current;
-
+        DEBUG("8V Packet setup\n");
         supply8Packet.len = 0;
         Comms::packetAddFloat(&supply8Packet, supply8Voltage);
         Comms::packetAddFloat(&supply8Packet, supply8Current);
         Comms::packetAddFloat(&supply8Packet, supply8Power);
+        DEBUG("Sending packet\n");
         Comms::emitPacket(&supply8Packet);
-
+        DEBUG("Packet sent\n");
         return powerUpdatePeriod;
     }
 }

@@ -61,7 +61,7 @@ namespace Ducers {
 
         //HAL::adc2.readChannelOTF(4); // switch mux back to channel 4
         //pressurantPTValue = interpolate5000(HAL::adc2.readChannelOTF(4)); // read channel 4, setup channel 5 for next read
-        pressurantPTValue = 0; //TODO remap this
+        pressurantPTValue = interpolate5000(HAL::adc1.readChannelOTF(0));
 
 
         // emit a packet with data
@@ -83,7 +83,7 @@ namespace Ducers {
         DEBUG("PTROC Starting\n");
         // pressurantPTROC = (pressurantPTValue - prevPressurantPTValue);
         pressurantPTROC = 0;
-        prevPressurantPTValue = pressurantPTValue;
+        // prevPressurantPTValue = pressurantPTValue;
         //emit a packet with data
         ptROCPacket.len = 0;
         DEBUG("PTROC Read\n");

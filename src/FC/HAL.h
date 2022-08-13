@@ -20,7 +20,8 @@ namespace HAL {
 
     const float battShuntR = 0.002;
     const float battCurrMax = 8.0;
-    const float supplyShuntR = 0.01;
+    // const float supplyShuntR = 0.01;
+    const float supplyShuntR = 0.033; // Shunt on Flight V3 is 0.033 ohms
     const float supplyCurrMax = 4.0;
     // extern INA226 supplyBatt;
     // extern INA219 supply12v;
@@ -28,7 +29,7 @@ namespace HAL {
 
     extern TCA6408A ioExpander;
 
-    const float chanShuntR = 0.033;
+    const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
 
     const uint8_t chan0Pin = 5;
