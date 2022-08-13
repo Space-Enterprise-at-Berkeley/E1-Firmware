@@ -25,29 +25,29 @@ namespace Power {
 
     uint32_t battSample() {
         // Reads current, voltage, power values for battery supply
-        battVoltage = HAL::supplyBatt.readBusVoltage();
-        battCurrent = HAL::supplyBatt.readShuntCurrent();
-        battPower = battVoltage * battCurrent;
+        // battVoltage = HAL::supplyBatt.readBusVoltage();
+        // battCurrent = HAL::supplyBatt.readShuntCurrent();
+        // battPower = battVoltage * battCurrent;
 
         battPacket.len = 0;
-        Comms::packetAddFloat(&battPacket, battVoltage);
-        Comms::packetAddFloat(&battPacket, battCurrent);
-        Comms::packetAddFloat(&battPacket, battPower);
-        Comms::emitPacket(&battPacket);
+        // Comms::packetAddFloat(&battPacket, battVoltage);
+        // Comms::packetAddFloat(&battPacket, battCurrent);
+        // Comms::packetAddFloat(&battPacket, battPower);
+        // Comms::emitPacket(&battPacket);
 
         return powerUpdatePeriod;
     }
 
     uint32_t supply12Sample() {
-        supply12Voltage = HAL::supply12v.readBusVoltage();
-        supply12Current = HAL::supply12v.readShuntCurrent();
-        supply12Power = supply12Voltage * supply12Current;
+        // supply12Voltage = HAL::supply12v.readBusVoltage();
+        // supply12Current = HAL::supply12v.readShuntCurrent();
+        // supply12Power = supply12Voltage * supply12Current;
 
         supply12Packet.len = 0;
-        Comms::packetAddFloat(&supply12Packet, supply12Voltage);
-        Comms::packetAddFloat(&supply12Packet, supply12Current);
-        Comms::packetAddFloat(&supply12Packet, supply12Power);
-        Comms::emitPacket(&supply12Packet);
+        // Comms::packetAddFloat(&supply12Packet, supply12Voltage);
+        // Comms::packetAddFloat(&supply12Packet, supply12Current);
+        // Comms::packetAddFloat(&supply12Packet, supply12Power);
+        // Comms::emitPacket(&supply12Packet);
 
         return powerUpdatePeriod;
     }

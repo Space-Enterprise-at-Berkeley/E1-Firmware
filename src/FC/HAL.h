@@ -16,14 +16,14 @@
 namespace HAL {    
     
     extern ADS8167 adc1;
-    extern ADS8167 adc2;
+    //extern ADS8167 adc2;
 
     const float battShuntR = 0.002;
     const float battCurrMax = 8.0;
     const float supplyShuntR = 0.01;
     const float supplyCurrMax = 4.0;
-    extern INA226 supplyBatt;
-    extern INA219 supply12v;
+    // extern INA226 supplyBatt;
+    // extern INA219 supply12v;
     extern INA219 supply8v;
 
     extern TCA6408A ioExpander;

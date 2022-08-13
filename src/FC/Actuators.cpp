@@ -283,17 +283,24 @@ namespace Actuators {
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
+        // DEBUG("STARTING VALVE SAMPLE\n");
         valve->voltage = valve->muxChannel->readChannel1();
+        // DEBUG("VOLTAGE READABLE \n");
         valve->current = valve->muxChannel->readChannel2();
+        // DEBUG("CURRENT READABLE \n");
         
         Comms::Packet tmp = {.id = valve->statusPacketID};
         //IDS: Arming valve, igniter, lox main valve, fuel main valve
         if (valve->current > valve->ocThreshold) {
             closeValve(valve, 1);
+            // DEBUG("VALVE CLOSED\n");
         }
         Comms::packetAddFloat(&tmp, valve->voltage);
+        // DEBUG("VOLTAGE SENT\n");
         Comms::packetAddFloat(&tmp, valve->current);
+        // DEBUG("CURRENT SENT\n");
         Comms::emitPacket(&tmp);
+        // DEBUG("PACKET SENT\n");
     }
 
     //common function for sampling non valves on the mux

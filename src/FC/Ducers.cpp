@@ -59,9 +59,9 @@ namespace Ducers {
         fuelDomePTValue = interpolate1000(HAL::adc1.readChannelOTF(6)); // read channel 5, setup channel 6 for next read
         fuelTankPTValue = interpolate1000(HAL::adc1.readChannelOTF(1)); // read channel 6, reset mux to channel 1
 
-        HAL::adc2.readChannelOTF(4); // switch mux back to channel 4
-        pressurantPTValue = interpolate5000(HAL::adc2.readChannelOTF(4)); // read channel 4, setup channel 5 for next read
-
+        //HAL::adc2.readChannelOTF(4); // switch mux back to channel 4
+        //pressurantPTValue = interpolate5000(HAL::adc2.readChannelOTF(4)); // read channel 4, setup channel 5 for next read
+        pressurantPTValue = 0; //TODO remap this
 
 
         // emit a packet with data
@@ -80,14 +80,16 @@ namespace Ducers {
     }
 
     uint32_t pressurantPTROCSample() {
-        pressurantPTROC = (pressurantPTValue - prevPressurantPTValue);
+        DEBUG("PTROC Starting\n");
+        // pressurantPTROC = (pressurantPTValue - prevPressurantPTValue);
+        pressurantPTROC = 0;
         prevPressurantPTValue = pressurantPTValue;
-
         //emit a packet with data
         ptROCPacket.len = 0;
+        DEBUG("PTROC Read\n");
         Comms::packetAddFloat(&ptROCPacket, pressurantPTROC);
         Comms::emitPacket(&ptROCPacket);
-
+        DEBUG("PTROC Packet Sent\n");
         return ptROCUpdatePeriod;
     }
 };

@@ -2,10 +2,10 @@
 
 namespace HAL {
     ADS8167 adc1;
-    ADS8167 adc2;
+    // ADS8167 adc2;
 
-    INA226 supplyBatt;
-    INA219 supply12v;
+    // INA226 supplyBatt;
+    // INA219 supply12v;
     INA219 supply8v;
 
     TCA6408A ioExpander;
@@ -36,9 +36,9 @@ namespace HAL {
     MuxChannel muxChan15;
 
     // Not usable rn
-    // MCP9600 tcAmp0;
-    // MCP9600 tcAmp1;
-    // MCP9600 tcAmp2;
+    MCP9600 tcAmp0;
+    MCP9600 tcAmp1;
+    MCP9600 tcAmp2;
     // MCP9600 tcAmp3;
 
     void initChannel(INA219 *channel, uint8_t address) {
@@ -59,13 +59,14 @@ namespace HAL {
 
     void initHAL() {
         // initialize ADC 1
-        adc1.init(&SPI, 37, 26, 9);
+        // adc1.init(&SPI, 37, 26, 9); // adc.init(&SPI, 37, 25, 999);
+        adc1.init(&SPI, 37, 25, 999);
         adc1.setAllInputsSeparate();
         adc1.enableOTFMode();
         // initialize ADC 2
-        adc2.init(&SPI, 36, 27, 10);
-        adc2.setAllInputsSeparate();
-        adc2.enableOTFMode();
+        // adc2.init(&SPI, 36, 27, 10);
+        // adc2.setAllInputsSeparate();
+        // adc2.enableOTFMode();
 
         // Initialize I2C buses
         Wire.begin();
@@ -75,12 +76,11 @@ namespace HAL {
         Wire1.setClock(1000000);
 
         // Initialize INA219s
-        supplyBatt.init(&Wire, 0x43, battShuntR, battCurrMax, INA226_AVERAGES_1, INA226_BUS_CONV_TIME_8244US, INA226_SHUNT_CONV_TIME_8244US, INA226_MODE_SHUNT_BUS_CONT);
-        supply12v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
-        supply8v.init(&Wire, 0x45, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
+        // Only INA219 on FCv3 is on 8V supply, address 0x44
+        supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
         // IO Expander
-        ioExpander.init(0x20, &Wire);
+        ioExpander.init(0x24, &Wire);
 
         // todo: channels now don't have ina219's
         // valves
@@ -114,9 +114,9 @@ namespace HAL {
         // thermocouple amplifiers
         // 08/02: not on e1 ext
         // tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
+        // tcAmp2.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp3.init(0x67, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
         muxChan0.init(&valveMux, 0);
         muxChan1.init(&valveMux, 1);

@@ -5,66 +5,65 @@
 #include "Power.h"
 #include "Actuators.h"
 #include "HAL.h"
-//#include "Thermocouples.h"
+// #include "Thermocouples.h"
 #include "OCHandler.h"
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 
+
 Task taskTable[] = {
     //automation
-    // {Automation::flow, 0, false},
-    // {Automation::abortFlow, 0, false},
-    // {Automation::checkIgniter, 0},
-    // {Automation::checkForTCAbort, 0, false},
-    // {Automation::checkForLCAbort, 0, false},
-    // {Automation::autoventFuelGemValveTask, 0},
-    // {Automation::autoventLoxGemValveTask, 0},
+    {Automation::flow, 0, false},//0
+    {Automation::abortFlow, 0, false},//1
+    {Automation::checkIgniter, 0},//2
+    {Automation::checkForTCAbort, 0, false},//3
+    {Automation::checkForLCAbort, 0, false},//4
+    {Automation::autoventFuelGemValveTask, 0},//5
+    {Automation::autoventLoxGemValveTask, 0},//6
 
     // ducers
-    {Ducers::ptSample, 0},
-    {Ducers::pressurantPTROCSample, 0},
+    {Ducers::ptSample, 0},//7
+    {Ducers::pressurantPTROCSample, 0}, //8 
 
     // power
-    // {Power::battSample, 0},
-    // {Power::supply12Sample, 0},
-    // {Power::supply8Sample, 0},
+    {Power::supply8Sample, 0},//9
 
     // thermocouples
-    // {Thermocouples::tcSample, 0},
+    //{Thermocouples::tcSample, 0},
     // {Thermocouples::tc0Sample, 0},
     // {Thermocouples::tc1Sample, 0},
     // {Thermocouples::tc2Sample, 0},
     // {Thermocouples::tc3Sample, 0},
 
     // valves
-    // {Actuators::armValveSample, 0},
-    // {Actuators::igniterSample, 0},
-    // {Actuators::loxMainValveSample, 0},
-    // {Actuators::fuelMainValveSample, 0},
-    // {Actuators::loxGemValveSample, 0},
-    // {Actuators::fuelGemValveSample, 0},
-    // {Actuators::breakWireSample, 0},
-    // {Actuators::toggleLoxGemValveTask, 0, false},
-    // {Actuators::toggleFuelGemValveTask, 0, false},
-    // {Actuators::igniterEnableRelaySample, 0},
+    {Actuators::armValveSample, 0},//10
+    {Actuators::igniterSample, 0},//11
+    {Actuators::loxMainValveSample, 0},//12
+    {Actuators::fuelMainValveSample, 0},//13
+    {Actuators::loxGemValveSample, 0},//14
+    {Actuators::fuelGemValveSample, 0},//15
+    {Actuators::breakWireSample, 0},//16
+    {Actuators::toggleLoxGemValveTask, 0, false},//17
+    {Actuators::toggleFuelGemValveTask, 0, false},//18
+    {Actuators::igniterEnableRelaySample, 0},//19
 
     // heaters
-    // {Actuators::RQDSample, 0},
-    // {Actuators::mainValveVentSample, 0},
+    {Actuators::RQDSample, 0},//20
+    {Actuators::mainValveVentSample, 0},//21
 
     // current sense mux
-    // {Actuators::chute1Sample, 0},
-    // {Actuators::chute2Sample, 0},
-    // {Actuators::cam1Sample, 0},
-    // {Actuators::rfAmpSample, 0},
-    // {Actuators::cam2Sample, 0},
-    // {Actuators::radioSample, 0},
-    // {Actuators::hBridge1Sample, 0},
-    // {Actuators::hBridge2Sample, 0},
-    // {Actuators::hBridge3Sample, 0},
-    // {Actuators::break2Sample, 0},
+    {Actuators::chute1Sample, 0},//22
+    {Actuators::chute2Sample, 0},//23
+    {Actuators::cam1Sample, 0},//24
+    {Actuators::rfAmpSample, 0},//25
+    {Actuators::cam2Sample, 0},//26
+    {Actuators::radioSample, 0},//27
+    {Actuators::hBridge1Sample, 0},//28
+    {Actuators::hBridge2Sample, 0},//29
+    {Actuators::hBridge3Sample, 0},//30
+    {Actuators::break2Sample, 0},//31
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -89,6 +88,8 @@ int main() {
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
+                Serial.print("Task done successfully ");
+                Serial.println(i);
             }
         }
         Comms::processWaitingPackets();
