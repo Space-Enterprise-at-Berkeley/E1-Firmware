@@ -49,11 +49,11 @@ namespace HAL {
 
     // New Pin Mappings for Flight Stack
     // Flight v3 Channels
-    const uint8_t ; 
-    const uint8_t ;
-    const uint8_t ;
-    const uint8_t ;
-    const uint8_t ;
+    const uint8_t chute1Pin = 30; 
+    const uint8_t chute2Pin = 31;
+    const uint8_t camPin = 39;
+    const uint8_t amp1Pin = 32; // not flying amp but keeping the name for ref to schematic
+    const uint8_t radio1Pin = 8;
 
     // E-1 Extension Channels
     const uint8_t valve1Pin = 7;
