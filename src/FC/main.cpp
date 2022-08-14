@@ -45,13 +45,13 @@ Task taskTable[] = {
     {Actuators::loxGemValveSample, 0},//14
     {Actuators::fuelGemValveSample, 0},//15
     {Actuators::breakWireSample, 0},//16
-    {Actuators::toggleLoxGemValveTask, 0, false},//17
-    {Actuators::toggleFuelGemValveTask, 0, false},//18
-    {Actuators::igniterEnableRelaySample, 0},//19
+    {Actuators::toggleLoxGemValveTask, 0},//17
+    {Actuators::toggleFuelGemValveTask, 0},//18
+    {Actuators::igniterEnableRelaySample, 0, false},//19 TODO: Assign channel
 
     // heaters
-    {Actuators::RQDSample, 0},//20
-    {Actuators::mainValveVentSample, 0},//21
+    {Actuators::RQDSample, 0, false},//20 TODO: Assign channel
+    {Actuators::mainValveVentSample, false, 0},//21 TODO: Assign channel
 
     // current sense mux
     {Actuators::chute1Sample, 0},//22
@@ -81,7 +81,7 @@ int main() {
     Power::initPower();
     Actuators::initActuators(&taskTable[23], &taskTable[24]);
     Thermocouples::initThermocouples();
-    // OCHandler::initOCHandler(20); // TODO: this seems to be causing code to crash... 
+    OCHandler::initOCHandler(20); // TODO: this seems to be causing code to crash... 
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

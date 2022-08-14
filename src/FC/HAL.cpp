@@ -8,8 +8,6 @@ namespace HAL {
     // INA219 supply12v;
     INA219 supply8v;
 
-    TCA6408A ioExpander;
-
     //Voltage and Current Sense Mux
     Mux valveMux = {.muxSelect1Pin = 3,
                     .muxSelect2Pin = 4,
@@ -79,16 +77,29 @@ namespace HAL {
         // Only INA219 on FCv3 is on 8V supply, address 0x44
         supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
-        // IO Expander
-        ioExpander.init(0x24, &Wire);
+        // IO Expander (this isn't the one we're actually using though, that's in OCHandler...)
+        // ioExpander.init(0x24, &Wire);
 
-        // channels
-        pinMode(chan0Pin, OUTPUT);
-        pinMode(chan1Pin, OUTPUT);
-        pinMode(chan2Pin, OUTPUT);
-        pinMode(chan3Pin, OUTPUT);
-        pinMode(chan4Pin, OUTPUT);
-        pinMode(chan5Pin, OUTPUT);
+        // Flight v3 channels
+        pinMode(chute1Pin, OUTPUT);
+        pinMode(chute2Pin, OUTPUT);
+        pinMode(camPin, OUTPUT);
+        pinMode(amp1Pin, OUTPUT);
+        pinMode(radio1Pin, OUTPUT);
+
+        // E-1 Extension channels
+        pinMode(valve1Pin, OUTPUT);
+        pinMode(valve2Pin, OUTPUT);
+        pinMode(valve3Pin, OUTPUT);
+        pinMode(valve4Pin, OUTPUT);
+        pinMode(valve5Pin, OUTPUT);
+        pinMode(valve6Pin, OUTPUT);
+        pinMode(hBridge1Pin1, OUTPUT);
+        pinMode(hBridge1Pin2, OUTPUT);
+        pinMode(hBridge2Pin1, OUTPUT);
+        pinMode(hBridge2Pin2, OUTPUT);
+        pinMode(hBridge3Pin1, OUTPUT);
+        pinMode(hBridge3Pin2, OUTPUT);
 
         // thermocouple amplifiers
         // 08/02: not on e1 ext

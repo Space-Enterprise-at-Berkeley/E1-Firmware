@@ -4,9 +4,9 @@
 
 #include <ADS8167.h>
 #include <INA219.h>
-#include <INA226.h>
+// #include <INA226.h>
 #include <MCP9600.h>
-#include <TCA6408A.h>
+// #include <TCA6408A.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -23,7 +23,7 @@ namespace HAL {
     const float supplyCurrMax = 4.0;
     extern INA219 supply8v;
 
-    extern TCA6408A ioExpander;
+    // extern TCA6408A ioExpander;
 
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
@@ -51,9 +51,9 @@ namespace HAL {
     const uint8_t hBridge3Pin2 = 22; 
 
     // These dont work at the moment
-    // extern MCP9600 tcAmp0;
-    // extern MCP9600 tcAmp1;
-    // extern MCP9600 tcAmp2;
+    extern MCP9600 tcAmp0;
+    extern MCP9600 tcAmp1;
+    extern MCP9600 tcAmp2;
     // extern MCP9600 tcAmp3;
 
     extern MuxChannel muxChan0; // Chute1

@@ -232,11 +232,12 @@ namespace Actuators {
 
     // common function for closing a valve
     void closeValve(Valve *valve, uint8_t OCShutoff) { //optional argument overcurrentShutoff
-        if(valve->pin != 255) {
-            digitalWriteFast(valve->pin, LOW); // turn off the physical pin
-        } else {
-            HAL::ioExpander.turnOff(valve->expanderPin);
-        }
+        // if(valve->pin != 255) {
+        //     digitalWriteFast(valve->pin, LOW); // turn off the physical pin
+        // } else {
+        //     HAL::ioExpander.turnOff(valve->expanderPin);
+        // }
+        digitalWriteFast(valve->pin, LOW); // turn off the physical pin
         valveStates &= ~(0x01 << valve->valveID); // set bit <valveID> to 1
 
         Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offset of 40 (check the E-1 Design spreadsheet)
