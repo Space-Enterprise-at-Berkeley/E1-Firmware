@@ -6,46 +6,47 @@ namespace Actuators {
     // the order of bits is the same as the order of valves on the E-1 Design spreadsheet
     uint16_t valveStates = 0x00;
 
-    // info for each individual valve
+    // Info for each individual valve.
+    // Mapping according to vertical system wiring + stack schematic, 08/13
     Valve armValve = {.valveID = 0,
                       .statePacketID = 40,
                       .statusPacketID = 30,
-                      .pin = 255,
-                      .expanderPin = HAL::chan11Pin,
+                     // .pin = 255,
+                      .pin = HAL::valve5Pin,
+                      .expanderPin = 255, 
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
-                      .muxChannel = &HAL::muxChan7};
+                      .muxChannel = &HAL::muxChan11};
 
-    //TODO what is this on?
     Valve igniter = {.valveID = 1,
                       .statePacketID = 41,
                       .statusPacketID = 31,
-                      .pin = 255,
-                      .expanderPin = HAL::chan7Pin,
+                      .pin = HAL::valve6Pin,
+                      .expanderPin = 255,
+                      .voltage = 0.0,
+                      .current = 0.0,
+                      .ocThreshold = 2.0,
+                      .period = 50 * 1000,
+                      .muxChannel = &HAL::muxChan12};
+    
+    Valve loxMainValve = {.valveID = 2,
+                      .statePacketID = 42,
+                      .statusPacketID = 32,
+                      .pin = HAL::valve2Pin,
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
                       .period = 50 * 1000,
                       .muxChannel = &HAL::muxChan8};
-    
-    Valve loxMainValve = {.valveID = 2,
-                      .statePacketID = 42,
-                      .statusPacketID = 32,
-                      .pin = 255,
-                      .expanderPin = HAL::chan8Pin,
-                      .voltage = 0.0,
-                      .current = 0.0,
-                      .ocThreshold = 2.0,
-                      .period = 50 * 1000,
-                      .muxChannel = &HAL::muxChan9};
 
     Valve fuelMainValve = {.valveID = 3,
                       .statePacketID = 43,
                       .statusPacketID = 33,
-                      .pin = 255,
-                      .expanderPin = HAL::chan10Pin,
+                      .pin = HAL::valve4Pin,
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
@@ -55,29 +56,29 @@ namespace Actuators {
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
                       .statusPacketID = 34,
-                      .pin = HAL::chan3Pin,
+                      .pin = 255, // HAL::chan3Pin, TODO: figure out - only reading continuity with MUX 
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 0.1,
                       .period = 50 * 1000,
-                      .muxChannel = &HAL::muxChan5};
+                      .muxChannel = &HAL::muxChan4}; // Using Breakwire1, S5B on MUX (MUX channel 4)
     
     Valve RQD = {.valveID = 5, // actuated from the IO Expander
                 .statePacketID = 45,
                 .statusPacketID = 35,
-                .pin = HAL::chan4Pin, // dont use pin
+                .pin = 255, // HAL::chan4Pin, TODO: Assign...
                 .expanderPin = 255,
                 .voltage = 0.0,
                 .current = 0.0,
                 .ocThreshold = 3.0,
                 .period = 50 * 1000,
-                .muxChannel = &HAL::muxChan4};
+                .muxChannel = &HAL::muxChan6}; // TODO: Reassign
 
     Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
                       .statePacketID = 46,
                       .statusPacketID = 36,
-                      .pin = HAL::chan5Pin, // dont use pin
+                      .pin = 255, // TODO: Assign...
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
@@ -88,7 +89,7 @@ namespace Actuators {
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
                       .statePacketID = 48,
                       .statusPacketID = 38,
-                      .pin = HAL::chan2Pin,
+                      .pin = 255, // TODO: Assign...
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
@@ -100,24 +101,24 @@ namespace Actuators {
     Valve loxGemValve = {.valveID = 8,
                       .statePacketID = 52,
                       .statusPacketID = 28,
-                      .pin = 255, // dont use pin
-                      .expanderPin = HAL::chan9Pin,
+                      .pin = HAL::valve1Pin, 
+                      .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
                       .period = 50 * 1000,
-                      .muxChannel = &HAL::muxChan9};
+                      .muxChannel = &HAL::muxChan7};
     
     Valve fuelGemValve = {.valveID = 9,
                   .statePacketID = 53,
                   .statusPacketID = 29,
-                  .pin = 255, // dont use pin
-                  .expanderPin = HAL::chan6Pin,
+                  .pin = HAL::hBridge3Pin1, 
+                  .expanderPin = 255,
                   .voltage = 0.0,
                   .current = 0.0,
                   .ocThreshold = 3.0,
                   .period = 50 * 1000,
-                  .muxChannel = &HAL::muxChan9};
+                  .muxChannel = &HAL::muxChan15};
 
     Actuator chute1 = {.statusPacketID = 0,
                     .hasVoltage = true,
@@ -182,14 +183,14 @@ namespace Actuators {
                     .current = 0.0,
                     .period = 100 * 1000,
                     .muxChannel = &HAL::muxChan14};
-
+    // Currently h bridge 3 is being used for PROP GEMS... 
     Actuator hBridge3 = {.statusPacketID = 0,
                     .hasVoltage = true,
                     .hasCurrent = true,
                     .voltage = 0.0,
                     .current = 0.0,
                     .period = 100 * 1000,
-                    .muxChannel = &HAL::muxChan15};
+                    .muxChannel = &HAL::muxChan9}; // TODO: Eventually need to fix - currently mapped to Valve channel 3 to avoid conflict
 
     Actuator break2 = {.statusPacketID = 0,
                     .hasVoltage = true,
@@ -197,7 +198,7 @@ namespace Actuators {
                     .voltage = 0.0,
                     .current = 0.0,
                     .period = 100 * 1000,
-                    .muxChannel = &HAL::muxChan6};
+                    .muxChannel = &HAL::muxChan6}; // Ch5 in use for radio power
 
     Task *_toggleFuelGemValve;
     Task *_toggleLoxGemValve;
@@ -213,11 +214,12 @@ namespace Actuators {
 
     // common function for opening a valve
     void openValve(Valve *valve) {
-        if(valve->pin != 255) {
-            digitalWriteFast(valve->pin, HIGH); // turn on the physical pin
-        } else {
-            HAL::ioExpander.turnOn(valve->expanderPin);
-        }
+        // if(valve->pin != 255) {
+        //     digitalWriteFast(valve->pin, HIGH); // turn on the physical pin
+        // } else {
+        //     HAL::ioExpander.turnOn(valve->expanderPin);
+        // }
+        digitalWriteFast(valve->pin, HIGH); // turn on the physical pin
         valveStates |= (0x01 << valve->valveID); // set bit <valveID> to 1
 
 
