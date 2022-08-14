@@ -16,15 +16,11 @@
 namespace HAL {    
     
     extern ADS8167 adc1;
-    //extern ADS8167 adc2;
 
     const float battShuntR = 0.002;
     const float battCurrMax = 8.0;
-    // const float supplyShuntR = 0.01;
-    const float supplyShuntR = 0.033; // Shunt on Flight V3 is 0.033 ohms
+    const float supplyShuntR = 0.033; // Shunt on Flight V3 is 0.033 ohms. Originally 0.01
     const float supplyCurrMax = 4.0;
-    // extern INA226 supplyBatt;
-    // extern INA219 supply12v;
     extern INA219 supply8v;
 
     extern TCA6408A ioExpander;
@@ -32,22 +28,7 @@ namespace HAL {
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
 
-    const uint8_t chan0Pin = 5;
-    const uint8_t chan1Pin = 4;
-    const uint8_t chan2Pin = 3;
-    const uint8_t chan3Pin = 2;
-    const uint8_t chan4Pin = 1;
-    const uint8_t chan5Pin = 0;
-
-    // NOTE: these pins refer to the IO Expander
-    const uint8_t chan6Pin = 0;
-    const uint8_t chan7Pin = 1;
-    const uint8_t chan8Pin = 2;
-    const uint8_t chan9Pin = 3;
-    const uint8_t chan10Pin = 4;
-    const uint8_t chan11Pin = 5;
-
-    // New Pin Mappings for Flight Stack
+    // Pin Mappings for Flight Stack
     // Flight v3 Channels
     const uint8_t chute1Pin = 30; 
     const uint8_t chute2Pin = 31;
@@ -56,20 +37,18 @@ namespace HAL {
     const uint8_t radio1Pin = 8;
 
     // E-1 Extension Channels
-    const uint8_t valve1Pin = 7;
-    const uint8_t valve2Pin = 24;
-    const uint8_t valve3Pin = 2;
-    const uint8_t valve4Pin = 23;
-    const uint8_t valve5Pin = 9;
-    const uint8_t valve6Pin = 14;
-    const uint8_t hBridge1Pin1 = 0;
-    const uint8_t hBridge1Pin2 = 1;
-    const uint8_t hBridge2Pin1 = 15;
-    const uint8_t hBridge2Pin2 = 36;
-    const uint8_t hBridge3Pin1 = 21;
-    const uint8_t hBridge3Pin2 = 22;
-    
-
+    const uint8_t valve1Pin = 7; // LOX GEMS
+    const uint8_t valve2Pin = 24; // LOX MAIN
+    const uint8_t valve3Pin = 2; 
+    const uint8_t valve4Pin = 23; // PROP MAIN
+    const uint8_t valve5Pin = 9; // ARM
+    const uint8_t valve6Pin = 14; // IGNITER
+    const uint8_t hBridge1Pin1 = 0; 
+    const uint8_t hBridge1Pin2 = 1; 
+    const uint8_t hBridge2Pin1 = 15; // PRESS FLOW 1
+    const uint8_t hBridge2Pin2 = 36; // PRESS FLOW 2
+    const uint8_t hBridge3Pin1 = 21; // PROP GEMS CTRL
+    const uint8_t hBridge3Pin2 = 22; 
 
     // These dont work at the moment
     // extern MCP9600 tcAmp0;

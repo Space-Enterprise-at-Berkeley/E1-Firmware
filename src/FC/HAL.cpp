@@ -18,22 +18,22 @@ namespace HAL {
                     .muxInput1Pin = 40,
                     .muxInput2Pin = 16};
 
-    MuxChannel muxChan0;
-    MuxChannel muxChan1;
-    MuxChannel muxChan2;
-    MuxChannel muxChan3;
-    MuxChannel muxChan4;
-    MuxChannel muxChan5;
-    MuxChannel muxChan6;
-    MuxChannel muxChan7;
-    MuxChannel muxChan8;
-    MuxChannel muxChan9;
-    MuxChannel muxChan10;
-    MuxChannel muxChan11;
-    MuxChannel muxChan12;
-    MuxChannel muxChan13;
-    MuxChannel muxChan14;
-    MuxChannel muxChan15;
+    MuxChannel muxChan0; // Chute1
+    MuxChannel muxChan1; // Chute2
+    MuxChannel muxChan2; // Cam1/NA
+    MuxChannel muxChan3; // Amp/NA
+    MuxChannel muxChan4; // Cam2/Break1
+    MuxChannel muxChan5; // Radio/Break2
+    MuxChannel muxChan6; // NA/Break3
+    MuxChannel muxChan7; // Valve1
+    MuxChannel muxChan8; // Valve2
+    MuxChannel muxChan9; // Valve3
+    MuxChannel muxChan10; // Valve4
+    MuxChannel muxChan11; // Valve5
+    MuxChannel muxChan12; // Valve6
+    MuxChannel muxChan13; // HBridge1
+    MuxChannel muxChan14; // HBridge2
+    MuxChannel muxChan15; // HBridge3
 
     // Not usable rn
     MCP9600 tcAmp0;
