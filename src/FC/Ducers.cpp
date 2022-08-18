@@ -80,16 +80,13 @@ namespace Ducers {
     }
 
     uint32_t pressurantPTROCSample() {
-        DEBUG("PTROC Starting\n");
         // pressurantPTROC = (pressurantPTValue - prevPressurantPTValue);
         pressurantPTROC = 0;
         // prevPressurantPTValue = pressurantPTValue;
         //emit a packet with data
         ptROCPacket.len = 0;
-        DEBUG("PTROC Read\n");
         Comms::packetAddFloat(&ptROCPacket, pressurantPTROC);
         Comms::emitPacket(&ptROCPacket);
-        DEBUG("PTROC Packet Sent\n");
         return ptROCUpdatePeriod;
     }
 };

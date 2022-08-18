@@ -14,6 +14,9 @@ namespace Comms {
     }
 
     void sendFirmwareVersionPacket(Packet unused, uint8_t ip) {
+        DEBUG("sending firmware version packet\n");
+        DEBUG_FLUSH();
+
         Packet version = {.id = 0, .len = 7};
 
         char commit[] = FW_COMMIT;
@@ -57,11 +60,11 @@ namespace Comms {
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
-            // DEBUG(packet->id);
-            // DEBUG("\n");
-            // DEBUG("Got unverified packet with ID ");
-            // DEBUG(packet->id);
-            // DEBUG('\n');
+            DEBUG(packet->id);
+            DEBUG("\n");
+            DEBUG("Got unverified packet with ID ");
+            DEBUG(packet->id);
+            DEBUG('\n');
             evokeCallbackFunction(packet, Udp.remoteIP()[3]);
         } else if(Serial.available()) {
             int cnt = 0;
@@ -137,6 +140,9 @@ namespace Comms {
      * @param packet Packet to be sent.
      */
     void emitPacket(Packet *packet) {
+        DEBUG(packet->id);
+        DEBUG(" - ");
+        DEBUG_FLUSH();
         //add timestamp to struct
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;

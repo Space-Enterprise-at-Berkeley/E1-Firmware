@@ -88,8 +88,6 @@ int main() {
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
-                Serial.print("Task done successfully ");
-                Serial.println(i);
             }
         }
         Comms::processWaitingPackets();
