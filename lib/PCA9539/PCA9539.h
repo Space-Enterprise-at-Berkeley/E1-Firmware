@@ -9,8 +9,6 @@
 #include "WProgram.h"
 #endif
 
-#define DEBUG 1
-
 //
 // PCA9555 defines
 //
