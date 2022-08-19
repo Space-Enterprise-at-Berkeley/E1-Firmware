@@ -10,6 +10,7 @@
 namespace Actuators {
 
     struct Actuator {
+        uint8_t actuatorID;
         uint8_t statusPacketID;
 
         float voltage;
@@ -20,18 +21,20 @@ namespace Actuators {
         uint8_t pin1;
         uint8_t pin2;
 
+        Task *stop;
+
         MuxChannel *muxChannel;
     };
 
     // TODO: Set correct OC limits
-    const uint8_t OClimits[7] = {4,4,4,4,4,4,4}; //(amps): Act 1, Act 2, Act 3, Act 4, Act 5, Act 6, Act 7
+    const uint8_t OClimit = 4; //(amps)
     const float stopCurrent = .1; // Stopped actuator current threshold (amps) 
     
     void extendPressFlowRBV();
     void retractPressFlowRBV();
     uint32_t stopPressFlowRBV();
     void brakePressFlowRBV();
-    void pressFlowRBVPacketHandler(Comms::Packet tmp);
+    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip);
 
     // void extendAct1();
     // void retractAct1();

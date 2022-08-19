@@ -5,13 +5,15 @@ namespace Actuators {
     // TODO: change this to appropriate value
     uint32_t actuatorCheckPeriod = 50 * 1000;
 
-    Actuator pressFlowRBV = {.statusPacketID = 39,
+    Actuator pressFlowRBV = { .actuatorID = 0,
+                    .statusPacketID = 39,
                     .voltage = 0.0,
                     .current = 0.0,
                     .period = 100 * 1000,
                     .state = 0,
                     .pin1 = HAL::hBridge2Pin1,
                     .pin2 = HAL::hBridge2Pin2,
+                    .stop = NULL, 
                     .muxChannel = &HAL::muxChan14};
   
     void driveForwards(Actuator *actuator){
@@ -38,11 +40,11 @@ namespace Actuators {
         actuator->state = 4; // Probably won't brake
     }
 
-    void extendPressFlowRBV(&pressFlowRBV){ driveForwards(); }
-    void retractPressFlowRBV(&pressFlowRBV){ driveBackwards(); }
-    uint32_t stopPressFlowRBV(&pressFlowRBV){ stopAct(); stopPressFlowRBV->enabled = false; return 0;}
-    void brakePressFlowRBV(&pressFlowRBV){ brakeAct(); }
-    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV, stopPressFlowRBV); }
+    void extendPressFlowRBV(){ driveForwards(&pressFlowRBV); }
+    void retractPressFlowRBV(){ driveBackwards(&pressFlowRBV); }
+    uint32_t stopPressFlowRBV(){ stopAct(&pressFlowRBV); pressFlowRBV.stop->enabled = false; return 0;}
+    void brakePressFlowRBV(){ brakeAct(&pressFlowRBV); }
+    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV, pressFlowRBV.stop); }
 
     void actPacketHandler(Comms::Packet tmp, void (*extend)(), void (*retract)(), Task *stopTask){
 /*         switch(tmp.data[0]){
@@ -84,9 +86,9 @@ namespace Actuators {
         actuator->voltage = actuator->muxChannel->readChannel1();
         actuator->current = actuator->muxChannel->readChannel2();
 
-        if (actuator->current > OClimits[actuatorID]){
-            switch(actuatorID){
-                case 0: stoppressFlowRBV(); break;
+        if (actuator->current > OClimit){
+            switch(actuator->actuatorID){
+                case 0: stopPressFlowRBV(); break;
                 // case 1: stopAct1(); break;
                 // case 2: stopAct2(); break;
             }
@@ -94,15 +96,15 @@ namespace Actuators {
         }
 
         if ((actuator->state == 1 || actuator->state == 2) && actuator->current < stopCurrent){
-            switch(actuatorID){
-                case 0: stoppressFlowRBV(); break;
+            switch(actuator->actuatorID){
+                case 0: stopPressFlowRBV(); break;
                 // case 1: stopAct1(); break;
                 // case 2: stopAct2(); break;
             }
         }
 
         Comms::Packet tmp = {.id = actuator->statusPacketID};
-        Comms::packetAddUint8(&tmp, actuator->actState);
+        Comms::packetAddUint8(&tmp, actuator->state);
         Comms::packetAddFloat(&tmp, actuator->voltage);
         Comms::packetAddFloat(&tmp, actuator->current);
         Comms::emitPacket(&tmp);
