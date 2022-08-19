@@ -4,9 +4,7 @@
 
 #include <ADS8167.h>
 #include <INA219.h>
-// #include <INA226.h>
 #include <MCP9600.h>
-// #include <TCA6408A.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -23,8 +21,6 @@ namespace HAL {
     const float supplyCurrMax = 4.0;
     extern INA219 supply8v;
 
-    // extern TCA6408A ioExpander;
-
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
 
@@ -38,16 +34,16 @@ namespace HAL {
 
     // E-1 Extension Channels
     const uint8_t valve1Pin = 7; // LOX GEMS
-    const uint8_t valve2Pin = 24; // LOX MAIN
+    const uint8_t valve2Pin = 24; // FUEL GEMS
     const uint8_t valve3Pin = 2; 
-    const uint8_t valve4Pin = 23; // PROP MAIN
-    const uint8_t valve5Pin = 9; // ARM
-    const uint8_t valve6Pin = 14; // IGNITER
+    const uint8_t valve4Pin = 23; 
+    const uint8_t valve5Pin = 9;
+    const uint8_t valve6Pin = 14; 
     const uint8_t hBridge1Pin1 = 0; 
     const uint8_t hBridge1Pin2 = 1; 
     const uint8_t hBridge2Pin1 = 15; // PRESS FLOW 1
     const uint8_t hBridge2Pin2 = 36; // PRESS FLOW 2
-    const uint8_t hBridge3Pin1 = 21; // PROP GEMS CTRL
+    const uint8_t hBridge3Pin1 = 21; 
     const uint8_t hBridge3Pin2 = 22; 
 
     // These dont work at the moment
@@ -72,9 +68,6 @@ namespace HAL {
     extern MuxChannel muxChan13; // HBridge1
     extern MuxChannel muxChan14; // HBridge2
     extern MuxChannel muxChan15; // HBridge3
-
-    // extern TCA6408A ioExpander0;
-    // extern TCA6408A ioExpander1;
 
     // void setWireClockLow();
     // void resetWireClock();

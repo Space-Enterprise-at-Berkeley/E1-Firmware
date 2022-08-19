@@ -4,6 +4,7 @@
 #include "Ducers.h"
 #include "Power.h"
 #include "Actuators.h"
+#include "Valves.h"
 #include "HAL.h"
 // #include "Thermocouples.h"
 #include "OCHandler.h"
@@ -61,7 +62,7 @@ Task taskTable[] = {
     {Actuators::cam2Sample, 0},//26
     {Actuators::radioSample, 0},//27
     {Actuators::hBridge1Sample, 0},//28
-    {Actuators::hBridge2Sample, 0},//29
+    {Actuators::pressFlowRBVSample, 0},//29
     {Actuators::hBridge3Sample, 0},//30
     {Actuators::break2Sample, 0},//31
 };

@@ -4,6 +4,7 @@
 #include "Ducers.h"
 #include "Thermocouples.h"
 #include "Util.h"
+#include "Valves.h"
 
 #include <Arduino.h>
 #include <stdlib.h>

@@ -2,10 +2,6 @@
 
 namespace HAL {
     ADS8167 adc1;
-    // ADS8167 adc2;
-
-    // INA226 supplyBatt;
-    // INA219 supply12v;
     INA219 supply8v;
 
     //Voltage and Current Sense Mux
@@ -61,10 +57,6 @@ namespace HAL {
         adc1.init(&SPI, 37, 25, 999);
         adc1.setAllInputsSeparate();
         adc1.enableOTFMode();
-        // initialize ADC 2
-        // adc2.init(&SPI, 36, 27, 10);
-        // adc2.setAllInputsSeparate();
-        // adc2.enableOTFMode();
 
         // Initialize I2C buses
         Wire.begin();
@@ -76,9 +68,6 @@ namespace HAL {
         // Initialize INA219s
         // Only INA219 on FCv3 is on 8V supply, address 0x44
         supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
-
-        // IO Expander (this isn't the one we're actually using though, that's in OCHandler...)
-        // ioExpander.init(0x24, &Wire);
 
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
