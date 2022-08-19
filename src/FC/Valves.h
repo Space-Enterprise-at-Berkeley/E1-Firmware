@@ -25,10 +25,6 @@ namespace Valves {
         MuxChannel *muxChannel;
     };
 
-    extern Valve loxGemValve;
-    extern Valve fuelGemValve;
-
-    
     void initValves(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask);
 
     void openFuelGemValve();

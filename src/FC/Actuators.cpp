@@ -5,16 +5,7 @@ namespace Actuators {
     // TODO: change this to appropriate value
     uint32_t actuatorCheckPeriod = 50 * 1000;
 
-    // TODO: set correct telem packet IDs
-    // Comms::Packet pressFlowRBVPacket = {.id = 39};
-    // uint8_t pressFlowRBVState = 0;
-    // float pressFlowRBVVoltage = 0.0;
-    // float pressFlowRBVCurrent = 0.0;
-    // Task *stoppressFlowRBV;
-
     Actuator pressFlowRBV = {.statusPacketID = 39,
-                    .hasVoltage = true,
-                    .hasCurrent = true,
                     .voltage = 0.0,
                     .current = 0.0,
                     .period = 100 * 1000,
@@ -23,35 +14,35 @@ namespace Actuators {
                     .pin2 = HAL::hBridge2Pin2,
                     .muxChannel = &HAL::muxChan14};
   
-    void driveForwards(uint8_t pin1, uint8_t pin2, uint8_t *actState, uint8_t actuatorID){
-        digitalWriteFast(pin1, HIGH);
-        digitalWriteFast(pin2, LOW);
+    void driveForwards(Actuator *actuator){
+        digitalWriteFast(actuator->pin1, HIGH);
+        digitalWriteFast(actuator->pin2, LOW);
         actuator->state = 1;
     }
 
-    void driveBackwards(uint8_t pin1, uint8_t pin2, uint8_t *actState, uint8_t actuatorID){
-        digitalWriteFast(pin1, LOW);
-        digitalWriteFast(pin2, HIGH);
+    void driveBackwards(Actuator *actuator){
+        digitalWriteFast(actuator->pin1, LOW);
+        digitalWriteFast(actuator->pin2, HIGH);
         actuator->state = 2;
     }
 
-    void stopAct(uint8_t pin1, uint8_t pin2, uint8_t *actState, uint8_t actuatorID){
-        digitalWriteFast(pin1, LOW);
-        digitalWriteFast(pin2, LOW);
+    void stopAct(Actuator *actuator){
+        digitalWriteFast(actuator->pin1, LOW);
+        digitalWriteFast(actuator->pin2, LOW);
         actuator->state = 0;
     }
 
-    void brakeAct(uint8_t pin1, uint8_t pin2, uint8_t *actState, uint8_t actuatorID){
-        digitalWriteFast(pin1, HIGH);
-        digitalWriteFast(pin2, HIGH);
+    void brakeAct(Actuator *actuator){
+        digitalWriteFast(actuator->pin1, HIGH);
+        digitalWriteFast(actuator->pin2, HIGH);
         actuator->state = 4; // Probably won't brake
     }
 
-    void extendpressFlowRBV(){ driveForwards(pressFlowRBVPin1, pressFlowRBVPin2, &pressFlowRBVState, 0); }
-    void retractpressFlowRBV(){ driveBackwards(pressFlowRBVPin1, pressFlowRBVPin2, &pressFlowRBVState, 0); }
-    uint32_t stoppressFlowRBV(){ stopAct(pressFlowRBVPin1, pressFlowRBVPin2, &pressFlowRBVState, 0); stopPressFlowRBV->enabled = false; return 0;}
-    void brakepressFlowRBV(){ brakeAct(pressFlowRBVPin1, pressFlowRBVPin2, &pressFlowRBVState, 0); }
-    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendpressFlowRBV, &retractpressFlowRBV, stopPressFlowRBV); }
+    void extendPressFlowRBV(&pressFlowRBV){ driveForwards(); }
+    void retractPressFlowRBV(&pressFlowRBV){ driveBackwards(); }
+    uint32_t stopPressFlowRBV(&pressFlowRBV){ stopAct(); stopPressFlowRBV->enabled = false; return 0;}
+    void brakePressFlowRBV(&pressFlowRBV){ brakeAct(); }
+    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV, stopPressFlowRBV); }
 
     void actPacketHandler(Comms::Packet tmp, void (*extend)(), void (*retract)(), Task *stopTask){
 /*         switch(tmp.data[0]){
@@ -88,42 +79,10 @@ namespace Actuators {
         }
     }
 
-    // void sampleActuator(Comms::Packet *packet, INA219 *ina, float *voltage, float *current, uint8_t *actState, uint8_t actuatorID) {
-    //     *voltage = ina->readBusVoltage();
-    //     *current = ina->readShuntCurrent();
-
-    //     if (*current > OClimits[actuatorID]){
-    //         switch(actuatorID){
-    //             case 0: stoppressFlowRBV(); break;
-    //             // case 1: stopAct1(); break;
-    //             // case 2: stopAct2(); break;
-    //         }
-    //         *actState = 3;
-    //     }
-
-    //     if ((*actState == 1 || *actState == 2) && *current < stopCurrent){
-    //         switch(actuatorID){
-    //             case 0: stoppressFlowRBV(); break;
-    //             // case 1: stopAct1(); break;
-    //             // case 2: stopAct2(); break;
-    //         }
-    //     }
-
-    //     packet->len = 0;
-    //     Comms::packetAddUint8(packet, *actState);
-    //     Comms::packetAddFloat(packet, *voltage);
-    //     Comms::packetAddFloat(packet, *current);
-    //     Comms::emitPacket(packet);
-    // }
-
     //common function for sampling H bridges with the MUX
     void sampleActuator(Actuator *actuator) {
-        if (actuator->hasVoltage) {
-            actuator->voltage = actuator->muxChannel->readChannel1();
-        }
-        if (actuator->hasCurrent) {
-            actuator->current = actuator->muxChannel->readChannel2();
-        }
+        actuator->voltage = actuator->muxChannel->readChannel1();
+        actuator->current = actuator->muxChannel->readChannel2();
 
         if (actuator->current > OClimits[actuatorID]){
             switch(actuatorID){
