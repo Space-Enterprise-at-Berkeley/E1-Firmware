@@ -31,6 +31,28 @@ namespace Valves {
                   .ocThreshold = 3.0,
                   .period = 50 * 1000,
                   .muxChannel = &HAL::muxChan8};
+
+    Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
+                        .statePacketID = 0,
+                        .statusPacketID = 34,
+                        .pin = 255, // only reading continuity with MUX 
+                        .expanderPin = 255,
+                        .voltage = 0.0,
+                        .current = 0.0,
+                        .ocThreshold = 0.1,
+                        .period = 50 * 1000,
+                        .muxChannel = &HAL::muxChan4}; // Using Breakwire1, S5B on MUX (MUX channel 4)
+
+    // todo: define these for the fcv3 channels
+    Valve chute1 = {};
+    
+    Valve chute2 = {};
+
+    Valve cam1 = {};
+
+    Valve cam2 = {};
+
+    Valve radio = {};
  
     Task *_toggleFuelGemValve;
     Task *_toggleLoxGemValve;
