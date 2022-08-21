@@ -15,6 +15,8 @@
 
 Task taskTable[] = {
     {Actuators::stopPressFlowRBV, 0, false},
+    {Valves::toggleLoxGemValveTask, 0, false},
+    {Valves::toggleFuelGemValveTask, 0, false},
 
     // ducers
     {Ducers::ptSample, 0},
@@ -32,8 +34,6 @@ Task taskTable[] = {
     // valves
     {Valves::loxGemValveSample, 0},
     {Valves::fuelGemValveSample, 0},
-    {Valves::toggleLoxGemValveTask, 0},
-    {Valves::toggleFuelGemValveTask, 0},
 
     // actuator
     {Actuators::pressFlowRBVSample, 0},
@@ -51,7 +51,8 @@ int main() {
     Comms::initComms();
     Ducers::initDucers();
     Power::initPower();
-    Actuators::initActuators();
+    Actuators::initActuators(&taskTable[0]);
+    Valves::initValves(&taskTable[1], &taskTable[2]);
     Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20); 
 

@@ -129,7 +129,8 @@ namespace Actuators {
     //     return actuatorCheckPeriod;
     // }
 
-    void initActuators() {
+    void initActuators(Task *pressFlowStopTask) {
         Comms::registerCallback(169, pressFlowRBVPacketHandler);
+        pressFlowRBV.stop = pressFlowStopTask;
     }
 };
