@@ -1,4 +1,5 @@
 #include "Valves.h"
+#include "Ducers.h"
 
 namespace Valves {
     // state of each valve is stored in each bit
@@ -37,6 +38,9 @@ namespace Valves {
 
     bool fuelGemOpen = false;
     bool loxGemOpen = false;
+
+    bool loxGemValveAbovePressure = false;
+    bool fuelGemValveAbovePressure = false;
 
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
