@@ -25,6 +25,9 @@ namespace Valves {
         MuxChannel *muxChannel;
     };
 
+    const float autoVentUpperThreshold = 630; //TODO actual value 650 - 620
+    const float autoVentLowerThreshold = 610;
+
     void initValves(Task *toggleLoxGemValveTask, Task *toggleFuelGemValveTask);
 
     void openFuelGemValve();
@@ -38,4 +41,7 @@ namespace Valves {
     uint32_t fuelGemValveSample();
     uint32_t toggleFuelGemValveTask();
     uint32_t toggleLoxGemValveTask();
+
+    uint32_t autoventFuelGemValveTask();
+    uint32_t autoventLoxGemValveTask();
 };

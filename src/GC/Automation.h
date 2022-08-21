@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Valves.h"
-#include "Ducers.h"
 #include "Thermocouples.h"
 #include "Util.h"
 
@@ -20,9 +19,6 @@ namespace Automation {
 
     const float loadCellThreshold = 100.0; //TODO actual value 100
     const float loadCellSampleRate = 0.0125;
-
-    const float autoVentUpperThreshold = 630; //TODO actual value 650 - 620
-    const float autoVentLowerThreshold = 610;
 
     extern Task *flowTask; // perform burn
     extern Task *abortFlowTask;
@@ -46,8 +42,6 @@ namespace Automation {
     void readLoadCell(Comms::Packet packet, uint8_t ip);
     uint32_t checkForTCAbort();
     uint32_t checkForLCAbort();
-    uint32_t autoventFuelGemValveTask();
-    uint32_t autoventLoxGemValveTask();
 
     void handleAutoSettings(Comms::Packet recv, uint8_t id);
 };

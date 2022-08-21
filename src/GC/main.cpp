@@ -1,7 +1,6 @@
 #include "Automation.h"
 #include <Common.h>
 #include <Comms.h>
-#include "Ducers.h"
 #include "Power.h"
 #include "Valves.h"
 #include "HAL.h"
@@ -18,12 +17,6 @@ Task taskTable[] = {
     {Automation::checkIgniter, 0},
     {Automation::checkForTCAbort, 0, false},
     {Automation::checkForLCAbort, 0, false},
-    {Automation::autoventFuelGemValveTask, 0},
-    {Automation::autoventLoxGemValveTask, 0},
-
-    // ducers
-    {Ducers::ptSample, 0},
-    {Ducers::pressurantPTROCSample, 0},
 
     // power
     {Power::battSample, 0},
@@ -42,14 +35,8 @@ Task taskTable[] = {
     {Valves::igniterSample, 0},
     {Valves::loxMainValveSample, 0},
     {Valves::fuelMainValveSample, 0},
-    {Valves::loxGemValveSample, 0},
-    {Valves::fuelGemValveSample, 0},
     {Valves::breakWireSample, 0},
-    {Valves::toggleLoxGemValveTask, 0, false},
-    {Valves::toggleFuelGemValveTask, 0, false},
     {Valves::igniterEnableRelaySample, 0},
-
-    // heaters
     {Valves::RQDSample, 0},
     {Valves::mainValveVentSample, 0},
 };
@@ -65,9 +52,8 @@ int main() {
     Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3], &taskTable[4]);
     HAL::initHAL();
     Comms::initComms();
-    Ducers::initDucers();
     Power::initPower();
-    Valves::initValves(&taskTable[23], &taskTable[24]);
+    Valves::initValves();
     Thermocouples::initThermocouples();
 
     while(1) {

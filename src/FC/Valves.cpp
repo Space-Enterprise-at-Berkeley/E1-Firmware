@@ -161,4 +161,42 @@ namespace Valves {
         _toggleFuelGemValve = toggleFuelGemValveTask;
     }
 
+    Comms::Packet autoventPacket = {.id = 51};
+
+    uint32_t autoventFuelGemValveTask() {
+        float fuelPressure = Ducers::fuelTankPTValue;
+
+        if (fuelPressure > autoVentUpperThreshold) {
+            Valves::openFuelGemValve();
+            fuelGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 1;
+            Comms::emitPacket(&autoventPacket);
+        } else if (fuelPressure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
+            Valves::closeFuelGemValve();
+            fuelGemValveAbovePressure = false;
+        }
+
+        return 0.25 * 1e6;
+    }
+
+    uint32_t autoventLoxGemValveTask() {
+        float loxPressure = Ducers::loxTankPTValue;
+
+        if (loxPressure > autoVentUpperThreshold) {
+            Valves::openLoxGemValve();
+            loxGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 0;
+            Comms::emitPacket(&autoventPacket);
+        } else if (loxPressure < autoVentLowerThreshold && loxGemValveAbovePressure) {
+            Valves::closeLoxGemValve();
+            loxGemValveAbovePressure = false;
+        }
+
+        return 0.25 * 1e6;
+    }
+
 };

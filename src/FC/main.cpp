@@ -18,9 +18,11 @@ Task taskTable[] = {
     {Valves::toggleLoxGemValveTask, 0, false},
     {Valves::toggleFuelGemValveTask, 0, false},
 
+    {Valves::autoventLoxGemValveTask, 0},
+    {Valves::autoventFuelGemValveTask, 0},
+
     // ducers
     {Ducers::ptSample, 0},
-    {Ducers::pressurantPTROCSample, 0},
 
     // power
     {Power::supply8Sample, 0},
