@@ -44,7 +44,9 @@ namespace Actuators {
     void retractPressFlowRBV(){ driveBackwards(&pressFlowRBV); }
     uint32_t stopPressFlowRBV(){ stopAct(&pressFlowRBV); pressFlowRBV.stop->enabled = false; return 0;}
     void brakePressFlowRBV(){ brakeAct(&pressFlowRBV); }
-    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV, pressFlowRBV.stop); }
+    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV,
+    
+     pressFlowRBV.stop); }
 
     void actPacketHandler(Comms::Packet tmp, void (*extend)(), void (*retract)(), Task *stopTask){
 /*         switch(tmp.data[0]){
@@ -94,7 +96,7 @@ namespace Actuators {
             }
             actuator->state = 3;
         }
-
+ 
         if ((actuator->state == 1 || actuator->state == 2) && actuator->current < stopCurrent){
             switch(actuator->actuatorID){
                 case 0: stopPressFlowRBV(); break;
