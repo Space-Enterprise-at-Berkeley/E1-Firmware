@@ -50,7 +50,11 @@ namespace Valves {
 
     // common function for opening a valve
     void openValve(Valve *valve) {
+        DEBUG("Opening valve\n");
+        DEBUG_FLUSH();
         digitalWriteFast(valve->pin, HIGH); // turn on the physical pin
+        DEBUG("Opened valve\n");
+        DEBUG_FLUSH();
         valveStates |= (0x01 << valve->valveID); // set bit <valveID> to 1
 
         Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offset of 40 (check the E-1 Design spreadsheet)
@@ -62,10 +66,14 @@ namespace Valves {
 
     // common function for closing a valve
     void closeValve(Valve *valve, uint8_t OCShutoff) { //optional argument overcurrentShutoff
+        DEBUG("Closing valve\n");
+        DEBUG_FLUSH();
         digitalWriteFast(valve->pin, LOW); // turn off the physical pin
+        DEBUG("Closed valve\n");
+        DEBUG_FLUSH();
         valveStates &= ~(0x01 << valve->valveID); // set bit <valveID> to 1
 
-        Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offset of 40 (check the E-1 Design spreadsheet)
+        Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offfset of 40 (check the E-1 Design spreadsheet)
         Comms::packetAddUint8(&tmp, OCShutoff << 1); // a value of 0 indicates the valve was turned off, 2 indicates overcurrent shutoff
         Comms::emitPacket(&tmp);
         
@@ -85,7 +93,9 @@ namespace Valves {
     void sampleValve(Valve *valve) {
         valve->voltage = valve->muxChannel->readChannel1();
         valve->current = valve->muxChannel->readChannel2();
-        
+        DEBUG(valve->current);
+        DEBUG("\n");
+        DEBUG_FLUSH();
         Comms::Packet tmp = {.id = valve->statusPacketID};
         if (valve->current > valve->ocThreshold) {
             closeValve(valve, 1);
@@ -110,8 +120,12 @@ namespace Valves {
         bool toggle = packet.data[0];
 
         if (toggle) {
+            DEBUG("Fuel gems toggled TRUE, closing\n");
+            DEBUG_FLUSH();
             _toggleFuelGemValve->enabled = true;
         } else {
+            DEBUG("Fuel gems toggled FALSE, closing\n");
+            DEBUG_FLUSH();
             _toggleFuelGemValve->enabled = false;
             closeFuelGemValve();
         }
@@ -130,6 +144,8 @@ namespace Valves {
 
     uint32_t toggleFuelGemValveTask() {
         if (fuelGemOpen) {
+            DEBUG("Closing fuel gems - toggling \n");
+            DEBUG_FLUSH();
             closeFuelGemValve();
             fuelGemOpen = false;
             return 5e6;
@@ -178,6 +194,8 @@ namespace Valves {
             autoventPacket.data[0] = 1;
             Comms::emitPacket(&autoventPacket);
         } else if (fuelPressure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
+            DEBUG("Closing fuel gems for autovent\n");
+            DEBUG_FLUSH();
             Valves::closeFuelGemValve();
             fuelGemValveAbovePressure = false;
         }

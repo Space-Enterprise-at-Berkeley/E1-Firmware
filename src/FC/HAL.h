@@ -21,6 +21,8 @@ namespace HAL {
     const float supplyCurrMax = 4.0;
     extern INA219 supply8v;
 
+    const float valveMuxScalingFactor = 0.002014;
+
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
 

@@ -54,6 +54,8 @@ namespace HAL {
     void initHAL() {
         // initialize ADC 1
         // adc1.init(&SPI, 37, 26, 9); // adc.init(&SPI, 37, 25, 999);
+        analogReadResolution(12); 
+
         adc1.init(&SPI, 37, 25, 999);
         adc1.setAllInputsSeparate();
         adc1.enableOTFMode();
@@ -104,14 +106,14 @@ namespace HAL {
         muxChan4.init(&valveMux, 4);
         muxChan5.init(&valveMux, 5);
         muxChan6.init(&valveMux, 6);
-        muxChan7.init(&valveMux, 7);
-        muxChan8.init(&valveMux, 8);
-        muxChan9.init(&valveMux, 9);
-        muxChan10.init(&valveMux, 10);
-        muxChan11.init(&valveMux, 11);
-        muxChan12.init(&valveMux, 12);
-        muxChan13.init(&valveMux, 13);
-        muxChan14.init(&valveMux, 14);
-        muxChan15.init(&valveMux, 15);
+        muxChan7.init(&valveMux, 7, valveMuxScalingFactor); // valve channel 1
+        muxChan8.init(&valveMux, 8, valveMuxScalingFactor);
+        muxChan9.init(&valveMux, 9, valveMuxScalingFactor);
+        muxChan10.init(&valveMux, 10, valveMuxScalingFactor);
+        muxChan11.init(&valveMux, 11, valveMuxScalingFactor);
+        muxChan12.init(&valveMux, 12, valveMuxScalingFactor); // valve channel 6
+        muxChan13.init(&valveMux, 13, valveMuxScalingFactor);
+        muxChan14.init(&valveMux, 14, valveMuxScalingFactor);
+        muxChan15.init(&valveMux, 15, valveMuxScalingFactor);
     }
 };

@@ -15,8 +15,7 @@ struct Mux {
 class MuxChannel {
     public:
     float scalingFactor = 1;
-    void init(Mux *mux, int channelID);
-    void setScalingFactor(float scalingFactor);
+    void init(Mux *mux, int channelID, float scalingFactor = 1);
     float readChannel1();
     float readChannel2();
     private:
