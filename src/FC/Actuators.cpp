@@ -87,6 +87,10 @@ namespace Actuators {
     void sampleActuator(Actuator *actuator) {
         actuator->voltage = actuator->muxChannel->readChannel1();
         actuator->current = actuator->muxChannel->readChannel2();
+        DEBUG("Actuator current: ");
+        DEBUG(actuator->current);
+        DEBUG("\n");
+        DEBUG_FLUSH();
 
         if (actuator->current > OClimit){
             switch(actuator->actuatorID){

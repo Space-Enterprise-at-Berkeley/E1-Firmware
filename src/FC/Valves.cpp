@@ -18,7 +18,7 @@ namespace Valves {
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
-                      .ocThreshold = 3.0,
+                      .ocThreshold = 10.0,
                       .period = 50 * 1000,
                       .muxChannel = &HAL::muxChan7};
     
@@ -29,7 +29,7 @@ namespace Valves {
                   .expanderPin = 255,
                   .voltage = 0.0,
                   .current = 0.0,
-                  .ocThreshold = 3.0,
+                  .ocThreshold = 10.0,
                   .period = 50 * 1000,
                   .muxChannel = &HAL::muxChan8};
  
@@ -93,6 +93,7 @@ namespace Valves {
     void sampleValve(Valve *valve) {
         valve->voltage = valve->muxChannel->readChannel1();
         valve->current = valve->muxChannel->readChannel2();
+        DEBUG("Valve current: ");
         DEBUG(valve->current);
         DEBUG("\n");
         DEBUG_FLUSH();

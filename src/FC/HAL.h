@@ -24,7 +24,7 @@ namespace HAL {
     const float valveMuxScalingFactor = 0.002014;
 
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
-    const float chanCurrMax = 4.0;
+    const float chanCurrMax = 6.0;
 
     // Pin Mappings for Flight Stack
     // Flight v3 Channels
