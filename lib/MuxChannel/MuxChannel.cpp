@@ -13,6 +13,7 @@ float MuxChannel::readChannel1() {
     digitalWrite(mux->muxSelect3Pin, channelID >> 2 & 1);
     digitalWrite(mux->muxSelect4Pin, channelID >> 3 & 1);
     delayMicroseconds(1);
+    // (float)analogRead(aPin0) * 3.3 / 4096.0;
     return ch1ScalingFactor * analogRead(mux->muxInput1Pin);
 }
 
