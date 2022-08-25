@@ -106,14 +106,14 @@ namespace HAL {
         muxChan4.init(&valveMux, 4);
         muxChan5.init(&valveMux, 5);
         muxChan6.init(&valveMux, 6);
-        muxChan7.init(&valveMux, 7, valveMuxScalingFactor); // valve channel 1
-        muxChan8.init(&valveMux, 8, valveMuxScalingFactor);
-        muxChan9.init(&valveMux, 9, valveMuxScalingFactor);
-        muxChan10.init(&valveMux, 10, valveMuxScalingFactor);
-        muxChan11.init(&valveMux, 11, valveMuxScalingFactor);
-        muxChan12.init(&valveMux, 12, valveMuxScalingFactor); // valve channel 6
-        muxChan13.init(&valveMux, 13, valveMuxScalingFactor);
-        muxChan14.init(&valveMux, 14, valveMuxScalingFactor);
-        muxChan15.init(&valveMux, 15, valveMuxScalingFactor);
+        muxChan7.init(&valveMux, 7, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor); // valve channel 1
+        muxChan8.init(&valveMux, 8, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan9.init(&valveMux, 9, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan10.init(&valveMux, 10, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan11.init(&valveMux, 11, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan12.init(&valveMux, 12, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor); // valve channel 6
+        muxChan13.init(&valveMux, 13, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan14.init(&valveMux, 14, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan15.init(&valveMux, 15, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
     }
 };

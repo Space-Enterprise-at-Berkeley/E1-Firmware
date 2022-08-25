@@ -20,7 +20,7 @@ namespace Thermocouples {
         tcPacket.len = 0;
         Comms::packetAddFloat(&tcPacket, *value);
         
-        Comms::emitPacket(&tcPacket);
+        Comms::emitPacket(&tcPacket, 43);
         // return the next execution time
         return tcUpdatePeriod;
     }

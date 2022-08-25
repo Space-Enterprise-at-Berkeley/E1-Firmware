@@ -91,18 +91,23 @@ namespace Valves {
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
-        valve->voltage = valve->muxChannel->readChannel1();
-        valve->current = valve->muxChannel->readChannel2();
+        // valve->voltage = valve->muxChannel->readChannel1();
+        // valve->current = valve->muxChannel->readChannel2();
+        valve->current = valve->muxChannel->readChannel1();
+        valve->voltage = valve->muxChannel->readChannel2();
         DEBUG("Valve current: ");
         DEBUG(valve->current);
         DEBUG("\n");
         DEBUG_FLUSH();
         Comms::Packet tmp = {.id = valve->statusPacketID};
         if (valve->current > valve->ocThreshold) {
+
             closeValve(valve, 1);
         }
+        // Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->current);
+        
         Comms::emitPacket(&tmp);
     }
 
