@@ -112,8 +112,8 @@ namespace HAL {
         muxChan10.init(&valveMux, 10, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan11.init(&valveMux, 11, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan12.init(&valveMux, 12, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor); // valve channel 6
-        muxChan13.init(&valveMux, 13, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
-        muxChan14.init(&valveMux, 14, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
-        muxChan15.init(&valveMux, 15, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan13.init(&valveMux, 13, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
+        muxChan14.init(&valveMux, 14, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
+        muxChan15.init(&valveMux, 15, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
     }
 };

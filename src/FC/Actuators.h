@@ -29,7 +29,7 @@ namespace Actuators {
     extern Actuator pressFlowRBV; 
 
     // TODO: Set correct OC limits
-    const uint8_t OClimit = 4; //(amps)
+    const uint8_t OClimit = 20; //4; //(amps)
     const float stopCurrent = .1; // Stopped actuator current threshold (amps) 
     
     void extendPressFlowRBV();
