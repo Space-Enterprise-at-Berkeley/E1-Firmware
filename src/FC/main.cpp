@@ -25,12 +25,13 @@ Task taskTable[] = {
     {Ducers::ptSample, 0},
 
     // power
+    // {Power::battSample, 0}, 
     {Power::supply8Sample, 0},
 
     // thermocouples
-    {Thermocouples::tc0Sample, 0},
-    {Thermocouples::tc1Sample, 0},
-    {Thermocouples::tc2Sample, 0},
+    // {Thermocouples::tc0Sample, 0},
+    // {Thermocouples::tc1Sample, 0},
+    // {Thermocouples::tc2Sample, 0},
     // {Thermocouples::tc3Sample, 0},
 
     // valves

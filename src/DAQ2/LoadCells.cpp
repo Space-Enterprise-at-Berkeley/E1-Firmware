@@ -17,7 +17,8 @@ namespace LoadCells {
 
         DEBUG("READING LOAD CELLS");
         loadCell1Value = -1 * HAL::lcAmp3.get_units(); // in pounds
-        loadCell2Value = HAL::lcAmp4.get_units(); // in pounds
+        // loadCell2Value = HAL::lcAmp4.get_units(); // in pounds
+        loadCell2Value = 0; // For Hotfire7, only using 3 load cells
 
         DEBUG(loadCell1Value);
         DEBUG(";");
@@ -29,7 +30,7 @@ namespace LoadCells {
         Comms::packetAddFloat(&tmp, loadCell2Value);
         Comms::packetAddFloat(&tmp, loadCell1Value + loadCell2Value);
         Comms::emitPacket(&tmp);
-        Comms::emitPacket(&tmp, 42); // send this packet to the flight computer as well
+        Comms::emitPacket(&tmp, 43); // send this packet to the flight computer as well
 
         return samplePeriod;
     }

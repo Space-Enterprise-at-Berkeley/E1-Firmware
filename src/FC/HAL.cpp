@@ -99,13 +99,13 @@ namespace HAL {
         // tcAmp2.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         // tcAmp3.init(0x67, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
-        muxChan0.init(&valveMux, 0);
-        muxChan1.init(&valveMux, 1);
-        muxChan2.init(&valveMux, 2);
-        muxChan3.init(&valveMux, 3);
-        muxChan4.init(&valveMux, 4);
-        muxChan5.init(&valveMux, 5);
-        muxChan6.init(&valveMux, 6);
+        muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan2.init(&valveMux, 2, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan3.init(&valveMux, 3, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan4.init(&valveMux, 4, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan5.init(&valveMux, 5, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan6.init(&valveMux, 6, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan7.init(&valveMux, 7, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor); // valve channel 1
         muxChan8.init(&valveMux, 8, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan9.init(&valveMux, 9, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
