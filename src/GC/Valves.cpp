@@ -54,13 +54,15 @@ namespace Valves {
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
                       .statusPacketID = 34,
-                      .pin = HAL::chan3Pin,
+                      //.pin = HAL::chan3Pin,
+                      .pin = HAL::chan9Pin, 
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 0.1,
                       .period = 50 * 1000,
-                      .ina = &HAL::chan3};
+                      .ina = &HAL::chan9}; 
+                      //.ina = &HAL::chan3};
     
     Valve RQD = {.valveID = 5, // actuated from the IO Expander
                 .statePacketID = 45,
