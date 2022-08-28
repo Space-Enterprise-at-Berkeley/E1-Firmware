@@ -7,12 +7,12 @@ namespace Automation {
     Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = Util::millisToMicros(215);
-    uint32_t burnTime = Util::secondsToMicros(120);
+    uint32_t burnTime = Util::secondsToMicros(30);
     uint32_t ventTime = Util::millisToMicros(200);
 
     bool igniterEnabled = true;
     bool breakwireEnabled = true;
-    bool thrustEnabled = true;
+    bool thrustEnabled = false;
 
     bool igniterTriggered = false;
 

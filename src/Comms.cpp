@@ -60,11 +60,11 @@ namespace Comms {
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
-            DEBUG(packet->id);
-            DEBUG("\n");
-            DEBUG("Got unverified packet with ID ");
-            DEBUG(packet->id);
-            DEBUG('\n');
+            // DEBUG(packet->id);
+            // DEBUG("\n");
+            // DEBUG("Got unverified packet with ID ");
+            // DEBUG(packet->id);
+            // DEBUG('\n');
             evokeCallbackFunction(packet, Udp.remoteIP()[3]);
         } else if(Serial.available()) {
             int cnt = 0;
