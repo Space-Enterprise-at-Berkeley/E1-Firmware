@@ -9,7 +9,7 @@
 
 namespace Automation {
     const float igniterTriggerThreshold = 0.06;
-    const float breakWireThreshold = 11;
+    const float breakWireThreshold = 22;
     const float currentThreshold = 0.2;
     const float mainValveCurrentThreshold = 0.08;
 
@@ -31,6 +31,7 @@ namespace Automation {
     extern bool igniterEnabled;
     extern bool breakwireEnabled;
     extern bool igniterTriggered;
+    extern bool breakwireBroken;
 
     void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask);
     void beginFlow(Comms::Packet packet, uint8_t ip);

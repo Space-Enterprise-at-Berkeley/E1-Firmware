@@ -15,6 +15,7 @@ namespace Automation {
     bool thrustEnabled = false;
 
     bool igniterTriggered = false;
+    bool breakwireBroken = false;
 
     bool loxGemValveAbovePressure = false;
     bool fuelGemValveAbovePressure = false;
@@ -73,6 +74,7 @@ namespace Automation {
             Comms::emitPacket(&fastPTReadPacket, 42);
             //reset values
             igniterTriggered = false;
+            breakwireBroken = false;
             flowTask->nexttime = micros();
             flowTask->enabled = true;
             checkForTCAbortTask->enabled = false;
@@ -116,7 +118,7 @@ namespace Automation {
             case 2: // step 2
                 // check igniter current trigger and break wire
                 if ((igniterTriggered || !igniterEnabled)
-                        && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
+                        && (breakwireBroken || !breakwireEnabled)) {
                     Valves::openArmValve();
                     sendFlowStatus(STATE_OPEN_ARM_VALVE);
                     step++;
@@ -272,6 +274,7 @@ namespace Automation {
 
     uint32_t checkIgniter() {
         igniterTriggered = Valves::igniter.current > igniterTriggerThreshold || igniterTriggered;
+        breakwireBroken = Valves::breakWire.voltage < breakWireThreshold || breakwireBroken;
         return Valves::igniter.period; //TODO determine appropriate sampling time
     }
 

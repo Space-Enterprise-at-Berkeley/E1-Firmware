@@ -15,7 +15,7 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
-                      .period = 50 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan11};
 
     Valve igniter = {.valveID = 1,
@@ -26,7 +26,7 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
-                      .period = 50 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan7};
     
     Valve loxMainValve = {.valveID = 2,
@@ -37,7 +37,7 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
-                      .period = 50 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan8};
 
     Valve fuelMainValve = {.valveID = 3,
@@ -48,19 +48,19 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 2.0,
-                      .period = 50 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan10};
 
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
                       .statusPacketID = 34,
                       //.pin = HAL::chan3Pin,
-                      .pin = HAL::chan9Pin, 
-                      .expanderPin = 255,
+                      .pin = 255, 
+                      .expanderPin = HAL::chan9Pin,
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 0.1,
-                      .period = 50 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan9}; 
                       //.ina = &HAL::chan3};
     
@@ -72,7 +72,7 @@ namespace Valves {
                 .voltage = 0.0,
                 .current = 0.0,
                 .ocThreshold = 3.0,
-                .period = 50 * 1000,
+                .period = 10 * 1000,
                 .ina = &HAL::chan4};
 
     Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
@@ -83,7 +83,7 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
-                      .period = 50 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan5};
 
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
@@ -94,7 +94,7 @@ namespace Valves {
                       .voltage = 0.0,
                       .current = 0.0,
                       .ocThreshold = 3.0,
-                      .period = 100 * 1000,
+                      .period = 10 * 1000,
                       .ina = &HAL::chan2};
 
     void sendStatusPacket() {
