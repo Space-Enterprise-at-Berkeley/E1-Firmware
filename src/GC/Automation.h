@@ -9,7 +9,7 @@
 
 namespace Automation {
     const float igniterTriggerThreshold = 0.06;
-    const float breakWireThreshold = 22;
+    const float breakWireThreshold = 20;
     const float currentThreshold = 0.2;
     const float mainValveCurrentThreshold = 0.08;
 
