@@ -28,7 +28,7 @@ int main() {
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
 
-    // Comms::initComms();
+    Comms::initComms();
 
     DEBUG("STARTING UP\n");
     DEBUG_FLUSH();
@@ -57,7 +57,7 @@ int main() {
                     DEBUG(Comms::packetGetFloat(packet, 0));
                     DEBUG("\n");
                     DEBUG_FLUSH();
-                    // Comms::emitPacket(packet);
+                    Comms::emitPacket(packet);
                     break;
                 }
             }
@@ -80,7 +80,7 @@ int main() {
                     DEBUG(Comms::packetGetFloat(packet, 0));
                     DEBUG("\n");
                     DEBUG_FLUSH();
-                    // Comms::emitPacket(packet);
+                    Comms::emitPacket(packet);
                     break;
                 }
             }
