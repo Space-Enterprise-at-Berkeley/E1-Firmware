@@ -18,5 +18,10 @@ namespace HAL {
     extern HX711 lcAmp4;
 
     void initHAL();
+
+    const uint8_t tcAmp1_pin = 25; //A11
+    const uint8_t tcAmp2_pin = 15; //A1
+    const uint8_t tcAmp3_pin = 16; //A2
+    const uint8_t tcAmp4_pin = 17; //A3
     
 };

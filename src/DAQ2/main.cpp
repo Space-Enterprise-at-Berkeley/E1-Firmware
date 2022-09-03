@@ -8,53 +8,64 @@
 const uint32_t TC_UPDATE_PERIOD = 100 * 1000; // 10 hz
 
 uint32_t tc1Sample() {
-    float temp = HAL::tcAmp1.readCelsius();
+    float sensorValue = analogRead(HAL::tcAmp1_pin);
+    float temp = (3.3*(sensorValue/1024)-1.25)/0.005;
     DEBUG("TC 1: ");
     DEBUG(temp);
     DEBUG("\n");
+    Serial.flush();
 
-    Comms::Packet p = {.id = 110};
-    Comms::packetAddFloat(&p, temp);
-    Comms::emitPacket(&p);
+    // Comms::Packet p = {.id = 110};
+    // Comms::packetAddFloat(&p, temp);
+    // Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
 
 uint32_t tc2Sample() {
-    float temp = HAL::tcAmp2.readCelsius();
+    float sensorValue = analogRead(HAL::tcAmp2_pin);
+    float temp = (3.3*(sensorValue/1024)-1.25)/0.005;
     DEBUG("TC 2: ");
     DEBUG(temp);
     DEBUG("\n");
+     Serial.flush();
 
-    Comms::Packet p = {.id = 111};
-    Comms::packetAddFloat(&p, temp);
-    Comms::emitPacket(&p);
+    // Comms::Packet p = {.id = 111};
+    // Comms::packetAddFloat(&p, temp);
+    // Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
 
 uint32_t tc3Sample() {
-    float temp = HAL::tcAmp3.readCelsius();
+    float sensorValue = analogRead(HAL::tcAmp3_pin);
+    float temp = (3.3*(sensorValue/1024)-1.25)/0.005;
     DEBUG("TC 3: ");
     DEBUG(temp);
     DEBUG("\n");
+    Serial.flush();
 
-    Comms::Packet p = {.id = 112};
-    Comms::packetAddFloat(&p, temp);
-    Comms::emitPacket(&p);
+    // Comms::Packet p = {.id = 112};
+    // Comms::packetAddFloat(&p, temp);
+    // Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
 
 uint32_t tc4Sample() {
-    float temp = HAL::tcAmp4.readCelsius();
+    float sensorValue = analogRead(HAL::tcAmp4_pin);
+    float temp = (3.3*(sensorValue/1024)-1.25)/0.005;
+    temp = -1;
+
+
     DEBUG("TC 4: ");
     DEBUG(temp);
     DEBUG("\n");
+    Serial.flush();
 
-    Comms::Packet p = {.id = 113};
-    Comms::packetAddFloat(&p, temp);
-    Comms::emitPacket(&p);
+    // Comms::Packet p = {.id = 113};
+    // Comms::packetAddFloat(&p, temp);
+    // Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
@@ -67,7 +78,7 @@ Task taskTable[] = {
     {&tc4Sample, 0},
 
     // load cells
-    {&LoadCells::sampleLoadCells, 0},
+    // {&LoadCells::sampleLoadCells, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -80,12 +91,13 @@ int main() {
     #endif
 
     DEBUG("BEFORE INIT\n");
+    DEBUG("INITIALZING HAL\n");
     HAL::initHAL();
-    DEBUG("AFTER HAL\n");
-    Comms::initComms();
-    DEBUG("AFTER COMMS");
-    LoadCells::initLoadCells();
-    DEBUG("LOAD CELLS INITIALIZED");
+    DEBUG("INITIALIZING COMMS\n");
+    // Comms::initComms();
+    DEBUG("INITIALIZING LOAD CELLS\n");
+    // LoadCells::initLoadCells();
+    
 
     while(1) {
         uint32_t ticks = micros(); // current time in microseconds
@@ -95,7 +107,7 @@ int main() {
             // DEBUG("\n");
             taskTable[i].nexttime = ticks + taskTable[i].taskCall();
         }
-        Comms::processWaitingPackets();
+        // Comms::processWaitingPackets();
     }
     return 0;
 }
