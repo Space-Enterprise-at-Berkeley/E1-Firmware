@@ -85,8 +85,8 @@ namespace Actuators {
 
     //common function for sampling H bridges with the MUX
     void sampleActuator(Actuator *actuator) {
-        actuator->voltage = actuator->muxChannel->readChannel1();
-        actuator->current = actuator->muxChannel->readChannel2();
+        actuator->current = actuator->muxChannel->readChannel1();
+        actuator->voltage = actuator->muxChannel->readChannel2();
         DEBUG("Actuator current: ");
         DEBUG(actuator->current);
         DEBUG("\n");
