@@ -14,14 +14,14 @@ namespace HAL {
     extern MAX31855 tcAmp3;
     extern MAX31855 tcAmp4;
 
-    extern HX711 lcAmp3;
-    extern HX711 lcAmp4;
+    extern HX711 lcAmp1;
+    extern HX711 lcAmp2;
 
     void initHAL();
 
-    const uint8_t tcAmp1_pin = 25; //A11
+    const uint8_t tcAmp1_pin = 14; //A11
     const uint8_t tcAmp2_pin = 15; //A1
     const uint8_t tcAmp3_pin = 16; //A2
-    const uint8_t tcAmp4_pin = 17; //A3
+    const uint8_t tcAmp4_pin = 30; //A3
     
 };

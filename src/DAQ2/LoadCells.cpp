@@ -5,20 +5,18 @@ namespace LoadCells {
     float loadCell2Value;
 
     void initLoadCells() {
+        HAL::lcAmp1.set_scale(3989); // measured 03/12/22
+        HAL::lcAmp2.set_scale(3995); // measured 03/12/22
 
-        HAL::lcAmp3.set_scale(3989); // measured 03/12/22
-        HAL::lcAmp4.set_scale(3995); // measured 03/12/22
-
-        HAL::lcAmp3.tare();
-        HAL::lcAmp4.tare();
+        HAL::lcAmp1.tare();
+        HAL::lcAmp2.tare();
     }
 
     uint32_t sampleLoadCells() {
 
         DEBUG("READING LOAD CELLS");
-        loadCell1Value = -1 * HAL::lcAmp3.get_units(); // in pounds
-        // loadCell2Value = HAL::lcAmp4.get_units(); // in pounds
-        loadCell2Value = 0; // For Hotfire7, only using 3 load cells
+        loadCell1Value = HAL::lcAmp1.get_units(); // in pounds
+        loadCell2Value = HAL::lcAmp2.get_units(); // in pounds
 
         DEBUG(loadCell1Value);
         DEBUG(";");

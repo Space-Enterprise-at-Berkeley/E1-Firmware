@@ -15,9 +15,9 @@ uint32_t tc1Sample() {
     DEBUG("\n");
     Serial.flush();
 
-    // Comms::Packet p = {.id = 110};
-    // Comms::packetAddFloat(&p, temp);
-    // Comms::emitPacket(&p);
+    Comms::Packet p = {.id = 110};
+    Comms::packetAddFloat(&p, temp);
+    Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
@@ -30,9 +30,9 @@ uint32_t tc2Sample() {
     DEBUG("\n");
      Serial.flush();
 
-    // Comms::Packet p = {.id = 111};
-    // Comms::packetAddFloat(&p, temp);
-    // Comms::emitPacket(&p);
+    Comms::Packet p = {.id = 111};
+    Comms::packetAddFloat(&p, temp);
+    Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
@@ -45,9 +45,9 @@ uint32_t tc3Sample() {
     DEBUG("\n");
     Serial.flush();
 
-    // Comms::Packet p = {.id = 112};
-    // Comms::packetAddFloat(&p, temp);
-    // Comms::emitPacket(&p);
+    Comms::Packet p = {.id = 112};
+    Comms::packetAddFloat(&p, temp);
+    Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
@@ -63,9 +63,9 @@ uint32_t tc4Sample() {
     DEBUG("\n");
     Serial.flush();
 
-    // Comms::Packet p = {.id = 113};
-    // Comms::packetAddFloat(&p, temp);
-    // Comms::emitPacket(&p);
+    Comms::Packet p = {.id = 113};
+    Comms::packetAddFloat(&p, temp);
+    Comms::emitPacket(&p);
 
     return TC_UPDATE_PERIOD;
 }
@@ -75,10 +75,9 @@ Task taskTable[] = {
     {&tc1Sample, 0},
     {&tc2Sample, 0},
     {&tc3Sample, 0},
-    {&tc4Sample, 0},
 
     // load cells
-    // {&LoadCells::sampleLoadCells, 0},
+    {&LoadCells::sampleLoadCells, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -94,9 +93,9 @@ int main() {
     DEBUG("INITIALZING HAL\n");
     HAL::initHAL();
     DEBUG("INITIALIZING COMMS\n");
-    // Comms::initComms();
+    Comms::initComms();
     DEBUG("INITIALIZING LOAD CELLS\n");
-    // LoadCells::initLoadCells();
+    LoadCells::initLoadCells();
     
 
     while(1) {
@@ -107,7 +106,7 @@ int main() {
             // DEBUG("\n");
             taskTable[i].nexttime = ticks + taskTable[i].taskCall();
         }
-        // Comms::processWaitingPackets();
+        Comms::processWaitingPackets();
     }
     return 0;
 }
