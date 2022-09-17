@@ -6,6 +6,10 @@
 #include <INA219.h>
 #include <MCP9600.h>
 
+#include <BMP388_DEV.h>
+#include <BNO055.h>
+#include <NEOM9N.h>
+
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
@@ -21,11 +25,18 @@ namespace HAL {
     const float supplyCurrMax = 4.0;
     extern INA219 supply8v;
 
+    const uint8_t RS485SwitchPin = 27;  
+    
     const float valveMuxCurrentScalingFactor = ((1.0 / 20.0) / 0.02) * 3.3 / 4096.0; // current
     const float valveMuxContinuityScalingFactor = (1.0) * 3.3 / 4096.0; // "voltage" reading, TODO will this value need to change
 
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
+
+    // Sensor Breakouts
+    extern BMP388_DEV bmp388; // barometer
+    extern BNO055 bno055; // imu
+    extern SFE_UBLOX_GNSS neom9n; // gps
 
     // Pin Mappings for Flight Stack
     // Flight v3 Channels

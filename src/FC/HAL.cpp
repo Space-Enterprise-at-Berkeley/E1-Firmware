@@ -39,18 +39,6 @@ namespace HAL {
         channel->init(&Wire1, address, chanShuntR, chanCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
     }
 
-    // void setWireClockLow() {
-    //     Wire.setClock(100000);
-    //     IMXRT_LPI2C_t *port = &IMXRT_LPI2C1;
-    //     port->MCR = 0;
-    //     port->MCFGR1 = LPI2C_MCFGR1_PRESCALE(2);
-    //     port->MCR = LPI2C_MCR_MEN;
-    // }
-
-    // void resetWireClock() {
-    //     Wire.setClock(400000);
-    // }
-
     void initHAL() {
         // initialize ADC 1
         // adc1.init(&SPI, 37, 26, 9); // adc.init(&SPI, 37, 25, 999);
@@ -71,6 +59,24 @@ namespace HAL {
         // Only INA219 on FCv3 is on 8V supply, address 0x44
         supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
+        // RS-485
+        pinMode(RS485SwitchPin, OUTPUT);
+
+        // barometer
+        // bmp388.begin(0x76); TODO check address
+
+        // imu
+        // bno055.begin();
+
+        // gps
+        // if(!neom9n.begin()) {
+        //     DEBUG("GPS DIDN'T INIT");
+        //     DEBUG("\n");
+        // } else {
+        //     DEBUG("GPS INIT SUCCESSFUL");
+        //     DEBUG("\n");
+        // }
+        
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
         pinMode(chute2Pin, OUTPUT);
