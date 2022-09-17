@@ -26,9 +26,12 @@ namespace Actuators {
         MuxChannel *muxChannel;
     };
 
+    extern Actuator pressFlowRBV; 
+
     // TODO: Set correct OC limits
-    const uint8_t OClimit = 4; //(amps)
-    const float stopCurrent = .1; // Stopped actuator current threshold (amps) 
+    const uint8_t OClimit = 5; //(amps)
+    const float stopCurrent = .02; // Stopped actuator current threshold (amps). 
+    // Current value is for press flow RBV
     
     void extendPressFlowRBV();
     void retractPressFlowRBV();
@@ -52,7 +55,7 @@ namespace Actuators {
 
     void sampleActuator(Actuator *actuator);
 
-    void initActuators();
+    void initActuators(Task *pressFlowStopTask);
 
     uint32_t pressFlowRBVSample();
 };

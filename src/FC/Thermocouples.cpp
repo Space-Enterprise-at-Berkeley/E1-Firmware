@@ -64,19 +64,31 @@ namespace Thermocouples {
     }
 
     uint32_t tc0Sample() {
-        //return tcSample(&HAL::tcAmp0, 20, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
+        // DEBUG("TC0 Reading: ");
+        // DEBUG(engineTC0Value);
+        // DEBUG("\n");
+        // DEBUG_FLUSH();
+        // return tcSample(&HAL::tcAmp0, 20, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
         return 0;
     }
     uint32_t tc1Sample() { 
-        //return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
+        // DEBUG("TC1 Reading: ");
+        // DEBUG(engineTC0Value);
+        // DEBUG("\n");
+        // DEBUG_FLUSH();
+        // return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
         return 0;
     }
     uint32_t tc2Sample() {
-        //return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
+        // DEBUG("TC2 Reading: ");
+        // DEBUG(engineTC0Value);
+        // DEBUG("\n");
+        // DEBUG_FLUSH();
+        // return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
         return 0;
     }
     uint32_t tc3Sample() { 
-        //return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
+        // return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
         return 0;
     }
 

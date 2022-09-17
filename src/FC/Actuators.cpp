@@ -44,7 +44,9 @@ namespace Actuators {
     void retractPressFlowRBV(){ driveBackwards(&pressFlowRBV); }
     uint32_t stopPressFlowRBV(){ stopAct(&pressFlowRBV); pressFlowRBV.stop->enabled = false; return 0;}
     void brakePressFlowRBV(){ brakeAct(&pressFlowRBV); }
-    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV, pressFlowRBV.stop); }
+    void pressFlowRBVPacketHandler(Comms::Packet tmp, uint8_t ip){ actPacketHandler(tmp, &extendPressFlowRBV, &retractPressFlowRBV,
+    
+     pressFlowRBV.stop); }
 
     void actPacketHandler(Comms::Packet tmp, void (*extend)(), void (*retract)(), Task *stopTask){
 /*         switch(tmp.data[0]){
@@ -83,8 +85,12 @@ namespace Actuators {
 
     //common function for sampling H bridges with the MUX
     void sampleActuator(Actuator *actuator) {
-        actuator->voltage = actuator->muxChannel->readChannel1();
-        actuator->current = actuator->muxChannel->readChannel2();
+        actuator->current = actuator->muxChannel->readChannel1();
+        actuator->voltage = actuator->muxChannel->readChannel2();
+        DEBUG("Actuator current: ");
+        DEBUG(actuator->current);
+        DEBUG("\n");
+        DEBUG_FLUSH();
 
         if (actuator->current > OClimit){
             switch(actuator->actuatorID){
@@ -94,7 +100,7 @@ namespace Actuators {
             }
             actuator->state = 3;
         }
-
+ 
         if ((actuator->state == 1 || actuator->state == 2) && actuator->current < stopCurrent){
             switch(actuator->actuatorID){
                 case 0: stopPressFlowRBV(); break;
@@ -127,7 +133,8 @@ namespace Actuators {
     //     return actuatorCheckPeriod;
     // }
 
-    void initActuators() {
+    void initActuators(Task *pressFlowStopTask) {
         Comms::registerCallback(169, pressFlowRBVPacketHandler);
+        pressFlowRBV.stop = pressFlowStopTask;
     }
 };

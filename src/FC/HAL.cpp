@@ -54,6 +54,8 @@ namespace HAL {
     void initHAL() {
         // initialize ADC 1
         // adc1.init(&SPI, 37, 26, 9); // adc.init(&SPI, 37, 25, 999);
+        analogReadResolution(12); 
+
         adc1.init(&SPI, 37, 25, 999);
         adc1.setAllInputsSeparate();
         adc1.enableOTFMode();
@@ -97,21 +99,21 @@ namespace HAL {
         // tcAmp2.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         // tcAmp3.init(0x67, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
-        muxChan0.init(&valveMux, 0);
-        muxChan1.init(&valveMux, 1);
-        muxChan2.init(&valveMux, 2);
-        muxChan3.init(&valveMux, 3);
-        muxChan4.init(&valveMux, 4);
-        muxChan5.init(&valveMux, 5);
-        muxChan6.init(&valveMux, 6);
-        muxChan7.init(&valveMux, 7);
-        muxChan8.init(&valveMux, 8);
-        muxChan9.init(&valveMux, 9);
-        muxChan10.init(&valveMux, 10);
-        muxChan11.init(&valveMux, 11);
-        muxChan12.init(&valveMux, 12);
-        muxChan13.init(&valveMux, 13);
-        muxChan14.init(&valveMux, 14);
-        muxChan15.init(&valveMux, 15);
+        muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan2.init(&valveMux, 2, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan3.init(&valveMux, 3, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan4.init(&valveMux, 4, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan5.init(&valveMux, 5, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan6.init(&valveMux, 6, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan7.init(&valveMux, 7, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor); // valve channel 1
+        muxChan8.init(&valveMux, 8, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan9.init(&valveMux, 9, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan10.init(&valveMux, 10, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan11.init(&valveMux, 11, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
+        muxChan12.init(&valveMux, 12, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor); // valve channel 6
+        muxChan13.init(&valveMux, 13, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
+        muxChan14.init(&valveMux, 14, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
+        muxChan15.init(&valveMux, 15, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
     }
 };

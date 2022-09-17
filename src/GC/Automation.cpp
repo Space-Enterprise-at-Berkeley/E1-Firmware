@@ -6,8 +6,8 @@ namespace Automation {
     Task *checkForTCAbortTask = nullptr;
     Task *checkForLCAbortTask = nullptr;
 
-    uint32_t loxLead = Util::millisToMicros(215);
-    uint32_t burnTime = Util::secondsToMicros(120);
+    uint32_t loxLead = Util::millisToMicros(190);
+    uint32_t burnTime = Util::secondsToMicros(30);
     uint32_t ventTime = Util::millisToMicros(200);
 
     bool igniterEnabled = true;
@@ -15,6 +15,7 @@ namespace Automation {
     bool thrustEnabled = true;
 
     bool igniterTriggered = false;
+    bool breakwireBroken = false;
 
     bool loxGemValveAbovePressure = false;
     bool fuelGemValveAbovePressure = false;
@@ -27,6 +28,9 @@ namespace Automation {
     //each index maps to a check
     uint8_t hysteresisValues[6] = {0};
     uint8_t hysteresisThreshold = 10;
+
+    Comms::Packet openLoxGemsPacket = {.id = 126};
+    Comms::Packet openFuelGemsPacket = {.id = 127};
 
     void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask) {
         Automation::flowTask = flowTask;
@@ -64,9 +68,13 @@ namespace Automation {
     void beginFlow(Comms::Packet packet, uint8_t ip) {
         if(!flowTask->enabled) {
             step = 0;
-            Ducers::ptUpdatePeriod = 1 * 1000;
+            // PT read rate should be fast for flows, so tell FC to change it
+            Comms::Packet fastPTReadPacket = {.id = 140};
+            Comms::packetAddUint8(&fastPTReadPacket, 1);
+            Comms::emitPacket(&fastPTReadPacket, 42);
             //reset values
             igniterTriggered = false;
+            breakwireBroken = false;
             flowTask->nexttime = micros();
             flowTask->enabled = true;
             checkForTCAbortTask->enabled = false;
@@ -110,7 +118,7 @@ namespace Automation {
             case 2: // step 2
                 // check igniter current trigger and break wire
                 if ((igniterTriggered || !igniterEnabled)
-                        && (Valves::breakWire.voltage < breakWireThreshold || !breakwireEnabled)) {
+                        && (breakwireBroken || !breakwireEnabled)) {
                     Valves::openArmValve();
                     sendFlowStatus(STATE_OPEN_ARM_VALVE);
                     step++;
@@ -201,12 +209,15 @@ namespace Automation {
         }
     }
 
-
     void beginManualAbortFlow(Comms::Packet packet, uint8_t ip) {
         // beginAbortFlow();
         Valves::deactivateIgniter();
-        Valves::openLoxGemValve();
-        Valves::openFuelGemValve();
+        // Send packet to FC to open Lox Gems
+        Comms::packetAddUint8(&openLoxGemsPacket, 1);
+        Comms::emitPacket(&openLoxGemsPacket, 42);
+        // Send packet to FC to open Fuel Gems
+        Comms::packetAddUint8(&openFuelGemsPacket, 1);
+        Comms::emitPacket(&openFuelGemsPacket, 42);
         sendFlowStatus(STATE_MANUAL_SAFE_ABORT);
     }
 
@@ -227,8 +238,12 @@ namespace Automation {
         // DEBUG("\n");
         switch(step) {
             case 0: // deactivate igniter and vent pneumatics and tanks
-                Valves::openLoxGemValve();
-                Valves::openFuelGemValve();
+                 // Send packet to FC to open Lox Gems
+                Comms::packetAddUint8(&openLoxGemsPacket, 1);
+                Comms::emitPacket(&openLoxGemsPacket, 42);
+                // Send packet to FC to open Fuel Gems
+                Comms::packetAddUint8(&openFuelGemsPacket, 1);
+                Comms::emitPacket(&openFuelGemsPacket, 42);
 
                 Valves::deactivateIgniter();
 
@@ -259,6 +274,7 @@ namespace Automation {
 
     uint32_t checkIgniter() {
         igniterTriggered = Valves::igniter.current > igniterTriggerThreshold || igniterTriggered;
+        breakwireBroken = Valves::breakWire.voltage < breakWireThreshold || breakwireBroken;
         return Valves::igniter.period; //TODO determine appropriate sampling time
     }
 
@@ -365,40 +381,4 @@ namespace Automation {
         return 12500; // load cells are sampled at 80 hz
     }
 
-    Comms::Packet autoventPacket = {.id = 51};
-    uint32_t autoventFuelGemValveTask() {
-        float fuelPresure = Ducers::fuelTankPTValue;
-
-        if (fuelPresure > autoVentUpperThreshold) {
-            Valves::openFuelGemValve();
-            fuelGemValveAbovePressure = true;
-
-            autoventPacket.len = 1;
-            autoventPacket.data[0] = 1;
-            Comms::emitPacket(&autoventPacket);
-        } else if (fuelPresure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
-            Valves::closeFuelGemValve();
-            fuelGemValveAbovePressure = false;
-        }
-
-        return 0.25 * 1e6;
-    }
-
-    uint32_t autoventLoxGemValveTask() {
-        float loxPressure = Ducers::loxTankPTValue;
-
-        if (loxPressure > autoVentUpperThreshold) {
-            Valves::openLoxGemValve();
-            loxGemValveAbovePressure = true;
-
-            autoventPacket.len = 1;
-            autoventPacket.data[0] = 0;
-            Comms::emitPacket(&autoventPacket);
-        } else if (loxPressure < autoVentLowerThreshold && loxGemValveAbovePressure) {
-            Valves::closeLoxGemValve();
-            loxGemValveAbovePressure = false;
-        }
-
-        return 0.25 * 1e6;
-    }
 };

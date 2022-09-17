@@ -14,7 +14,6 @@
 
 namespace HAL {
     extern ADS8167 adc1;
-    extern ADS8167 adc2;
 
     const float battShuntR = 0.002;
     const float battCurrMax = 8.0;
@@ -63,9 +62,6 @@ namespace HAL {
     extern MCP9600 tcAmp1;
     extern MCP9600 tcAmp2;
     extern MCP9600 tcAmp3;
-
-    // extern TCA6408A ioExpander0;
-    // extern TCA6408A ioExpander1;
 
     // void setWireClockLow();
     // void resetWireClock();

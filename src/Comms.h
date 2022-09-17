@@ -78,6 +78,8 @@ namespace Comms {
      */
     void emitPacket(Packet *packet, uint8_t end);
 
+    bool verifyPacket(Packet *packet);
+
     uint16_t computePacketChecksum(Packet *packet);
 
     /**

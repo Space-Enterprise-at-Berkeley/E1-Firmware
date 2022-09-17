@@ -1,4 +1,5 @@
 #include "Valves.h"
+#include "Ducers.h"
 
 namespace Valves {
     // state of each valve is stored in each bit
@@ -17,7 +18,7 @@ namespace Valves {
                       .expanderPin = 255,
                       .voltage = 0.0,
                       .current = 0.0,
-                      .ocThreshold = 3.0,
+                      .ocThreshold = 10.0,
                       .period = 50 * 1000,
                       .muxChannel = &HAL::muxChan7};
     
@@ -28,7 +29,7 @@ namespace Valves {
                   .expanderPin = 255,
                   .voltage = 0.0,
                   .current = 0.0,
-                  .ocThreshold = 3.0,
+                  .ocThreshold = 10.0,
                   .period = 50 * 1000,
                   .muxChannel = &HAL::muxChan8};
 
@@ -60,6 +61,9 @@ namespace Valves {
     bool fuelGemOpen = false;
     bool loxGemOpen = false;
 
+    bool loxGemValveAbovePressure = false;
+    bool fuelGemValveAbovePressure = false;
+
     void sendStatusPacket() {
         Comms::Packet tmp = {.id = 49};
         Comms::packetAddUint16(&tmp, valveStates);
@@ -68,7 +72,11 @@ namespace Valves {
 
     // common function for opening a valve
     void openValve(Valve *valve) {
+        DEBUG("Opening valve\n");
+        DEBUG_FLUSH();
         digitalWriteFast(valve->pin, HIGH); // turn on the physical pin
+        DEBUG("Opened valve\n");
+        DEBUG_FLUSH();
         valveStates |= (0x01 << valve->valveID); // set bit <valveID> to 1
 
         Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offset of 40 (check the E-1 Design spreadsheet)
@@ -80,10 +88,14 @@ namespace Valves {
 
     // common function for closing a valve
     void closeValve(Valve *valve, uint8_t OCShutoff) { //optional argument overcurrentShutoff
+        DEBUG("Closing valve\n");
+        DEBUG_FLUSH();
         digitalWriteFast(valve->pin, LOW); // turn off the physical pin
+        DEBUG("Closed valve\n");
+        DEBUG_FLUSH();
         valveStates &= ~(0x01 << valve->valveID); // set bit <valveID> to 1
 
-        Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offset of 40 (check the E-1 Design spreadsheet)
+        Comms::Packet tmp = {.id = valve->statePacketID}; // valve packets have an offfset of 40 (check the E-1 Design spreadsheet)
         Comms::packetAddUint8(&tmp, OCShutoff << 1); // a value of 0 indicates the valve was turned off, 2 indicates overcurrent shutoff
         Comms::emitPacket(&tmp);
         
@@ -101,15 +113,20 @@ namespace Valves {
 
     // common function for sampling a valve's voltage and current
     void sampleValve(Valve *valve) {
-        valve->voltage = valve->muxChannel->readChannel1();
-        valve->current = valve->muxChannel->readChannel2();
-        
+        valve->current = valve->muxChannel->readChannel1();
+        valve->voltage = valve->muxChannel->readChannel2();
+        DEBUG("Valve current: ");
+        DEBUG(valve->current);
+        DEBUG("\n");
+        DEBUG_FLUSH();
         Comms::Packet tmp = {.id = valve->statusPacketID};
         if (valve->current > valve->ocThreshold) {
+
             closeValve(valve, 1);
         }
         Comms::packetAddFloat(&tmp, valve->voltage);
         Comms::packetAddFloat(&tmp, valve->current);
+        
         Comms::emitPacket(&tmp);
     }
 
@@ -128,8 +145,12 @@ namespace Valves {
         bool toggle = packet.data[0];
 
         if (toggle) {
+            DEBUG("Fuel gems toggled TRUE, closing\n");
+            DEBUG_FLUSH();
             _toggleFuelGemValve->enabled = true;
         } else {
+            DEBUG("Fuel gems toggled FALSE, closing\n");
+            DEBUG_FLUSH();
             _toggleFuelGemValve->enabled = false;
             closeFuelGemValve();
         }
@@ -148,6 +169,8 @@ namespace Valves {
 
     uint32_t toggleFuelGemValveTask() {
         if (fuelGemOpen) {
+            DEBUG("Closing fuel gems - toggling \n");
+            DEBUG_FLUSH();
             closeFuelGemValve();
             fuelGemOpen = false;
             return 5e6;
@@ -181,6 +204,46 @@ namespace Valves {
        
         _toggleLoxGemValve = toggleLoxGemValveTask;
         _toggleFuelGemValve = toggleFuelGemValveTask;
+    }
+
+    Comms::Packet autoventPacket = {.id = 51};
+
+    uint32_t autoventFuelGemValveTask() {
+        float fuelPressure = Ducers::fuelTankPTValue;
+
+        if (fuelPressure > autoVentUpperThreshold) {
+            Valves::openFuelGemValve();
+            fuelGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 1;
+            Comms::emitPacket(&autoventPacket);
+        } else if (fuelPressure < autoVentLowerThreshold && fuelGemValveAbovePressure) {
+            DEBUG("Closing fuel gems for autovent\n");
+            DEBUG_FLUSH();
+            Valves::closeFuelGemValve();
+            fuelGemValveAbovePressure = false;
+        }
+
+        return 0.25 * 1e6;
+    }
+
+    uint32_t autoventLoxGemValveTask() {
+        float loxPressure = Ducers::loxTankPTValue;
+
+        if (loxPressure > autoVentUpperThreshold) {
+            Valves::openLoxGemValve();
+            loxGemValveAbovePressure = true;
+
+            autoventPacket.len = 1;
+            autoventPacket.data[0] = 0;
+            Comms::emitPacket(&autoventPacket);
+        } else if (loxPressure < autoVentLowerThreshold && loxGemValveAbovePressure) {
+            Valves::closeLoxGemValve();
+            loxGemValveAbovePressure = false;
+        }
+
+        return 0.25 * 1e6;
     }
 
 };

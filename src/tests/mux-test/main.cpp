@@ -10,12 +10,21 @@ const uint8_t sel3 = 6;
 
 const uint8_t wr = 41;
 
+uint8_t v1 = 24; // 7;
+uint8_t count = 0;
+uint8_t hb2_c1 = 15;
+uint8_t hb2_c2 = 36;
+
 int main() {
     Serial.begin(115200);
     while(!Serial);
     Serial.println("---BEGIN---");
 
     analogReadRes(12);
+
+    pinMode(v1, OUTPUT);
+    pinMode(hb2_c1, OUTPUT);
+    pinMode(hb2_c2, OUTPUT);
 
     pinMode(wr, OUTPUT);
     
@@ -33,6 +42,15 @@ int main() {
 
     while(1) {
         Serial.println("-----Taking sample-----");
+        if (count == 50) {
+           // digitalWrite(v1, HIGH)  ;
+           digitalWrite(hb2_c1, HIGH);
+        }
+        if (count == 100) { 
+            count = 0;
+           // digitalWrite(v1, LOW);
+           digitalWrite(hb2_c1, LOW);
+        }
         for(uint8_t i = 0; i < 16; i++) {
             Serial.print(i & 0x1);
             Serial.print((i >> 1) & 0x1);
@@ -47,15 +65,18 @@ int main() {
             digitalWriteFast(sel3, (i >> 3) & 0x1);
             delay(1);
             float a0 = (float)analogRead(aPin0) * 3.3 / 4096.0;
-            float a1 = (float)analogRead(aPin1) * 3.3 / 4096.0;
-            Serial.print(a0);
-            Serial.print(":");
-            Serial.print(a1);
-            Serial.print(" ");
+        //    float a1 = (float)analogRead(aPin1) * 3.3 / 4096.0;
+            Serial.print(a0, 5);
+            // Serial.print(":");
+            // Serial.print(a1);
+            Serial.print(" , Shunt V: ");
+            Serial.print(a0 / 20, 5);
+            Serial.print(" , Shunt Current: ");
+            Serial.print((a0 / 20) / 0.02, 5);
             Serial.println();
         }
-        Serial.println();
-        delay(500);
+        delay(100);
+        count++; 
     }
 
     return 0;

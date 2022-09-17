@@ -21,6 +21,9 @@ namespace HAL {
     const float supplyCurrMax = 4.0;
     extern INA219 supply8v;
 
+    const float valveMuxCurrentScalingFactor = ((1.0 / 20.0) / 0.02) * 3.3 / 4096.0; // current
+    const float valveMuxContinuityScalingFactor = (1.0) * 3.3 / 4096.0; // "voltage" reading, TODO will this value need to change
+
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
 
@@ -47,9 +50,9 @@ namespace HAL {
     const uint8_t hBridge3Pin2 = 22; 
 
     // These dont work at the moment
-    extern MCP9600 tcAmp0;
-    extern MCP9600 tcAmp1;
-    extern MCP9600 tcAmp2;
+    // extern MCP9600 tcAmp0;
+    // extern MCP9600 tcAmp1;
+    // extern MCP9600 tcAmp2;
     // extern MCP9600 tcAmp3;
 
     extern MuxChannel muxChan0; // Chute1

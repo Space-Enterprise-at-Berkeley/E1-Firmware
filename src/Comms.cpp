@@ -60,11 +60,11 @@ namespace Comms {
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
-            DEBUG(packet->id);
-            DEBUG("\n");
-            DEBUG("Got unverified packet with ID ");
-            DEBUG(packet->id);
-            DEBUG('\n');
+            // DEBUG(packet->id);
+            // DEBUG("\n");
+            // DEBUG("Got unverified packet with ID ");
+            // DEBUG(packet->id);
+            // DEBUG('\n');
             evokeCallbackFunction(packet, Udp.remoteIP()[3]);
         } else if(Serial.available()) {
             int cnt = 0;
@@ -140,9 +140,6 @@ namespace Comms {
      * @param packet Packet to be sent.
      */
     void emitPacket(Packet *packet) {
-        DEBUG(packet->id);
-        DEBUG(" - ");
-        DEBUG_FLUSH();
         //add timestamp to struct
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;
@@ -184,8 +181,6 @@ namespace Comms {
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
-        DEBUG(end);
-        DEBUG('\n');
         //add timestamp to struct
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;
@@ -205,6 +200,11 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+    }
+
+    bool verifyPacket(Packet *packet) {
+        uint16_t csum = computePacketChecksum(packet);
+        return ((uint8_t) csum & 0xFF) == packet->checksum[0] && ((uint8_t) (csum >> 8)) == packet->checksum[1];
     }
 
     /**
