@@ -1,11 +1,13 @@
 #include <Common.h>
 #include <Comms.h>
 
+#include "GPS.h"
+
 #include <Arduino.h>
 
 
 Task taskTable[] = {
-
+    {GPS::sampleGPS, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
