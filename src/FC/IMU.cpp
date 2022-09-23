@@ -19,7 +19,6 @@ namespace IMU {
 		Comms::emitPacket(&imuPacket);
 
 		// 80 hz
-		uint32_t updatePeriod = 80 * 1000;
 		return updatePeriod;
 	};
 

@@ -3,7 +3,7 @@
 #include <Comms.h>
 
 namespace IMU {
-	extern updatePeriod;
+	uint32_t updatePeriod = (0.0125) * 1000;
 
 	void init();
 	uint32_t sampleIMU();
