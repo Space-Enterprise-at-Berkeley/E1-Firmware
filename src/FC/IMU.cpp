@@ -4,8 +4,8 @@ namespace IMU {
 	BNO055 bno055;
 
 	void init() {
-		bno055.begin()
-	};
+		bno055.begin();
+	}
 
 	uint32_t sampleIMU() {
 		auto a = bno055.getVector(BNO055::VECTOR_LINEARACCEL);
@@ -21,5 +21,9 @@ namespace IMU {
 		// 80 hz
 		return updatePeriod;
 	};
+
+	imu::Vector<(uint8_t)3U> getAcceleration() {
+		return bno055.getVector(BNO055::VECTOR_LINEARACCEL);
+	}
 
 }
