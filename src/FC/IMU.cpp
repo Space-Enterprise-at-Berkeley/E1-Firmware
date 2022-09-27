@@ -3,6 +3,8 @@
 namespace IMU {
 	BNO055 bno055;
 
+	uint32_t updatePeriod = (0.0125) * 1000;
+
 	void init() {
 		bno055.begin();
 	}
