@@ -1,4 +1,6 @@
 #include <Comms.h>
+#include <Destinations/Destination.h>
+#include <Destinations/SerialDestination.h>
 
 namespace Comms {
 

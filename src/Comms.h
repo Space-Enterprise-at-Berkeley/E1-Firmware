@@ -30,7 +30,9 @@ namespace Comms {
         uint8_t len;
         uint8_t timestamp[4];
         uint8_t checksum[2];
-        uint8_t data[256];
+        uint8_t data[254];
+        uint8_t count;
+        uint8_t rate;
     };
 
     void initComms();
