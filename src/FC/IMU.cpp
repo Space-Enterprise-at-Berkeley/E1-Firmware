@@ -4,6 +4,7 @@ namespace IMU {
 	BNO055 bno055;
 
 	uint32_t updatePeriod = (0.0125) * 1000;
+	imu::Vector<(uint8_t)3U> accelerometerReading;
 
 	void init() {
 		// if(bno055.isFullyCalibrated())
@@ -11,7 +12,8 @@ namespace IMU {
 	}
 
 	uint32_t sampleIMU() {
-		auto a = bno055.getVector(BNO055::VECTOR_LINEARACCEL);
+		accelerometerReading = bno055.getVector(BNO055::VECTOR_LINEARACCEL);
+		auto &a = accelerometerReading; // keep the a alias so the code is cleaner
 		auto m = bno055.getVector(BNO055::VECTOR_MAGNETOMETER);
 		auto q = bno055.getQuat();
 
@@ -27,7 +29,7 @@ namespace IMU {
 	};
 
 	imu::Vector<(uint8_t)3U> getAcceleration() {
-		return bno055.getVector(BNO055::VECTOR_LINEARACCEL);
+		return accelerometerReading;
 	}
 
 }

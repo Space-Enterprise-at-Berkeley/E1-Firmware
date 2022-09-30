@@ -3,13 +3,17 @@
 
 #include "GPS.h"
 #include "IMU.h"
+#include "Barometer.h"
+#include "Apogee.h"
 
 #include <Arduino.h>
 
 
 Task taskTable[] = {
     {GPS::sampleGPS, 0},
-    {IMU::sampleIMU, 0}
+    {IMU::sampleIMU, 0},
+    {Barometer::sampleBarometer, 0},
+    {Apogee::checkForApogee, 0, false}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))

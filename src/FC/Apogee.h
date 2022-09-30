@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Comms.h"
+#include "IMU.h"
 
 namespace Apogee {
 
