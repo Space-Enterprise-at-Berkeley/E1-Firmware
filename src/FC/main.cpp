@@ -3,15 +3,22 @@
 #include "Ducers.h"
 #include "Power.h"
 #include "Actuators.h"
+#include "CapFill.h"
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
 #include "OCHandler.h"
 
+// #include "BlackBox.h"
+#include "Barometer.h"
+#include "IMU.h"
+#include "GPS.h"
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 
+#define RS485_SERIAL Serial8
 
 Task taskTable[] = {
     {Actuators::stopPressFlowRBV, 0, false},
@@ -35,11 +42,24 @@ Task taskTable[] = {
     // {Thermocouples::tc3Sample, 0},
 
     // valves
-    {Valves::loxGemValveSample, 0},
-    {Valves::fuelGemValveSample, 0},
+    // {Valves::loxGemValveSample, 0},
+    // {Valves::fuelGemValveSample, 0},
 
     // actuator
-    {Actuators::pressFlowRBVSample, 0},
+    // {Actuators::pressFlowRBVSample, 0},
+
+    // Barometer
+    {Barometer::sampleAltPressTemp, 0},
+    {Barometer::zeroAltitude, 0},
+
+    {IMU::imuSample, 0},
+
+    //GPS
+    {GPS::latLongSample, 0},
+    // {GPS::auxSample, 0},
+
+    // Cap fill
+    {CapFill::sampleCapFill, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -47,6 +67,8 @@ Task taskTable[] = {
 int main() {
     // hardware setup
     Serial.begin(115200);
+    // RS-485 RX/TX is Serial8 (pins 34, 35)
+    RS485_SERIAL.begin(115200); // Serial for capfill
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
@@ -56,8 +78,9 @@ int main() {
     Power::initPower();
     Actuators::initActuators(&taskTable[0]);
     Valves::initValves(&taskTable[1], &taskTable[2]);
-    Thermocouples::initThermocouples();
+    // Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20); 
+    CapFill::initCapFill();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
