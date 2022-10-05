@@ -2,73 +2,66 @@
 
 /*
 Detection methods:
-- accelerometer
-- GPS
 - barometer
-- simulated
-- IMU data (all 9 axis) (?)
 - magnetometer
 */
 
 namespace Apogee {
 
-	const uint32_t updatePeriod = (0.0125) * 1000;
-	bool beginDetection = false;
+	const uint32_t updatePeriod = 10 * 1000;
 
-	float lastReading;
+	uint32_t apogeeTime = 0;
+	uint8_t apogeesFound = 0;
+	bool apogeeCheck = false;
+	bool launchCheck = false;
 
-	bool accelerometerActive = 0;
-	bool gpsActive = 0;
-	bool barometerActive = 0;
-	bool magnetometerActive = 0;
+	const int sampleSize = 25;
+	float velocitySamples[sampleSize] = {0};
+	int velocityIndex = 0;
 
-	uint8_t accelerometerCount = 0;
-	uint8_t gpsCount = 0;
-	uint8_t barometerCount = 0;
-	uint8_t magnetometerCount = 0;
-
-	float accelerometerLastTime = 0;
-	float gpsLastTime = 0;
-	float barometerLastTime = 0;
-	float magnetometerLastTime = 0;
-
-	float accelerometerCumulativeVelocity = 0;
+	float previousAltitude = 0;
+	float previousVelocity = 0;
+	float barometerVelocity = 0;
 
 	void init() {
 
 	}
 
+	void start() {
+		launchCheck = 1;
+	}
+
 	uint32_t checkForApogee() {
-		float currentReading = millis();
-		float time_delta = currentReading - lastReading;
-		lastReading = currentReading;
+		barometerVelocity = Apogee::altitudeToVelocity(Barometer::getAltitude());
+		velocitySamples[velocityIndex] = barometerVelocity;
+		velocityIndex = (velocityIndex + 1) % sampleSize;
 
-		// check axis
-		accelerometerCumulativeVelocity += IMU::getAcceleration().y() * time_delta;
-		// check sign
-		if (accelerometerActive && accelerometerCumulativeVelocity < 0) {
-			accelerometerCount ++;
-			accelerometerActive = false;
+		float total = 0;
+		for (int i = 0; i < sampleSize; i ++) {
+			total += velocitySamples[i];
 		}
-		else if (!accelerometerActive && accelerometerCumulativeVelocity >= 0) {
-			accelerometerActive = true;
+		float average = total / sampleSize;
+
+		if (average < 0 && apogeeCheck == 0 && launchCheck == 1 && Barometer::getAltitude() > 100) {
+			apogeeCheck = true;
+			apogeeTime = millis();
+			apogeesFound ++;
+		}
+		else if (average > 0.01) { // 10 feet per second?
+			apogeeCheck = false; // reset in case of false positive
 		}
 
-		Comms::Packet apogeePacket = {.id = 1111};
-
-		Comms::packetAddUint8(&apogeePacket, accelerometerCount);
-		Comms::packetAddFloat(&apogeePacket, accelerometerLastTime);
-
-		Comms::packetAddUint8(&apogeePacket, gpsCount);
-		Comms::packetAddFloat(&apogeePacket, gpsLastTime);
-
-		Comms::packetAddUint8(&apogeePacket, barometerCount);
-		Comms::packetAddFloat(&apogeePacket, barometerLastTime);
-
-		Comms::packetAddUint8(&apogeePacket, magnetometerCount);
-		Comms::packetAddFloat(&apogeePacket, magnetometerLastTime);
-
+		Comms::Packet apogeePacket = {.id = 158};
+		Comms::packetAddFloat(&apogeePacket, apogeeTime);
+		Comms::packetAddUint8(&apogeePacket, apogeesFound);
 		Comms::emitPacket(&apogeePacket);
 		return updatePeriod;
+	}
+
+	float altitudeToVelocity(float altitude) {
+		float velocity = (altitude - previousAltitude) / Barometer::getUpdatePeriod();
+		previousAltitude = altitude;
+		previousVelocity = velocity;
+		return barometerVelocity;
 	}
 }

@@ -3,7 +3,7 @@
 namespace IMU {
 	BNO055 bno055;
 
-	uint32_t updatePeriod = (0.0125) * 1000;
+	uint32_t updatePeriod = 10 * 1000;
 	imu::Vector<(uint8_t)3U> accelerometerReading;
 
 	void init() {
@@ -19,7 +19,7 @@ namespace IMU {
 
 		float data[10] = { a.x(), a.y(), a.z(), q.x(), q.y(), q.z(), q.w(), m.x(), m.y(), m.z()};
 
-		Comms::Packet imuPacket = { .id = 1234, .len = 0};
+		Comms::Packet imuPacket = { .id = 4, .len = 0};
 		for(float value : data)
 			Comms::packetAddFloat(&imuPacket, value);
 		Comms::emitPacket(&imuPacket);
