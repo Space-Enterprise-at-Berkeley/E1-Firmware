@@ -15,9 +15,9 @@ namespace Barometer {
         return updatePeriod;
     }
 
-    // float getAltitude() {
-    //     return altitude;
-    // }
+    float getAltitude() {
+        return altitude;
+    }
 
     uint32_t sampleBarometer() {
         uint8_t altCheck = bmp388_dev.getAltitude(altitude);
