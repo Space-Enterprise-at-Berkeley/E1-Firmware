@@ -15,14 +15,10 @@ namespace Barometer {
         return updatePeriod;
     }
 
-    float getAltitude() {
-        return altitude;
-    }
-
     uint32_t sampleBarometer() {
         uint8_t altCheck = bmp388_dev.getAltitude(altitude);
         uint8_t presCheck = bmp388_dev.getPressure(pressure);
-        uint8_t tempCheck = bmp388_dev.getPressure(temperature);
+        uint8_t tempCheck = bmp388_dev.getTemperature(temperature);
 
         if (altCheck == 1 && presCheck == 1) {
             Comms::Packet barometerPacket = { .id = 5, .len = 0};
@@ -35,4 +31,9 @@ namespace Barometer {
 		// 100 hz
 		return updatePeriod;
     }
+    
+    float getAltitude() {
+        return altitude;
+    }
+
 }
