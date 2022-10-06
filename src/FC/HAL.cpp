@@ -68,9 +68,10 @@ namespace HAL {
         pinMode(RS485SwitchPin, OUTPUT);
 
         // barometer
-        bmp388.begin(0x28); // TODO check address
+        bmp388.begin(0x76); // TODO check address
 
         // imu
+        bno055 = BNO055(28);
         bno055.begin();
 
         // gps
