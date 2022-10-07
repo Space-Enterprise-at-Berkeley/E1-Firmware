@@ -69,6 +69,29 @@ void loop()
     Serial.print(fAlt / 10e3);
     Serial.print(F(" (mm)"));
 
+    long year = myGNSS.getYear();
+    Serial.print(F(" Year: "));
+    Serial.print(year);
+
+    long month = myGNSS.getMonth();
+    Serial.print(F(" Month: "));
+    Serial.print(month);
+
+    long day = myGNSS.getDay();
+    Serial.print(F(" Day: "));
+    Serial.print(day);
+
+    long hour = myGNSS.getHour();
+    long minute = myGNSS.getMinute();
+    long sec = myGNSS.getSecond();
+    Serial.print(F(" Time: "));
+    Serial.print(hour);
+    Serial.print(":");
+    Serial.print(minute);
+    Serial.print(":");
+    Serial.print(sec);
+    
+
     byte SIV = myGNSS.getSIV();
     Serial.print(F(" SIV: "));
     Serial.print(SIV);
