@@ -44,7 +44,7 @@ int main() {
 
         while(LOX_SERIAL.available() && loxCnt < 256) {
             loxBuffer[loxCnt] = LOX_SERIAL.read();
-            if(loxCnt == 0 && loxBuffer[loxCnt] != 221) {
+            if(loxCnt == 0 && loxBuffer[loxCnt] != 221 && loxBuffer[loxCnt] != 222) {
                 break;
             }
             if(loxBuffer[loxCnt] == '\n') {
@@ -70,6 +70,9 @@ int main() {
 
         while(FUEL_SERIAL.available() && fuelCnt < 256) {
             fuelBuffer[fuelCnt] = FUEL_SERIAL.read();
+            if(fuelCnt == 0 && fuelBuffer[fuelCnt] != 221 && fuelBuffer[fuelCnt] != 222) {
+                break;
+            }
             if(fuelBuffer[fuelCnt] == '\n') {
                 Comms::Packet *packet = (Comms::Packet *)&fuelBuffer;
                 if(Comms::verifyPacket(packet)) {
