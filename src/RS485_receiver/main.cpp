@@ -38,7 +38,7 @@ int main() {
 
     while(1) {
 
-        while(LOX_SERIAL.available() && loxCnt < 256) {
+        while(LOX_SERIAL.available()) {
             loxBuffer[loxCnt] = LOX_SERIAL.read();
             DEBUG((uint8_t)loxBuffer[loxCnt]);
             DEBUG_FLUSH();

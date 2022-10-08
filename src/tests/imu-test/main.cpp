@@ -84,6 +84,17 @@ int main() {
         Serial.println("");
         Serial.flush();
 
+        
+        /* Display the acceleration data */
+        Serial.print("AccelX: ");
+        Serial.print(bno.getVector(BNO055::VECTOR_LINEARACCEL).x());
+        Serial.print("\tAccelY: ");
+        Serial.print(bno.getVector(BNO055::VECTOR_LINEARACCEL).y());
+        Serial.print("\tAccelZ: ");
+        Serial.print(bno.getVector(BNO055::VECTOR_LINEARACCEL).z());
+        Serial.println("");
+        Serial.flush();
+
         /* Display the quat data */
         imu::Quaternion quat = bno.getQuat();
         Serial.print("qW: ");

@@ -15,7 +15,7 @@
 
 
 namespace IMU {
-    uint32_t imuUpdatePeriod = 30 * 1000;
+    uint32_t imuUpdatePeriod = 100 * 1000;
     Comms::Packet imuPacket = {.id = 4};
 
     float qW = 0.0;
@@ -54,6 +54,15 @@ namespace IMU {
         accelZ = (float) a.z();
 
         imuPacket.len = 0;
+
+        DEBUG("Accelerometer X: ");
+        DEBUG(accelX);
+        DEBUG("     Y: ");
+        DEBUG(accelY);
+        DEBUG("     Z:");
+        DEBUG(accelZ);
+        DEBUG("\n");
+        DEBUG_FLUSH();
 
         Comms::packetAddFloat(&imuPacket, qW);
         Comms::packetAddFloat(&imuPacket, qX);
