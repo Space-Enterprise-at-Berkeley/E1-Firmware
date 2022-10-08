@@ -1,3 +1,4 @@
+
 #include <Arduino.h>
 
 #include <Wire.h>
@@ -20,7 +21,9 @@ TMP236 _tempSens = TMP236(TEMP_PIN);
 void setup()
 {
   Serial.begin(115200);
-  Comms::initComms();
+  Serial1.begin(115200);
+  
+  // Comms::initComms();
 
   Wire.begin();
   _capSens = FDC2214();
@@ -29,7 +32,12 @@ void setup()
   _tempSens.init();
 
   pinMode(EN_485, OUTPUT);
+  pinMode(TE_485, OUTPUT);
   pinMode(STATUS_LED, OUTPUT);
+
+  digitalWrite(EN_485, HIGH);
+  digitalWrite(TE_485, HIGH);
+  digitalWrite(STATUS_LED, LOW);
 }
 
 unsigned long previousMillis = 0;
@@ -43,9 +51,6 @@ Comms::Packet capPacket = {.id = PACKET_ID};
 
 void loop()
 {
-  digitalWrite(EN_485, HIGH);
-  digitalWrite(STATUS_LED, LOW);
-
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= interval)
@@ -66,10 +71,39 @@ void loop()
 
     Serial.println(capValue);
 
-    capPacket.len = 0;
-    Comms::packetAddFloat(&capPacket, capValue);
-    Comms::packetAddFloat(&capPacket, avgCap);
-    Comms::packetAddFloat(&capPacket, tempValue);
-    Comms::emitPacket(&capPacket);
+    // When commanded to (packet from FC received, & confirmed), send data over serial
+    if (Serial.available() > 0) {
+      capPacket.len = 0;
+      Comms::packetAddFloat(&capPacket, capValue);
+      Comms::packetAddFloat(&capPacket, avgCap);
+      Comms::packetAddFloat(&capPacket, tempValue);
+      
+      uint32_t timestamp = millis();
+      capPacket.timestamp[0] = timestamp & 0xFF;
+      capPacket.timestamp[1] = (timestamp >> 8) & 0xFF;
+      capPacket.timestamp[2] = (timestamp >> 16) & 0xFF;
+      capPacket.timestamp[3] = (timestamp >> 24) & 0xFF;
+
+      //calculate and append checksum to struct
+      uint16_t checksum = Comms::computePacketChecksum(&capPacket);
+      capPacket.checksum[0] = checksum & 0xFF;
+      capPacket.checksum[1] = checksum >> 8;
+
+      Serial.write(capPacket.id);
+      Serial.write(capPacket.len);
+      Serial.write(capPacket.timestamp, 4);
+      Serial.write(capPacket.checksum, 2);
+      Serial.write(capPacket.data, capPacket.len);
+      Serial.write('\n');
+      Serial.flush();
+
+      Serial1.write(capPacket.id);
+      Serial1.write(capPacket.len);
+      Serial1.write(capPacket.timestamp, 4);
+      Serial1.write(capPacket.checksum, 2);
+      Serial1.write(capPacket.data, capPacket.len);
+      Serial1.write('\n');
+      Serial1.flush();
+    }
   }
 }

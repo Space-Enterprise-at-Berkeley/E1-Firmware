@@ -35,6 +35,11 @@ namespace HAL {
     MCP9600 tcAmp2;
     // MCP9600 tcAmp3;
 
+    // Sensors breakouts
+    BMP388_DEV bmp388;
+    BNO055 bno055;
+    SFE_UBLOX_GNSS neom9n;
+
     void initChannel(INA219 *channel, uint8_t address) {
         channel->init(&Wire1, address, chanShuntR, chanCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
     }
@@ -63,10 +68,11 @@ namespace HAL {
         pinMode(RS485SwitchPin, OUTPUT);
 
         // barometer
-        // bmp388.begin(0x76); TODO check address
+        bmp388.begin(0x76); // TODO check address
 
         // imu
-        // bno055.begin();
+        bno055 = BNO055(28);
+        bno055.begin();
 
         // gps
         // if(!neom9n.begin()) {

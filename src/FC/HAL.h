@@ -2,6 +2,7 @@
 
 #include <Common.h>
 
+
 #include <ADS8167.h>
 #include <INA219.h>
 #include <MCP9600.h>
@@ -17,6 +18,8 @@
 
 namespace HAL {    
     
+    #define RS485_SERIAL Serial8
+
     extern ADS8167 adc1;
 
     const float battShuntR = 0.002;
@@ -28,7 +31,7 @@ namespace HAL {
     const uint8_t RS485SwitchPin = 27;  
     
     const float valveMuxCurrentScalingFactor = ((1.0 / 20.0) / 0.02) * 3.3 / 4096.0; // current
-    const float valveMuxContinuityScalingFactor = (1.0) * 3.3 / 4096.0; // "voltage" reading, TODO will this value need to change
+    const float valveMuxContinuityScalingFactor = (11.0) / 4096.0; // "voltage" reading, TODO will this value need to change
 
     const float chanShuntR = 0.02; // Orig. 0.033 but now 20 mOhm on v2
     const float chanCurrMax = 4.0;
@@ -45,6 +48,7 @@ namespace HAL {
     const uint8_t camPin = 39;
     const uint8_t amp1Pin = 32; // not flying amp but keeping the name for ref to schematic
     const uint8_t radio1Pin = 8;
+    
 
     // E-1 Extension Channels
     const uint8_t valve1Pin = 7; // LOX GEMS
