@@ -9,7 +9,7 @@
 
 #include <BMP388_DEV.h>
 #include <BNO055.h>
-#include <NEOM9N.h>
+#include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -40,6 +40,8 @@ namespace HAL {
     extern BMP388_DEV bmp388; // barometer
     extern BNO055 bno055; // imu
     extern SFE_UBLOX_GNSS neom9n; // gps
+
+    const uint8_t gpsCSPin = 38;
 
     // Pin Mappings for Flight Stack
     // Flight v3 Channels

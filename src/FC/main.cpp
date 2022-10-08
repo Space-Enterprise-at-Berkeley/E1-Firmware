@@ -59,10 +59,10 @@ Task taskTable[] = {
     // {GPS::auxSample, 0},
 
     // Cap fill
-    {CapFill::sampleCapFill, 0}
+    // {CapFill::sampleCapFill, 0}
 };
 
-// #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
+#define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
 
 int main() {
     // hardware setup
@@ -80,10 +80,16 @@ int main() {
     Valves::initValves(&taskTable[1], &taskTable[2]);
     // Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20); 
-    CapFill::initCapFill();
+    // CapFill::initCapFill();
 
     while(1) {
-        loop();
+        for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
+            uint32_t ticks = micros(); // current time in microseconds
+            if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
+                taskTable[i].nexttime = ticks + taskTable[i].taskCall();
+            }
+        }
+        Comms::processWaitingPackets();
     }
     return 0;
 }

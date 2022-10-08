@@ -75,13 +75,13 @@ namespace HAL {
         bno055.begin();
 
         // gps
-        // if(!neom9n.begin()) {
-        //     DEBUG("GPS DIDN'T INIT");
-        //     DEBUG("\n");
-        // } else {
-        //     DEBUG("GPS INIT SUCCESSFUL");
-        //     DEBUG("\n");
-        // }
+        if(!neom9n.begin(SPI, gpsCSPin, 4000000)) {
+            DEBUG("GPS DIDN'T INIT");
+            DEBUG("\n");
+        } else {
+            DEBUG("GPS INIT SUCCESSFUL");
+            DEBUG("\n");
+        }
         
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
