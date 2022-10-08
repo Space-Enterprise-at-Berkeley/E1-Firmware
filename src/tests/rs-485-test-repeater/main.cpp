@@ -14,6 +14,8 @@ Task taskTable[] = {
 // #define FUEL_SERIAL Serial4 // TODO: verify this
 // #define FUEL_REN_PIN 18
 
+#define RS485_TX_PIN 35
+
 char rs485Buffer[sizeof(Comms::Packet)];
 int cnt = 0;
 // char fuelBuffer[sizeof(Comms::Packet)];
@@ -25,11 +27,11 @@ int main() {
     // hardware setup
     Serial.begin(115200);
     RS485_SERIAL.begin(115200);
-    #ifdef DEBUG_MODE
-    while(!Serial) {} // wait for user to open serial port (debugging only)
-    #endif
+    // #ifdef DEBUG_MODE
+    // while(!Serial) {} // wait for user to open serial port (debugging only)
+    // #endif
 
-    Comms::initComms();
+    // Comms::initComms();
 
     DEBUG("STARTING UP\n");
     DEBUG_FLUSH();
@@ -37,20 +39,31 @@ int main() {
     pinMode(RS485_SW_PIN, OUTPUT);
     // pinMode(FUEL_REN_PIN, OUTPUT);
 
-    digitalWriteFast(RS485_SW_PIN, LOW)                                                                                                                                                                                                                                                                                                                                                                      ;
+    digitalWriteFast(RS485_SW_PIN, HIGH)                                                                                                                                                                                                                                                                                                                                                                      ;
     // digitalWriteFast(FUEL_REN_PIN, LOW);
+
+    // pinMode(RS485_TX_PIN, OUTPUT);
+
+    // digitalWriteFast(RS485_TX_PIN, HIGH);
 
 
     while(1) {
+
+        // digitalWriteFast(RS485_TX_PIN, HIGH);
+        // delay(2000);
+        // digitalWriteFast(RS485_TX_PIN, LOW);
+        // delay(2000);
 
         // 0: ready to transmit
         if (state == 0) { 
             DEBUG("in transmit mode\n");
             DEBUG_FLUSH();
             digitalWriteFast(RS485_SW_PIN, HIGH);
-            Comms::Packet capCommand = {.id = 221}; 
-            Comms::packetAddFloat(&capCommand, 221);
-            Comms::emitPacket(&capCommand, RS485_SERIAL);
+            // Comms::Packet capCommand = {.id = 221}; 
+            // Comms::packetAddFloat(&capCommand, 221);
+            // Comms::emitPacket(&capCommand, RS485_SERIAL);
+
+            RS485_SERIAL.write("e");
             DEBUG("cap command sent\n");
             DEBUG_FLUSH();
             RS485_SERIAL.flush();

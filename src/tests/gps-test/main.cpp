@@ -1,68 +1,101 @@
-#include <Arduino.h>
-#include <NEOM9N.h>
-#include <SPI.h>
+#include <SPI.h> //Needed for SPI to GNSS
 
-
+#include <SparkFun_u-blox_GNSS_Arduino_Library.h> //http://librarymanager/All#SparkFun_u-blox_GNSS
 SFE_UBLOX_GNSS myGNSS;
-uint32_t gpsUpdatePeriod = 40 * 1000;
-uint8_t gpsCS = 38;
 
-double latitude;
-double longitude;
-double altitude;
-double speed;
-double degree;
-byte SIV;
+// #########################################
 
-int main() {
-    Serial.begin(9600);
+// Instantiate an instance of the SPI class. 
+// Your configuration may be different, depending on the microcontroller you are using!
 
-    Serial.println("GPS setup");
-    if (!myGNSS.begin(&SPI, gpsCS, 4000000)) {
-        Serial.println("GPS failed to start");
-    } else {
-        Serial.println("GPS started");
-    }
+#define spiPort SPI // This is the SPI port on standard Ardino boards. Comment this line if you want to use a different port.
 
-  myGNSS.setPortOutput(COM_PORT_SPI, COM_TYPE_UBX); //Set the SPI port to output UBX only (turn off NMEA noise)
+//SPIClass spiPort (HSPI); // This is the default SPI interface on some ESP32 boards. Uncomment this line if you are using ESP32.
+
+// #########################################
+
+const uint8_t csPin = 38; // On ATmega328 boards, SPI Chip Select is usually pin 10. Change this to match your board.
+
+// #########################################
+
+long lastTime = 0; //Simple local timer. Limits amount of SPI traffic to u-blox module.
+
+void setup()
+{
+  Serial.begin(115200);
+  while (!Serial); //Wait for user to open terminal
+  Serial.println(F("SparkFun u-blox Example"));
+
+  spiPort.begin(); // begin the SPI port
+
+  //myGNSS.enableDebugging(); // Uncomment this line to see helpful debug messages on Serial
+
+  // Connect to the u-blox module using SPI port, csPin and speed setting
+  // ublox devices generally work up to 5MHz. We'll use 4MHz for this example:
+  if (myGNSS.begin(spiPort, csPin, 4000000) == false) 
+  {
+    Serial.println(F("u-blox GNSS not detected on SPI bus. Please check wiring. Freezing."));
+    while (1);
+  }
+  
+  //myGNSS.factoryDefault(); delay(5000); // Uncomment this line to reset the module back to its factory defaults
+
+  myGNSS.setPortOutput(COM_PORT_SPI, COM_TYPE_UBX); //gSet the SPI port to output UBX only (turn off NMEA noise)
   myGNSS.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
+}
 
-    while (1)   {
-        Serial.println();
+void loop()
+{
+  //Query module only every second. Doing it more often will just cause SPI traffic.
+  //The module only responds when a new position is available
+  if (millis() - lastTime > 1000)
+  {
+    lastTime = millis(); //Update the timer
+    
+    long latitude = myGNSS.getLatitude();
+    Serial.print(F("Lat: "));
+    float fLat = (float) latitude;
+    Serial.print(fLat / 10e6);
 
-        latitude = myGNSS.getLatitude() / 10000000;
-        Serial.print(F("Lat: "));
-        Serial.print(latitude);
+    long longitude = myGNSS.getLongitude();
+    Serial.print(F(" Long: "));
+    float fLong = (float) longitude;
+    Serial.print(fLong / 10e6);
+    Serial.print(F(" (degrees * 10^-7)"));
 
-        longitude = myGNSS.getLongitude() / 10000000;
-        Serial.print(F(" Long: "));
-        Serial.print(longitude);
+    long altitude = myGNSS.getAltitude();
+    Serial.print(F(" Alt: "));
+    float fAlt = (float) altitude;
+    Serial.print(fAlt / 10e3);
+    Serial.print(F(" (mm)"));
 
-        // Serial.print(F(" (degrees"));
+    long year = myGNSS.getYear();
+    Serial.print(F(" Year: "));
+    Serial.print(year);
 
-        //Get Altitude
-        altitude = myGNSS.getAltitude();
-        Serial.print(F(" Alt: "));
-        Serial.print(altitude);
-        Serial.print(F(" (mm)"));
+    long month = myGNSS.getMonth();
+    Serial.print(F(" Month: "));
+    Serial.print(month);
 
-        //Get SIV
-        SIV = myGNSS.getSIV();
-        Serial.print(F(" SIV: "));
-        Serial.print(SIV);
+    long day = myGNSS.getDay();
+    Serial.print(F(" Day: "));
+    Serial.print(day);
 
-        //Get Speed
-        speed = myGNSS.getGroundSpeed();
-        Serial.print(F(" speed: "));    
-        Serial.print(speed / 1000); 
-        Serial.print(F(" m/s"));
+    long hour = myGNSS.getHour();
+    long minute = myGNSS.getMinute();
+    long sec = myGNSS.getSecond();
+    Serial.print(F(" Time: "));
+    Serial.print(hour);
+    Serial.print(":");
+    Serial.print(minute);
+    Serial.print(":");
+    Serial.print(sec);
+    
 
-        //Get Degree
-        degree = myGNSS.getHeading() / 100000;
-        Serial.print(F(" Angle: "));    
-        Serial.print(degree); 
+    byte SIV = myGNSS.getSIV();
+    Serial.print(F(" SIV: "));
+    Serial.print(SIV);
 
-
-
-    }
+    Serial.println();
+  }
 }
