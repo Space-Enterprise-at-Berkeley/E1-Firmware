@@ -24,7 +24,7 @@ int main() {
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
 
-    // Comms::initComms();
+    Comms::initComms();
 
     DEBUG("STARTING UP\n");
     DEBUG_FLUSH();
@@ -40,7 +40,7 @@ int main() {
 
         while(LOX_SERIAL.available()) {
             loxBuffer[loxCnt] = LOX_SERIAL.read();
-            DEBUG((uint8_t)loxBuffer[loxCnt]);
+            DEBUG(loxBuffer[loxCnt]);
             DEBUG_FLUSH();
             if(loxCnt == 0 && loxBuffer[loxCnt] != 221) {
                 break;
@@ -49,9 +49,13 @@ int main() {
                 Comms::Packet *packet = (Comms::Packet *)&loxBuffer;
                 if(Comms::verifyPacket(packet)) {
                     DEBUG(packet->id);
+                    DEBUG("\n");
                     DEBUG_FLUSH();
                     loxCnt = 0;
                     if(packet->id == 221) {
+                        DEBUG("got\n");
+                        DEBUG_FLUSH();
+                        
                         digitalWriteFast(LOX_REN_PIN, HIGH);
                         packet->data[0] = 0xaa;
                         packet->len = 1;

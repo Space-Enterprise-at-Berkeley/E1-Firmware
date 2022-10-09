@@ -31,7 +31,7 @@ int main() {
     // while(!Serial) {} // wait for user to open serial port (debugging only)
     // #endif
 
-    // Comms::initComms();
+    Comms::initComms();
 
     DEBUG("STARTING UP\n");
     DEBUG_FLUSH();
@@ -59,15 +59,14 @@ int main() {
             DEBUG("in transmit mode\n");
             DEBUG_FLUSH();
             digitalWriteFast(RS485_SW_PIN, HIGH);
-            // Comms::Packet capCommand = {.id = 221}; 
-            // Comms::packetAddFloat(&capCommand, 221);
-            // Comms::emitPacket(&capCommand, RS485_SERIAL);
-
-            RS485_SERIAL.write("e");
+            Comms::Packet capCommand = {.id = 221};
+            Comms::packetAddUint8(&capCommand, capID);
+            Comms::emitPacket(&capCommand, RS485_SERIAL);
+            // RS485_SERIAL.write("e");
             DEBUG("cap command sent\n");
             DEBUG_FLUSH();
             RS485_SERIAL.flush();
-            // digitalWriteFast(RS485_SW_PIN, LOW);
+
             // digitalWriteFast(RS485_SW_PIN, LOW); 
             // DEBUG("cap set to receive\n");
             // DEBUG_FLUSH();

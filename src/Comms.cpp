@@ -217,12 +217,16 @@ namespace Comms {
         packet->checksum[1] = checksum >> 8;
 
         // Send over serial
+        DEBUG("sending packet over hardware serial\n");
+        DEBUG_FLUSH();
         serialBus->write(packet->id);
         serialBus->write(packet->len);
         serialBus->write(packet->timestamp, 4);
         serialBus->write(packet->checksum, 2);
         serialBus->write(packet->data, packet->len);
         serialBus->write('\n');
+        DEBUG("packet sent over hardware serial\n");
+        DEBUG_FLUSH();
     }
 
     bool verifyPacket(Packet *packet) {
