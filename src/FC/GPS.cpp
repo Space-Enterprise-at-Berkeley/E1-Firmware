@@ -11,8 +11,8 @@ namespace GPS {
   float altitude;
   float speed;
   float angle;
-
-  // Comms::Packet auxPacket = {.id = 7};
+  uint8_t satFixNum;
+  uint8_t fixType;
 
   void initGPS() { 
       HAL::neom9n.setPortOutput(COM_PORT_SPI, COM_TYPE_UBX); //gSet the SPI port to output UBX only (turn off NMEA noise)
@@ -31,6 +31,11 @@ namespace GPS {
 
     speed = (float)(HAL::neom9n.getSpeedAccEst()) / 10e3; // raw is mm/s
 
+    satFixNum = HAL::neom9n.getSIV();
+
+    // 0=no, 3=3D, 4=GNSS+Deadreckoning
+    fixType = HAL::neom9n.getFixType();
+
     DEBUG("GPS Latitude: ");
     DEBUG(latitude);
     DEBUG("     Longitude: ");
@@ -39,6 +44,10 @@ namespace GPS {
     DEBUG(altitude);
     DEBUG("     Speed: ");
     DEBUG(speed);
+    DEBUG("     NumSatellites: ");
+    DEBUG(satFixNum);
+    DEBUG("     Type of fix:  ");
+    DEBUG(fixType);
     DEBUG("\n");
     DEBUG_FLUSH();
 
@@ -47,6 +56,9 @@ namespace GPS {
     Comms::packetAddFloat(&latLongPacket, longitude);
     Comms::packetAddFloat(&latLongPacket, altitude);
     Comms::packetAddFloat(&latLongPacket, speed);
+    Comms::packetAddUint8(&latLongPacket, fixType);
+    Comms::packetAddUint8(&latLongPacket, satFixNum);
+
     Comms::emitPacket(&latLongPacket);
 
     return gpsUpdatePeriod;
