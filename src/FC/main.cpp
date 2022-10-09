@@ -3,7 +3,7 @@
 #include "Ducers.h"
 #include "Power.h"
 #include "Actuators.h"
-#include "CapFill.h"
+// #include "CapFill.h"
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
@@ -42,11 +42,11 @@ Task taskTable[] = {
     // {Thermocouples::tc3Sample, 0},
 
     // valves
-    // {Valves::loxGemValveSample, 0},
-    // {Valves::fuelGemValveSample, 0},
+    {Valves::loxGemValveSample, 0},
+    {Valves::fuelGemValveSample, 0},
 
     // actuator
-    // {Actuators::pressFlowRBVSample, 0},
+    {Actuators::pressFlowRBVSample, 0},
 
     // Barometer
     {Barometer::sampleAltPressTemp, 0},

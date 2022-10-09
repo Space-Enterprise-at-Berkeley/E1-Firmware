@@ -29,10 +29,9 @@ namespace HAL {
     MuxChannel muxChan14; // HBridge2
     MuxChannel muxChan15; // HBridge3
 
-    // Not usable rn
-    MCP9600 tcAmp0;
-    MCP9600 tcAmp1;
-    MCP9600 tcAmp2;
+    // MCP9600 tcAmp0;
+    // MCP9600 tcAmp1;
+    // MCP9600 tcAmp2;
     // MCP9600 tcAmp3;
 
     // Sensors breakouts
@@ -107,9 +106,9 @@ namespace HAL {
         // thermocouple amplifiers
         // 08/02: not on e1 ext
         // tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
-        // tcAmp2.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp3.init(0x67, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
+        // tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
         muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
