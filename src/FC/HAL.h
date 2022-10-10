@@ -6,9 +6,9 @@
 #include <INA219.h>
 #include <MCP9600.h>
 
-#include <BMP388_DEV.h>
-#include <BNO055.h>
-#include <NEOM9N.h>
+// #include <BMP388_DEV.h>
+// #include <BNO055.h>
+// #include <NEOM9N.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -34,9 +34,9 @@ namespace HAL {
     const float chanCurrMax = 4.0;
 
     // Sensor Breakouts
-    extern BMP388_DEV bmp388; // barometer
-    extern BNO055 bno055; // imu
-    extern SFE_UBLOX_GNSS neom9n; // gps
+    // extern BMP388_DEV bmp388; // barometer
+    // extern BNO055 bno055; // imu
+    // extern SFE_UBLOX_GNSS neom9n; // gps
 
     // Pin Mappings for Flight Stack
     // Flight v3 Channels

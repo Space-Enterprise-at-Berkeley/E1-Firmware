@@ -5,7 +5,7 @@
 #include "Actuators.h"
 #include "Valves.h"
 #include "HAL.h"
-#include "Thermocouples.h"
+// #include "Thermocouples.h"
 #include "OCHandler.h"
 
 #include <Arduino.h>
@@ -56,7 +56,7 @@ int main() {
     Power::initPower();
     Actuators::initActuators(&taskTable[0]);
     Valves::initValves(&taskTable[1], &taskTable[2]);
-    Thermocouples::initThermocouples();
+    // Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20); 
 
     while(1) {

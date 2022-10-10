@@ -30,9 +30,9 @@ namespace HAL {
     MuxChannel muxChan15; // HBridge3
 
     // Not usable rn
-    MCP9600 tcAmp0;
-    MCP9600 tcAmp1;
-    MCP9600 tcAmp2;
+    // MCP9600 tcAmp0;
+    // MCP9600 tcAmp1;
+    // MCP9600 tcAmp2;
     // MCP9600 tcAmp3;
 
     void initChannel(INA219 *channel, uint8_t address) {
