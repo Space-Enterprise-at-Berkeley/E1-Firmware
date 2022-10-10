@@ -24,7 +24,7 @@ int main() {
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
 
-    Comms::initComms();
+    // Comms::initComms();
 
     DEBUG("STARTING UP\n");
     DEBUG_FLUSH();
@@ -40,8 +40,8 @@ int main() {
 
         while(LOX_SERIAL.available()) {
             loxBuffer[loxCnt] = LOX_SERIAL.read();
-            DEBUG(loxBuffer[loxCnt]);
-            DEBUG_FLUSH();
+            // DEBUG(loxBuffer[loxCnt]);
+            // DEBUG_FLUSH();
             if(loxCnt == 0 && loxBuffer[loxCnt] != 221) {
                 break;
             }
@@ -57,15 +57,19 @@ int main() {
                         DEBUG_FLUSH();
                         
                         digitalWriteFast(LOX_REN_PIN, HIGH);
+                        Comms::Packet tmp = {.id = 221};
+                        Comms::packetAddFloat(&tmp, 1.234);
                         packet->data[0] = 0xaa;
-                        packet->len = 1;
-                        LOX_SERIAL.write(packet->id);
-                        LOX_SERIAL.write(packet->len);
-                        LOX_SERIAL.write(packet->timestamp, 4);
-                        LOX_SERIAL.write(packet->checksum, 2);
-                        LOX_SERIAL.write(packet->data, packet->len);
-                        LOX_SERIAL.write('\n');
+                        // LOX_SERIAL.write(packet->id);
+                        // LOX_SERIAL.write(packet->len);
+                        // LOX_SERIAL.write(packet->timestamp, 4);
+                        // LOX_SERIAL.write(packet->checksum, 2);
+                        // LOX_SERIAL.write(packet->data, packet->len);
+                        // LOX_SERIAL.write('\n');
+                        // LOX_SERIAL.flush();
+                        Comms::emitPacket(packet, &LOX_SERIAL);
                         LOX_SERIAL.flush();
+
                         digitalWriteFast(LOX_REN_PIN, LOW);
                     }
                     break;
@@ -73,7 +77,7 @@ int main() {
             }
             loxCnt++;
         }
-        if(loxCnt == 256) {
+        if(loxCnt == 128) {
             DEBUG("\nRESETTING LOX BUFFER\n");
             loxCnt = 0;
         }
