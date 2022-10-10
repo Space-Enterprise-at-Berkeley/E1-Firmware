@@ -59,5 +59,7 @@ namespace Comms {
      */
     void emitPacket(Packet *packet);
 
+    void emitPacket(Packet *packet, HardwareSerial *serialBus);
+
     uint16_t computePacketChecksum(Packet *packet);
 };

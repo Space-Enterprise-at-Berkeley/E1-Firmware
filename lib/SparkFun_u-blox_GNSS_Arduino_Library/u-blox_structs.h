@@ -43,10 +43,18 @@
 #ifndef __u_blox_structs_h__
 #define __u_blox_structs_h__
 
-#include "NEOM9N.h"
+#include "SparkFun_u-blox_GNSS_Arduino_Library.h"
 
 #ifndef DEF_NUM_SENS
 #define DEF_NUM_SENS 7 // The maximum number of ESF sensors
+#endif
+
+#ifndef DEF_MAX_NUM_ESF_RAW_REPEATS
+#define DEF_MAX_NUM_ESF_RAW_REPEATS 10 // The NEO-M8U sends ESF RAW data in blocks / sets of ten readings. (The ZED-F9R sends them one at a time.)
+#endif
+
+#ifndef DEF_MAX_NUM_ESF_MEAS
+#define DEF_MAX_NUM_ESF_MEAS 31 // numMeas is 5 bits, indicating up to 31 groups could be received
 #endif
 
 // Additional flags and pointers that need to be stored with each message type
@@ -999,7 +1007,6 @@ typedef struct
   ubxAutomaticFlags automaticFlags;
   UBX_NAV_TIMEUTC_data_t data;
   UBX_NAV_TIMEUTC_moduleQueried_t moduleQueried;
-  void (*callbackPointer)(UBX_NAV_TIMEUTC_data_t);
   void (*callbackPointerPtr)(UBX_NAV_TIMEUTC_data_t *);
   UBX_NAV_TIMEUTC_data_t *callbackData;
 } UBX_NAV_TIMEUTC_t;
@@ -1233,7 +1240,6 @@ typedef struct
   ubxAutomaticFlags automaticFlags;
   UBX_NAV_SVIN_data_t data;
   UBX_NAV_SVIN_moduleQueried_t moduleQueried;
-  void (*callbackPointer)(UBX_NAV_SVIN_data_t);
   void (*callbackPointerPtr)(UBX_NAV_SVIN_data_t *);
   UBX_NAV_SVIN_data_t *callbackData;
 } UBX_NAV_SVIN_t;
@@ -1384,6 +1390,37 @@ typedef struct
   UBX_NAV_AOPSTATUS_data_t *callbackData;
 } UBX_NAV_AOPSTATUS_t;
 
+// UBX-NAV-EOE (0x01 0x61): End of Epoch
+const uint16_t UBX_NAV_EOE_LEN = 4;
+
+typedef struct
+{
+  uint32_t iTOW; // GPS time of week of the navigation epoch: ms
+} UBX_NAV_EOE_data_t;
+
+typedef struct
+{
+  union
+  {
+    uint32_t all;
+    struct
+    {
+      uint32_t all : 1;
+
+      uint32_t iTOW : 1;
+    } bits;
+  } moduleQueried;
+} UBX_NAV_EOE_moduleQueried_t;
+
+typedef struct
+{
+  ubxAutomaticFlags automaticFlags;
+  UBX_NAV_EOE_data_t data;
+  UBX_NAV_EOE_moduleQueried_t moduleQueried;
+  void (*callbackPointerPtr)(UBX_NAV_EOE_data_t *);
+  UBX_NAV_EOE_data_t  *callbackData;
+} UBX_NAV_EOE_t;
+
 // RXM-specific structs
 
 // UBX-RXM-SFRBX (0x02 0x13): Broadcast navigation data subframe
@@ -1484,6 +1521,66 @@ typedef struct
   UBX_RXM_RAWX_data_t *callbackData;
 } UBX_RXM_RAWX_t;
 
+// UBX-RXM-COR (0x02 0x34): Differential correction input status
+const uint16_t UBX_RXM_COR_LEN = 12;
+
+typedef struct
+{
+  uint8_t version;      // Message version (0x01 for this version)
+  uint8_t ebno;         // Energy per bit to noise power spectral density ratio (Eb/N0): 2^-3 dB
+                        // 0: unknown. Reported only for protocol UBX-RXM-PMP (SPARTN) to monitor signal quality.
+  uint8_t reserved0[2]; // Reserved
+  union
+  {
+    uint32_t all;
+    struct
+    {
+      uint32_t protocol : 5;        // Input correction data protocol:
+                                    // 0: Unknown
+                                    // 1: RTCM3
+                                    // 2: SPARTN (Secure Position Augmentation for Real Time Navigation)
+                                    // 29: UBX-RXM-PMP (SPARTN)
+                                    // 30: UBX-RXM-QZSSL6
+      uint32_t errStatus : 2;       // Error status of the received correction message content based on possibly available error codes or checksums:
+                                    // 0: Unknown
+                                    // 1: Error-free
+                                    // 2: Erroneous
+      uint32_t msgUsed : 2;         // Status of receiver using the input message:
+                                    // 0: Unknown
+                                    // 1: Not used
+                                    // 2: Used
+      uint32_t correctionId : 16;   // Identifier for the correction stream:
+                                    // For RTCM 3: Reference station ID (DF003) of the received RTCM input message.
+                                    // Valid range 0-4095.
+                                    // For all other messages, reports 0xFFFF.
+                                    // For other correction protocols 0xFFFF.
+      uint32_t msgTypeValid : 1;    // Validity of the msgType field. Set to False e.g. if the protocol does not define msgType.
+      uint32_t msgSubTypeValid : 1; // Validity of the msgSubType field. Set to False e.g. if the protocol does not define subtype for the msgType.
+      uint32_t msgInputHandle : 1;  // Input handling support of the input message:
+                                    // 0: Receiver does not have input handling support for this message
+                                    // 1: Receiver has input handling support for this message
+      uint32_t msgEncrypted : 2;    // Encryption status of the input message:
+                                    // 0: Unknown
+                                    // 1: Not encrypted
+                                    // 2: Encrypted
+      uint32_t msgDecrypted : 2;    // Decryption status of the input message:
+                                    // 0: Unknown
+                                    // 1: Not decrypted
+                                    // 2: Successfully decrypted
+    } bits;
+  } statusInfo;
+  uint16_t msgType;    // Message type
+  uint16_t msgSubType; // Message subtype
+} UBX_RXM_COR_data_t;
+
+// The COR data can only be accessed via a callback. COR cannot be polled.
+typedef struct
+{
+  ubxAutomaticFlags automaticFlags;
+  void (*callbackPointerPtr)(UBX_RXM_COR_data_t *);
+  UBX_RXM_COR_data_t *callbackData;
+} UBX_RXM_COR_t;
+
 // UBX-RXM-PMP (0x02 0x72): PMP raw data (D9 modules)
 // There are two versions of this message but, fortunately, both have a max len of 528
 const uint16_t UBX_RXM_PMP_MAX_USER_DATA = 504;
@@ -1539,6 +1636,62 @@ typedef struct
   void (*callbackPointerPtr)(UBX_RXM_PMP_message_data_t *);
   UBX_RXM_PMP_message_data_t *callbackData;
 } UBX_RXM_PMP_message_t;
+
+// UBX-RXM-QZSSL6 (0x02 0x73): QZSS L6 raw data (D9C modules)
+#define UBX_RXM_QZSSL6_NUM_CHANNELS 2
+const uint16_t UBX_RXM_QZSSL6_DATALEN = 250;
+const uint16_t UBX_RXM_QZSSL6_MAX_LEN = UBX_RXM_QZSSL6_DATALEN + 14;
+
+typedef struct
+{
+  uint8_t version;        // Message version (0x00 / 0x01)
+  uint8_t svId;           // Satellite identifier
+  uint16_t cno;           // Mean C/N0
+  uint32_t timeTag;       // Time since startup when frame started : ms
+  uint8_t groupDelay;     // L6 group delay w.r.t. L2 on channel
+  uint8_t bitErrCorr;     // Number of bit errors corrected by Reed-Solomon decoder
+  uint16_t chInfo;        // Information about receiver channel associated with a received QZSS L6 message
+  uint8_t reserved0[2];   // Reserved
+  uint8_t msgBytes[UBX_RXM_QZSSL6_DATALEN];  // Bytes in a QZSS L6 message
+} UBX_RXM_QZSSL6_data_t;
+
+struct ubxQZSSL6AutomaticFlags
+{
+  union
+  {
+    uint8_t all;
+    struct
+    {
+      uint8_t automatic : 1;         // Will this message be delivered and parsed "automatically" (without polling)
+      uint8_t implicitUpdate : 1;    // Is the update triggered by accessing stale data (=true) or by a call to checkUblox (=false)
+      uint8_t addToFileBuffer : 1;   // Should the raw UBX data be added to the file buffer?
+      uint8_t callbackCopyValid : UBX_RXM_QZSSL6_NUM_CHANNELS; // Is the copies of the data structs used by the callback valid/fresh?
+    } bits;
+  } flags;
+};
+
+// Define a struct to hold the entire QZSSL6 message so the whole thing can be pushed to a GNSS.
+// Remember that the length of the payload could be variable (with version 1 messages).
+typedef struct
+{
+  uint8_t sync1; // 0xB5
+  uint8_t sync2; // 0x62
+  uint8_t cls;
+  uint8_t ID;
+  uint8_t lengthLSB;
+  uint8_t lengthMSB;
+  uint8_t payload[UBX_RXM_QZSSL6_MAX_LEN];
+  uint8_t checksumA;
+  uint8_t checksumB;
+} UBX_RXM_QZSSL6_message_data_t;
+
+// The QZSSL6 data can only be accessed via a callback. QZSSL6 cannot be polled.
+typedef struct
+{
+  ubxQZSSL6AutomaticFlags automaticFlags;
+  void (*callbackPointerPtr)(UBX_RXM_QZSSL6_message_data_t *);
+  UBX_RXM_QZSSL6_message_data_t *callbackData;
+} UBX_RXM_QZSSL6_message_t;
 
 // CFG-specific structs
 
@@ -1695,6 +1848,35 @@ typedef struct
   } config2;
 } UBX_CFG_ITFM_data_t;
 
+// UBX-CFG-TMODE3 (0x06 0x71): Time Mode Settings 3
+const uint16_t UBX_CFG_TMODE3_LEN = 40;
+
+typedef struct
+{
+  uint8_t version; // Message version (0x00 for this version)
+  uint8_t reserved1;
+  union
+  {
+    uint16_t all;
+    struct
+    {
+      uint16_t mode : 8; // Receiver Mode: 0 Disabled; 1 Survey In; 2 Fixed Mode (true ARP position information required); 3-255 Reserved
+      uint16_t lla : 1;  // Position is given in LAT/LON/ALT (default is ECEF)
+    } bits;
+  } flags;
+  int32_t ecefXOrLat;  // WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above: cm or deg*1e-7
+  int32_t ecefYOrLon;  // WGS84 ECEF Y coordinate (or latitude) of the ARP position, depending on flags above: cm or deg*1e-7
+  int32_t ecefZOrAlt;  // WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above: cm
+  int8_t ecefXOrLatHP; // High-precision WGS84 ECEF X coordinate (or latitude) of the ARP position, depending on flags above: 0.1 mm or deg*1e-9
+  int8_t ecefYOrLonHP; // High-precision WGS84 ECEF Y coordinate (or longitude) of the ARP position, depending on flags above: 0.1 mm or deg*1e-9
+  int8_t ecefZOrAltHP; // High-precision WGS84 ECEF Z coordinate (or altitude) of the ARP position, depending on flags above: 0.1 mm
+  uint8_t reserved2;
+  uint32_t fixedPosAcc;  // Fixed position 3D accuracy: 0.1 mm
+  uint32_t svinMinDur;   // Survey-in minimum duration: s
+  uint32_t svinAccLimit; // Survey-in position accuracy limit: 0.1 mm
+  uint8_t reserved3[8];
+} UBX_CFG_TMODE3_data_t;
+
 // MON-specific structs
 
 // UBX-MON-HW (0x0A 0x09): Hardware status
@@ -1702,37 +1884,54 @@ const uint16_t UBX_MON_HW_LEN = 60;
 
 typedef struct
 {
-  uint32_t pinSel; // Mask of pins set as peripheral/PIO
-  uint32_t pinBank; // Mask of pins set as bank A/B
-  uint32_t pinDir; // Mask of pins set as input/output
-  uint32_t pinVal; // Mask of pins value low/high
+  uint32_t pinSel;     // Mask of pins set as peripheral/PIO
+  uint32_t pinBank;    // Mask of pins set as bank A/B
+  uint32_t pinDir;     // Mask of pins set as input/output
+  uint32_t pinVal;     // Mask of pins value low/high
   uint16_t noisePerMS; // Noise level as measured by the GPS core
-  uint16_t agcCnt; // AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)
-  uint8_t aStatus; // Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)
-  uint8_t aPower; // Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)
+  uint16_t agcCnt;     // AGC monitor (counts SIGHI xor SIGLO, range 0 to 8191)
+  uint8_t aStatus;     // Status of the antenna supervisor state machine (0=INIT, 1=DONTKNOW, 2=OK, 3=SHORT, 4=OPEN)
+  uint8_t aPower;      // Current power status of antenna (0=OFF, 1=ON, 2=DONTKNOW)
   union
   {
     uint8_t all;
     struct
     {
-      uint8_t rtcCalib : 1; // RTC is calibrated
-      uint8_t safeBoot : 1; // Safeboot mode (0 = inactive, 1 = active)
+      uint8_t rtcCalib : 1;     // RTC is calibrated
+      uint8_t safeBoot : 1;     // Safeboot mode (0 = inactive, 1 = active)
       uint8_t jammingState : 2; // Output from jamming/interference monitor (0 = unknown or feature disabled,
                                 // 1 = ok - no significant jamming,
                                 // 2 = warning - interference visible but fix OK,
                                 // 3 = critical - interference visible and no fix)
-      uint8_t xtalAbsent : 1; // RTC xtal has been determined to be absent
+      uint8_t xtalAbsent : 1;   // RTC xtal has been determined to be absent
     } bits;
   } flags;
-  uint8_t reserved1; // Reserved
-  uint32_t usedMask; // Mask of pins that are used by the virtual pin manager
-  uint8_t VP[17]; // Array of pin mappings for each of the 17 physical pins
-  uint8_t jamInd; // CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)
+  uint8_t reserved1;    // Reserved
+  uint32_t usedMask;    // Mask of pins that are used by the virtual pin manager
+  uint8_t VP[17];       // Array of pin mappings for each of the 17 physical pins
+  uint8_t jamInd;       // CW jamming indicator, scaled (0 = no CW jamming, 255 = strong CW jamming)
   uint8_t reserved2[2]; // Reserved
-  uint32_t pinIrq; // Mask of pins value using the PIO Irq
-  uint32_t pullH; // Mask of pins value using the PIO pull high resistor
-  uint8_t pullL; // Mask of pins value using the PIO pull low resistor
+  uint32_t pinIrq;      // Mask of pins value using the PIO Irq
+  uint32_t pullH;       // Mask of pins value using the PIO pull high resistor
+  uint8_t pullL;        // Mask of pins value using the PIO pull low resistor
 } UBX_MON_HW_data_t;
+
+// UBX-MON-HW2 (0x0A 0x0B): Extended hardware status
+const uint16_t UBX_MON_HW2_LEN = 28;
+
+typedef struct
+{
+  int8_t ofsI;       // Imbalance of I-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)
+  uint8_t magI;      // Magnitude of I-part of complex signal, scaled (0 = no signal, 255 = max. magnitude)
+  int8_t ofsQ;       // Imbalance of Q-part of complex signal, scaled (-128 = max. negative imbalance, 127 = max. positive imbalance)
+  uint8_t magQ;      // Magnitude of Q-part of complex signal, scaled (0 = no signal, 255 = max. magnitude)
+  uint8_t cfgSource; // Source of low-level configuration (114 = ROM, 111 = OTP, 112 = config pins, 102 = flash image)
+  uint8_t reserved0[3];
+  uint32_t lowLevCfg; // Low-level configuration (obsolete for protocol versions greater than 15.00)
+  uint8_t reserved1[8];
+  uint32_t postStatus;  // POST status word
+  uint8_t reserved2[4]; // Reserved
+} UBX_MON_HW2_data_t;
 
 // UBX-MON-RF (0x0a 0x38): RF information
 const uint16_t UBX_MON_RF_MAX_BLOCKS = 2; // 0 = L1; 1 = L2 / L5
@@ -1995,7 +2194,8 @@ typedef struct
 
 // UBX-ESF-MEAS (0x10 0x02): External sensor fusion measurements
 // Note: length is variable
-const uint16_t UBX_ESF_MEAS_MAX_LEN = 8 + (4 * DEF_NUM_SENS) + 4;
+// Note: ESF RAW data cannot be polled. It is "Output" only
+const uint16_t UBX_ESF_MEAS_MAX_LEN = 8 + (4 * DEF_MAX_NUM_ESF_MEAS) + 4;
 
 typedef struct
 {
@@ -2027,38 +2227,14 @@ typedef struct
     } bits;
   } flags;
   uint16_t id; // Identification number of data provider
-  UBX_ESF_MEAS_sensorData_t data[DEF_NUM_SENS];
+  UBX_ESF_MEAS_sensorData_t data[DEF_MAX_NUM_ESF_MEAS];
   uint32_t calibTtag; // OPTIONAL: Receiver local time calibrated: ms
 } UBX_ESF_MEAS_data_t;
 
 typedef struct
 {
-  union
-  {
-    uint32_t all;
-    struct
-    {
-      uint32_t all : 1;
-
-      uint32_t timeMarkSent : 1;
-      uint32_t timeMarkEdge : 1;
-      uint32_t calibTtagValid : 1;
-      uint32_t numMeas : 1;
-
-      uint32_t id : 1;
-
-      uint32_t data : DEF_NUM_SENS;
-
-      uint32_t calibTtag : 1;
-    } bits;
-  } moduleQueried;
-} UBX_ESF_MEAS_moduleQueried_t;
-
-typedef struct
-{
   ubxAutomaticFlags automaticFlags;
   UBX_ESF_MEAS_data_t data;
-  UBX_ESF_MEAS_moduleQueried_t moduleQueried;
   void (*callbackPointer)(UBX_ESF_MEAS_data_t);
   void (*callbackPointerPtr)(UBX_ESF_MEAS_data_t *);
   UBX_ESF_MEAS_data_t *callbackData;
@@ -2066,7 +2242,10 @@ typedef struct
 
 // UBX-ESF-RAW (0x10 0x03): Raw sensor measurements
 // Note: length is variable
-const uint16_t UBX_ESF_RAW_MAX_LEN = 4 + (8 * DEF_NUM_SENS);
+// Note: The ZED-F9R sends sets of seven sensor readings one at a time
+//       But the NEO-M8U sends them in sets of ten (i.e. seventy readings per message)
+// Note: ESF RAW data cannot be polled. It is "Output" only
+const uint16_t UBX_ESF_RAW_MAX_LEN = 4 + (8 * DEF_NUM_SENS * DEF_MAX_NUM_ESF_RAW_REPEATS);
 
 typedef struct
 {
@@ -2085,28 +2264,14 @@ typedef struct
 typedef struct
 {
   uint8_t reserved1[4];
-  UBX_ESF_RAW_sensorData_t data[DEF_NUM_SENS];
+  UBX_ESF_RAW_sensorData_t data[DEF_NUM_SENS * DEF_MAX_NUM_ESF_RAW_REPEATS];
+  uint8_t numEsfRawBlocks; // Note: this is not contained in the ESF RAW message. It is calculated from the message length.
 } UBX_ESF_RAW_data_t;
-
-typedef struct
-{
-  union
-  {
-    uint32_t all;
-    struct
-    {
-      uint32_t all : 1;
-
-      uint32_t data : DEF_NUM_SENS;
-    } bits;
-  } moduleQueried;
-} UBX_ESF_RAW_moduleQueried_t;
 
 typedef struct
 {
   ubxAutomaticFlags automaticFlags;
   UBX_ESF_RAW_data_t data;
-  UBX_ESF_RAW_moduleQueried_t moduleQueried;
   void (*callbackPointer)(UBX_ESF_RAW_data_t);
   void (*callbackPointerPtr)(UBX_ESF_RAW_data_t *);
   UBX_ESF_RAW_data_t *callbackData;

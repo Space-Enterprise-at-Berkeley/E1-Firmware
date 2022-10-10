@@ -78,6 +78,12 @@ namespace Comms {
      */
     void emitPacket(Packet *packet, uint8_t end);
 
+    /**
+     * @brief Sends the packet over a specified hardware serial bus
+     * 
+     */ 
+    void emitPacket(Packet *packet, HardwareSerial *serialBus);
+
     bool verifyPacket(Packet *packet);
 
     uint16_t computePacketChecksum(Packet *packet);

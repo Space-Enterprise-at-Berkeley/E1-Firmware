@@ -29,11 +29,15 @@ namespace HAL {
     MuxChannel muxChan14; // HBridge2
     MuxChannel muxChan15; // HBridge3
 
-    // Not usable rn
-    MCP9600 tcAmp0;
-    MCP9600 tcAmp1;
-    MCP9600 tcAmp2;
+    // MCP9600 tcAmp0;
+    // MCP9600 tcAmp1;
+    // MCP9600 tcAmp2;
     // MCP9600 tcAmp3;
+
+    // Sensors breakouts
+    BMP388_DEV bmp388;
+    BNO055 bno055;
+    SFE_UBLOX_GNSS neom9n;
 
     void initChannel(INA219 *channel, uint8_t address) {
         channel->init(&Wire1, address, chanShuntR, chanCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
@@ -63,19 +67,20 @@ namespace HAL {
         pinMode(RS485SwitchPin, OUTPUT);
 
         // barometer
-        // bmp388.begin(0x76); TODO check address
+        bmp388.begin(0x76); // TODO check address
 
         // imu
-        // bno055.begin();
+        bno055 = BNO055(28);
+        bno055.begin();
 
         // gps
-        // if(!neom9n.begin()) {
-        //     DEBUG("GPS DIDN'T INIT");
-        //     DEBUG("\n");
-        // } else {
-        //     DEBUG("GPS INIT SUCCESSFUL");
-        //     DEBUG("\n");
-        // }
+        if(!neom9n.begin(SPI, gpsCSPin, 4000000)) {
+            DEBUG("GPS DIDN'T INIT");
+            DEBUG("\n");
+        } else {
+            DEBUG("GPS INIT SUCCESSFUL");
+            DEBUG("\n");
+        }
         
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
@@ -101,9 +106,9 @@ namespace HAL {
         // thermocouple amplifiers
         // 08/02: not on e1 ext
         // tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
-        // tcAmp2.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp3.init(0x67, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp1.init(0x61, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
+        // tcAmp2.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
         muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);

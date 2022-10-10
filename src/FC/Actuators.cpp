@@ -11,10 +11,10 @@ namespace Actuators {
                     .current = 0.0,
                     .period = 100 * 1000,
                     .state = 0,
-                    .pin1 = HAL::hBridge2Pin1,
-                    .pin2 = HAL::hBridge2Pin2,
+                    .pin1 = HAL::hBridge1Pin1,
+                    .pin2 = HAL::hBridge1Pin2,
                     .stop = NULL, 
-                    .muxChannel = &HAL::muxChan14};
+                    .muxChannel = &HAL::muxChan13};
   
     void driveForwards(Actuator *actuator){
         digitalWriteFast(actuator->pin1, HIGH);
