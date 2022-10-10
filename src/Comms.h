@@ -3,13 +3,22 @@
 #include <Common.h>
 
 #include <Arduino.h>
-#include <NativeEthernet.h>
-#include <NativeEthernetUdp.h>
+#ifdef esp32
+    #include <Ethernet.h>
+    #include <EthernetUdp.h>
+#else
+    #include <NativeEthernet.h>
+    #include <NativeEthernetUdp.h>
+#endif
 #include <map>
 #include <vector>
 
 namespace Comms {
     //https://github.com/sstaub/TeensyID/issues/3
+    #ifdef esp32
+        #define HW_OCOTP_MAC1 0xdead
+        #define HW_OCOTP_MAC0 0xbeef
+    #endif
     const uint32_t __m1 = HW_OCOTP_MAC1;
     const uint32_t __m2 = HW_OCOTP_MAC0;
     const byte mac[] = {
@@ -21,6 +30,9 @@ namespace Comms {
         (uint8_t)(__m2 >> 0),
     };
     const int port = 42069;
+    #ifndef IP_ADDRESS_END
+        #define IP_ADDRESS_END 254
+    #endif
     const IPAddress ip(10, 0, 0, IP_ADDRESS_END);
     const IPAddress groundStation1(10, 0, 0, 69);
     const IPAddress groundStation2(10, 0, 0, 70);
