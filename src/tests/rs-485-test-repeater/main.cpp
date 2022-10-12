@@ -61,8 +61,14 @@ int main() {
             // DEBUG_FLUSH();
             digitalWriteFast(RS485_SW_PIN, HIGH);
             Comms::Packet capCommand = {.id = 221};
-            // Comms::packetAddUint8(&capCommand,);
+            Comms::packetAddUint8(&capCommand, capID);
             Comms::emitPacket(&capCommand, &RS485_SERIAL);
+            // RS485_SERIAL.write(capCommand.id);
+            // RS485_SERIAL.write(capCommand.len);
+            // RS485_SERIAL.write(capCommand.timestamp, 4);
+            // RS485_SERIAL.write(capCommand.checksum, 2);
+            // RS485_SERIAL.write(capCommand.data, capCommand.len);
+            // RS485_SERIAL.write('\n');
             // RS485_SERIAL.write("e");
             // DEBUG("cap command sent\n");
             // DEBUG_FLUSH();
