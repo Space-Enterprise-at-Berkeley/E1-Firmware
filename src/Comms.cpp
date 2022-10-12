@@ -7,8 +7,10 @@ namespace Comms {
     char packetBuffer[sizeof(Packet)];
 
     void initComms() {
+        #ifdef ETH
         Ethernet.begin((uint8_t *)mac, ip);
         Udp.begin(port);
+        #endif
 
         registerCallback(0, sendFirmwareVersionPacket);
     }
@@ -55,6 +57,7 @@ namespace Comms {
     }
 
     void processWaitingPackets() {
+        #ifdef ETH
         if(Udp.parsePacket()) {
             if(Udp.remotePort() != port) return; // make sure this packet is for the right port
             Udp.read(packetBuffer, sizeof(Packet));
@@ -66,7 +69,8 @@ namespace Comms {
             // DEBUG(packet->id);
             // DEBUG('\n');
             evokeCallbackFunction(packet, Udp.remoteIP()[3]);
-        } else if(Serial.available()) {
+        #endif
+        if(Serial.available()) {
             int cnt = 0;
             while(Serial.available() && cnt < sizeof(Packet)) {
                 packetBuffer[cnt] = Serial.read();
@@ -163,6 +167,7 @@ namespace Comms {
         #endif
 
         //Send over ethernet to both ground stations
+        #ifdef ETH
         Udp.beginPacket(groundStation1, port);
         Udp.write(packet->id);
         Udp.write(packet->len);
@@ -178,6 +183,7 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+        #endif
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
@@ -193,6 +199,8 @@ namespace Comms {
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
 
+        #ifdef ETH
+
         Udp.beginPacket(IPAddress(10, 0, 0, end), port);
         Udp.write(packet->id);
         Udp.write(packet->len);
@@ -200,6 +208,8 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
+
+        #endif
     }
 
     bool verifyPacket(Packet *packet) {
