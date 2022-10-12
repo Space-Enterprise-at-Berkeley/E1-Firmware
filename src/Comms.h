@@ -42,7 +42,8 @@ namespace Comms {
         uint8_t len;
         uint8_t timestamp[4];
         uint8_t checksum[2];
-        uint8_t data[256];
+        uint8_t data[255];
+        uint8_t count;
     };
 
     void initComms();
@@ -56,6 +57,13 @@ namespace Comms {
      * @param function a pointer to a method that takes in a Packet struct.
      */
     void registerCallback(uint8_t id, commFunction function);
+
+    /**
+     * @brief Registers a method to be called every time a packet is sent out.
+     * 
+     * @param function a pointer to a method that will be called when a packet is sent out;
+     */
+    void registerEmitter(commFunction function);
 
     void processWaitingPackets();
 
