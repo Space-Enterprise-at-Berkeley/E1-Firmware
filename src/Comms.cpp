@@ -3,6 +3,7 @@
 namespace Comms {
 
     std::map<uint8_t, commFunction> callbackMap;
+    std::vector<commFunction> emitterList;
     EthernetUDP Udp;
     char packetBuffer[sizeof(Packet)];
 
@@ -28,6 +29,10 @@ namespace Comms {
 
     void registerCallback(uint8_t id, commFunction function) {
         callbackMap.insert(std::pair<int, commFunction>(id, function));
+    }
+
+    void registerEmitter(commFunction function) {
+        emitterList.push_back(function);
     }
 
     /**
@@ -144,46 +149,8 @@ namespace Comms {
      * @param packet Packet to be sent.
      */
     void emitPacket(Packet *packet) {
-        //add timestamp to struct
-        uint32_t timestamp = millis();
-        packet->timestamp[0] = timestamp & 0xFF;
-        packet->timestamp[1] = (timestamp >> 8) & 0xFF;
-        packet->timestamp[2] = (timestamp >> 16) & 0xFF;
-        packet->timestamp[3] = (timestamp >> 24) & 0xFF;
-
-        //calculate and append checksum to struct
-        uint16_t checksum = computePacketChecksum(packet);
-        packet->checksum[0] = checksum & 0xFF;
-        packet->checksum[1] = checksum >> 8;
-
-        // Send over serial, but disable if in debug mode
-        #ifndef DEBUG_MODE
-        Serial.write(packet->id);
-        Serial.write(packet->len);
-        Serial.write(packet->timestamp, 4);
-        Serial.write(packet->checksum, 2);
-        Serial.write(packet->data, packet->len);
-        Serial.write('\n');
-        #endif
-
-        //Send over ethernet to both ground stations
-        #ifdef ETH
-        Udp.beginPacket(groundStation1, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
-
-        Udp.beginPacket(groundStation2, port);
-        Udp.write(packet->id);
-        Udp.write(packet->len);
-        Udp.write(packet->timestamp, 4);
-        Udp.write(packet->checksum, 2);
-        Udp.write(packet->data, packet->len);
-        Udp.endPacket();
-        #endif
+        emitPacket(packet, 69);
+        emitPacket(packet, 70);
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
@@ -199,8 +166,11 @@ namespace Comms {
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
 
-        #ifdef ETH
+        for (commFunction func : emitterList) {
+            func(*packet, Udp.remoteIP()[3]);
+        }
 
+        #ifdef ETH
         Udp.beginPacket(IPAddress(10, 0, 0, end), port);
         Udp.write(packet->id);
         Udp.write(packet->len);
@@ -208,7 +178,6 @@ namespace Comms {
         Udp.write(packet->checksum, 2);
         Udp.write(packet->data, packet->len);
         Udp.endPacket();
-
         #endif
     }
 
