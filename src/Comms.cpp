@@ -202,6 +202,29 @@ namespace Comms {
         Udp.endPacket();
     }
 
+    // Send packet over hardware serial 
+    void emitPacket(Packet *packet, HardwareSerial *serialBus) {
+        //add timestamp to struct
+        uint32_t timestamp = millis();
+        packet->timestamp[0] = timestamp & 0xFF;
+        packet->timestamp[1] = (timestamp >> 8) & 0xFF;
+        packet->timestamp[2] = (timestamp >> 16) & 0xFF;
+        packet->timestamp[3] = (timestamp >> 24) & 0xFF;
+
+        //calculate and append checksum to struct
+        uint16_t checksum = computePacketChecksum(packet);
+        packet->checksum[0] = checksum & 0xFF;
+        packet->checksum[1] = checksum >> 8;
+
+        // Send over serial
+        serialBus->write(packet->id);
+        serialBus->write(packet->len);
+        serialBus->write(packet->timestamp, 4);
+        serialBus->write(packet->checksum, 2);
+        serialBus->write(packet->data, packet->len);
+        serialBus->write('\n');
+    }
+
     bool verifyPacket(Packet *packet) {
         uint16_t csum = computePacketChecksum(packet);
         return ((uint8_t) csum & 0xFF) == packet->checksum[0] && ((uint8_t) (csum >> 8)) == packet->checksum[1];
