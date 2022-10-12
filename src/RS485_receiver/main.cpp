@@ -24,7 +24,7 @@ int main() {
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
 
-    Comms::initComms();
+    // Comms::initComms();
 
     DEBUG("STARTING UP\n");
     DEBUG_FLUSH();

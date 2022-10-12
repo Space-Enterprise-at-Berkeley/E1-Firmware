@@ -32,7 +32,6 @@ Task taskTable[] = {
     {Ducers::ptSample, 0},
 
     // power
-    // {Power::battSample, 0}, 
     {Power::supply8Sample, 0},
 
     // thermocouples
@@ -48,15 +47,15 @@ Task taskTable[] = {
     // actuator
     {Actuators::pressFlowRBVSample, 0},
 
-    // Barometer
-    {Barometer::sampleAltPressTemp, 0},
-    {Barometer::zeroAltitude, 0},
-
     {IMU::imuSample, 0},
 
     //GPS
     {GPS::latLongSample, 0},
     // {GPS::auxSample, 0},
+
+    // Barometer
+    {Barometer::sampleAltPressTemp, 0},
+    // {Barometer::zeroAltitude, 0},
 
     // Cap fill
     // {CapFill::sampleCapFill, 0}
@@ -68,7 +67,7 @@ int main() {
     // hardware setup
     Serial.begin(115200);
     // RS-485 RX/TX is Serial8 (pins 34, 35)
-    RS485_SERIAL.begin(115200); // Serial for capfill
+    // RS485_SERIAL.begin(115200); // Serial for capfill
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
@@ -79,13 +78,18 @@ int main() {
     Actuators::initActuators(&taskTable[0]);
     Valves::initValves(&taskTable[1], &taskTable[2]);
     // Thermocouples::initThermocouples();
-    OCHandler::initOCHandler(20); 
+    OCHandler::initOCHandler(20);
+    GPS::initGPS();
     // CapFill::initCapFill();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
+                DEBUG("Task ID: ");
+                DEBUG(i);
+                DEBUG("\n");
+                DEBUG_FLUSH();
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
             }
         }
