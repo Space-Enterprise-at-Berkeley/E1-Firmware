@@ -3,7 +3,7 @@
 #include "Ducers.h"
 #include "Power.h"
 #include "Actuators.h"
-// #include "CapFill.h"
+#include "CapFill.h"
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
@@ -19,6 +19,7 @@
 #include <SPI.h>
 
 #define RS485_SERIAL Serial8
+#define RADIO_SERIAL Serial7
 
 Task taskTable[] = {
     {Actuators::stopPressFlowRBV, 0, false},
@@ -58,7 +59,7 @@ Task taskTable[] = {
     // {Barometer::zeroAltitude, 0},
 
     // Cap fill
-    // {CapFill::sampleCapFill, 0}
+    {CapFill::sampleCapFill, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -80,7 +81,7 @@ int main() {
     // Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20);
     GPS::initGPS();
-    // CapFill::initCapFill();
+    CapFill::initCapFill();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

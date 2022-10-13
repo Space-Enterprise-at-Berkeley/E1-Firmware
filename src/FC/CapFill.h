@@ -10,6 +10,5 @@ namespace CapFill {
 
     uint32_t sampleCapFill();
 
-    void sampleCapBoard(uint8_t);
 };
 

@@ -17,13 +17,13 @@ namespace GPS {
   void initGPS() { 
       HAL::neom9n.setPortOutput(COM_PORT_SPI, COM_TYPE_UBX); //gSet the SPI port to output UBX only (turn off NMEA noise)
       HAL::neom9n.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
-      HAL::neom9n.setNavigationFrequency(40);
+      // HAL::neom9n.setNavigationFrequency(40);
       // HAL::neom9n.setAutoPVT(true);
   }
 
   uint32_t latLongSample() {
 
-    // HAL::neom9n.checkUblox();
+    HAL::neom9n.checkUblox();
     
     latitude = (float)(HAL::neom9n.getLatitude()) / 10e6;
 
