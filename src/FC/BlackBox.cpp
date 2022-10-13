@@ -1,15 +1,15 @@
 #include "BlackBox.h"
     namespace BlackBox {
-        const uint32_t updatePeriod = 100 * 1000; //TODO figure out update period
+        const uint32_t updatePeriod = 100 * 1000; //TODO update period
         uint8_t lastElement = 0;
         uint8_t page = 0;
         byte pageAddress = 0;
-        bool Full = false;
+        bool full = false;
         W25Q w25q;
 
         // buffer has 20 packets, each packet has 66 uint8_t, TODO, confirm packet size;
-        int bufferSize = 20*(sizeof(Comms::Packet));
-        uint8_t buffer[bufferSize]; //TODO should mem be allocated here or in init?
+        uint8_t bufferSize = 20*(64 + 2);
+        volatile uint8_t buffer[bufferSize]; //TODO should mem be allocated here or in init?
 
         /*******************************Public Methods******************************/
 
@@ -41,7 +41,8 @@
                 lastElement = 0;
             }
             //memecpy(&buffer,&packet, 66) TODO, use memcpy for nicer code
-            for(uint8_t uInt : packet) {
+            
+            for(int i = 0; i < packet.len + 8 ; i++) {
                 buffer[lastElement] = uInt;
                 lastElement++;
             }
@@ -60,16 +61,17 @@
             if (Full) {
                 return;
             }
-            w25q.initStreamWrite(page, pageAddress)
+            W25Q::initStreamWrite(page, pageAddress)
             for (uint8_t uInt: buffer) {
-                w25q.streamWrite(uInt);//TODO, how to write all bytes in the package
                 pageAddress++;
                 if (pageAddress > 256 ) {
-                    pageAddress = pageAddress % 256;
-                    if (page > w25q.numPages - 1) {
+                    pageAdress = pageAdress % 256;
+                    if (page > 65536) {
                         Full = true;
                     }
                     page++;
+                    fc.streamWrite(uInt);//TODO, how to write all bytes in the package
+
                 }
             }
             w25q.closeStreamWrite()
@@ -95,4 +97,3 @@
             fc.chipErase();
         }
     }
-    
