@@ -8,8 +8,8 @@
         W25Q w25q;
 
         // buffer has 20 packets, each packet has 66 uint8_t, TODO, confirm packet size;
-        uint8_t bufferSize = 20*(64 + 2);
-        volatile uint8_t buffer[bufferSize]; //TODO should mem be allocated here or in init?
+        int bufferSize = 20*(sizeof(Comms::Packet));
+        uint8_t buffer[bufferSize]; //TODO should mem be allocated here or in init?
 
         /*******************************Public Methods******************************/
 
@@ -60,13 +60,13 @@
             if (Full) {
                 return;
             }
-            W25Q::initStreamWrite(page, pageAddress)
+            w25q.initStreamWrite(page, pageAddress)
             for (uint8_t uInt: buffer) {
-                fc.streamWrite(uInt);//TODO, how to write all bytes in the package
+                w25q.streamWrite(uInt);//TODO, how to write all bytes in the package
                 pageAddress++;
                 if (pageAddress > 256 ) {
-                    pageAdress = pageAdress % 256;
-                    if (page > 65536) {
+                    pageAddress = pageAddress % 256;
+                    if (page > w25q.numPages - 1) {
                         Full = true;
                     }
                     page++;
@@ -80,7 +80,7 @@
         * Description: @brief attempts to clear the buffers memory 
         *****************************************************************************/
         void clearBuffer() {
-            memset(buffer, 0, sizeof buffer);
+            memset(buffer, 0, sizeof(buffer));
         }
 
 
