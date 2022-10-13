@@ -5,8 +5,8 @@
 
 namespace BlackBox {
 
-        void init();
-        void writeToBuffer();  
+        void init(int FLASH_SS);
+        void writeToBuffer(Comms::Packet packet, uint8_t ip);  
         void clearBuffer();   
         void writeBufferToBB();
 }

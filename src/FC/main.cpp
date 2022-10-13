@@ -3,6 +3,7 @@
 
 #include "GPS.h"
 #include "IMU.h"
+#include "BlackBox.h"
 // #include "Barometer.h"
 // #include "Apogee.h"
 
@@ -11,8 +12,8 @@
 
 
 Task taskTable[] = {
-    {GPS::latLongSample, 0},
-    // {IMU::sampleIMU, 0},
+    // {GPS::latLongSample, 0},
+    {IMU::sampleIMU, 0},
     // {Barometer::sampleBarometer, 0},
     // {Apogee::checkForApogee, 0, false}
 };
@@ -27,7 +28,9 @@ int main() {
     Serial.println("hola");
     Comms::initComms();
     IMU::init();
-    GPS::init();
+    // GPS::init();
+    BlackBox::init(10);
+    
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif

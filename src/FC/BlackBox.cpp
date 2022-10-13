@@ -17,9 +17,12 @@
         *****************************************************************************/
 
         void init(int FLASH_SS) {
+            DEBUG("trying to init black box\n");
             w25q.init(FLASH_SS);
             clearBuffer();
             Comms::registerEmitter(writeToBuffer);
+
+            DEBUG("init'ed black box!\n");
         }
 
         /*****************************************************************************
@@ -34,13 +37,15 @@
         * buffer is writen onto W25Q. Amortized O(n).
         *****************************************************************************/
         void writeToBuffer(Comms::Packet packet, uint8_t ip) {
+            Serial.printf("adding packet to buffer, %d\n", lastElement);
             if(lastElement + packet.len + 8 >= bufferSize) {
                 writeBufferToBB();
                 clearBuffer();
                 lastElement = 0;
-            }
-                memcpy(buffer + lastElement, &packet, packet.len + 8);
-                lastElement += packet.len + 8;
+            } 
+            memcpy(buffer + lastElement, &packet, packet.len + 8);
+            lastElement += packet.len + 8;
+            
         }
         /*******************************Private Methods******************************/
 
@@ -51,6 +56,7 @@
         *  into chip and closes reader   
         *****************************************************************************/
         void writeBufferToBB() {
+            DEBUG("writing out buffer to black box\n");
             if (full) {
                 return;
             }

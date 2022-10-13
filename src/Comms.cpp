@@ -155,6 +155,7 @@ namespace Comms {
 
     void emitPacket(Packet *packet, uint8_t end) {
         //add timestamp to struct
+        Serial.println("sent out IMU packet");
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;
         packet->timestamp[1] = (timestamp >> 8) & 0xFF;
