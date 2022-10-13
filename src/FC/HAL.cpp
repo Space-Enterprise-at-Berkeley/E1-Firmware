@@ -45,7 +45,6 @@ namespace HAL {
 
     void initHAL() {
         // initialize ADC 1
-        // adc1.init(&SPI, 37, 26, 9); // adc.init(&SPI, 37, 25, 999);
         analogReadResolution(12); 
 
         adc1.init(&SPI, 37, 25, 999);
@@ -64,7 +63,7 @@ namespace HAL {
         supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
         // RS-485
-        // pinMode(RS485SwitchPin, OUTPUT);
+        pinMode(RS485SwitchPin, OUTPUT);
 
         // barometer
         bmp388.begin(0x76); // TODO check address

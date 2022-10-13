@@ -26,8 +26,8 @@ uint8_t tocount = 0;
 
 int main() {
     // hardware setup
-    Serial.begin(115200);
-    RS485_SERIAL.begin(115200);
+    Serial.begin(921600);
+    RS485_SERIAL.begin(921600);
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
@@ -50,28 +50,18 @@ int main() {
 
     while(1) {
 
-        // digitalWriteFast(RS485_TX_PIN, HIGH);
-        // delay(2000);
-        // digitalWriteFast(RS485_TX_PIN, LOW);
-        // delay(2000);
-
         // 0: ready to transmit
         if (state == 0) { 
-            // DEBUG("in transmit mode\n");
-            // DEBUG_FLUSH();
+            DEBUG("in transmit mode\n");
+            DEBUG_FLUSH();
             digitalWriteFast(RS485_SW_PIN, HIGH);
-            Comms::Packet capCommand = {.id = 221};
-            Comms::packetAddUint8(&capCommand, capID);
+            Comms::Packet capCommand = {.id = capID};
+            // Comms::packetAddUint8(&capCommand, 222);
             Comms::emitPacket(&capCommand, &RS485_SERIAL);
-            // RS485_SERIAL.write(capCommand.id);
-            // RS485_SERIAL.write(capCommand.len);
-            // RS485_SERIAL.write(capCommand.timestamp, 4);
-            // RS485_SERIAL.write(capCommand.checksum, 2);
-            // RS485_SERIAL.write(capCommand.data, capCommand.len);
-            // RS485_SERIAL.write('\n');
-            // RS485_SERIAL.write("e");
-            // DEBUG("cap command sent\n");
-            // DEBUG_FLUSH();
+
+            DEBUG("packet sent\n");
+            DEBUG_FLUSH();
+
             RS485_SERIAL.flush();
 
             digitalWriteFast(RS485_SW_PIN, LOW); 
@@ -92,21 +82,21 @@ int main() {
                 continue;
             }
             while(RS485_SERIAL.available()) {
-                // DEBUG("READING...\n");
-                // DEBUG_FLUSH();
+                DEBUG("READING...\n");
+                DEBUG_FLUSH();
                 rs485Buffer[cnt] = RS485_SERIAL.read();
-                // DEBUG((uint8_t)rs485Buffer[cnt]);
-                // DEBUG_FLUSH();
-                if(cnt == 0 && rs485Buffer[cnt] != 221) {
+                DEBUG(rs485Buffer[cnt]);
+                DEBUG_FLUSH();
+                if(cnt == 0 && rs485Buffer[cnt] != capID) {
                     break;
                 }
-                // DEBUG("bruh\n");
-                // DEBUG_FLUSH();
+                DEBUG("bruh\n");
+                DEBUG_FLUSH();
                 if(rs485Buffer[cnt] == '\n') {
                     Comms::Packet *packet = (Comms::Packet *)&rs485Buffer;
                     if(Comms::verifyPacket(packet)) {
                         cnt = 0;
-                        DEBUG("lox: ");
+                        DEBUG("sensor read: ");
                         DEBUG(packet->id);
                         DEBUG(" : ");
                         DEBUG(Comms::packetGetFloat(packet, 0));
@@ -117,6 +107,10 @@ int main() {
                         tocount = 0;
                         // DEBUG("packet processed\n");
                         // DEBUG_FLUSH();
+
+                        // Switching cap ID to read other one next
+                        (capID == 221) ? capID = 222: capID = 221;
+
                         break;
                     }
                 }
@@ -125,7 +119,7 @@ int main() {
         }  
 
         if(cnt >= 128) {
-            DEBUG("\nRESETTING LOX BUFFER\n");
+            DEBUG("\nRESETTING BUFFER\n");
             cnt = 0;
             state = 0;
         }

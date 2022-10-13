@@ -205,6 +205,8 @@ namespace Comms {
     // Send packet over hardware serial 
     void emitPacket(Packet *packet, HardwareSerial *serialBus) {
         //add timestamp to struct
+        // DEBUG("Sending over hardware serial\n");
+        // DEBUG_FLUSH();
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;
         packet->timestamp[1] = (timestamp >> 8) & 0xFF;
@@ -223,6 +225,8 @@ namespace Comms {
         serialBus->write(packet->checksum, 2);
         serialBus->write(packet->data, packet->len);
         serialBus->write('\n');
+        // DEBUG("Sent over hardware serial\n");
+        // DEBUG_FLUSH();
     }
 
     bool verifyPacket(Packet *packet) {

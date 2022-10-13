@@ -29,7 +29,7 @@ namespace CapFill {
             digitalWriteFast(&HAL::RS485SwitchPin, HIGH);
             
             Comms::Packet capCommand = {.id = capID};
-            Comms::packetAddUint8(&capCommand, capID);
+            // Comms::packetAddUint8(&capCommand, capID);
             Comms::emitPacket(&capCommand, RS485_SERIAL);
             
             DEBUG("cap command sent\n");
@@ -49,21 +49,23 @@ namespace CapFill {
             DEBUG(".");
             DEBUG_FLUSH();
             timeoutCount++;
-            if (timeoutCount > 100) { 
+            if (timeoutCount > 1) { 
                 // DEBUG("TIMED OUT\n");
                 // DEBUG_FLUSH();
                 state = 0;
                 timeoutCount = 0;
+                cnt = 0;
+                return;
             }
             while(RS485_SERIAL.available()) {
-                // DEBUG("READING...\n");
-                // DEBUG_FLUSH();
+                DEBUG("READING...\n");
+                DEBUG_FLUSH();
                 rs485Buffer[cnt] = RS485_SERIAL.read();
                 // DEBUG((uint8_t)rs485Buffer[cnt]);
                 // DEBUG_FLUSH();
-                if(cnt == 0 && rs485Buffer[cnt] != 221) {
-                    break;
-                }
+                if(cnt == 0 && rs485Buffer[cnt] != capID) {
+                    continue;
+                } 
                 // DEBUG("bruh\n");
                 // DEBUG_FLUSH();
                 if(rs485Buffer[cnt] == '\n') {
@@ -76,7 +78,7 @@ namespace CapFill {
                         DEBUG(Comms::packetGetFloat(packet, 0));
                         DEBUG("\n");
                         DEBUG_FLUSH();
-                        // Comms::emitPacket(packet);
+                        Comms::emitPacket(packet);
                         state = 0; // switch back to transmit since full packet verified
                         timeoutCount = 0;
 
@@ -92,7 +94,7 @@ namespace CapFill {
             }
         }  
 
-        if(cnt >= 128) {
+        if(cnt >= 42) {
             DEBUG("\nRESETTING BUFFER\n");
             cnt = 0;
             state = 0;

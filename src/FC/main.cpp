@@ -68,7 +68,9 @@ int main() {
     // hardware setup
     Serial.begin(115200);
     // RS-485 RX/TX is Serial8 (pins 34, 35)
-    // RS485_SERIAL.begin(115200); // Serial for capfill
+    RS485_SERIAL.begin(921600); // Serial for capfill
+    // RADIO_SERIAL.begin(115200);
+
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
