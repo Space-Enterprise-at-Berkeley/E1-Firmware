@@ -56,6 +56,7 @@
             }
             w25q.initStreamWrite(page, pageAddress);
             for (uint8_t elem: buffer) {
+                w25q.streamWrite(elem);
                 pageAddress++;
                 if (pageAddress > w25q.pageSize - 1) {
                     pageAddress = pageAddress % 256;
@@ -63,8 +64,7 @@
                         full = true;
                     }
                     page++;
-                    w25q.streamWrite(elem);
-
+                    w25q.initStreamWrite(page, pageAddress);
                 }
             }
             w25q.closeStreamWrite();
