@@ -21,6 +21,9 @@
 // #define RS485_SERIAL Serial8
 #define RADIO_SERIAL Serial7
 
+// 0: Ground, 1: Flight
+uint8_t vehicleState = 0; 
+
 Task taskTable[] = {
     {Actuators::stopPressFlowRBV, 0, false},
     {Valves::toggleLoxGemValveTask, 0, false},
@@ -64,6 +67,15 @@ Task taskTable[] = {
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
 
+// Flight/Launch mode enable
+uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){                    
+    vehicleState = Comms::packetGetUint8(&statePacket, 0);
+    // Send confirmation to ground station
+    Comms::Packet tmp = {.id = 29};
+    Comms::packetAddUint8(&tmp, vehicleState);
+    Comms::emitPacket(&tmp);
+}
+
 int main() {
     // hardware setup
     Serial.begin(115200);
@@ -84,6 +96,8 @@ int main() {
     OCHandler::initOCHandler(20);
     GPS::initGPS();
     CapFill::initCapFill();
+
+    Comms::registerCallback(29, setVehicleMode);
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

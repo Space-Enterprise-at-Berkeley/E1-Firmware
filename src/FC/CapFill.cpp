@@ -6,9 +6,9 @@ namespace CapFill {
 
     uint8_t state = 0;
 
-    // LOx Cap packet 221
-    // Fuel Cap packet 222
-    uint8_t capID = 221;
+    // LOx Cap packet 38
+    // Fuel Cap packet 39
+    uint8_t capID = 38;
 
     uint8_t timeoutCount = 0;
     uint8_t cnt = 0;
@@ -55,7 +55,7 @@ namespace CapFill {
                 state = 0;
                 timeoutCount = 0;
                 cnt = 0;
-                capID = (capID == 221) ? 222: 221;
+                capID = (capID == 38) ? 39: 38;
                 return 1 * 1000;
             }
             while(RS485_SERIAL.available()) {
@@ -84,7 +84,7 @@ namespace CapFill {
                         timeoutCount = 0;
 
                         // Switching cap ID to read other one next
-                        capID = (capID == 221) ? 222: 221;
+                        capID = (capID == 38) ? 39: 38;
  
                         // DEBUG("packet processed\n");
                         // DEBUG_FLUSH();

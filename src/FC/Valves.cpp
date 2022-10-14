@@ -12,8 +12,8 @@ namespace Valves {
 
     //TODO fill in with actual GEM pin values
     Valve loxGemValve = {.valveID = 8,
-                      .statePacketID = 52,
-                      .statusPacketID = 28,
+                      .statePacketID = 31,
+                      .statusPacketID = 11, // voltage/current
                       .pin = HAL::valve1Pin, 
                       .expanderPin = 255,
                       .voltage = 0.0,
@@ -23,8 +23,8 @@ namespace Valves {
                       .muxChannel = &HAL::muxChan7};
     
     Valve fuelGemValve = {.valveID = 9,
-                  .statePacketID = 53,
-                  .statusPacketID = 29,
+                  .statePacketID = 32,
+                  .statusPacketID = 12, // voltage/current
                   .pin = HAL::valve2Pin, 
                   .expanderPin = 255,
                   .voltage = 0.0,

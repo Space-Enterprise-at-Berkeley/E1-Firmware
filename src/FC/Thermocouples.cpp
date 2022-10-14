@@ -73,7 +73,7 @@ namespace Thermocouples {
     }
     uint32_t tc1Sample() { 
         // DEBUG("TC1 Reading: ");
-        // DEBUG(engineTC0Value);
+        // DEBUG(engineTC1Value);
         // DEBUG("\n");
         // DEBUG_FLUSH();
         // return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
@@ -81,14 +81,18 @@ namespace Thermocouples {
     }
     uint32_t tc2Sample() {
         // DEBUG("TC2 Reading: ");
-        // DEBUG(engineTC0Value);
+        // DEBUG(engineTC2Value);
         // DEBUG("\n");
         // DEBUG_FLUSH();
         // return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
         return 0;
     }
     uint32_t tc3Sample() { 
-        // return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
+        // DEBUG("TC3 Reading: ");
+        // DEBUG(engineTC3Value);
+        // DEBUG("\n");
+        // DEBUG_FLUSH();
+        // return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC2ROC); 
         return 0;
     }
 
