@@ -15,8 +15,6 @@ Task taskTable[] = {
     {Automation::flow, 0, false},
     {Automation::abortFlow, 0, false},
     {Automation::checkIgniter, 0},
-    {Automation::checkForTCAbort, 0, false},
-    {Automation::checkForLCAbort, 0, false},
 
     // power
     {Power::battSample, 0},
@@ -49,7 +47,7 @@ int main() {
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
-    Automation::initAutomation(&taskTable[0], &taskTable[1], &taskTable[3], &taskTable[4]);
+    Automation::initAutomation(&taskTable[0], &taskTable[1]);
     HAL::initHAL();
     Comms::initComms();
     Power::initPower();

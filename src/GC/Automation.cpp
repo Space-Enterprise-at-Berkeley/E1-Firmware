@@ -32,15 +32,12 @@ namespace Automation {
     Comms::Packet openLoxGemsPacket = {.id = 126};
     Comms::Packet openFuelGemsPacket = {.id = 127};
 
-    void initAutomation(Task *flowTask, Task *abortFlowTask, Task *checkForTCAbortTask, Task *checkForLCAbortTask) {
+    void initAutomation(Task *flowTask, Task *abortFlowTask) {
         Automation::flowTask = flowTask;
         Automation::abortFlowTask = abortFlowTask;
-        Automation::checkForTCAbortTask = checkForTCAbortTask;
-        Automation::checkForLCAbortTask = checkForLCAbortTask;
 
         Comms::registerCallback(150, beginFlow);
         Comms::registerCallback(151, beginManualAbortFlow);
-        Comms::registerCallback(120, readLoadCell);
         Comms::registerCallback(152, handleAutoSettings);
     }
 
@@ -51,34 +48,26 @@ namespace Automation {
             burnTime = Comms::packetGetUint32(&recv, 4);
             igniterEnabled = Comms::packetGetUint8(&recv, 8);
             breakwireEnabled = Comms::packetGetUint8(&recv, 9);
-            thrustEnabled = Comms::packetGetUint8(&recv, 10);
         }
         Comms::Packet tmp = {.id = recv.id};
         Comms::packetAddUint32(&tmp, loxLead);
         Comms::packetAddUint32(&tmp, burnTime);
         Comms::packetAddUint8(&tmp, igniterEnabled);
         Comms::packetAddUint8(&tmp, breakwireEnabled);
-        Comms::packetAddUint8(&tmp, thrustEnabled);
         Comms::emitPacket(&tmp);
     }
 
-    Comms::Packet flowPacket = {.id = 50};
+    Comms::Packet flowPacket = {.id = 80};
     int step = 0;
 
     void beginFlow(Comms::Packet packet, uint8_t ip) {
         if(!flowTask->enabled) {
             step = 0;
-            // PT read rate should be fast for flows, so tell FC to change it
-            Comms::Packet fastPTReadPacket = {.id = 140};
-            Comms::packetAddUint8(&fastPTReadPacket, 1);
-            Comms::emitPacket(&fastPTReadPacket, 42);
             //reset values
             igniterTriggered = false;
             breakwireBroken = false;
             flowTask->nexttime = micros();
             flowTask->enabled = true;
-            checkForTCAbortTask->enabled = false;
-            checkForLCAbortTask->enabled = false;
         }
     }
     inline void sendFlowStatus(uint8_t status) {
@@ -148,7 +137,6 @@ namespace Automation {
                         && Valves::loxMainValve.current > mainValveCurrentThreshold) {
                     Valves::openFuelMainValve();
                     //begin checking thermocouple values
-                    checkForTCAbortTask->enabled = true;
                     sendFlowStatus(STATE_OPEN_FUEL_VALVE);
                     step++;
                     return ventTime;
@@ -172,7 +160,7 @@ namespace Automation {
                 }
 
             case 6: // enable Load Cell abort
-                checkForLCAbortTask->enabled = true;
+                // checkForLCAbortTask->enabled = true;
                 //begin checking loadcell values
                 sendFlowStatus(STATE_BEGIN_THRUST_CHECK);
                 step++;
@@ -188,9 +176,6 @@ namespace Automation {
 
             case 8: // step 8 (arm main to close valves)
                 Valves::openArmValve(); // reopen arm to close valves
-                
-                checkForTCAbortTask->enabled = false;
-                checkForLCAbortTask->enabled = false;
                 sendFlowStatus(STATE_CLOSE_FUEL_VALVE);
                 sendFlowStatus(STATE_CLOSE_LOX_VALVE);
                 step++;
@@ -211,6 +196,7 @@ namespace Automation {
 
     void beginManualAbortFlow(Comms::Packet packet, uint8_t ip) {
         // beginAbortFlow();
+        flowTask->enabled = false;
         Valves::deactivateIgniter();
         // Send packet to FC to open Lox Gems
         Comms::packetAddUint8(&openLoxGemsPacket, 1);
@@ -227,8 +213,6 @@ namespace Automation {
             flowTask->enabled = false;
             abortFlowTask->nexttime = micros() + 1500; // 1500 is a dirty hack to make sure flow status gets recorded. Ask @andy
             abortFlowTask->enabled = true;
-            checkForTCAbortTask->enabled = false;
-            checkForLCAbortTask->enabled = false;
         }
     }
 
@@ -276,109 +260,6 @@ namespace Automation {
         igniterTriggered = Valves::igniter.current > igniterTriggerThreshold || igniterTriggered;
         breakwireBroken = Valves::breakWire.voltage < breakWireThreshold || breakwireBroken;
         return Valves::igniter.period; //TODO determine appropriate sampling time
-    }
-
-    void readLoadCell(Comms::Packet packet, uint8_t ip) {
-        float loadCellSum = Comms::packetGetFloat(&packet, 8);
-        if(ip == 11) {
-            loadCell12Value = loadCellSum;
-            lastLoadCell12Time = millis();
-        } else if(ip == 12) {
-            loadCell34Value = loadCellSum;
-            lastLoadCell34Time = millis();
-        }
-        // DEBUG(loadCell12Value);
-        // DEBUG("\n");
-    }
-
-    uint32_t checkForTCAbort() {
-        //check thermocouple temperatures to be below a threshold
-        float maxThermocoupleValue = max(max(Thermocouples::engineTC0Value, Thermocouples::engineTC1Value), 
-                                        max(Thermocouples::engineTC2Value, Thermocouples::engineTC3Value));
-
-        // DEBUG("LOAD CELL VALUE: ");
-        // DEBUG(loadCell12Value);
-        // DEBUG(" TC VALUE: ");
-        // DEBUG(Thermocouples::engineTC3Value);
-        // DEBUG(" TC ROC: ");
-        // DEBUG(Thermocouples::engineTC3ROC);
-        // DEBUG(" Hysteresis TC3: ");
-        // DEBUG(hysteresisValues[4]);
-        // DEBUG("\n");
-
-        if (maxThermocoupleValue > thermocoupleAbsoluteThreshold) {
-            hysteresisValues[0] += 1;
-            if (hysteresisValues[0] >= hysteresisThreshold) {
-                sendFlowStatus(STATE_ABORT_ENGINE_TEMP);
-                beginAbortFlow();
-            }
-        } else {
-            hysteresisValues[0] = 0;
-        }
-
-        if (Thermocouples::engineTC0Value > thermocoupleThreshold && Thermocouples::engineTC0ROC > thermocoupleRateThreshold) {
-            hysteresisValues[1] += 1;
-            if (hysteresisValues[1] >= hysteresisThreshold) {
-                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
-                beginAbortFlow();
-            }
-        } else {
-            hysteresisValues[1] = 0;
-        }
-
-        if (Thermocouples::engineTC1Value > thermocoupleThreshold && Thermocouples::engineTC1ROC > thermocoupleRateThreshold) {
-            hysteresisValues[2] += 1;
-            if (hysteresisValues[2] >= hysteresisThreshold) {
-                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
-                beginAbortFlow();
-            }
-        } else {
-            hysteresisValues[2] = 0;
-        }
-
-        if (Thermocouples::engineTC2Value > thermocoupleThreshold && Thermocouples::engineTC2ROC > thermocoupleRateThreshold) {
-            hysteresisValues[3] += 1;
-            if (hysteresisValues[3] >= hysteresisThreshold) {
-                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
-                beginAbortFlow();
-            }
-        } else {
-            hysteresisValues[3] = 0;
-        }
-
-        if (Thermocouples::engineTC3Value > thermocoupleThreshold && Thermocouples::engineTC3ROC > thermocoupleRateThreshold) {
-            hysteresisValues[4] += 1;
-            if (hysteresisValues[4] >= hysteresisThreshold) {
-                sendFlowStatus(STATE_ABORT_ENGINE_TEMP_ROC);
-                beginAbortFlow();
-            }
-        } else {
-            hysteresisValues[4] = 0;
-        }
-
-        return Thermocouples::tcUpdatePeriod; //TODO determine appropriate sampling time
-    }
-
-    uint32_t checkForLCAbort() {
-        DEBUG(loadCell12Value+loadCell34Value);
-        DEBUG(" : ");
-        DEBUG(millis() - lastLoadCell12Time);
-        DEBUG(" : ");
-        DEBUG(millis() - lastLoadCell34Time);
-        DEBUG(" : ");
-        DEBUG(thrustEnabled);
-        DEBUG("\n");
-        if (loadCell12Value+loadCell34Value < loadCellThreshold && millis() - lastLoadCell12Time < 25 && millis() - lastLoadCell34Time < 25 && thrustEnabled) {
-            hysteresisValues[5] += 1;
-            if (hysteresisValues[5] >= hysteresisThreshold) {
-                sendFlowStatus(STATE_ABORT_THRUST);
-                beginAbortFlow();
-            }
-        } else {
-            hysteresisValues[5] = 0;
-        }
-
-        return 12500; // load cells are sampled at 80 hz
     }
 
 };

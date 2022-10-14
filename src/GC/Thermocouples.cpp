@@ -2,7 +2,7 @@
 
 namespace Thermocouples {
     uint32_t tcUpdatePeriod = 100 * 1000;
-    Comms::Packet tcPacket = {.id = 20};
+    Comms::Packet tcPacket = {.id = 56};
 
     float engineTC0Value;
     float engineTC1Value;
@@ -64,16 +64,16 @@ namespace Thermocouples {
     }
 
     uint32_t tc0Sample() {
-        return tcSample(&HAL::tcAmp0, 20, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
+        return tcSample(&HAL::tcAmp0, 56, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
     }
     uint32_t tc1Sample() { 
-        return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
+        return tcSample(&HAL::tcAmp1, 57, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
     }
     uint32_t tc2Sample() {
-        return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
+        return tcSample(&HAL::tcAmp2, 58, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
     }
     uint32_t tc3Sample() { 
-        return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
+        return tcSample(&HAL::tcAmp3, 59, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
     }
 
 };

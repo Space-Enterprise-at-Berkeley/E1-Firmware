@@ -8,8 +8,8 @@ namespace Valves {
 
     // info for each individual valve
     Valve armValve = {.valveID = 0,
-                      .statePacketID = 40,
-                      .statusPacketID = 30,
+                      .statePacketID = 70,
+                      .statusPacketID = 60,
                       .pin = 255,
                       .expanderPin = HAL::chan11Pin,
                       .voltage = 0.0,
@@ -19,8 +19,8 @@ namespace Valves {
                       .ina = &HAL::chan11};
 
     Valve igniter = {.valveID = 1,
-                      .statePacketID = 41,
-                      .statusPacketID = 31,
+                      .statePacketID = 71,
+                      .statusPacketID = 61,
                       .pin = 255,
                       .expanderPin = HAL::chan7Pin,
                       .voltage = 0.0,
@@ -30,8 +30,8 @@ namespace Valves {
                       .ina = &HAL::chan7};
     
     Valve loxMainValve = {.valveID = 2,
-                      .statePacketID = 42,
-                      .statusPacketID = 32,
+                      .statePacketID = 72,
+                      .statusPacketID = 62,
                       .pin = 255,
                       .expanderPin = HAL::chan8Pin,
                       .voltage = 0.0,
@@ -41,8 +41,8 @@ namespace Valves {
                       .ina = &HAL::chan8};
 
     Valve fuelMainValve = {.valveID = 3,
-                      .statePacketID = 43,
-                      .statusPacketID = 33,
+                      .statePacketID = 73,
+                      .statusPacketID = 63,
                       .pin = 255,
                       .expanderPin = HAL::chan10Pin,
                       .voltage = 0.0,
@@ -53,7 +53,7 @@ namespace Valves {
 
     Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                       .statePacketID = 0,
-                      .statusPacketID = 34,
+                      .statusPacketID = 64,
                       //.pin = HAL::chan3Pin,
                       .pin = 255, 
                       .expanderPin = HAL::chan9Pin,
@@ -65,8 +65,8 @@ namespace Valves {
                       //.ina = &HAL::chan3};
     
     Valve RQD = {.valveID = 5, // actuated from the IO Expander
-                .statePacketID = 45,
-                .statusPacketID = 35,
+                .statePacketID = 75,
+                .statusPacketID = 65,
                 .pin = HAL::chan4Pin, // dont use pin
                 .expanderPin = 255,
                 .voltage = 0.0,
@@ -76,8 +76,8 @@ namespace Valves {
                 .ina = &HAL::chan4};
 
     Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
-                      .statePacketID = 46,
-                      .statusPacketID = 36,
+                      .statePacketID = 76,
+                      .statusPacketID = 66,
                       .pin = HAL::chan5Pin, // dont use pin
                       .expanderPin = 255,
                       .voltage = 0.0,
@@ -87,8 +87,8 @@ namespace Valves {
                       .ina = &HAL::chan5};
 
     Valve igniterEnableRelay = {.valveID = 4, // actuated from the IO Expander
-                      .statePacketID = 48,
-                      .statusPacketID = 38,
+                      .statePacketID = 77,
+                      .statusPacketID = 67,
                       .pin = HAL::chan2Pin,
                       .expanderPin = 255,
                       .voltage = 0.0,
@@ -98,7 +98,7 @@ namespace Valves {
                       .ina = &HAL::chan2};
 
     void sendStatusPacket() {
-        Comms::Packet tmp = {.id = 49};
+        Comms::Packet tmp = {.id = 79};
         Comms::packetAddUint16(&tmp, valveStates);
         Comms::emitPacket(&tmp);
     }
@@ -232,7 +232,7 @@ namespace Valves {
         Comms::registerCallback(135, RQDPacketHandler);
         Comms::registerCallback(136, mainValveVentPacketHandler);
 
-        Comms::registerCallback(138, igniterEnableRelayPacketHandler);
+        Comms::registerCallback(137, igniterEnableRelayPacketHandler);
     }
 
 };
