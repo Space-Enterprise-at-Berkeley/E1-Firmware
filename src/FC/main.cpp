@@ -12,10 +12,11 @@
 
 
 Task taskTable[] = {
-    // {GPS::latLongSample, 0},
+    {GPS::latLongSample, 0},
     {IMU::sampleIMU, 0},
     // {Barometer::sampleBarometer, 0},
     // {Apogee::checkForApogee, 0, false}
+    {BlackBox::sendMetadataPacket, 0},
 };
 
 
@@ -26,9 +27,30 @@ int main() {
     // hardware setup
     Serial.begin(115200);
     Serial.println("hola");
+    
+    #ifdef ERASE_BB
+    while (!Serial); {}
+    Serial.printf("Init'ing black box\n");
+    BlackBox::init(10);
+    Serial.printf("Erasing black box... \n");
+    BlackBox::resetAll();
+    Serial.printf("done!\n");
+    while(1);
+    #endif
+
+    #ifdef DUMP_BB
+    while (!Serial) {}
+    int maxDumpPages = 50; //set to -1 to dump all, otherwise between 0 and 65536
+    Serial.printf("Init'ing black box\n");
+    BlackBox::init(10);
+    Serial.printf("starting dump:\n");
+    BlackBox::dump(maxDumpPages);
+    while(1);
+    #endif
+
     Comms::initComms();
     IMU::init();
-    // GPS::init();
+    GPS::init();
     BlackBox::init(10);
     
     #ifdef DEBUG_MODE

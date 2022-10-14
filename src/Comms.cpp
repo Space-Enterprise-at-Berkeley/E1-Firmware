@@ -13,6 +13,8 @@ namespace Comms {
         Udp.begin(port);
         #endif
 
+        Serial7.begin(115200);
+
         registerCallback(0, sendFirmwareVersionPacket);
     }
 
@@ -150,12 +152,11 @@ namespace Comms {
      */
     void emitPacket(Packet *packet) {
         emitPacket(packet, 69);
-        emitPacket(packet, 70);
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
         //add timestamp to struct
-        Serial.println("sent out IMU packet");
+        Serial.printf("sent out packet with id %d\n", packet->id);
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;
         packet->timestamp[1] = (timestamp >> 8) & 0xFF;
@@ -170,6 +171,22 @@ namespace Comms {
         for (commFunction func : emitterList) {
             func(*packet, Udp.remoteIP()[3]);
         }
+
+        Serial7.write(packet->id);
+        Serial7.write(packet->len);
+        Serial7.write(packet->timestamp, 4);
+        Serial7.write(packet->checksum, 2);
+        Serial7.write(packet->data, packet->len);
+        Serial7.write(13);
+        Serial7.write(10);
+        Serial7.write(10);
+
+        // Serial.write(packet->id);
+        // Serial.write(packet->len);
+        // Serial.write(packet->timestamp, 4);
+        // Serial.write(packet->checksum, 2);
+        // Serial.write(packet->data, packet->len);
+        // Serial.write('\n');
 
         #ifdef ETH
         Udp.beginPacket(IPAddress(10, 0, 0, end), port);

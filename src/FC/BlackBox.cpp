@@ -1,12 +1,15 @@
 #include "BlackBox.h"
     namespace BlackBox {
-        uint8_t lastElement = 0;
-        uint8_t page = 0;
-        byte pageAddress = 0;
+        int lastElement = 0;
+        int page = 0;
+        int pageAddress = 0;
         bool full = false;
         W25Q w25q;
         const int bufferSize = 20*(64 + 2);
-        volatile uint8_t buffer[bufferSize]; 
+        uint8_t buffer[bufferSize]; 
+        Comms::Packet metadataPacket = {.id = 55};
+
+        uint32_t updatePeriod = 1000 * 1000;
 
         /*******************************Public Methods******************************/
 
@@ -17,12 +20,9 @@
         *****************************************************************************/
 
         void init(int FLASH_SS) {
-            DEBUG("trying to init black box\n");
             w25q.init(FLASH_SS);
             clearBuffer();
             Comms::registerEmitter(writeToBuffer);
-
-            DEBUG("init'ed black box!\n");
         }
 
         /*****************************************************************************
@@ -37,15 +37,29 @@
         * buffer is writen onto W25Q. Amortized O(n).
         *****************************************************************************/
         void writeToBuffer(Comms::Packet packet, uint8_t ip) {
-            Serial.printf("adding packet to buffer, %d\n", lastElement);
-            if(lastElement + packet.len + 8 >= bufferSize) {
-                writeBufferToBB();
-                clearBuffer();
-                lastElement = 0;
-            } 
-            memcpy(buffer + lastElement, &packet, packet.len + 8);
-            lastElement += packet.len + 8;
+
+            memcpy(buffer, &packet, 8 + packet.len);
+
+            writeBufferToBB(8 + packet.len, packet.id);
+
+            // Serial.printf("adding packet to buffer, %d\n", lastElement);
+            // if(lastElement + packet.len + 8 >= bufferSize) {
+            //     Serial.printf("Writing buffer to BB\n");
+            //     writeBufferToBB();
+            //     clearBuffer();
+            //     lastElement = 0;
+            // } 
+            // memcpy(buffer + lastElement, &packet, packet.len + 8);
+            // lastElement += packet.len + 8;
             
+        }
+
+        int sendMetadataPacket() {
+            metadataPacket.len = 0;
+            Comms::packetAddUint32(&metadataPacket, page);
+            Comms::emitPacket(&metadataPacket);
+
+            return updatePeriod;
         }
         /*******************************Private Methods******************************/
 
@@ -55,22 +69,29 @@
         * Description @brief if W25Q is not full: opens reader, writes buffer
         *  into chip and closes reader   
         *****************************************************************************/
-        void writeBufferToBB() {
+        void writeBufferToBB(int len, int packetid) {
             DEBUG("writing out buffer to black box\n");
             if (full) {
                 return;
             }
             w25q.initStreamWrite(page, pageAddress);
-            for (uint8_t elem: buffer) {
+            // Serial.printf("got packet with total len %d\n", len);
+            for (int i = 0; i < len; i++) {
+                uint8_t elem = buffer[i];
+                if (elem == 0xFF) {
+                    Serial.printf("0xff found with packetid %d\n", packetid);
+                }
                 w25q.streamWrite(elem);
                 pageAddress++;
-                if (pageAddress > w25q.pageSize - 1) {
-                    pageAddress = pageAddress % 256;
+                if (pageAddress >= w25q.pageSize) {
+                    // Serial.printf("BEFORE: changed page to page %d, pageAddress = %d\n", page, pageAddress);
+                    pageAddress = 0;
                     if (page > 65536) {
                         full = true;
                     }
                     page++;
                     w25q.initStreamWrite(page, pageAddress);
+                    // Serial.printf("AFTER:  changed page to page %d, pageAddress = %d\n", page, pageAddress);
                 }
             }
             w25q.closeStreamWrite();
@@ -84,6 +105,33 @@
             memset(buffer, 0, sizeof(buffer));
         }
 
+        void dump(int maxDumpPages) {
+
+            if (maxDumpPages == -1) maxDumpPages = w25q.numPages;
+            int maxPages = maxDumpPages < w25q.numPages ? maxDumpPages : w25q.numPages;
+
+
+            page = 0;
+            while (page < maxPages) {
+                pageAddress = 0;
+                w25q.initStreamRead(page, pageAddress);
+                while (pageAddress < w25q.pageSize) {
+                    #ifdef DUMP_BINARY
+                    Serial.write(w25q.streamRead());
+                    #endif
+                    #ifdef DUMP_HEX
+                    Serial.printf("%x ", w25q.streamRead());
+                    #endif
+                    pageAddress ++;
+                }
+                w25q.closeStreamRead();
+                page++;
+                #ifdef DUMP_HEX 
+                Serial.printf("\n");
+                #endif
+            }
+        }
+
 
         /*******************************Testing Methods******************************/
         /*****************************************************************************
@@ -95,4 +143,6 @@
             clearBuffer();
             w25q.chipErase();
         }
+
+
     }
