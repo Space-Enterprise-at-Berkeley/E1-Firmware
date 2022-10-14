@@ -12,18 +12,19 @@
 
 #define STATUS_LED 34
 #define TEMP_PIN 1
-#define EN_485 20
-#define TE_485 19
+#define EN_485 20 // switch between transmit and receive
+#define TE_485 19 // terminate enable
 
 FDC2214 _capSens;
 TMP236 _tempSens = TMP236(TEMP_PIN);
 
+char rs485Buffer[sizeof(Comms::Packet)];
+int cnt = 0;
+
 void setup()
 {
   Serial.begin(115200);
-  Serial1.begin(115200);
-  
-  // Comms::initComms();
+  Serial1.begin(921600);
 
   Wire.begin();
   _capSens = FDC2214();
@@ -35,8 +36,12 @@ void setup()
   pinMode(TE_485, OUTPUT);
   pinMode(STATUS_LED, OUTPUT);
 
-  digitalWrite(EN_485, HIGH);
+  digitalWrite(EN_485, LOW); // put in receive mode by default
+  #ifdef FUEL
   digitalWrite(TE_485, HIGH);
+  #else
+  digitalWrite(TE_485, LOW);
+  #endif
   digitalWrite(STATUS_LED, LOW);
 }
 
@@ -51,6 +56,46 @@ Comms::Packet capPacket = {.id = PACKET_ID};
 
 void loop()
 {
+  while(Serial1.available()) {
+    rs485Buffer[cnt] = Serial1.read();
+    // DEBUG((uint8_t)rs485Buffer[cnt]);
+    // DEBUG(" ");
+    // DEBUG_FLUSH();
+    if(cnt == 0 && rs485Buffer[cnt] != PACKET_ID) {
+      break;
+    }
+
+    if(rs485Buffer[cnt] == '\n') {
+      DEBUG("\n");
+      for(int i = 0; i < cnt; i++) {
+        DEBUG((uint8_t) rs485Buffer[i]);
+        DEBUG(" ");
+      }
+      DEBUG("\n");
+      DEBUG_FLUSH();
+      Comms::Packet *packet = (Comms::Packet *)&rs485Buffer;
+      if(Comms::verifyPacket(packet)) {
+        cnt = 0;
+        DEBUG("sample command received\n");
+
+        // Comms::emitPacket(&capPacket, &Serial);
+        digitalWrite(EN_485, HIGH);
+        Comms::emitPacket(&capPacket, &Serial1);
+        Serial1.flush();
+        digitalWrite(EN_485, LOW);
+        break;
+      }
+    }
+    cnt++;
+
+    if(cnt >= 20) {
+      cnt = 0;
+    }
+  }
+
+
+
+
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= interval)
@@ -69,8 +114,6 @@ void loop()
 
     float tempValue = _tempSens.readTemperature();
 
-    Serial.println(capValue);
-
     capPacket.len = 0;
     Comms::packetAddFloat(&capPacket, capValue);
     Comms::packetAddFloat(&capPacket, avgCap);
@@ -86,22 +129,5 @@ void loop()
     uint16_t checksum = Comms::computePacketChecksum(&capPacket);
     capPacket.checksum[0] = checksum & 0xFF;
     capPacket.checksum[1] = checksum >> 8;
-
-    // Send over serial, but disable if in debug mode
-    Serial.write(capPacket.id);
-    Serial.write(capPacket.len);
-    Serial.write(capPacket.timestamp, 4);
-    Serial.write(capPacket.checksum, 2);
-    Serial.write(capPacket.data, capPacket.len);
-    Serial.write('\n');
-    Serial.flush();
-
-    Serial1.write(capPacket.id);
-    Serial1.write(capPacket.len);
-    Serial1.write(capPacket.timestamp, 4);
-    Serial1.write(capPacket.checksum, 2);
-    Serial1.write(capPacket.data, capPacket.len);
-    Serial1.write('\n');
-    Serial1.flush();
   }
 }

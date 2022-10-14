@@ -58,6 +58,9 @@ namespace Comms {
      * @param packet The packet in which the data is stored.
      */
     void emitPacket(Packet *packet);
+    void emitPacket(Packet *packet, HardwareSerial *serialBus);
+
+    bool verifyPacket(Packet *packet);
 
     uint16_t computePacketChecksum(Packet *packet);
 };
