@@ -3,6 +3,7 @@
 #include "Comms.h"
 #include <Common.h>
 #include "HAL.h"
+#include <Arduino.h>
 
 namespace CapFill {
 

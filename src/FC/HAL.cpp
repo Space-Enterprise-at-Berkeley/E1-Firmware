@@ -62,9 +62,6 @@ namespace HAL {
         // Only INA219 on FCv3 is on 8V supply, address 0x44
         supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
-        // RS-485
-        pinMode(RS485SwitchPin, OUTPUT);
-
         // barometer
         bmp388.begin(0x76); // TODO check address
 
@@ -81,6 +78,10 @@ namespace HAL {
             DEBUG("\n");
         }
         
+        // RS-485
+        pinMode(RS485SwitchPin, OUTPUT);
+        RS485_SERIAL.begin(921600); // Serial for capfill
+
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
         pinMode(chute2Pin, OUTPUT);

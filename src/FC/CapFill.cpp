@@ -14,11 +14,9 @@ namespace CapFill {
     uint8_t timeoutCount = 0;
     uint8_t cnt = 0;
 
-
-
     void initCapFill() {
         // Set pin to receive
-        digitalWriteFast(&HAL::RS485SwitchPin, LOW); 
+        digitalWriteFast(HAL::RS485SwitchPin, LOW); 
     }
 
     // Read from 1 cap fill sensor at a time
@@ -26,7 +24,7 @@ namespace CapFill {
 
         // In Transmit Mode
         if (state == 0) { 
-            digitalWriteFast(&HAL::RS485SwitchPin, HIGH);
+            digitalWriteFast(HAL::RS485SwitchPin, HIGH);
             
             Comms::Packet capCommand = {.id = capID};
             // Comms::packetAddUint8(&capCommand, capID);
@@ -37,7 +35,7 @@ namespace CapFill {
 
             RS485_SERIAL.flush();
 
-            digitalWriteFast(&HAL::RS485SwitchPin, LOW); 
+            digitalWriteFast(HAL::RS485SwitchPin, LOW); 
             
             DEBUG("cap set to receive\n");
             DEBUG_FLUSH();
@@ -48,15 +46,15 @@ namespace CapFill {
         if (state == 1) { 
             DEBUG(".");
             DEBUG_FLUSH();
-            timeoutCount++;
-            if (timeoutCount > 1) { 
-                // DEBUG("TIMED OUT\n");
-                // DEBUG_FLUSH();
-                state = 0;
-                timeoutCount = 0;
-                cnt = 0;
-                return;
-            }
+            // timeoutCount++;
+            // if (timeoutCount > 1) { 
+            //     DEBUG("TIMED OUT\n");
+            //     DEBUG_FLUSH();
+            //     state = 0;
+            //     timeoutCount = 0;
+            //     cnt = 0;
+            //     return;
+            // }
             while(RS485_SERIAL.available()) {
                 DEBUG("READING...\n");
                 DEBUG_FLUSH();

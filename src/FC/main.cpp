@@ -18,7 +18,7 @@
 #include <Wire.h>
 #include <SPI.h>
 
-#define RS485_SERIAL Serial8
+// #define RS485_SERIAL Serial8
 #define RADIO_SERIAL Serial7
 
 Task taskTable[] = {
@@ -68,7 +68,7 @@ int main() {
     // hardware setup
     Serial.begin(115200);
     // RS-485 RX/TX is Serial8 (pins 34, 35)
-    RS485_SERIAL.begin(921600); // Serial for capfill
+    // RS485_SERIAL.begin(921600); // Serial for capfill
     // RADIO_SERIAL.begin(115200);
 
     #ifdef DEBUG_MODE

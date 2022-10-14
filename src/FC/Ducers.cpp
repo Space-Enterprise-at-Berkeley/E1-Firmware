@@ -46,6 +46,8 @@ namespace Ducers {
         fuelInjectorPTValue = interpolate1000(HAL::adc1.readChannelOTF(0)); // read channel 6, reset mux to channel 1
         pressurantPTValue = interpolate5000(HAL::adc1.readChannelOTF(1));
 
+        DEBUG("Read all PTs\n");
+        DEBUG_FLUSH();
 
         // emit a packet with data
         ptPacket.len = 0;
@@ -59,6 +61,9 @@ namespace Ducers {
 
         Comms::emitPacket(&ptPacket);
         // return the next execution time
+        DEBUG("PT Packet Sent\n");
+        DEBUG_FLUSH();
+
         return ptUpdatePeriod;
     }
 
