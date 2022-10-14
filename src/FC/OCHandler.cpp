@@ -27,7 +27,7 @@ namespace OCHandler {
         attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
     }
 
-    Comms::Packet ocPacket = {.id = 11};
+    Comms::Packet ocPacket = {.id = 40};
     void OCInterrupt() {
         for (int i = 0; i < 14; i++) {
             if (ioOCExpander.digitalRead(i)) {

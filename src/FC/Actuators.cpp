@@ -6,7 +6,7 @@ namespace Actuators {
     uint32_t actuatorCheckPeriod = 50 * 1000;
 
     Actuator pressFlowRBV = { .actuatorID = 0,
-                    .statusPacketID = 39,
+                    .statusPacketID = 13,
                     .voltage = 0.0,
                     .current = 0.0,
                     .period = 100 * 1000,
