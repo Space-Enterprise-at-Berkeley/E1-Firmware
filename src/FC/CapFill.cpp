@@ -3,7 +3,6 @@
 namespace CapFill {
 
     char rs485Buffer[sizeof(Comms::Packet)];
-    int rs485BufferCnt = 0;
 
     uint8_t state = 0;
 
@@ -13,6 +12,8 @@ namespace CapFill {
 
     uint8_t timeoutCount = 0;
     uint8_t cnt = 0;
+
+
 
     void initCapFill() {
         // Set pin to receive
@@ -28,7 +29,7 @@ namespace CapFill {
             
             Comms::Packet capCommand = {.id = capID};
             // Comms::packetAddUint8(&capCommand, capID);
-            Comms::emitPacket(&capCommand, RS485_SERIAL);
+            Comms::emitPacket(&capCommand, &RS485_SERIAL);
             
             DEBUG("cap command sent\n");
             DEBUG_FLUSH();
@@ -41,20 +42,22 @@ namespace CapFill {
             DEBUG_FLUSH();
             
             state = 1;
+            return 10 * 1000;
         }
 
         if (state == 1) { 
             DEBUG(".");
             DEBUG_FLUSH();
-            // timeoutCount++;
-            // if (timeoutCount > 1) { 
-            //     DEBUG("TIMED OUT\n");
-            //     DEBUG_FLUSH();
-            //     state = 0;
-            //     timeoutCount = 0;
-            //     cnt = 0;
-            //     return;
-            // }
+            timeoutCount++;
+            if (timeoutCount > 1) { 
+                DEBUG("TIMED OUT\n");
+                DEBUG_FLUSH();
+                state = 0;
+                timeoutCount = 0;
+                cnt = 0;
+                capID = (capID == 221) ? 222: 221;
+                return 1 * 1000;
+            }
             while(RS485_SERIAL.available()) {
                 DEBUG("READING...\n");
                 DEBUG_FLUSH();
@@ -81,7 +84,7 @@ namespace CapFill {
                         timeoutCount = 0;
 
                         // Switching cap ID to read other one next
-                        (capID == 221) ? capID = 222: capID = 221;
+                        capID = (capID == 221) ? 222: 221;
  
                         // DEBUG("packet processed\n");
                         // DEBUG_FLUSH();
@@ -98,7 +101,7 @@ namespace CapFill {
             state = 0;
         }
 
-        return 100 * 1000;  
+        return 50 * 1000;  
 
     }
 
