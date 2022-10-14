@@ -6,19 +6,19 @@ namespace Heaters {
     uint32_t heaterCheckPeriod = 50 * 1000;
 
     // TODO: set correct telem packet IDs
-    Comms::Packet ctl12vChan1Packet = {.id = 0};
+    Comms::Packet ctl12vChan1Packet = {.id = 100};
     float ctl12vChan1Voltage = 0.0;
     float ctl12vChan1Current = 0.0;
 
-    Comms::Packet ctl12vChan2Packet = {.id = 0};
+    Comms::Packet ctl12vChan2Packet = {.id = 101};
     float ctl12vChan2Voltage = 0.0;
     float ctl12vChan2Current = 0.0;
 
-    Comms::Packet ctl24vChan1Packet = {.id = 0};
+    Comms::Packet ctl24vChan1Packet = {.id = 102};
     float ctl24vChan1Voltage = 0.0;
     float ctl24vChan1Current = 0.0;
 
-    Comms::Packet ctl24vChan2Packet = {.id = 0};
+    Comms::Packet ctl24vChan2Packet = {.id = 103};
     float ctl24vChan2Voltage = 0.0;
     float ctl24vChan2Current = 0.0;
 

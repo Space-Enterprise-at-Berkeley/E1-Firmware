@@ -26,9 +26,9 @@ namespace Thermocouples {
         return tcUpdatePeriod;
     }
 
-    uint32_t tc0Sample() { return tcSample(&HAL::tcAmp0, 110, &TC0Value); }
-    uint32_t tc1Sample() { return tcSample(&HAL::tcAmp1, 111, &TC1Value); }
-    uint32_t tc2Sample() { return tcSample(&HAL::tcAmp2, 112, &TC2Value); }
-    uint32_t tc3Sample() { return tcSample(&HAL::tcAmp3, 113, &TC3Value); }
+    uint32_t tc0Sample() { return tcSample(&HAL::tcAmp0, 112, &TC0Value); }
+    uint32_t tc1Sample() { return tcSample(&HAL::tcAmp1, 113, &TC1Value); }
+    uint32_t tc2Sample() { return tcSample(&HAL::tcAmp2, 114, &TC2Value); }
+    uint32_t tc3Sample() { return tcSample(&HAL::tcAmp3, 115, &TC3Value); }
 
 };

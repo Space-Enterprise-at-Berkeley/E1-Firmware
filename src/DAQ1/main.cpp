@@ -10,7 +10,6 @@
 Task taskTable[] = {
     // adc
     {&ADC::adcSample, 0},
-    {&ADC::fastADCSample, 0},
 
     // thermocouples
     {&Thermocouples::tc0Sample, 0},

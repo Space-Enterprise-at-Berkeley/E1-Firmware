@@ -2,7 +2,7 @@
 
 namespace ADC {
     uint32_t adcUpdatePeriod = 100 * 1000;
-    Comms::Packet adcPacket = {.id = 101};
+    Comms::Packet adcPacket = {.id = 111};
 
     void initADC() {
     }
@@ -12,31 +12,19 @@ namespace ADC {
         return tmp / 51.7;
     }
 
-    uint32_t fastADCSample() {
-        Comms::Packet tmp = {.id = 121};
-
-        HAL::adc.readChannelOTF(4);
-        Comms::packetAddFloat(&tmp, HAL::adc.readChannelOTF(5));
-        Comms::packetAddFloat(&tmp, HAL::adc.readChannelOTF(6));
-
-        Comms::emitPacket(&tmp);
-
-        return 1 * 1000;
-    }
-
     uint32_t adcSample() {
         // read from all 8 ADC channels in sequence
         HAL::adc.readChannelOTF(0); // switch mux back to channel 0
 
         adcPacket.len = 0;
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(1));
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(2));
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(3));
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(4));
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(5));
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(6));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(1)));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(2)));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(3)));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(4)));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(5)));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(6)));
         Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(7))); // Fuel Dome PT
-        Comms::packetAddFloat(&adcPacket, HAL::adc.readChannelOTF(0));
+        Comms::packetAddFloat(&adcPacket, interpolate1000(HAL::adc.readChannelOTF(0)));
 
         Comms::emitPacket(&adcPacket);
         // return the next execution time
