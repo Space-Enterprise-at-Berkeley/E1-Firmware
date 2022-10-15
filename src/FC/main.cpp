@@ -26,7 +26,8 @@ Task taskTable[] = {
 int main() {
     // hardware setup
     Serial.begin(115200);
-    Serial.println("hola");
+    Serial.println("hola.. delaying 5s..");
+    delay(5000);
     
     #ifdef ERASE_BB
     while (!Serial); {}

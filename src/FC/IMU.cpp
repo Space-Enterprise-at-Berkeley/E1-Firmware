@@ -19,7 +19,7 @@ namespace IMU {
 		auto m = bno055.getVector(BNO055::VECTOR_MAGNETOMETER);
 		auto q = bno055.getQuat();
 
-		float data[10] = { a.x(), a.y(), a.z(), q.x(), q.y(), q.z(), q.w(), m.x(), m.y(), m.z()};
+		float data[10] = {q.w(), q.x(), q.y(), q.z(), a.x(), a.y(), a.z(),  m.x(), m.y(), m.z()};
 		// Serial.println(a.x());
 
 		imuPacket.len = 0;

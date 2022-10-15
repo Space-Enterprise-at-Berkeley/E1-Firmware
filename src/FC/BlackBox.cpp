@@ -3,11 +3,14 @@
         int lastElement = 0;
         int page = 0;
         int pageAddress = 0;
+        
         bool full = false;
-        W25Q w25q;
+        // W25Q w25q;
+        SPIFlash bb(10);
         const int bufferSize = 20*(64 + 2);
         uint8_t buffer[bufferSize]; 
         Comms::Packet metadataPacket = {.id = 55};
+        uint8_t first_byte;
 
         uint32_t updatePeriod = 1000 * 1000;
 
@@ -20,9 +23,13 @@
         *****************************************************************************/
 
         void init(int FLASH_SS) {
-            w25q.init(FLASH_SS);
+            // w25q.init(FLASH_SS);
+            bb.initialize();
             clearBuffer();
-            Comms::registerEmitter(writeToBuffer);
+            if (bb.readByte(0) == 0xFF) {
+                Comms::registerEmitter(writeToBuffer);
+            }
+
         }
 
         /*****************************************************************************
@@ -56,7 +63,8 @@
 
         int sendMetadataPacket() {
             metadataPacket.len = 0;
-            Comms::packetAddUint32(&metadataPacket, page);
+            Comms::packetAddUint32(&metadataPacket, (int) pageAddress / 1000);
+            Comms::packetAddUint8(&metadataPacket, 0);
             Comms::emitPacket(&metadataPacket);
 
             return updatePeriod;
@@ -74,27 +82,37 @@
             if (full) {
                 return;
             }
-            w25q.initStreamWrite(page, pageAddress);
-            // Serial.printf("got packet with total len %d\n", len);
-            for (int i = 0; i < len; i++) {
-                uint8_t elem = buffer[i];
-                if (elem == 0xFF) {
-                    Serial.printf("0xff found with packetid %d\n", packetid);
-                }
-                w25q.streamWrite(elem);
-                pageAddress++;
-                if (pageAddress >= w25q.pageSize) {
-                    // Serial.printf("BEFORE: changed page to page %d, pageAddress = %d\n", page, pageAddress);
-                    pageAddress = 0;
-                    if (page > 65536) {
-                        full = true;
-                    }
-                    page++;
-                    w25q.initStreamWrite(page, pageAddress);
-                    // Serial.printf("AFTER:  changed page to page %d, pageAddress = %d\n", page, pageAddress);
-                }
+            Serial.printf("got packet with total len %d\n", len);
+
+            if ((pageAddress + len > 16000000)) {
+                return;
+            } else {
+                bb.writeBytes(pageAddress, buffer, len);
+                pageAddress += len;
             }
-            w25q.closeStreamWrite();
+
+
+            // w25q.initStreamWrite(page, pageAddress);
+            // // Serial.printf("got packet with total len %d\n", len);
+            // for (int i = 0; i < len; i++) {
+            //     uint8_t elem = buffer[i];
+            //     if (elem == 0xFF) {
+            //         Serial.printf("0xff found with packetid %d\n", packetid);
+            //     }
+            //     w25q.streamWrite(elem);
+            //     pageAddress++;
+            //     if (pageAddress >= w25q.pageSize) {
+            //         // Serial.printf("BEFORE: changed page to page %d, pageAddress = %d\n", page, pageAddress);
+            //         pageAddress = 0;
+            //         if (page > 65536) {
+            //             full = true;
+            //         }
+            //         page++;
+            //         w25q.initStreamWrite(page, pageAddress);
+            //         // Serial.printf("AFTER:  changed page to page %d, pageAddress = %d\n", page, pageAddress);
+            //     }
+            // }
+            // w25q.closeStreamWrite();
         }
         /*****************************************************************************
         * Function: clearBuffer
@@ -107,27 +125,21 @@
 
         void dump(int maxDumpPages) {
 
-            if (maxDumpPages == -1) maxDumpPages = w25q.numPages;
-            int maxPages = maxDumpPages < w25q.numPages ? maxDumpPages : w25q.numPages;
+            if (maxDumpPages == -1) maxDumpPages = 65536;
+            int maxPages = maxDumpPages < 65536 ? maxDumpPages : 65536;
 
 
-            page = 0;
-            while (page < maxPages) {
-                pageAddress = 0;
-                w25q.initStreamRead(page, pageAddress);
-                while (pageAddress < w25q.pageSize) {
-                    #ifdef DUMP_BINARY
-                    Serial.write(w25q.streamRead());
-                    #endif
-                    #ifdef DUMP_HEX
-                    Serial.printf("%x ", w25q.streamRead());
-                    #endif
-                    pageAddress ++;
-                }
-                w25q.closeStreamRead();
-                page++;
+            int ptr = 0;
+            while (ptr < maxPages*256) {
+                #ifdef DUMP_BINARY
+                Serial.write(bb.readByte(ptr));
+                #endif
+                #ifdef DUMP_HEX
+                Serial.printf("%x ", bb.readByte(ptr));
+                #endif
+                ptr++;
                 #ifdef DUMP_HEX 
-                Serial.printf("\n");
+                if (ptr % 256 == 0) Serial.printf("\n\n");
                 #endif
             }
         }
@@ -141,7 +153,9 @@
         *****************************************************************************/
         void resetAll() {
             clearBuffer();
-            w25q.chipErase();
+            // w25q.chipErase();
+            bb.chipErase();
+            while (bb.busy()) {}
         }
 
 

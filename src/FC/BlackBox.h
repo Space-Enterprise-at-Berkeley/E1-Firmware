@@ -1,7 +1,8 @@
 #pragma once
 
-#include <W25Q.h>
+// #include <W25Q.h>
 #include <Comms.h>
+#include <SPIFlash.h>
 
 namespace BlackBox {
 
