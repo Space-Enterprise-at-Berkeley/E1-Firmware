@@ -19,6 +19,7 @@
 namespace HAL {    
     
     #define RS485_SERIAL Serial8
+    // #define RADIO_SERIAL Serial7
 
     extern ADS8167 adc1;
 
@@ -67,9 +68,9 @@ namespace HAL {
     const uint8_t hBridge3Pin2 = 22; 
 
     // These dont work at the moment
-    // extern MCP9600 tcAmp0;
-    // extern MCP9600 tcAmp1;
-    // extern MCP9600 tcAmp2;
+    extern MCP9600 tcAmp0;
+    extern MCP9600 tcAmp1;
+    extern MCP9600 tcAmp2;
     // extern MCP9600 tcAmp3;
 
     extern MuxChannel muxChan0; // Chute1

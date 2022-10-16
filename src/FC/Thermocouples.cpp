@@ -53,7 +53,6 @@ namespace Thermocouples {
         // read from all TCs in sequence
         *value = reading;
 
-        
         tcPacket.id = packetID;
         tcPacket.len = 0;
         Comms::packetAddFloat(&tcPacket, *value);
@@ -64,36 +63,33 @@ namespace Thermocouples {
     }
 
     uint32_t tc0Sample() {
-        // DEBUG("TC0 Reading: ");
-        // DEBUG(engineTC0Value);
-        // DEBUG("\n");
-        // DEBUG_FLUSH();
-        // return tcSample(&HAL::tcAmp0, 20, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
-        return 0;
+        DEBUG("TC0 Reading: ");
+        DEBUG(engineTC0Value);
+        DEBUG("\n");
+        DEBUG_FLUSH();
+        return tcSample(&HAL::tcAmp0, 20, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
     }
     uint32_t tc1Sample() { 
-        // DEBUG("TC1 Reading: ");
-        // DEBUG(engineTC1Value);
-        // DEBUG("\n");
-        // DEBUG_FLUSH();
-        // return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
-        return 0;
+        DEBUG("TC1 Reading: ");
+        DEBUG(engineTC1Value);
+        DEBUG("\n");
+        DEBUG_FLUSH();
+        return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
     }
     uint32_t tc2Sample() {
-        // DEBUG("TC2 Reading: ");
-        // DEBUG(engineTC2Value);
-        // DEBUG("\n");
-        // DEBUG_FLUSH();
-        // return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
-        return 0;
+        DEBUG("TC2 Reading: ");
+        DEBUG(engineTC2Value);
+        DEBUG("\n");
+        DEBUG_FLUSH();
+        return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
     }
-    uint32_t tc3Sample() { 
-        // DEBUG("TC3 Reading: ");
-        // DEBUG(engineTC3Value);
-        // DEBUG("\n");
-        // DEBUG_FLUSH();
-        // return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC2ROC); 
-        return 0;
-    }
+    // uint32_t tc3Sample() { 
+    //     // DEBUG("TC3 Reading: ");
+    //     // DEBUG(engineTC3Value);
+    //     // DEBUG("\n");
+    //     // DEBUG_FLUSH();
+    //     // return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC2ROC); 
+    //     return 0;
+    // }
 
 };

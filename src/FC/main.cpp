@@ -18,9 +18,6 @@
 #include <Wire.h>
 #include <SPI.h>
 
-// #define RS485_SERIAL Serial8
-#define RADIO_SERIAL Serial7
-
 // 0: Ground, 1: Flight
 uint8_t vehicleState = 0; 
 
@@ -33,15 +30,15 @@ Task taskTable[] = {
     {Valves::autoventFuelGemValveTask, 0},
 
     // ducers
-    {Ducers::ptSample, 0},
+    // {Ducers::ptSample, 0},
 
     // power
     {Power::supply8Sample, 0},
 
     // thermocouples
-    // {Thermocouples::tc0Sample, 0},
-    // {Thermocouples::tc1Sample, 0},
-    // {Thermocouples::tc2Sample, 0},
+    {Thermocouples::tc0Sample, 0},
+    {Thermocouples::tc1Sample, 0},
+    {Thermocouples::tc2Sample, 0},
     // {Thermocouples::tc3Sample, 0},
 
     // valves
@@ -54,7 +51,7 @@ Task taskTable[] = {
     {IMU::imuSample, 0},
 
     //GPS
-    {GPS::latLongSample, 0},
+    // {GPS::latLongSample, 0},
     // {GPS::auxSample, 0},
 
     // Barometer
@@ -74,14 +71,12 @@ uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){
     Comms::Packet tmp = {.id = 29};
     Comms::packetAddUint8(&tmp, vehicleState);
     Comms::emitPacket(&tmp);
+    return vehicleState;
 }
 
 int main() {
     // hardware setup
     Serial.begin(115200);
-    // RS-485 RX/TX is Serial8 (pins 34, 35)
-    // RS485_SERIAL.begin(921600); // Serial for capfill
-    // RADIO_SERIAL.begin(115200);
 
     #ifdef DEBUG_MODE
     while(!Serial) {} // wait for user to open serial port (debugging only)
