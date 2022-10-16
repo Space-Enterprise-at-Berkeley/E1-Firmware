@@ -7,9 +7,9 @@ namespace LoadCells {
     float loadCell3Value;
 
     void initLoadCells() {
-        HAL::lcAmp0.set_scale(3889); // measured imperically
-        HAL::lcAmp1.set_scale(-3941); // measured imperically
-        HAL::lcAmp2.set_scale(3889); // CHANGE ME
+        HAL::lcAmp0.set_scale(-3982); // measured imperically
+        HAL::lcAmp1.set_scale(3941); // measured imperically
+        HAL::lcAmp2.set_scale(-3989); // CHANGE ME
         HAL::lcAmp3.set_scale(3889); // CHANGE ME
 
         HAL::lcAmp0.tare();
