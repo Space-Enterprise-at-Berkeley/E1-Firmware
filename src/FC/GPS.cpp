@@ -2,7 +2,7 @@
 #include "GPS.h"
 namespace GPS { 
 
-  uint32_t gpsUpdatePeriod = 1000 * 1000;
+  uint32_t gpsUpdatePeriod = 100 * 1000;
 
   Comms::Packet latLongPacket = {.id = 6};
 

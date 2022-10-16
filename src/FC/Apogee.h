@@ -1,12 +1,13 @@
-// #pragma once
+#pragma once
 
-// #include "Comms.h"
-// #include "Barometer.h"
+#include "Comms.h"
+#include "Barometer.h"
+#include "HAL.h"
 
-// namespace Apogee {
+namespace Apogee {
 
-// 	void init();
-// 	void start();
-// 	uint32_t checkForApogee();
-// 	float altitudeToVelocity(float altitude);
-// }
+	void init();
+	void start();
+	uint32_t checkForApogee();
+	float altitudeToVelocity(float altitude);
+}

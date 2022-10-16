@@ -30,7 +30,7 @@ Task taskTable[] = {
     {Valves::autoventFuelGemValveTask, 0},
 
     // ducers
-    // {Ducers::ptSample, 0},
+    {Ducers::ptSample, 0},
 
     // power
     {Power::supply8Sample, 0},
@@ -51,7 +51,7 @@ Task taskTable[] = {
     {IMU::imuSample, 0},
 
     //GPS
-    // {GPS::latLongSample, 0},
+    {GPS::latLongSample, 0},
     // {GPS::auxSample, 0},
 
     // Barometer

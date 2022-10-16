@@ -70,7 +70,7 @@ namespace HAL {
         bno055.begin();
 
         // gps
-        if(!neom9n.begin(SPI, gpsCSPin, 4000000)) {
+        if(!neom9n.begin(SPI, gpsCSPin, 2000000)) {
             DEBUG("GPS DIDN'T INIT");
             DEBUG("\n");
         } else {

@@ -5,7 +5,7 @@
 
 #define N_CHANNELS          8
 
-#define _SPI_SPEED          14000000
+#define _SPI_SPEED          2000000
 
 ADS8167::ADS8167() {}
 
