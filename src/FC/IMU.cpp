@@ -24,7 +24,7 @@ namespace IMU {
 
 		imuPacket.len = 0;
 		for(float value : data)
-			Comms::packetAddFloat(&imuPacket, value);
+			Comms::packetAddFloat(&imuPacket, value);	
 		Comms::emitPacket(&imuPacket);
 		uint8_t sys, gyro, acc, mag;
 		bno055.getCalibration(&sys, &gyro, &acc, &mag);

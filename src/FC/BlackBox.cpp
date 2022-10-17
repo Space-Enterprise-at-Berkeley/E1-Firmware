@@ -28,6 +28,9 @@
             clearBuffer();
             if (bb.readByte(0) == 0xFF) {
                 Comms::registerEmitter(writeToBuffer);
+                Serial.println("RECORDING");
+            } else {
+                Serial.println("NOT RECORDING");
             }
 
         }
