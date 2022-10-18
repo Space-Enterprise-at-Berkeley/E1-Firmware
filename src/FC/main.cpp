@@ -9,7 +9,7 @@
 #include "Thermocouples.h"
 #include "OCHandler.h"
 
-// #include "BlackBox.h"
+#include "BlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -17,6 +17,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
+
+#include "Apogee.h"
 
 // 0: Ground, 1: Flight
 uint8_t vehicleState = 0; 
@@ -52,14 +54,15 @@ Task taskTable[] = {
 
     //GPS
     {GPS::latLongSample, 0},
-    // {GPS::auxSample, 0},
 
     // Barometer
     {Barometer::sampleAltPressTemp, 0},
-    // {Barometer::zeroAltitude, 0},
 
     // Cap fill
-    {CapFill::sampleCapFill, 0}
+    {CapFill::sampleCapFill, 0},
+
+    // Apogee
+    {Apogee::checkForApogee, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -71,8 +74,17 @@ uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){
     Comms::Packet tmp = {.id = 29};
     Comms::packetAddUint8(&tmp, vehicleState);
     Comms::emitPacket(&tmp);
+
+    // Setup for apogee
+    if (vehicleState) { 
+        BlackBox::beginWrite();
+        Barometer::zeroAltitude();
+        Apogee::start();
+    } 
+
     return vehicleState;
 }
+
 
 int main() {
     // hardware setup
@@ -91,6 +103,7 @@ int main() {
     OCHandler::initOCHandler(20);
     GPS::initGPS();
     CapFill::initCapFill();
+    BlackBox::init();    
 
     Comms::registerCallback(29, setVehicleMode);
 

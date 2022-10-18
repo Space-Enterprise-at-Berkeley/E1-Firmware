@@ -24,4 +24,8 @@ namespace Barometer {
     uint32_t sampleAltPressTemp();
 
     uint32_t zeroAltitude();
+
+    uint32_t getUpdatePeriod();
+
+    float getAltitude();
 }

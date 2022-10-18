@@ -19,7 +19,7 @@
 namespace HAL {    
     
     #define RS485_SERIAL Serial8
-    // #define RADIO_SERIAL Serial7
+    #define RADIO_SERIAL Serial7
 
     extern ADS8167 adc1;
 

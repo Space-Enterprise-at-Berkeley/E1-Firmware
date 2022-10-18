@@ -82,6 +82,8 @@ namespace HAL {
         pinMode(RS485SwitchPin, OUTPUT);
         RS485_SERIAL.begin(921600); // Serial for capfill
 
+        RADIO_SERIAL.begin(115200);
+
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
         pinMode(chute2Pin, OUTPUT);

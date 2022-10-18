@@ -45,6 +45,13 @@ namespace Comms {
      */
     void registerCallback(uint8_t id, commFunction function);
 
+    /**
+     * @brief Registers a method to be called every time a packet is sent out.
+     * 
+     * @param function a pointer to a method that will be called when a packet is sent out;
+     */
+    void registerEmitter(commFunction function);
+
     void processWaitingPackets();
 
     void packetAddFloat(Packet *packet, float value);

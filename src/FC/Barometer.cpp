@@ -40,6 +40,7 @@ namespace Barometer {
 
     float totalAltitude = 0;
     float samples = 0;
+
     uint32_t zeroAltitude() {
 
         //if offset calculation is done, disable the task.
@@ -64,5 +65,13 @@ namespace Barometer {
         altitudeOffset = totalAltitude / samples;
 
         return 1000;
+    }
+
+    uint32_t getUpdatePeriod() { 
+        return bmUpdatePeriod;
+    }
+
+    float getAltitude() { 
+        return baroAltitude - altitudeOffset;
     }
 }

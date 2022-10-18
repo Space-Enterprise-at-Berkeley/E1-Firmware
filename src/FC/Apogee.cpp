@@ -12,6 +12,7 @@ namespace Apogee {
 
 	uint32_t apogeeTime = 0;
 	uint8_t apogeesFound = 0;
+	float altitudeFound = 0;
 	bool apogeeCheck = false;
 	bool launchCheck = false;
 
@@ -31,8 +32,13 @@ namespace Apogee {
 		launchCheck = 1;
 	}
 
+	void disable() {
+		launchCheck = 0;
+	}
+
 	uint32_t checkForApogee() {
-		barometerVelocity = altitudeToVelocity(HAL::bmp388.getAltitude());
+		altitudeFound = Barometer::getAltitude();
+		barometerVelocity = altitudeToVelocity(altitudeFound);
 		velocitySamples[velocityIndex] = barometerVelocity;
 		velocityIndex = (velocityIndex + 1) % sampleSize;
 
@@ -42,24 +48,42 @@ namespace Apogee {
 		}
 		float average = total / sampleSize;
 
-		if (average < 0 && apogeeCheck == 0 && launchCheck == 1 && HAL::bmp388.getAltitude() > 100) {
+		if (average < 0 && apogeeCheck == 0 && launchCheck == 1 &&  altitudeFound > 100) {
 			apogeeCheck = true;
 			apogeeTime = millis();
 			apogeesFound ++;
+
+			DEBUG("APOGEE DETECTED: Time: ");
+			DEBUG(apogeeTime);
+			DEBUG("	Altitude: ");
+			DEBUG(altitudeFound);
+			DEBUG("	Apogees found: ");
+			DEBUG(apogeesFound);
+			DEBUG("\n");
+			DEBUG_FLUSH();
 		}
 		else if (average > 0.01) { // 10 feet per second?
 			apogeeCheck = false; // reset in case of false positive
 		}
 
+		DEBUG("Apogee check? ");
+		DEBUG(apogeeCheck);
+		DEBUG("\n");
+		DEBUG_FLUSH();
+
 		Comms::Packet apogeePacket = {.id = 28};
-		Comms::packetAddFloat(&apogeePacket, apogeeTime);
-		Comms::packetAddUint8(&apogeePacket, apogeesFound);
+		// Comms::packetAddUint8(&apogeePacket, apogeeCheck);
+		Comms::packetAddUint32(&apogeePacket, apogeeTime);
+		Comms::packetAddFloat(&apogeePacket, altitudeFound);
+		// Comms::packetAddUint8(&apogeePacket, apogeesFound);
 		Comms::emitPacket(&apogeePacket);
+
+		DEBUG("Apogee packet sent\n");
 		return updatePeriod;
 	}
 
 	float altitudeToVelocity(float altitude) {
-		float velocity = (altitude - previousAltitude) / HAL::bmp388.getUpdatePeriod();
+		float velocity = (altitude - previousAltitude) / Barometer::getUpdatePeriod();
 		previousAltitude = altitude;
 		previousVelocity = velocity;
 		return barometerVelocity;
