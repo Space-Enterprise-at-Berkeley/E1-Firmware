@@ -32,7 +32,7 @@ namespace HAL {
     MCP9600 tcAmp0;
     MCP9600 tcAmp1;
     MCP9600 tcAmp2;
-    // MCP9600 tcAmp3;
+    MCP9600 tcAmp3;
 
     // Sensors breakouts
     BMP388_DEV bmp388;
@@ -82,7 +82,7 @@ namespace HAL {
         pinMode(RS485SwitchPin, OUTPUT);
         RS485_SERIAL.begin(921600); // Serial for capfill
 
-        RADIO_SERIAL.begin(115200);
+        RADIO_SERIAL.begin(250000);
 
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
@@ -110,7 +110,7 @@ namespace HAL {
         tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
         tcAmp2.init(0x66, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp3.init(0x63, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp3.init(0x65, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
         muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);

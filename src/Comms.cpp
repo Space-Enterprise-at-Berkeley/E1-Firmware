@@ -146,44 +146,6 @@ namespace Comms {
      * @param packet Packet to be sent.
      */
     void emitPacket(Packet *packet) {
-        // //add timestamp to struct
-        // uint32_t timestamp = millis();
-        // packet->timestamp[0] = timestamp & 0xFF;
-        // packet->timestamp[1] = (timestamp >> 8) & 0xFF;
-        // packet->timestamp[2] = (timestamp >> 16) & 0xFF;
-        // packet->timestamp[3] = (timestamp >> 24) & 0xFF;
-
-        // //calculate and append checksum to struct
-        // uint16_t checksum = computePacketChecksum(packet);
-        // packet->checksum[0] = checksum & 0xFF;
-        // packet->checksum[1] = checksum >> 8;
-
-        // // Send over serial, but disable if in debug mode
-        // #ifndef DEBUG_MODE
-        // Serial.write(packet->id);
-        // Serial.write(packet->len);
-        // Serial.write(packet->timestamp, 4);
-        // Serial.write(packet->checksum, 2);
-        // Serial.write(packet->data, packet->len);
-        // Serial.write('\n');
-        // #endif
-
-        // //Send over ethernet to both ground stations
-        // Udp.beginPacket(groundStation1, port);
-        // Udp.write(packet->id);
-        // Udp.write(packet->len);
-        // Udp.write(packet->timestamp, 4);
-        // Udp.write(packet->checksum, 2);
-        // Udp.write(packet->data, packet->len);
-        // Udp.endPacket();
-
-        // Udp.beginPacket(groundStation2, port);
-        // Udp.write(packet->id);
-        // Udp.write(packet->len);
-        // Udp.write(packet->timestamp, 4);
-        // Udp.write(packet->checksum, 2);
-        // Udp.write(packet->data, packet->len);
-        // Udp.endPacket();
         emitPacket(packet, 69);
         emitPacket(packet, 70);
     }
@@ -229,6 +191,10 @@ namespace Comms {
         //add timestamp to struct
         // DEBUG("Sending over hardware serial\n");
         // DEBUG_FLUSH();
+        emitPacket(packet, serialBus, "\n", 1); 
+    }
+
+    void emitPacket(Packet *packet, HardwareSerial *serialBus, char* delim, int dlen) { 
         uint32_t timestamp = millis();
         packet->timestamp[0] = timestamp & 0xFF;
         packet->timestamp[1] = (timestamp >> 8) & 0xFF;
@@ -241,16 +207,12 @@ namespace Comms {
         packet->checksum[1] = checksum >> 8;
 
         // Send over serial
-        if (serialBus->available()) { 
         serialBus->write(packet->id);
         serialBus->write(packet->len);
         serialBus->write(packet->timestamp, 4);
         serialBus->write(packet->checksum, 2);
         serialBus->write(packet->data, packet->len);
-        serialBus->write('\n');
-        DEBUG("Sent over hardware serial\n");
-        DEBUG_FLUSH();
-        }
+        serialBus->write(delim, dlen);
     }
 
     bool verifyPacket(Packet *packet) {

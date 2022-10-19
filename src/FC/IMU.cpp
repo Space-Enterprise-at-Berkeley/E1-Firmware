@@ -15,7 +15,7 @@
 
 
 namespace IMU {
-    uint32_t imuUpdatePeriod = 100 * 1000;
+    uint32_t imuUpdatePeriod = 30 * 1000;
     Comms::Packet imuPacket = {.id = 4};
 
     float qW = 0.0;
@@ -73,7 +73,7 @@ namespace IMU {
         Comms::packetAddFloat(&imuPacket, accelZ);
                 
         Comms::emitPacket(&imuPacket);
-        Comms::emitPacket(&imuPacket, &RADIO_SERIAL);
+        Comms::emitPacket(&imuPacket, &RADIO_SERIAL, "\r\n\n", 3);
 
         return imuUpdatePeriod;
     }

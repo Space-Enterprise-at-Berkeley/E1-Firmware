@@ -71,7 +71,7 @@ namespace HAL {
     extern MCP9600 tcAmp0;
     extern MCP9600 tcAmp1;
     extern MCP9600 tcAmp2;
-    // extern MCP9600 tcAmp3;
+    extern MCP9600 tcAmp3;
 
     extern MuxChannel muxChan0; // Chute1
     extern MuxChannel muxChan1; // Chute2

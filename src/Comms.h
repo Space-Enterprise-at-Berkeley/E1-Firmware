@@ -87,6 +87,8 @@ namespace Comms {
 
     void emitPacket(Packet *packet, HardwareSerial *serialBus);
 
+    void emitPacket(Packet *packet, HardwareSerial *serialBus, char* delim, int dlen);
+
     bool verifyPacket(Packet *packet);
 
     uint16_t computePacketChecksum(Packet *packet);

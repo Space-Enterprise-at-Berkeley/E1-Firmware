@@ -58,7 +58,7 @@ namespace Thermocouples {
         Comms::packetAddFloat(&tcPacket, *value);
         
         Comms::emitPacket(&tcPacket);
-        Comms::emitPacket(&tcPacket, &RADIO_SERIAL);
+        Comms::emitPacket(&tcPacket, &RADIO_SERIAL, "\r\n\n", 3);
         // return the next execution time
         return tcUpdatePeriod;
     }
@@ -84,13 +84,13 @@ namespace Thermocouples {
         DEBUG_FLUSH();
         return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
     }
-    // uint32_t tc3Sample() { 
-    //     // DEBUG("TC3 Reading: ");
-    //     // DEBUG(engineTC3Value);
-    //     // DEBUG("\n");
-    //     // DEBUG_FLUSH();
-    //     // return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC2ROC); 
-    //     return 0;
-    // }
+    uint32_t tc3Sample() { 
+        DEBUG("TC3 Reading: ");
+        DEBUG(engineTC3Value);
+        DEBUG("\n");
+        DEBUG_FLUSH();
+        return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
+        // return 0;
+    }
 
 };

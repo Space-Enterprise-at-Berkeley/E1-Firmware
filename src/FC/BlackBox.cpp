@@ -18,6 +18,7 @@ namespace BlackBox {
     bool writeEnabled = false;
 
     void init() {
+        DEBUG("Initializing black box\n");
         Comms::registerEmitter(&writePacket);
         // Comms::registerCallback(153, &getData);
         Comms::registerCallback(29, &beginWrite); // Begin writing to flash chip when Flight Mode packet sent

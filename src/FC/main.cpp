@@ -41,7 +41,7 @@ Task taskTable[] = {
     {Thermocouples::tc0Sample, 0},
     {Thermocouples::tc1Sample, 0},
     {Thermocouples::tc2Sample, 0},
-    // {Thermocouples::tc3Sample, 0},
+    {Thermocouples::tc3Sample, 0},
 
     // valves
     {Valves::loxGemValveSample, 0},
@@ -77,7 +77,7 @@ uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){
 
     // Setup for apogee
     if (vehicleState) { 
-        BlackBox::beginWrite();
+        // BlackBox::beginWrite();
         Barometer::zeroAltitude();
         Apogee::start();
     } 
@@ -103,7 +103,9 @@ int main() {
     OCHandler::initOCHandler(20);
     GPS::initGPS();
     CapFill::initCapFill();
-    BlackBox::init();    
+
+    Barometer::zeroAltitude();
+    // BlackBox::init();   
 
     Comms::registerCallback(29, setVehicleMode);
 

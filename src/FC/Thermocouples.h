@@ -24,5 +24,5 @@ namespace Thermocouples {
     uint32_t tc0Sample();
     uint32_t tc1Sample();
     uint32_t tc2Sample();
-    // uint32_t tc3Sample();
+    uint32_t tc3Sample();
 };
