@@ -77,6 +77,7 @@ namespace GPS {
     Comms::packetAddUint8(&latLongPacket, satFixNum);
 
     Comms::emitPacket(&latLongPacket);
+    Comms::emitPacket(&latLongPacket, &RADIO_SERIAL);
 
     return gpsUpdatePeriod;
   }

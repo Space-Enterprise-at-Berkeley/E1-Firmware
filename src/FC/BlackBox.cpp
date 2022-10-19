@@ -4,6 +4,10 @@ namespace BlackBox {
 
     const char* filePath = "data.txt";
 
+    Comms::Packet blackBoxPacket = {.id = 30};
+
+    uint32_t bbUpdatePeriod = 100 * 1000;
+
     LittleFS_QSPIFlash blackBox;
 
     EthernetUDP Udp;
@@ -15,9 +19,9 @@ namespace BlackBox {
 
     void init() {
         Comms::registerEmitter(&writePacket);
-        Comms::registerCallback(153, &getData);
-        Comms::registerCallback(154, &beginWrite);
-        Comms::registerCallback(155, &erase);
+        // Comms::registerCallback(153, &getData);
+        Comms::registerCallback(29, &beginWrite); // Begin writing to flash chip when Flight Mode packet sent
+        Comms::registerCallback(153, &erase);
 
         blackBox.begin();
 
@@ -36,6 +40,17 @@ namespace BlackBox {
     void beginWrite() {
         DEBUG("BLACKBOX: WRITE ENABLED");
         writeEnabled = true;
+    }
+
+    uint32_t reportBlackBoxStatus() {
+        uint32_t storageUsed = blackBox.usedSize();
+
+        Comms::packetAddUint32(&blackBoxPacket, storageUsed);
+        Comms::packetAddUint8(&blackBoxPacket, writeEnabled);
+        Comms::emitPacket(&blackBoxPacket);
+        // return the next execution time
+        return bbUpdatePeriod;
+
     }
 
     void writePacket(Comms::Packet packet) {

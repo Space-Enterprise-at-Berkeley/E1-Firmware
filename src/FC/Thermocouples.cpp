@@ -58,6 +58,7 @@ namespace Thermocouples {
         Comms::packetAddFloat(&tcPacket, *value);
         
         Comms::emitPacket(&tcPacket);
+        Comms::emitPacket(&tcPacket, &RADIO_SERIAL);
         // return the next execution time
         return tcUpdatePeriod;
     }

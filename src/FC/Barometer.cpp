@@ -26,6 +26,7 @@ namespace Barometer {
         Comms::packetAddFloat(&baroPacket, baroPressure);
         Comms::packetAddFloat(&baroPacket, baroTemperature);
         Comms::emitPacket(&baroPacket);
+        Comms::emitPacket(&baroPacket, &RADIO_SERIAL);
         DEBUG("Barometer Altitude: ");
         DEBUG(baroAltitude - altitudeOffset);
         DEBUG("     Barometer Pressure: ");

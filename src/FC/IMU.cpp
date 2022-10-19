@@ -73,6 +73,7 @@ namespace IMU {
         Comms::packetAddFloat(&imuPacket, accelZ);
                 
         Comms::emitPacket(&imuPacket);
+        Comms::emitPacket(&imuPacket, &RADIO_SERIAL);
 
         return imuUpdatePeriod;
     }

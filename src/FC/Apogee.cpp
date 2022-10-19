@@ -77,7 +77,7 @@ namespace Apogee {
 		Comms::packetAddFloat(&apogeePacket, altitudeFound);
 		// Comms::packetAddUint8(&apogeePacket, apogeesFound);
 		Comms::emitPacket(&apogeePacket);
-
+		Comms::emitPacket(&apogeePacket, &RADIO_SERIAL);
 		DEBUG("Apogee packet sent\n");
 		return updatePeriod;
 	}

@@ -60,6 +60,7 @@ namespace Ducers {
         Comms::packetAddFloat(&ptPacket, fuelDomePTValue);
 
         Comms::emitPacket(&ptPacket);
+        Comms::emitPacket(&ptPacket, &RADIO_SERIAL);
         // return the next execution time
         DEBUG("PT Packet Sent\n");
         DEBUG_FLUSH();

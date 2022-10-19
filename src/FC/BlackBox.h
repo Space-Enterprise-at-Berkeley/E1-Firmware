@@ -18,4 +18,6 @@ namespace BlackBox {
      * 
      */
     void getData(Comms::Packet packet);
+
+    uint32_t reportBlackBoxStatus();
 }
