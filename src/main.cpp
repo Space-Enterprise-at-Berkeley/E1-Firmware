@@ -75,6 +75,7 @@ void loop()
       DEBUG_FLUSH();
       Comms::Packet *packet = (Comms::Packet *)&rs485Buffer;
       if(Comms::verifyPacket(packet)) {
+        digitalWrite(STATUS_LED, HIGH);
         cnt = 0;
         DEBUG("sample command received\n");
 
@@ -83,6 +84,7 @@ void loop()
         Comms::emitPacket(&capPacket, &Serial1);
         Serial1.flush();
         digitalWrite(EN_485, LOW);
+        digitalWrite(STATUS_LED, LOW);
         break;
       }
     }
