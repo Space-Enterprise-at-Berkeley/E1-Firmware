@@ -2,7 +2,6 @@
 
 namespace Barometer {
     uint32_t bmUpdatePeriod = 30 * 1000; // TODO: Placeholder
-    uint32_t bmUpdatePeriod = 1 * 1000; // TODO: Placeholder
     Comms::Packet baroPacket = {.id = 5};
 
     Task *_zeroAltitudeTask;
