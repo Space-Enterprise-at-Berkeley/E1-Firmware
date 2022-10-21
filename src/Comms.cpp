@@ -65,9 +65,6 @@ namespace Comms {
             Udp.read(packetBuffer, sizeof(Packet));
 
             Packet *packet = (Packet *)&packetBuffer;
-            DEBUG("Got unverified packet with ID ");
-            DEBUG(packet->id);
-            DEBUG('\n');
             evokeCallbackFunction(packet);
         } else if(Serial.available()) {
             int cnt = 0;
@@ -76,9 +73,6 @@ namespace Comms {
                 cnt++;
             }
             Packet *packet = (Packet *)&packetBuffer;
-            DEBUG("Got unverified packet with ID ");
-            DEBUG(packet->id);
-            DEBUG('\n');
             evokeCallbackFunction(packet);
         }
     }
@@ -125,16 +119,6 @@ namespace Comms {
         uint16_t checksum = computePacketChecksum(packet);
         packet->checksum[0] = checksum & 0xFF;
         packet->checksum[1] = checksum >> 8;
-
-        // Send over serial, but disable if in debug mode
-        #ifndef DEBUG_MODE
-        Serial.write(packet->id);
-        Serial.write(packet->len);
-        Serial.write(packet->timestamp, 4);
-        Serial.write(packet->checksum, 2);
-        Serial.write(packet->data, packet->len);
-        Serial.write('\n');
-        #endif
 
         //Send over ethernet to both ground stations
         

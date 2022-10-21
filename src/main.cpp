@@ -66,18 +66,10 @@ void loop()
     }
 
     if(rs485Buffer[cnt] == '\n') {
-      DEBUG("\n");
-      for(int i = 0; i < cnt; i++) {
-        DEBUG((uint8_t) rs485Buffer[i]);
-        DEBUG(" ");
-      }
-      DEBUG("\n");
-      DEBUG_FLUSH();
       Comms::Packet *packet = (Comms::Packet *)&rs485Buffer;
       if(Comms::verifyPacket(packet)) {
         digitalWrite(STATUS_LED, HIGH);
         cnt = 0;
-        DEBUG("sample command received\n");
 
         // Comms::emitPacket(&capPacket, &Serial);
         digitalWrite(EN_485, HIGH);
