@@ -20,6 +20,8 @@ namespace Automation {
     extern uint32_t loxLead;
     extern uint32_t burnTime;
 
+    extern bool automationEnabled;
+
     extern bool igniterEnabled;
     extern bool breakwireEnabled;
     extern bool igniterTriggered;
@@ -34,6 +36,7 @@ namespace Automation {
     uint32_t checkIgniter();
 
     void handleAutoSettings(Comms::Packet recv, uint8_t id);
+    void handleEnableLaunch(Comms::Packet recv, uint8_t id);
 };
 
 #define STATE_ACTIVATE_IGNITER 0

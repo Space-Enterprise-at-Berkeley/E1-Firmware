@@ -64,9 +64,9 @@ namespace Valves {
                       .ina = &HAL::chan9}; 
                       //.ina = &HAL::chan3};
     
-    Valve RQD = {.valveID = 5, // actuated from the IO Expander
-                .statePacketID = 75,
-                .statusPacketID = 65,
+    Valve RQD = {.valveID = 6, // actuated from the IO Expander
+                .statePacketID = 76,
+                .statusPacketID = 66,
                 .pin = HAL::chan4Pin, // dont use pin
                 .expanderPin = 255,
                 .voltage = 0.0,
@@ -75,9 +75,9 @@ namespace Valves {
                 .period = 10 * 1000,
                 .ina = &HAL::chan4};
 
-    Valve mainValveVent = {.valveID = 6, // actuated from the IO Expander
-                      .statePacketID = 76,
-                      .statusPacketID = 66,
+    Valve mainValveVent = {.valveID = 5, // actuated from the IO Expander
+                      .statePacketID = 75,
+                      .statusPacketID = 65,
                       .pin = HAL::chan5Pin, // dont use pin
                       .expanderPin = 255,
                       .voltage = 0.0,

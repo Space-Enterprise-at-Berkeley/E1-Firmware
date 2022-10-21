@@ -6,43 +6,43 @@ namespace Actuators {
     uint32_t actuatorCheckPeriod = 50 * 1000;
 
     // TODO: set correct telem packet IDs
-    Comms::Packet act1Packet = {.id = 70};
+    Comms::Packet act1Packet = {.id = 90};
     uint8_t act1State = 0;
     float act1Voltage = 0.0;
     float act1Current = 0.0;
     Task *stop1;
     
-    Comms::Packet act2Packet = {.id = 71};
+    Comms::Packet act2Packet = {.id = 91};
     uint8_t act2State = 0;
     float act2Voltage = 0.0;
     float act2Current = 0.0;
     Task *stop2;
 
-    Comms::Packet act3Packet = {.id = 72};
+    Comms::Packet act3Packet = {.id = 92};
     uint8_t act3State = 0;
     float act3Voltage = 0.0;
     float act3Current = 0.0;
     Task *stop3;
 
-    Comms::Packet act4Packet = {.id = 73};
+    Comms::Packet act4Packet = {.id = 93};
     uint8_t act4State = 0;
     float act4Voltage = 0.0;
     float act4Current = 0.0;
     Task *stop4;
 
-    Comms::Packet act5Packet = {.id = 74};
+    Comms::Packet act5Packet = {.id = 94};
     uint8_t act5State = 0;
     float act5Voltage = 0.0;
     float act5Current = 0.0;
     Task *stop5;
 
-    Comms::Packet act6Packet = {.id = 75};
+    Comms::Packet act6Packet = {.id = 95};
     uint8_t act6State = 0;
     float act6Voltage = 0.0;
     float act6Current = 0.0;
     Task *stop6;
 
-    Comms::Packet act7Packet = {.id = 76};
+    Comms::Packet act7Packet = {.id = 96};
     uint8_t act7State = 0;
     float act7Voltage = 0.0;
     float act7Current = 0.0;

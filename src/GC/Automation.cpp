@@ -3,31 +3,21 @@
 namespace Automation {
     Task *flowTask = nullptr;
     Task *abortFlowTask = nullptr;
-    Task *checkForTCAbortTask = nullptr;
-    Task *checkForLCAbortTask = nullptr;
 
     uint32_t loxLead = Util::millisToMicros(190);
     uint32_t burnTime = Util::secondsToMicros(30);
     uint32_t ventTime = Util::millisToMicros(200);
 
+    bool automationEnabled = false;
+
     bool igniterEnabled = true;
     bool breakwireEnabled = true;
-    bool thrustEnabled = true;
 
     bool igniterTriggered = false;
     bool breakwireBroken = false;
 
     bool loxGemValveAbovePressure = false;
     bool fuelGemValveAbovePressure = false;
-
-    float loadCell12Value;
-    float loadCell34Value;
-    uint32_t lastLoadCell12Time; // last time that load cell value was received
-    uint32_t lastLoadCell34Time; // last time that load cell value was received
-
-    //each index maps to a check
-    uint8_t hysteresisValues[6] = {0};
-    uint8_t hysteresisThreshold = 10;
 
     Comms::Packet openLoxGemsPacket = {.id = 126};
     Comms::Packet openFuelGemsPacket = {.id = 127};
@@ -39,6 +29,18 @@ namespace Automation {
         Comms::registerCallback(150, beginFlow);
         Comms::registerCallback(151, beginManualAbortFlow);
         Comms::registerCallback(152, handleAutoSettings);
+        Comms::registerCallback(42, handleEnableLaunch);
+    }
+
+    void handleEnableLaunch(Comms::Packet recv, uint8_t ip) {
+        if(recv.data[0] > 0) {
+            automationEnabled = true;
+        } else {
+            automationEnabled = false;
+        }
+        Comms::Packet tmp = {.id = 42};
+        Comms::packetAddUint8(&tmp, automationEnabled ? 1 : 0);
+        Comms::emitPacket(&tmp);
     }
 
     void handleAutoSettings(Comms::Packet recv, uint8_t ip) {
@@ -61,7 +63,7 @@ namespace Automation {
     int step = 0;
 
     void beginFlow(Comms::Packet packet, uint8_t ip) {
-        if(!flowTask->enabled) {
+        if(!flowTask->enabled && automationEnabled) {
             step = 0;
             //reset values
             igniterTriggered = false;
