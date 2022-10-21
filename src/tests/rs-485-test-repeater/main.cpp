@@ -21,7 +21,7 @@ int cnt = 0;
 // char fuelBuffer[sizeof(Comms::Packet)];
 // int fuelCnt = 0;
 uint8_t state = 0;
-uint8_t capID = 221;
+uint8_t capID = 38;
 uint8_t tocount = 0;
 
 int main() {
@@ -52,8 +52,8 @@ int main() {
 
         // 0: ready to transmit
         if (state == 0) { 
-            DEBUG("in transmit mode\n");
-            DEBUG_FLUSH();
+            // DEBUG("in transmit mode\n");
+            // DEBUG_FLUSH();
             digitalWriteFast(RS485_SW_PIN, HIGH);
             Comms::Packet capCommand = {.id = capID};
             // Comms::packetAddUint8(&capCommand, 222);
@@ -71,8 +71,8 @@ int main() {
         }
 
         if (state == 1) { 
-            DEBUG(".");
-            DEBUG_FLUSH();
+            // DEBUG(".");
+            // DEBUG_FLUSH();
             tocount++;
             if (tocount > 100) { 
                 // DEBUG("TIMED OUT\n");
@@ -82,16 +82,16 @@ int main() {
                 continue;
             }
             while(RS485_SERIAL.available()) {
-                DEBUG("READING...\n");
-                DEBUG_FLUSH();
+                // DEBUG("READING...\n");
+                // DEBUG_FLUSH();
                 rs485Buffer[cnt] = RS485_SERIAL.read();
-                DEBUG(rs485Buffer[cnt]);
+                DEBUG((uint8_t)rs485Buffer[cnt]);
                 DEBUG_FLUSH();
                 if(cnt == 0 && rs485Buffer[cnt] != capID) {
                     break;
                 }
-                DEBUG("bruh\n");
-                DEBUG_FLUSH();
+                // DEBUG("bruh\n");
+                // DEBUG_FLUSH();
                 if(rs485Buffer[cnt] == '\n') {
                     Comms::Packet *packet = (Comms::Packet *)&rs485Buffer;
                     if(Comms::verifyPacket(packet)) {
@@ -109,7 +109,7 @@ int main() {
                         // DEBUG_FLUSH();
 
                         // Switching cap ID to read other one next
-                        (capID == 221) ? capID = 222: capID = 221;
+                        // capID = (capID == 38) ? 39: 38;
 
                         break;
                     }
