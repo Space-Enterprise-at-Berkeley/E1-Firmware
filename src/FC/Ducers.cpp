@@ -1,7 +1,7 @@
 #include "Ducers.h"
 
 namespace Ducers {
-    uint32_t ptUpdatePeriod = 100 * 1000;
+    uint32_t ptUpdatePeriod = 20 * 1000;
     Comms::Packet ptPacket = {.id = 10};
 
     float pressurantPTValue = 0.0;
@@ -21,7 +21,7 @@ namespace Ducers {
     }
 
     void initDucers() {
-        Comms::registerCallback(140, handleFastReadPacket);
+        // Comms::registerCallback(140, handleFastReadPacket);
     }
 
     float interpolate1000(uint16_t rawValue) {
