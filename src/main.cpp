@@ -97,6 +97,9 @@ void loop()
     previousMillis = currentMillis;
 
     float capValue = _capSens.readCapacitance();
+    DEBUG(capValue);
+    DEBUG('\n');
+    DEBUG_FLUSH();
 
     capBuffer.push(capValue);
 
