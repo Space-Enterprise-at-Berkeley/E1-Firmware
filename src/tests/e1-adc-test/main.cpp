@@ -15,7 +15,8 @@ int main(){
 
     while(1) {
         Serial.print("  adc0:   ");
-        Serial.print(adc.readChannelOTF(0));
+        Serial.print(adc.readChannelOTF(0
+        ));
         Serial.print("  adc1:   ");
         Serial.print(adc.readChannelOTF(1));
         Serial.print("  adc2 :    ");

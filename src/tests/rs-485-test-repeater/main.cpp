@@ -59,8 +59,8 @@ int main() {
             // Comms::packetAddUint8(&capCommand, 222);
             Comms::emitPacket(&capCommand, &RS485_SERIAL);
 
-            DEBUG("packet sent\n");
-            DEBUG_FLUSH();
+            // DEBUG("packet sent\n");
+            // DEBUG_FLUSH();
 
             RS485_SERIAL.flush();
 
@@ -74,19 +74,21 @@ int main() {
             // DEBUG(".");
             // DEBUG_FLUSH();
             tocount++;
-            if (tocount > 100) { 
+            if (tocount > 200) { 
                 // DEBUG("TIMED OUT\n");
                 // DEBUG_FLUSH();
                 state = 0;
                 tocount = 0;
+                cnt = 0;
                 continue;
             }
             while(RS485_SERIAL.available()) {
+                tocount = 0;
                 // DEBUG("READING...\n");
                 // DEBUG_FLUSH();
                 rs485Buffer[cnt] = RS485_SERIAL.read();
-                DEBUG((uint8_t)rs485Buffer[cnt]);
-                DEBUG_FLUSH();
+                // DEBUG((uint8_t)rs485Buffer[cnt]);
+                // DEBUG_FLUSH();
                 if(cnt == 0 && rs485Buffer[cnt] != capID) {
                     break;
                 }

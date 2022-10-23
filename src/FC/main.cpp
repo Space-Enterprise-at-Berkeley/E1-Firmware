@@ -32,16 +32,16 @@ Task taskTable[] = {
     {Valves::autoventFuelGemValveTask, 0},
 
     // ducers
-    // {Ducers::ptSample, 0},
+    {Ducers::ptSample, 0},
 
     // power
     {Power::supply8Sample, 0},
 
     // thermocouples
-    // {Thermocouples::tc0Sample, 0},
-    // {Thermocouples::tc1Sample, 0},
-    // {Thermocouples::tc2Sample, 0},
-    // {Thermocouples::tc3Sample, 0},
+    {Thermocouples::tc0Sample, 0},
+    {Thermocouples::tc1Sample, 0},
+    {Thermocouples::tc2Sample, 0},
+    {Thermocouples::tc3Sample, 0},
 
     // valves
     {Valves::loxGemValveSample, 0},
@@ -53,7 +53,7 @@ Task taskTable[] = {
     {IMU::imuSample, 0},
 
     //GPS
-    // {GPS::latLongSample, 0},
+    {GPS::latLongSample, 0},
 
     // Barometer
     {Barometer::sampleAltPressTemp, 0},
@@ -95,13 +95,13 @@ int main() {
     #endif
     HAL::initHAL();
     Comms::initComms();
-    // Ducers::initDucers();
+    Ducers::initDucers();
     Power::initPower();
     Actuators::initActuators(&taskTable[0]);
     Valves::initValves(&taskTable[1], &taskTable[2]);
     // Thermocouples::initThermocouples();
     OCHandler::initOCHandler(20);
-    // GPS::initGPS();
+    GPS::initGPS();
     CapFill::initCapFill();
 
     Barometer::zeroAltitude();

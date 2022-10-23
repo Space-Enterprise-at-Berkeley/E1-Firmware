@@ -59,6 +59,7 @@ namespace CapFill {
                 return 1 * 1000;
             }
             while(RS485_SERIAL.available()) {
+                timeoutCount = 0;
                 DEBUG("READING...\n");
                 DEBUG_FLUSH();
                 rs485Buffer[cnt] = RS485_SERIAL.read();
