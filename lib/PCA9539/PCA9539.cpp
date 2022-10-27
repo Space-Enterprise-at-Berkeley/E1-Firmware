@@ -81,6 +81,20 @@ uint8_t PCA9539::digitalRead(uint8_t pin) {
     }
 }
 
+/**
+ * @name digitalRead Reads the high/low value of specified pin
+ * @param pin
+ * @return value of pin
+ * Reads the selected pin.
+ */
+uint16_t PCA9539::digitalReadAll() {
+    uint16_t _inputData = 0;
+
+    _inputData  = I2CGetValue(_address, NXP_INPUT);
+    _inputData |= I2CGetValue(_address, NXP_INPUT + 1) << 8;
+    return _inputData;
+}
+
 void PCA9539::digitalWrite(uint8_t pin, uint8_t value) {
     //
     // check valid pin first

@@ -22,6 +22,7 @@ public:
     PCA9539(uint8_t address);                            // constructor
     void pinMode(uint8_t pin, uint8_t IOMode);          // pinMode
     uint8_t digitalRead(uint8_t pin);                    // digitalRead
+    uint16_t digitalReadAll();
     void digitalWrite(uint8_t pin, uint8_t value);      // digitalWrite
 
 private:

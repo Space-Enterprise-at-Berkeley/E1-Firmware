@@ -9,17 +9,15 @@
 
 ADS8167::ADS8167() {}
 
-bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt) {
+bool ADS8167::init(SPIClass *theSPI, uint8_t cs, uint8_t rdy) {
   _cs_pin = cs;
   _rdy_pin = rdy;
-  _alrt_pin = alrt;
   _theSPI = theSPI;
   
   _theSPI->begin();
 
   pinMode(_cs_pin, OUTPUT);
   pinMode(_rdy_pin, INPUT_PULLUP);
-  pinMode(_alrt_pin, INPUT);
 
   digitalWriteFast(_cs_pin, HIGH);
 

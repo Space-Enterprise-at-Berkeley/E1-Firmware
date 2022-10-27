@@ -4,6 +4,10 @@ namespace OCHandler {
 
     PCA9539 ioOCExpander(0x24);
 
+    uint32_t ocUpdatePeriod = 100 * 1000;
+
+    bool ocDetected = false;
+
     void initOCHandler(uint8_t interruptPin) {
         //setup IO Expander pins
         //TODO check this implementation
@@ -22,18 +26,27 @@ namespace OCHandler {
         ioOCExpander.pinMode(13, INPUT); // HBridge1
         ioOCExpander.pinMode(14, INPUT); // HBridge2
         ioOCExpander.pinMode(15, INPUT); // HBridge3
-
-        pinMode(interruptPin, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
+        DEBUG("init all io expand pins\n");
+        // pinMode(interruptPin, INPUT_PULLUP);
+        // attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
+        DEBUG('e\n');
     }
 
     Comms::Packet ocPacket = {.id = 40};
+    
     void OCInterrupt() {
-        for (int i = 0; i < 14; i++) {
-            if (ioOCExpander.digitalRead(i)) {
-                Comms::packetAddUint8(&ocPacket, i);
-            }
-        }
+        ocDetected = true;
+    }
+
+    uint32_t handleOC() { 
+
+        if (!ocDetected) {
+            return ocUpdatePeriod;
+        } 
+
+        ocPacket.len = 0;
+        Comms::packetAddUint16(&ocPacket, ioOCExpander.digitalReadAll());
         Comms::emitPacket(&ocPacket);
+        return ocUpdatePeriod;
     }
 }

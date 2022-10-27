@@ -9,7 +9,7 @@
 #include "Thermocouples.h"
 #include "OCHandler.h"
 
-// #include "BlackBox.h"
+#include "BlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -62,7 +62,9 @@ Task taskTable[] = {
     {CapFill::sampleCapFill, 0},
 
     // Apogee
-    {Apogee::checkForApogee, 0}
+    {Apogee::checkForApogee, 0},
+
+    {OCHandler::handleOC, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -77,7 +79,7 @@ uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){
 
     // Setup for apogee
     if (vehicleState) { 
-        // BlackBox::beginWrite();
+        BlackBox::beginWrite();
         Barometer::zeroAltitude();
         Apogee::start();
     } 
@@ -94,19 +96,24 @@ int main() {
     while(!Serial) {} // wait for user to open serial port (debugging only)
     #endif
     HAL::initHAL();
+    DEBUG("1\n");
     Comms::initComms();
+    DEBUG("2\n");
     Ducers::initDucers();
-    Power::initPower();
+    DEBUG("3\n");
     Actuators::initActuators(&taskTable[0]);
+    DEBUG("4\n");
     Valves::initValves(&taskTable[1], &taskTable[2]);
-    // Thermocouples::initThermocouples();
+    DEBUG("5\n");
     OCHandler::initOCHandler(20);
+    DEBUG("6\n");
     GPS::initGPS();
+    DEBUG("7\n");
     CapFill::initCapFill();
-
+    DEBUG("Made it this far\n");
     Barometer::zeroAltitude();
-    // BlackBox::init();   
-
+    BlackBox::init();   
+    DEBUG("Cringe\n");
     Comms::registerCallback(29, setVehicleMode);
 
     while(1) {

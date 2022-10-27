@@ -6,7 +6,6 @@ namespace Barometer {
 
     Task *_zeroAltitudeTask;
 
-    uint32_t zeroSamples = 200; //number of samples to calculate altitude offset over
     float altitudeOffset = 0;
     
     float baroAltitude, baroPressure, baroTemperature;
@@ -45,7 +44,7 @@ namespace Barometer {
     uint32_t zeroAltitude() {
 
         //if offset calculation is done, disable the task.
-        if (samples >= zeroSamples) {
+        if (samples >= 1) {
             _zeroAltitudeTask->enabled = false;
             DEBUG("STOPPED ZEROING");
             DEBUG("\n");
@@ -61,9 +60,9 @@ namespace Barometer {
         while (!successfully_measured) {
             successfully_measured = HAL::bmp388.getMeasurements(temperature, pressure, altitude);
         }
-        totalAltitude += altitude;
-        samples += 1;
-        altitudeOffset = totalAltitude / samples;
+
+        samples++;
+        altitudeOffset = altitude;
 
         return 1000;
     }

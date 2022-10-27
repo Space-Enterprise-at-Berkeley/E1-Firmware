@@ -10,9 +10,6 @@ namespace Power {
     float supply8Current = 0.0;
     float supply8Power = 0.0;
 
-    void initPower(){
-    }
-
     uint32_t supply8Sample() {
         supply8Voltage = HAL::supply8v.readBusVoltage();
         supply8Current = HAL::supply8v.readShuntCurrent();

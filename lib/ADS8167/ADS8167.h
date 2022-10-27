@@ -7,7 +7,7 @@ class ADS8167 {
     public:
         ADS8167();
 
-        bool init(SPIClass *theSPI, uint8_t cs, uint8_t rdy, uint8_t alrt);
+        bool init(SPIClass *theSPI, uint8_t cs, uint8_t rdy);
 
         void setSDOMode();
         void enableSeqStatus(bool en);
@@ -46,7 +46,6 @@ class ADS8167 {
         void write_cmd(const adc_cmd_t cmd, const uint16_t address, const uint8_t data);
 
         uint8_t _cs_pin;
-        uint8_t _alrt_pin;
         uint8_t _rdy_pin;
         SPIClass *_theSPI;
 

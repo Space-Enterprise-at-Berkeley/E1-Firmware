@@ -17,8 +17,6 @@ namespace Power {
     extern float supply8Voltage;
     extern float supply8Current;
     extern float supply8Power;
-    
-    void initPower();
 
     uint32_t supply8Sample();
 }

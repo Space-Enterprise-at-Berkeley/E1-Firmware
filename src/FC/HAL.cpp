@@ -36,27 +36,20 @@ namespace HAL {
 
     // Sensors breakouts
     BMP388_DEV bmp388;
-    BNO055 bno055;
+    BNO055 bno055(28);
     SFE_UBLOX_GNSS neom9n;
-
-    void initChannel(INA219 *channel, uint8_t address) {
-        channel->init(&Wire1, address, chanShuntR, chanCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
-    }
 
     void initHAL() {
         // initialize ADC 1
         analogReadResolution(12); 
 
-        adc1.init(&SPI, 37, 25, 999);
+        adc1.init(&SPI, 37, 25);
         adc1.setAllInputsSeparate();
         adc1.enableOTFMode();
 
         // Initialize I2C buses
         Wire.begin();
         Wire.setClock(100000);
-
-        Wire1.begin();
-        Wire1.setClock(1000000);
 
         // Initialize INA219s
         // Only INA219 on FCv3 is on 8V supply, address 0x44
@@ -66,7 +59,6 @@ namespace HAL {
         bmp388.begin(0x76); // TODO check address
 
         // imu
-        bno055 = BNO055(28);
         bno055.begin();
 
         // gps
@@ -83,6 +75,8 @@ namespace HAL {
         RS485_SERIAL.begin(921600); // Serial for capfill
 
         RADIO_SERIAL.begin(250000);
+
+        DEBUG("radio\n");
 
         // Flight v3 channels
         pinMode(chute1Pin, OUTPUT);
@@ -106,11 +100,12 @@ namespace HAL {
         pinMode(hBridge3Pin2, OUTPUT);
 
         // thermocouple amplifiers
-        // 08/02: not on e1 ext
         tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
         tcAmp2.init(0x66, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
         tcAmp3.init(0x65, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+
+        DEBUG("tc\n");
 
         muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
@@ -128,5 +123,7 @@ namespace HAL {
         muxChan13.init(&valveMux, 13, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
         muxChan14.init(&valveMux, 14, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
         muxChan15.init(&valveMux, 15, valveMuxCurrentScalingFactor, valveMuxCurrentScalingFactor);
+
+        DEBUG("mux\n");
     }
 };
