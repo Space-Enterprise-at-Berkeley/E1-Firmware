@@ -1,96 +1,43 @@
 #include "Thermocouples.h"
 
 namespace Thermocouples {
-    uint32_t tcUpdatePeriod = 100 * 1000;
+    uint32_t tcUpdatePeriod = 10 * 1000;
     Comms::Packet tcPacket = {.id = 20};
-
-    float engineTC0Value;
-    float engineTC1Value;
-    float engineTC2Value;
-    float engineTC3Value;
-
-    float engineTC0ROC;
-    float engineTC1ROC;
-    float engineTC2ROC;
-    float engineTC3ROC;
-
-
-    float TC0ROCValues[10] = {0};
-    float TC1ROCValues[10] = {0};
-    float TC2ROCValues[10] = {0};
-    float TC3ROCValues[10] = {0};
 
     void initThermocouples() {
     }
 
-    uint32_t tcROCSample(float *thermocoupleValues, float currThermocoupleValue, float prevThermocoupleValue, float *ROCValue) {
-        for (int i = 1; i < 10; i++) {
-            thermocoupleValues[i] = thermocoupleValues[i-1];
-        }
-        thermocoupleValues[0] = (currThermocoupleValue - prevThermocoupleValue) / ((float)tcUpdatePeriod / 1e6);
-
-        float sum = 0;
-        for (int i = 0; i < 10; i++) {
-            sum += thermocoupleValues[i];
-        }
-        *ROCValue = sum / 10;
-    }
-
-    uint32_t tcSample(MCP9600 *amp, uint8_t packetID, float *value, float *thermocoupleValues, float *ROCValue) {
+    uint32_t tcSample(MCP9600 *amp, uint8_t packetID) {
+        uint32_t t1 = micros();
         float reading = amp->readThermocouple();
-        //calculate ROC TC value
-        for (int i = 1; i < 10; i++) {
-            thermocoupleValues[i] = thermocoupleValues[i-1];
-        }
-        thermocoupleValues[0] = (reading - *value) / ((float)tcUpdatePeriod / 1e6);
+        uint32_t t2 = micros();
 
-        float sum = 0;
-        for (int i = 0; i < 10; i++) {
-            sum += thermocoupleValues[i];
-        }
-        *ROCValue = sum / 10;
-        
-        // read from all TCs in sequence
-        *value = reading;
+        DEBUG("time: ");
+        DEBUG(t2 - t1);
+        DEBUG("\n");
+        DEBUG_FLUSH();
 
         tcPacket.id = packetID;
         tcPacket.len = 0;
-        Comms::packetAddFloat(&tcPacket, *value);
+        Comms::packetAddFloat(&tcPacket, reading);
         
         Comms::emitPacket(&tcPacket);
-        Comms::emitPacket(&tcPacket, &RADIO_SERIAL, "\r\n\n", 3);
+        // Comms::emitPacket(&tcPacket, &RADIO_SERIAL, "\r\n\n", 3);
         // return the next execution time
         return tcUpdatePeriod;
     }
 
     uint32_t tc0Sample() {
-        DEBUG("TC0 Reading: ");
-        DEBUG(engineTC0Value);
-        DEBUG("\n");
-        DEBUG_FLUSH();
-        return tcSample(&HAL::tcAmp0, 20, &engineTC0Value, TC0ROCValues, &engineTC0ROC); 
+        return tcSample(&HAL::tcAmp0, 20); 
     }
     uint32_t tc1Sample() { 
-        DEBUG("TC1 Reading: ");
-        DEBUG(engineTC1Value);
-        DEBUG("\n");
-        DEBUG_FLUSH();
-        return tcSample(&HAL::tcAmp1, 21, &engineTC1Value, TC1ROCValues, &engineTC1ROC); 
+        return tcSample(&HAL::tcAmp1, 21); 
     }
     uint32_t tc2Sample() {
-        DEBUG("TC2 Reading: ");
-        DEBUG(engineTC2Value);
-        DEBUG("\n");
-        DEBUG_FLUSH();
-        return tcSample(&HAL::tcAmp2, 22, &engineTC2Value, TC2ROCValues, &engineTC2ROC); 
+        return tcSample(&HAL::tcAmp2, 22); 
     }
     uint32_t tc3Sample() { 
-        DEBUG("TC3 Reading: ");
-        DEBUG(engineTC3Value);
-        DEBUG("\n");
-        DEBUG_FLUSH();
-        return tcSample(&HAL::tcAmp3, 23, &engineTC3Value, TC3ROCValues, &engineTC3ROC); 
-        // return 0;
+        return tcSample(&HAL::tcAmp3, 23); 
     }
 
 };

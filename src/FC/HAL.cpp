@@ -29,10 +29,10 @@ namespace HAL {
     MuxChannel muxChan14; // HBridge2
     MuxChannel muxChan15; // HBridge3
 
-    // MCP9600 tcAmp0;
-    // MCP9600 tcAmp1;
-    // MCP9600 tcAmp2;
-    // MCP9600 tcAmp3;
+    MCP9600 tcAmp0;
+    MCP9600 tcAmp1;
+    MCP9600 tcAmp2;
+    MCP9600 tcAmp3;
 
     // Sensors breakouts
     // BMP388_DEV bmp388;
@@ -100,12 +100,12 @@ namespace HAL {
         pinMode(hBridge3Pin2, OUTPUT);
 
         // thermocouple amplifiers
-        // tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
-        // tcAmp2.init(0x66, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        // tcAmp3.init(0x65, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
+        tcAmp2.init(0x66, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        tcAmp3.init(0x65, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
-        DEBUG("tc\n");
+        // DEBUG("tc\n");
 
         muxChan0.init(&valveMux, 0, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);
         muxChan1.init(&valveMux, 1, valveMuxCurrentScalingFactor, valveMuxContinuityScalingFactor);

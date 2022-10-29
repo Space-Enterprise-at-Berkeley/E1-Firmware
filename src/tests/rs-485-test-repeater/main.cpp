@@ -21,7 +21,7 @@ int cnt = 0;
 // char fuelBuffer[sizeof(Comms::Packet)];
 // int fuelCnt = 0;
 uint8_t state = 0;
-uint8_t capID = 38;
+uint8_t capID = 39;
 uint8_t tocount = 0;
 
 int main() {
@@ -71,8 +71,8 @@ int main() {
         }
 
         if (state == 1) { 
-            // DEBUG(".");
-            // DEBUG_FLUSH();
+            DEBUG(".");
+            DEBUG_FLUSH();
             tocount++;
             if (tocount > 200) { 
                 // DEBUG("TIMED OUT\n");

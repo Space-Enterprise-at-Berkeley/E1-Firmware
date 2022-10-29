@@ -67,7 +67,6 @@ namespace HAL {
     const uint8_t hBridge3Pin1 = 21; 
     const uint8_t hBridge3Pin2 = 22; 
 
-    // These dont work at the moment
     extern MCP9600 tcAmp0;
     extern MCP9600 tcAmp1;
     extern MCP9600 tcAmp2;

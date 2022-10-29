@@ -6,7 +6,7 @@
 // #include "CapFill.h"
 #include "Valves.h"
 #include "HAL.h"
-// #include "Thermocouples.h"
+#include "Thermocouples.h"
 // #include "OCHandler.h"
 
 // #include "BlackBox.h"
@@ -32,23 +32,23 @@ Task taskTable[] = {
     {Valves::autoventFuelGemValveTask, 0},
 
     // ducers
-    {Ducers::ptSample, 0},
+    // {Ducers::ptSample, 0},
 
     // power
     {Power::supply8Sample, 0},
 
     // thermocouples
-    // {Thermocouples::tc0Sample, 0},
-    // {Thermocouples::tc1Sample, 0},
-    // {Thermocouples::tc2Sample, 0},
-    // {Thermocouples::tc3Sample, 0},
+    {Thermocouples::tc0Sample, 0},
+    {Thermocouples::tc1Sample, 0},
+    {Thermocouples::tc2Sample, 0},
+    {Thermocouples::tc3Sample, 0},
 
     // valves
-    {Valves::loxGemValveSample, 0},
-    {Valves::fuelGemValveSample, 0},
+    // {Valves::loxGemValveSample, 0},
+    // {Valves::fuelGemValveSample, 0},
 
     // actuator
-    {Actuators::pressFlowRBVSample, 0},
+    // {Actuators::pressFlowRBVSample, 0},
 
     // {IMU::imuSample, 0},
 
@@ -105,6 +105,7 @@ int main() {
     DEBUG("4\n");
     Valves::initValves(&taskTable[1], &taskTable[2]);
     DEBUG("5\n");
+
     // OCHandler::initOCHandler(20);
     DEBUG("6\n");
     // GPS::initGPS();
@@ -121,7 +122,7 @@ int main() {
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
                 DEBUG("Task ID: ");
-                DEBUG(i);
+                DEBUG(i);                                                                
                 DEBUG("\n");
                 DEBUG_FLUSH();
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();

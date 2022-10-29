@@ -184,16 +184,37 @@ int16_t INA219::readRegister16(uint8_t reg)
 {
     int16_t value;
 
-    _localWire->beginTransmission(inaAddress);
-    _localWire->write(reg);
-    _localWire->endTransmission();
+    Serial.println("yeet");
+    Serial.flush();
 
     _localWire->beginTransmission(inaAddress);
-    _localWire->requestFrom(inaAddress, 2);
-    while(!_localWire->available()) {};
-    uint16_t vha = _localWire->read();
-    uint16_t vla = _localWire->read();
+    Serial.println("yeet");
+    Serial.flush();
+    _localWire->write(reg);
+    Serial.println("yeet");
+    Serial.flush();
     _localWire->endTransmission();
+    Serial.println("yeet");
+    Serial.flush();
+
+    _localWire->beginTransmission(inaAddress);
+    Serial.println("yeet");
+    Serial.flush();
+    _localWire->requestFrom(inaAddress, 2);
+    Serial.println("yeet");
+    Serial.flush();
+    while(!_localWire->available()) {};
+    Serial.println("yeet");
+    Serial.flush();
+    uint16_t vha = _localWire->read();
+    Serial.println("yeet");
+    Serial.flush();
+    uint16_t vla = _localWire->read();
+    Serial.println("yeet");
+    Serial.flush();
+    _localWire->endTransmission();
+    Serial.println("yeet");
+    Serial.flush();
 
     value = vha << 8 | vha;
 

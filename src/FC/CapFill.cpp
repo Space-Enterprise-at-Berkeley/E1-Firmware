@@ -31,15 +31,15 @@ namespace CapFill {
             // Comms::packetAddUint8(&capCommand, capID);
             Comms::emitPacket(&capCommand, &RS485_SERIAL);
             
-            DEBUG("cap command sent\n");
-            DEBUG_FLUSH();
+            // DEBUG("cap command sent\n");
+            // DEBUG_FLUSH();
 
             RS485_SERIAL.flush();
 
             digitalWriteFast(HAL::RS485SwitchPin, LOW); 
             
-            DEBUG("cap set to receive\n");
-            DEBUG_FLUSH();
+            // DEBUG("cap set to receive\n");
+            // DEBUG_FLUSH();
             
             state = 1;
             return 10 * 1000;
@@ -60,8 +60,8 @@ namespace CapFill {
             }
             while(RS485_SERIAL.available()) {
                 timeoutCount = 0;
-                DEBUG("READING...\n");
-                DEBUG_FLUSH();
+                // DEBUG("READING...\n");
+                // DEBUG_FLUSH();
                 rs485Buffer[cnt] = RS485_SERIAL.read();
                 // DEBUG((uint8_t)rs485Buffer[cnt]);
                 // DEBUG_FLUSH();
