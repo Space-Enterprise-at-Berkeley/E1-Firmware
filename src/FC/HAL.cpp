@@ -29,15 +29,15 @@ namespace HAL {
     MuxChannel muxChan14; // HBridge2
     MuxChannel muxChan15; // HBridge3
 
-    MCP9600 tcAmp0;
-    MCP9600 tcAmp1;
-    MCP9600 tcAmp2;
-    MCP9600 tcAmp3;
+    // MCP9600 tcAmp0;
+    // MCP9600 tcAmp1;
+    // MCP9600 tcAmp2;
+    // MCP9600 tcAmp3;
 
     // Sensors breakouts
-    BMP388_DEV bmp388;
-    BNO055 bno055(28);
-    SFE_UBLOX_GNSS neom9n;
+    // BMP388_DEV bmp388;
+    // BNO055 bno055(28);
+    // SFE_UBLOX_GNSS neom9n;
 
     void initHAL() {
         // initialize ADC 1
@@ -56,23 +56,23 @@ namespace HAL {
         supply8v.init(&Wire, 0x44, supplyShuntR, supplyCurrMax, INA219_RANGE_32V, INA219_GAIN_160MV, INA219_BUS_RES_12BIT, INA219_SHUNT_RES_12BIT_1S, INA219_MODE_SHUNT_BUS_CONT);
 
         // barometer
-        bmp388.begin(0x76); // TODO check address
+        // bmp388.begin(0x76); // TODO check address
 
         // imu
-        bno055.begin();
+        // bno055.begin();
 
         // gps
-        if(!neom9n.begin(SPI, gpsCSPin, 2000000)) {
-            DEBUG("GPS DIDN'T INIT");
-            DEBUG("\n");
-        } else {
-            DEBUG("GPS INIT SUCCESSFUL");
-            DEBUG("\n");
-        }
+        // if(!neom9n.begin(SPI, gpsCSPin, 2000000)) {
+        //     DEBUG("GPS DIDN'T INIT");
+        //     DEBUG("\n");
+        // } else {
+        //     DEBUG("GPS INIT SUCCESSFUL");
+        //     DEBUG("\n");
+        // }
         
         // RS-485
-        pinMode(RS485SwitchPin, OUTPUT);
-        RS485_SERIAL.begin(921600); // Serial for capfill
+        // pinMode(RS485SwitchPin, OUTPUT);
+        // RS485_SERIAL.begin(921600); // Serial for capfill
 
         RADIO_SERIAL.begin(250000);
 
@@ -100,10 +100,10 @@ namespace HAL {
         pinMode(hBridge3Pin2, OUTPUT);
 
         // thermocouple amplifiers
-        tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
-        tcAmp2.init(0x66, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
-        tcAmp3.init(0x65, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp0.init(0x60, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp1.init(0x62, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0); 
+        // tcAmp2.init(0x66, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
+        // tcAmp3.init(0x65, &Wire, MCP9600_ADCRESOLUTION_16, MCP9600_TYPE_K, 0);
 
         DEBUG("tc\n");
 

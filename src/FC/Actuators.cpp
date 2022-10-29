@@ -101,7 +101,7 @@ namespace Actuators {
             actuator->state = 3;
         }
  
-        if ((actuator->state == 1 || actuator->state == 2) && actuator->current < stopCurrent){
+        if (actuator->state > 0 && !actuator->stop->enabled && actuator->current < stopCurrent){
             switch(actuator->actuatorID){
                 case 0: stopPressFlowRBV(); break;
                 // case 1: stopAct1(); break;
