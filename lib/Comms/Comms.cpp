@@ -156,6 +156,7 @@ namespace Comms {
         // Serial.write('\n');
         // Serial.write('\n');
 
+        digitalWrite(2, HIGH);
         Serial2.write(packet->id);
         Serial2.write(packet->len);
         Serial2.write(packet->timestamp, 4);
@@ -164,6 +165,7 @@ namespace Comms {
         Serial2.write('\r');
         Serial2.write('\n');
         Serial2.write('\n');
+        digitalWrite(2, LOW);
 
         int numBytes = 1 + 1 + 4 + 2 + packet->len + 1;
 

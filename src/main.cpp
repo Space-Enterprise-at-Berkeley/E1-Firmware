@@ -1,4 +1,4 @@
-//#define FLIGHT
+#define FLIGHT
 //#define ERASE_BLACK_BOX
 //#define DUMP_BLACK_BOX
 
@@ -162,9 +162,9 @@ void saveToFlash(uint8_t* buf, int len) {
 }
 void initBMP() {
   if (!bmp.begin()) {
-    //Serial.println("BMP init failed");
+    Serial.println("BMP init failed");
   }
-  else //Serial.println("BMP init success!");
+  else Serial.println("BMP init success!");
   bmp.setOversampling(2);
 }
 boolean doubleEqualsZero(double f) {
@@ -299,10 +299,10 @@ void doMPU(Packet* f) {
   packetAddFloat(f, ((float) ax) / 2048.0f);
   packetAddFloat(f, ((float) ay) / 2048.0f);
   packetAddFloat(f, ((float) az) / 2048.0f);
-  // packetAddFloat(f, ((float) ax) / 1.0f);
-  // packetAddFloat(f, ((float) ay) / 1.0f);
-  // packetAddFloat(f, ((float) az) / 1.0f);
-
+  packetAddFloat(f, ((float) ax) / 1.0f);
+  packetAddFloat(f, ((float) ay) / 1.0f);
+  packetAddFloat(f, ((float) az) / 1.0f);
+  // Serial.printf("x: %f, y: %f, z: %f\n", (float)ax/2048.0f, (float)ay/2048.0f, (float)az/2048.0f);
   int len = emitPacket(f, packetStoreBuffer);
   saveToFlash(packetStoreBuffer, len);
 
@@ -361,11 +361,12 @@ int serialBufferPtr;
 void setup() {
   delay(1000);
   Serial.begin(115200); //set up serial over usb
-  Serial2.begin(115200); // set up radio
+  Serial2.begin(250000); // set up radio
   initBMP();
   initGPS();
-  initFlash();
+  // initFlash();
   initMPU();
+  pinMode(2, OUTPUT); //led pin
   pinMode(36, PULLDOWN); //breakwire pins, idt it does anything though
   pinMode(39, PULLDOWN);
   Serial.println("hi  i work");
@@ -378,7 +379,7 @@ void setup() {
   }
 
   eraseFlashForLAD8();
-  startBlackboxRecord();
+  // startBlackboxRecord();
 
 }
 
@@ -413,10 +414,10 @@ void loop() {
     lastAccelRead = micros();
     doMPU(&MPU);
   }
-  if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
-    lastRecordingRead = micros();
-    doRecordingRead(&RRP);
-  }
+  // if ((micros() - lastRecordingRead) > (1000000 / RECORDING_METADATA_FREQUENCY)) {
+  //   lastRecordingRead = micros();
+  //   doRecordingRead(&RRP);
+  // }
   if ((micros() - lastGPSRead) > (1000000 / GPS_FREQUENCY)) {
     lastGPSRead = micros();
     doGPS(&GPS);
@@ -426,15 +427,15 @@ void loop() {
     doBMP(&BMP);
   }
 
-  // if ((micros() - lastBreakwireRead) > (1000000 / BREAKWIRE_FREQUENCY)) {
-  //   lastBreakwireRead = micros();
-  //   doBW(&BW);
-  // }
-
-  if ((micros() - lastApogeeRead) > (1000000 / APOGEE_FREQUENCY)) {
-    lastApogeeRead = micros();
-    doApogee(&AP);
+  if ((micros() - lastBreakwireRead) > (1000000 / BREAKWIRE_FREQUENCY)) {
+    lastBreakwireRead = micros();
+    doBW(&BW);
   }
+
+  // if ((micros() - lastApogeeRead) > (1000000 / APOGEE_FREQUENCY)) {
+  //   lastApogeeRead = micros();
+  //   doApogee(&AP);
+  // }
 
 }
 #endif
