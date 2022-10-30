@@ -6,12 +6,12 @@
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
-#include "OCHandler.h"
+// #include "OCHandler.h"
 
 // #include "BlackBox.h"
-// #include "Barometer.h"
-// #include "IMU.h"
-// #include "GPS.h"
+#include "Barometer.h"
+#include "IMU.h"
+#include "GPS.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -34,10 +34,10 @@ Task taskTable[] = {
     {Ducers::ptSample, 0},
 
     // thermocouples
-    // {Thermocouples::tc0Sample, 0},
-    // {Thermocouples::tc1Sample, 0},
-    // {Thermocouples::tc2Sample, 0},
-    // {Thermocouples::tc3Sample, 0},
+    {Thermocouples::tc0Sample, 0},
+    {Thermocouples::tc1Sample, 0},
+    {Thermocouples::tc2Sample, 0},
+    {Thermocouples::tc3Sample, 0},
 
     // valves
     {Valves::loxGemValveSample, 0},
@@ -46,21 +46,19 @@ Task taskTable[] = {
     // actuator
     {Actuators::pressFlowRBVSample, 0},
 
-    // {IMU::imuSample, 0},
+    {IMU::imuSample, 0},
 
     //GPS
-    // {GPS::latLongSample, 0},
+    {GPS::latLongSample, 0},
 
     // Barometer
-    // {Barometer::sampleAltPressTemp, 0},
+    {Barometer::sampleAltPressTemp, 0},
 
     // Cap fill
-    {CapFill::sampleCapFill, 0},
+    // {CapFill::sampleCapFill, 0},
 
     // Apogee
     // {Apogee::checkForApogee, 0},
-
-    {OCHandler::handleOC, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -102,13 +100,13 @@ int main() {
     Valves::initValves(&taskTable[1], &taskTable[2]);
     DEBUG("5\n");
 
-    OCHandler::initOCHandler(20);
+    // OCHandler::initOCHandler(20);
     DEBUG("6\n");
-    // GPS::initGPS();
+    GPS::initGPS();
     DEBUG("7\n");
-    CapFill::initCapFill();
+    // CapFill::initCapFill();
     DEBUG("Made it this far\n");
-    // Barometer::zeroAltitude();
+    Barometer::zeroAltitude();
     // BlackBox::init();   
     DEBUG("Cringe\n");
     // Comms::registerCallback(29, setVehicleMode);
