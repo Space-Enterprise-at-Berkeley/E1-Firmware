@@ -27,7 +27,7 @@ namespace OCHandler {
         ioOCExpander.pinMode(14, INPUT); // HBridge2
         ioOCExpander.pinMode(15, INPUT); // HBridge3
         DEBUG("init all io expand pins\n");
-        // pinMode(interruptPin, INPUT_PULLUP);
+        pinMode(interruptPin, INPUT_PULLUP);
         // attachInterrupt(digitalPinToInterrupt(interruptPin), OCInterrupt, LOW);
         DEBUG('e\n');
     }
@@ -49,4 +49,23 @@ namespace OCHandler {
         Comms::emitPacket(&ocPacket);
         return ocUpdatePeriod;
     }
+
+
+    uint32_t printPinStatus() {
+    //print expander pins
+    // for (int i = 0; i <= 15; i++) {
+    //     uint8_t status = ioOCExpander.digitalRead(i);
+    //     Serial.print(status);
+    //     Serial.print(" ");
+    // }
+    // Serial.print(" - ");
+    // Serial.print(digitalRead(interruptPin));
+    // Serial.println();
+        DEBUG("io expander reading: ");
+        DEBUG(ioOCExpander.digitalReadAll());
+        DEBUG('\n');
+        DEBUG_FLUSH();
+        return ocUpdatePeriod;
 }
+
+}                      

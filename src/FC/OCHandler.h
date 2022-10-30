@@ -15,4 +15,5 @@ namespace OCHandler {
     void initOCHandler(uint8_t interruptPin);
     void OCInterrupt();
     uint32_t handleOC();
+    uint32_t printPinStatus();
 }

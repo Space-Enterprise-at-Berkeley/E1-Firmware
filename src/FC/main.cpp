@@ -1,13 +1,12 @@
 #include <Common.h>
 #include <Comms.h>
 #include "Ducers.h"
-#include "Power.h"
 #include "Actuators.h"
-// #include "CapFill.h"
+#include "CapFill.h"
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
-// #include "OCHandler.h"
+#include "OCHandler.h"
 
 // #include "BlackBox.h"
 // #include "Barometer.h"
@@ -32,23 +31,20 @@ Task taskTable[] = {
     {Valves::autoventFuelGemValveTask, 0},
 
     // ducers
-    // {Ducers::ptSample, 0},
-
-    // power
-    {Power::supply8Sample, 0},
+    {Ducers::ptSample, 0},
 
     // thermocouples
-    {Thermocouples::tc0Sample, 0},
-    {Thermocouples::tc1Sample, 0},
-    {Thermocouples::tc2Sample, 0},
-    {Thermocouples::tc3Sample, 0},
+    // {Thermocouples::tc0Sample, 0},
+    // {Thermocouples::tc1Sample, 0},
+    // {Thermocouples::tc2Sample, 0},
+    // {Thermocouples::tc3Sample, 0},
 
     // valves
-    // {Valves::loxGemValveSample, 0},
-    // {Valves::fuelGemValveSample, 0},
+    {Valves::loxGemValveSample, 0},
+    {Valves::fuelGemValveSample, 0},
 
     // actuator
-    // {Actuators::pressFlowRBVSample, 0},
+    {Actuators::pressFlowRBVSample, 0},
 
     // {IMU::imuSample, 0},
 
@@ -59,12 +55,12 @@ Task taskTable[] = {
     // {Barometer::sampleAltPressTemp, 0},
 
     // Cap fill
-    // {CapFill::sampleCapFill, 0},
+    {CapFill::sampleCapFill, 0},
 
     // Apogee
     // {Apogee::checkForApogee, 0},
 
-    // {OCHandler::handleOC, 0}
+    {OCHandler::handleOC, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -105,13 +101,12 @@ int main() {
     DEBUG("4\n");
     Valves::initValves(&taskTable[1], &taskTable[2]);
     DEBUG("5\n");
-    Power::init();
 
-    // OCHandler::initOCHandler(20);
+    OCHandler::initOCHandler(20);
     DEBUG("6\n");
     // GPS::initGPS();
     DEBUG("7\n");
-    // CapFill::initCapFill();
+    CapFill::initCapFill();
     DEBUG("Made it this far\n");
     // Barometer::zeroAltitude();
     // BlackBox::init();   

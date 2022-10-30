@@ -4,7 +4,6 @@
 
 
 #include <ADS8167.h>
-#include <INA219.h>
 #include <MCP9600.h>
 
 #include <BMP388_DEV.h>
@@ -22,12 +21,6 @@ namespace HAL {
     #define RADIO_SERIAL Serial7
 
     extern ADS8167 adc1;
-
-    const float battShuntR = 0.002;
-    const float battCurrMax = 8.0;
-    const float supplyShuntR = 0.033; // Shunt on Flight V3 is 0.033 ohms. Originally 0.01
-    const float supplyCurrMax = 4.0;
-    extern INA219 supply8v;
 
     const uint8_t RS485SwitchPin = 27;  
     
