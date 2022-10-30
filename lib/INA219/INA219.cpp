@@ -200,19 +200,16 @@ int16_t INA219::readRegister16(uint8_t reg)
     _localWire->beginTransmission(inaAddress);
     Serial.println("yeet");
     Serial.flush();
-    _localWire->requestFrom(inaAddress, 2);
+    if(_localWire->requestFrom(inaAddress, 2) != 2) { return -1; };
     Serial.println("yeet");
     Serial.flush();
-    while(!_localWire->available()) {};
+    // while(!_localWire->available()) {};
     Serial.println("yeet");
     Serial.flush();
     uint16_t vha = _localWire->read();
     Serial.println("yeet");
     Serial.flush();
     uint16_t vla = _localWire->read();
-    Serial.println("yeet");
-    Serial.flush();
-    _localWire->endTransmission();
     Serial.println("yeet");
     Serial.flush();
 

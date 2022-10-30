@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 #include <INA219.h>
+#include "PCA9539.h"
 
 namespace Power {
 
@@ -19,4 +20,5 @@ namespace Power {
     extern float supply8Power;
 
     uint32_t supply8Sample();
+    void init();
 }

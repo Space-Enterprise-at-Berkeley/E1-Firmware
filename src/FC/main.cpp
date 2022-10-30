@@ -105,6 +105,7 @@ int main() {
     DEBUG("4\n");
     Valves::initValves(&taskTable[1], &taskTable[2]);
     DEBUG("5\n");
+    Power::init();
 
     // OCHandler::initOCHandler(20);
     DEBUG("6\n");
