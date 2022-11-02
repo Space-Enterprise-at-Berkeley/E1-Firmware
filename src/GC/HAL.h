@@ -14,6 +14,7 @@
 
 namespace HAL {
     extern ADS8167 adc1;
+    extern ADS8167 adc2;
 
     const float battShuntR = 0.002;
     const float battCurrMax = 8.0;

@@ -14,7 +14,7 @@ namespace HAL {
     HX711 lcAmp2;
 
     void initHAL() {
-        adc.init(&SPI, 37, 14, 15);
+        adc.init(&SPI, 37, 14);
         adc.setAllInputsSeparate();
         adc.enableOTFMode();
 

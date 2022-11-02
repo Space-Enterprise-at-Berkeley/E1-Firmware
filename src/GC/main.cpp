@@ -5,6 +5,7 @@
 #include "Valves.h"
 #include "HAL.h"
 #include "Thermocouples.h"
+#include "Ducers.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -37,6 +38,8 @@ Task taskTable[] = {
     {Valves::igniterEnableRelaySample, 0},
     {Valves::RQDSample, 0},
     {Valves::mainValveVentSample, 0},
+
+    {Ducers::ptSample, 0}
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -51,6 +54,7 @@ int main() {
     HAL::initHAL();
     Comms::initComms();
     Power::initPower();
+    Ducers::initDucers();
     Valves::initValves();
     Thermocouples::initThermocouples();
 
