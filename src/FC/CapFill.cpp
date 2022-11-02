@@ -81,6 +81,7 @@ namespace CapFill {
                         DEBUG("\n");
                         DEBUG_FLUSH();
                         Comms::emitPacket(packet);
+                        Comms::emitPacket(packet, &RADIO_SERIAL, "\r\n\n", 3);
                         state = 0; // switch back to transmit since full packet verified
                         timeoutCount = 0;
 

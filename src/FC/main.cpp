@@ -8,7 +8,7 @@
 #include "Thermocouples.h"
 // #include "OCHandler.h"
 
-// #include "BlackBox.h"
+#include "BlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -17,7 +17,7 @@
 #include <Wire.h>
 #include <SPI.h>
 
-// #include "Apogee.h"
+#include "Apogee.h"
 
 // 0: Ground, 1: Flight
 uint8_t vehicleState = 0; 
@@ -58,28 +58,28 @@ Task taskTable[] = {
     // {CapFill::sampleCapFill, 0},
 
     // Apogee
-    // {Apogee::checkForApogee, 0},
+    {Apogee::checkForApogee, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
 
 // Flight/Launch mode enable
-// uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){                    
-//     vehicleState = Comms::packetGetUint8(&statePacket, 0);
-//     // Send confirmation to ground station
-//     Comms::Packet tmp = {.id = 29};
-//     Comms::packetAddUint8(&tmp, vehicleState);
-//     Comms::emitPacket(&tmp);
+uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){                    
+    vehicleState = Comms::packetGetUint8(&statePacket, 0);
+    // Send confirmation to ground station
+    Comms::Packet tmp = {.id = 29};
+    Comms::packetAddUint8(&tmp, vehicleState);
+    Comms::emitPacket(&tmp);
 
-//     // Setup for apogee
-//     if (vehicleState) { 
-//         BlackBox::beginWrite();
-//         Barometer::zeroAltitude();
-//         Apogee::start();
-//     } 
+    // Setup for apogee
+    if (vehicleState) { 
+        BlackBox::beginWrite();
+        Barometer::zeroAltitude();
+        Apogee::start();
+    } 
 
-//     return vehicleState;
-// }
+    return vehicleState;
+}
 
 
 int main() {
@@ -107,9 +107,9 @@ int main() {
     // CapFill::initCapFill();
     DEBUG("Made it this far\n");
     Barometer::zeroAltitude();
-    // BlackBox::init();   
+    BlackBox::init();   
     DEBUG("Cringe\n");
-    // Comms::registerCallback(29, setVehicleMode);
+    Comms::registerCallback(29, setVehicleMode);
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time

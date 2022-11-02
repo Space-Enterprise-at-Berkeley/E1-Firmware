@@ -12,7 +12,6 @@ namespace HAL {
     HX711 lcAmp0;
     HX711 lcAmp1;
     HX711 lcAmp2;
-    HX711 lcAmp3;
 
     void initHAL() {
         adc.init(&SPI, 37, 14, 15);
@@ -29,6 +28,5 @@ namespace HAL {
         lcAmp0.init(39, 38);
         lcAmp1.init(9, 10);
         lcAmp2.init(0, 1);
-        lcAmp3.init(2, 3);
     }
 };

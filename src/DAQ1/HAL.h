@@ -21,7 +21,6 @@ namespace HAL {
     extern HX711 lcAmp0;
     extern HX711 lcAmp1;
     extern HX711 lcAmp2;
-    extern HX711 lcAmp3;
 
     void initHAL();
     
