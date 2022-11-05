@@ -8,7 +8,8 @@
 #include "Thermocouples.h"
 // #include "OCHandler.h"
 
-#include "BlackBox.h"
+// #include "BlackBox.h"
+#include "RadioBlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -55,7 +56,7 @@ Task taskTable[] = {
     {Barometer::sampleAltPressTemp, 0},
 
     // Cap fill
-    // {CapFill::sampleCapFill, 0},
+    {CapFill::sampleCapFill, 0},
 
     // Apogee
     {Apogee::checkForApogee, 0},
@@ -73,7 +74,6 @@ uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){
 
     // Setup for apogee
     if (vehicleState) { 
-        BlackBox::beginWrite();
         Barometer::zeroAltitude();
         Apogee::start();
     } 
@@ -100,25 +100,24 @@ int main() {
     Valves::initValves(&taskTable[1], &taskTable[2]);
     DEBUG("5\n");
 
-    // OCHandler::initOCHandler(20);
     DEBUG("6\n");
     GPS::initGPS();
     DEBUG("7\n");
-    // CapFill::initCapFill();
-    DEBUG("Made it this far\n");
+    CapFill::initCapFill();
+    DEBUG("8\n");
     Barometer::zeroAltitude();
-    BlackBox::init();   
-    DEBUG("Cringe\n");
+    RadioBlackBox::init();  
+    DEBUG("9\n");
     Comms::registerCallback(29, setVehicleMode);
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
-                DEBUG("Task ID: ");
-                DEBUG(i);                                                                
-                DEBUG("\n");
-                DEBUG_FLUSH();
+                // DEBUG("Task ID: ");
+                // DEBUG(i);                                                                
+                // DEBUG("\n");
+                // DEBUG_FLUSH();
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
             }
         }
