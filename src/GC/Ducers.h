@@ -11,6 +11,7 @@ namespace Ducers {
 
     extern float rqdPTValue;
     extern float purgePTValue;
+    extern float mainValvePTValue;
     
     void initDucers();
     float interpolate1000(uint16_t rawValue);

@@ -6,6 +6,7 @@ namespace Ducers {
 
     float rqdPTValue = 0.0;
     float purgePTValue = 0.0;
+    float mainValvePTValue = 0.0;
 
     void handleFastReadPacket(Comms::Packet tmp, uint8_t ip) {
         if(tmp.data[0]) {
@@ -32,7 +33,7 @@ namespace Ducers {
 
         rqdPTValue = interpolate1000(HAL::adc2.readChannelOTF(6)); // read channel 1, setup channel 2 for next read
         purgePTValue = interpolate1000(HAL::adc2.readChannelOTF(5)); // read channel 2, setup channel 3 for next read
-        // mainValvePTValue = interpolate1000(HAL::adc2.readChannelOTF(6));
+        mainValvePTValue = interpolate1000(HAL::adc2.readChannelOTF(6));
 
         DEBUG("Read all PTs\n");
         DEBUG_FLUSH();
@@ -41,6 +42,7 @@ namespace Ducers {
         ptPacket.len = 0;
         Comms::packetAddFloat(&ptPacket, rqdPTValue);
         Comms::packetAddFloat(&ptPacket, purgePTValue);
+        Comms::packetAddFloat(&ptPacket, mainValvePTValue);
 
         Comms::emitPacket(&ptPacket);
         // return the next execution time
