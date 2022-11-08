@@ -1,28 +1,28 @@
-#include "RadioBlackBox.h"
+// #include "RadioBlackBox.h"
 
-namespace RadioBlackBox {
+// namespace RadioBlackBox {
 
-    void init() {
-        DEBUG("Initializing radio black box\n");
-        DEBUG_FLUSH();
-        Comms::registerCallback(29, &beginWrite); // Begin writing to flash chip when Flight Mode packet received by FC
-    }
+//     void init() {
+//         DEBUG("Initializing radio black box\n");
+//         DEBUG_FLUSH();
+//         Comms::registerCallback(29, &beginWrite); // Begin writing to flash chip when Flight Mode packet received by FC
+//     }
 
-    void beginWrite() {
-        // send packet to radio to start writing. id 200, send 1
-        Comms::Packet radioBBPacket = {.id = 200};
-        Comms::packetAddUint8(&radioBBPacket, 1);
-        Comms::emitPacket(&radioBBPacket, &RADIO_SERIAL, "\r\n\n", 3);
-        DEBUG("Begin write sent to radio\n");
-        DEBUG_FLUSH();
-    }
+//     void beginWrite() {
+//         // send packet to radio to start writing. id 200, send 1
+//         Comms::Packet radioBBPacket = {.id = 200};
+//         Comms::packetAddUint8(&radioBBPacket, 1);
+//         Comms::emitPacket(&radioBBPacket, &RADIO_SERIAL, "\r\n\n", 3);
+//         DEBUG("Begin write sent to radio\n");
+//         DEBUG_FLUSH();
+//     }
 
-    void erase() {
-        // send packet to radio to erase. id 200, send 0
-        Comms::Packet radioBBPacket = {.id = 200};
-        Comms::packetAddUint8(&radioBBPacket, 0);
-        Comms::emitPacket(&radioBBPacket, &RADIO_SERIAL, "\r\n\n", 3);
-        DEBUG("Command sent to radio to erase BB\n");
-        DEBUG_FLUSH();
-    }
-}
+//     void erase() {
+//         // send packet to radio to erase. id 200, send 0
+//         Comms::Packet radioBBPacket = {.id = 200};
+//         Comms::packetAddUint8(&radioBBPacket, 0);
+//         Comms::emitPacket(&radioBBPacket, &RADIO_SERIAL, "\r\n\n", 3);
+//         DEBUG("Command sent to radio to erase BB\n");
+//         DEBUG_FLUSH();
+//     }
+// }

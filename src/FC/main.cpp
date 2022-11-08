@@ -9,7 +9,7 @@
 // #include "OCHandler.h"
 
 // #include "BlackBox.h"
-#include "RadioBlackBox.h"
+// #include "RadioBlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -59,7 +59,7 @@ Task taskTable[] = {
     {CapFill::sampleCapFill, 0},
 
     // Apogee
-    {Apogee::checkForApogee, 0},
+    // {Apogee::checkForApogee, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -106,7 +106,8 @@ int main() {
     CapFill::initCapFill();
     DEBUG("8\n");
     Barometer::zeroAltitude();
-    RadioBlackBox::init();  
+    // RadioBlackBox::init();  
+    // RadioBlackBox::erase();
     DEBUG("9\n");
     Comms::registerCallback(29, setVehicleMode);
 

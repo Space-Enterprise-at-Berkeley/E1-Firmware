@@ -31,9 +31,9 @@ namespace Ducers {
 
     uint32_t ptSample() {
 
-        rqdPTValue = interpolate1000(HAL::adc2.readChannelOTF(6)); // read channel 1, setup channel 2 for next read
+        rqdPTValue = interpolate1000(HAL::adc2.readChannelOTF(6)) * (150.0/1000.0); // read channel 1, setup channel 2 for next read
         purgePTValue = interpolate1000(HAL::adc2.readChannelOTF(5)); // read channel 2, setup channel 3 for next read
-        mainValvePTValue = interpolate1000(HAL::adc2.readChannelOTF(6));
+        mainValvePTValue = interpolate1000(HAL::adc2.readChannelOTF(7));
 
         DEBUG("Read all PTs\n");
         DEBUG_FLUSH();
