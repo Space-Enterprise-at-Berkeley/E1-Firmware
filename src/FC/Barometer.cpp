@@ -4,7 +4,7 @@ namespace Barometer {
     uint32_t bmUpdatePeriod = 30 * 1000; // TODO: Placeholder
     Comms::Packet baroPacket = {.id = 5};
 
-    Task *_zeroAltitudeTask;
+    Task* _zeroAltitudeTask;
 
     float altitudeOffset = 0;
     
@@ -42,13 +42,6 @@ namespace Barometer {
     float samples = 0;
 
     uint32_t zeroAltitude() {
-
-        //if offset calculation is done, disable the task.
-        if (samples >= 1) {
-            _zeroAltitudeTask->enabled = false;
-            DEBUG("STOPPED ZEROING");
-            DEBUG("\n");
-        } 
 
         // get readings
         float altitude;

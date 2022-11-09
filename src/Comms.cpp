@@ -168,14 +168,14 @@ namespace Comms {
         }
 
         // Send over serial, but disable if in debug mode
-        #ifndef DEBUG_MODE
-        Serial.write(packet->id);
-        Serial.write(packet->len);
-        Serial.write(packet->timestamp, 4);
-        Serial.write(packet->checksum, 2);
-        Serial.write(packet->data, packet->len);
-        Serial.write('\n');
-        #endif
+        // #ifndef DEBUG_MODE
+        // Serial.write(packet->id);
+        // Serial.write(packet->len);
+        // Serial.write(packet->timestamp, 4);
+        // Serial.write(packet->checksum, 2);
+        // Serial.write(packet->data, packet->len);
+        // Serial.write('\n');
+        // #endif
 
         Udp.beginPacket(IPAddress(10, 0, 0, end), port);
         Udp.write(packet->id);

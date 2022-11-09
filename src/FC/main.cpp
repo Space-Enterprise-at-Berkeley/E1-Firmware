@@ -9,7 +9,7 @@
 // #include "OCHandler.h"
 
 // #include "BlackBox.h"
-// #include "RadioBlackBox.h"
+#include "RadioBlackBox.h"
 #include "Barometer.h"
 #include "IMU.h"
 #include "GPS.h"
@@ -75,7 +75,8 @@ uint8_t setVehicleMode(Comms::Packet statePacket, uint8_t ip){
     // Setup for apogee
     if (vehicleState) { 
         Barometer::zeroAltitude();
-        Apogee::start();
+        Apogee::start();   
+        RadioBlackBox::beginWrite();
     } 
 
     return vehicleState;
@@ -110,6 +111,8 @@ int main() {
     // RadioBlackBox::erase();
     DEBUG("9\n");
     Comms::registerCallback(29, setVehicleMode);
+    DEBUG("69\n");
+    RadioBlackBox::init();
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
