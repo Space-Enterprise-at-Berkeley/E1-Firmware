@@ -59,7 +59,7 @@ Task taskTable[] = {
     {CapFill::sampleCapFill, 0},
 
     // Apogee
-    // {Apogee::checkForApogee, 0},
+    {Apogee::checkForApogee, 0},
 };
 
 #define TASK_COUNT (sizeof(taskTable) / sizeof (struct Task))
@@ -99,26 +99,24 @@ int main() {
     DEBUG("4\n");
     Valves::initValves(&taskTable[1], &taskTable[2]);
     DEBUG("5\n");
-
-    DEBUG("6\n");
     GPS::initGPS();
-    DEBUG("7\n");
+    DEBUG("6\n");
     CapFill::initCapFill();
-    DEBUG("8\n");
+    DEBUG("7\n");
     Barometer::zeroAltitude();
     // RadioBlackBox::init();  
     // RadioBlackBox::erase();
-    DEBUG("9\n");
+    DEBUG("8\n");
     Comms::registerCallback(29, setVehicleMode);
 
     while(1) {
         for(uint32_t i = 0; i < TASK_COUNT; i++) { // for each task, execute if next time >= current time
             uint32_t ticks = micros(); // current time in microseconds
             if (taskTable[i].nexttime - ticks > UINT32_MAX / 2 && taskTable[i].enabled) {
-                // DEBUG("Task ID: ");
-                // DEBUG(i);                                                                
-                // DEBUG("\n");
-                // DEBUG_FLUSH();
+                DEBUG("Task ID: ");
+                DEBUG(i);                                                                
+                DEBUG("\n");
+                DEBUG_FLUSH();
                 taskTable[i].nexttime = ticks + taskTable[i].taskCall();
             }
         }
