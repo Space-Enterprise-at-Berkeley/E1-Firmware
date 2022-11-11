@@ -105,8 +105,6 @@ int main() {
     CapFill::initCapFill();
     DEBUG("7\n");
     Barometer::zeroAltitude();
-    // RadioBlackBox::init();  
-    // RadioBlackBox::erase();
     DEBUG("8\n");
     Comms::registerCallback(29, setVehicleMode);
     DEBUG("69\n");
