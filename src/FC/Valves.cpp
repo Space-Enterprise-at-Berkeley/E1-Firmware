@@ -33,7 +33,7 @@ namespace Valves {
                   .period = 50 * 1000,
                   .muxChannel = &HAL::muxChan8};
 
-    Valve breakWire = {.valveID = 255, // break wire can't be actuated, no valveID is used.
+    Valve breakWire1 = {.valveID = 255, // break wire can't be actuated, no valveID is used.
                         .statePacketID = 0,
                         .statusPacketID = 34,
                         .pin = 255, // only reading continuity with MUX 
@@ -43,6 +43,17 @@ namespace Valves {
                         .ocThreshold = 0.1,
                         .period = 50 * 1000,
                         .muxChannel = &HAL::muxChan4}; // Using Breakwire1, S5B on MUX (MUX channel 4)
+
+    Valve breakWire2 = {.valveID = 255, // break wire can't be actuated, no valveID is used.
+                        .statePacketID = 0,
+                        .statusPacketID = 35,
+                        .pin = 255, // only reading continuity with MUX 
+                        .expanderPin = 255,
+                        .voltage = 0.0,
+                        .current = 0.0,
+                        .ocThreshold = 0.1,
+                        .period = 50 * 1000,
+                        .muxChannel = &HAL::muxChan5}; // Using Breakwire2, S6B on MUX (MUX channel 5)
 
     // todo: define these for the fcv3 channels
     Valve chute1 = {};
@@ -118,6 +129,9 @@ namespace Valves {
         DEBUG("Valve current: ");
         DEBUG(valve->current);
         DEBUG("\n");
+        DEBUG("Continuity: ");
+        DEBUG(valve->voltage);
+        DEBUG("\n");
         DEBUG_FLUSH();
         Comms::Packet tmp = {.id = valve->statusPacketID};
         if (valve->current > valve->ocThreshold) {
@@ -128,6 +142,7 @@ namespace Valves {
         Comms::packetAddFloat(&tmp, valve->current);
         
         Comms::emitPacket(&tmp);
+        Comms::emitPacket(&tmp, &RADIO_SERIAL, "\r\n\n", 3);
     }
 
     // individual task functions (see taskTable in main.cpp)
@@ -139,6 +154,16 @@ namespace Valves {
     uint32_t fuelGemValveSample() {
         sampleValve(&fuelGemValve);
         return loxGemValve.period;
+    }
+
+    uint32_t breakWire1Sample() {
+        sampleValve(&breakWire1);
+        return breakWire1.period;
+    }
+
+    uint32_t breakWire2Sample() {
+        sampleValve(&breakWire2);
+        return breakWire2.period;
     }
 
     void toggleFuelGemValve(Comms::Packet packet, uint8_t ip) {

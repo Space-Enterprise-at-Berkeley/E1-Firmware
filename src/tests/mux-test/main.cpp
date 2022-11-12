@@ -64,16 +64,18 @@ int main() {
             digitalWriteFast(sel2, (i >> 2) & 0x1);
             digitalWriteFast(sel3, (i >> 3) & 0x1);
             delay(1);
-            float a0 = (float)analogRead(aPin0) * 3.3 / 4096.0;
-        //    float a1 = (float)analogRead(aPin1) * 3.3 / 4096.0;
+            float a0 = (float)analogRead(aPin0) * ((1.0 / 20.0) / 0.02) * 3.3 / 4096.0;
+            float a1 = (float)analogRead(aPin1) * (11.0) / 4096.0;
+    //            const float valveMuxCurrentScalingFactor = ((1.0 / 20.0) / 0.02) * 3.3 / 4096.0; // current
+    // const float valveMuxContinuityScalingFactor = (11.0) / 4096.0; // "voltage" reading, TODO will this value need to change
             Serial.print(a0, 5);
-            // Serial.print(":");
-            // Serial.print(a1);
-            Serial.print(" , Shunt V: ");
-            Serial.print(a0 / 20, 5);
-            Serial.print(" , Shunt Current: ");
-            Serial.print((a0 / 20) / 0.02, 5);
-            Serial.println();
+            Serial.print(":");
+            Serial.println(a1, 5);
+            // Serial.print(" , Shunt V: ");
+            // Serial.print(a1 / 20, 5);
+            // Serial.print(" , Shunt Current: ");
+            // Serial.print((a0 / 20) / 0.02, 5);
+            // Serial.println();
         }
         delay(100);
         count++; 

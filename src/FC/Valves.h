@@ -39,6 +39,9 @@ namespace Valves {
     void sampleValve(Valve *valve);
     uint32_t loxGemValveSample();
     uint32_t fuelGemValveSample();
+    uint32_t breakWire1Sample();
+    uint32_t breakWire2Sample();
+
     uint32_t toggleFuelGemValveTask();
     uint32_t toggleLoxGemValveTask();
 

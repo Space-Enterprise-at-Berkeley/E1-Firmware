@@ -44,6 +44,10 @@ Task taskTable[] = {
     {Valves::loxGemValveSample, 0},
     {Valves::fuelGemValveSample, 0},
 
+    // breakwires
+    {Valves::breakWire1Sample, 0},
+    {Valves::breakWire2Sample, 0},
+
     // actuator
     {Actuators::pressFlowRBVSample, 0},
 
