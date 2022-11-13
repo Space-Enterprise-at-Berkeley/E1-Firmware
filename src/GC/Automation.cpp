@@ -108,16 +108,19 @@ namespace Automation {
 
             case 2: // step 2
                 // check igniter current trigger and break wire
-                if ((igniterTriggered || !igniterEnabled)
-                        && (breakwireBroken || !breakwireEnabled)) {
+                if (!(igniterTriggered || !igniterEnabled)) {
+                    sendFlowStatus(STATE_ABORT_IGNITER_UNTRIGGERED);
+                    beginAbortFlow();
+                    return 0;
+                } else if(!(breakwireBroken || !breakwireEnabled)) {
+                    sendFlowStatus(STATE_ABORT_BREAKWIRE_UNBROKEN);
+                    beginAbortFlow();
+                    return 0;
+                } else {
                     Valves::openArmValve();
                     sendFlowStatus(STATE_OPEN_ARM_VALVE);
                     step++;
                     return 500 * 1000; // delay 0.5s
-                } else {
-                    sendFlowStatus(STATE_ABORT_BREAKWIRE_UNBROKEN);
-                    beginAbortFlow();
-                    return 0;
                 }
 
             case 3: // step 3

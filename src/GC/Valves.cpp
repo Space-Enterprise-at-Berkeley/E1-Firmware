@@ -22,12 +22,12 @@ namespace Valves {
                       .statePacketID = 71,
                       .statusPacketID = 61,
                       .pin = 255,
-                      .expanderPin = HAL::chan7Pin,
+                      .expanderPin = HAL::chan6Pin,
                       .voltage = 0.0,
                       .current = 0.0,
-                      .ocThreshold = 2.0,
+                      .ocThreshold = 6.0,
                       .period = 10 * 1000,
-                      .ina = &HAL::chan7};
+                      .ina = &HAL::chan6};
     
     Valve loxMainValve = {.valveID = 2,
                       .statePacketID = 72,
