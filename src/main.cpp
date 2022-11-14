@@ -43,12 +43,7 @@ void setup()
   pinMode(STATUS_LED, OUTPUT);
 
   digitalWrite(EN_485, LOW); // put in receive mode by default
-  #ifdef FUEL
   digitalWrite(TE_485, HIGH);
-  #else
-  digitalWrite(TE_485, LOW);
-  #endif
-  digitalWrite(STATUS_LED, LOW);
 
   #ifdef FUEL
   delay(50);
