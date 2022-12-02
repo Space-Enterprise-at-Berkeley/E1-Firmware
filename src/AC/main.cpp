@@ -3,6 +3,7 @@
 #include "Actuators.h"
 #include "Power.h"
 #include "HAL.h"
+#include "Valves.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -25,6 +26,9 @@ Task taskTable[] = {
     {Actuators::stopAct5, 0, false},
     {Actuators::stopAct6, 0, false},
     {Actuators::stopAct7, 0, false},
+
+    {Valves::loxDomeHeaterSample, 0},
+    {Valves::fuelDomeHeaterSample, 0},
 
     // power
     {Power::battSample, 0},
@@ -51,6 +55,7 @@ int main() {
     Comms::initComms();
     Actuators::initActuators();
     Power::initPower();
+    Valves::initValves();
 
     while(1) {
         uint32_t ticks = micros(); // current time in microseconds
