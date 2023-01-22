@@ -138,6 +138,8 @@ void loop()
 
     capBuffer.push(capValue);
 
+    float capValue1 = _capSens.readCapacitance1();
+
     float avgCap = 0;
     for (int i = 0; i < capBuffer.size(); i++){
       avgCap += capBuffer[i];
@@ -146,8 +148,14 @@ void loop()
 
     float tempValue = _tempSens.readTemperature();
 
+    Serial.println(tempValue);
+    Serial.println(capValue);
+    Serial.println(_capSens.readSensor(1));
+    Serial.println();
+
     capPacket.len = 0;
     Comms::packetAddFloat(&capPacket, capValue);
+    Comms::packetAddFloat(&capPacket, capValue1);
     Comms::packetAddFloat(&capPacket, avgCap);
     Comms::packetAddFloat(&capPacket, tempValue);
     // Comms::packetAddFloat(&capPacket, 0.0);

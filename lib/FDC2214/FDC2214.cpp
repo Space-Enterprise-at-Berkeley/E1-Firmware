@@ -94,6 +94,23 @@ float FDC2214::readCapacitance(){
     return capVal * pow(10, 12);
 }
 
+float FDC2214::readCapacitance1(){
+    const double fixedL = 0.000010; // 10 μH
+    #ifdef LOX
+    const double diffC = .000000000038; 
+    #elif FUEL
+    const double diffC = .000000000038; 
+    #endif
+
+    const double fRef = 40000000; //40 MHz
+
+    float fSens = readSensor(1) * fRef / pow(2, 28);
+    //float capVal0 = (1.0 / (fixedL * pow(2.0* PI * fSens0, 2.0))) * pow(10, 12);
+    float capVal = (pow(1/((fSens * 2) * PI * sqrt(fixedL * diffC)) - 1, 2) - 1) * diffC;
+
+    return capVal * pow(10, 12);
+}
+
 float FDC2214::readDiffCapacitance(){
     const double fixedL = 0.000010; // 10 μH
     const double fRef = 40000000; //40 MHz

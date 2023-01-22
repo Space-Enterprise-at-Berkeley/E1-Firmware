@@ -73,6 +73,7 @@ public:
     unsigned long readSensor(int channel); 
        
     float readCapacitance();
+    float readCapacitance1();
     float readDiffCapacitance();
 protected:
   uint8_t _device_id = 0;
