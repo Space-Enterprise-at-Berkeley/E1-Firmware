@@ -28,30 +28,43 @@ boolean FDC2214::begin(uint8_t i2c_addr, TwoWire *theWire) {
 
     Adafruit_I2CRegister config_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_CONFIG, 2, MSBFIRST);
     // Active channel 0; Sleep disabled; Full sensor activiation current; Internal oscillator; Interrupt unused; High current drive disabled
-    config_reg.write(0x1E81);
+    config_reg.write(0x1601);
     //config_reg.write(0x1C81);
 
     Adafruit_I2CRegister muxconfig_reg = Adafruit_I2CRegister(i2c_dev, FDC2214_MUX_CONFIG, 2, MSBFIRST);
     // Continuous conversion; 10MHz deglitch
-    muxconfig_reg.write(0x020D);
+    muxconfig_reg.write(0xC20D);
 
     Adafruit_I2CRegister settlecount_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_SETTLECOUNT_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister settlecount_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_SETTLECOUNT_CH1, 2, MSBFIRST);
     // 16 settlecount
     settlecount_regch0.write(0x0010); 
+    settlecount_regch1.write(0x0010); 
 
     Adafruit_I2CRegister rcount_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister rcount_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_RCOUNT_CH1, 2, MSBFIRST);
     // 8192 RCount
     rcount_regch0.write(0xA800);
+    rcount_regch1.write(0xA800);
 
     Adafruit_I2CRegister clockdiv_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister clockdiv_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_CLOCK_DIVIDERS_CH1, 2, MSBFIRST);
     // Single-ended configuration; 1x Clock divider for differential; 2x for single ended
     clockdiv_regch0.write(0x2001); 
+    clockdiv_regch1.write(0x2001); 
     //clockdiv_regch0.write(0x1001); 
 
     Adafruit_I2CRegister drive_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister drive_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_DRIVE_CH1, 2, MSBFIRST);
     // Sensor drive current
     //drive_regch0.write(0xA800);
     drive_regch0.write(0xF800);
+    drive_regch1.write(0xF800);
+
+    Adafruit_I2CRegister offset_regch0 = Adafruit_I2CRegister(i2c_dev, FDC2214_OFFSET_CH0, 2, MSBFIRST);
+    Adafruit_I2CRegister offset_regch1 = Adafruit_I2CRegister(i2c_dev, FDC2214_OFFSET_CH1, 2, MSBFIRST);
+    offset_regch0.write(0x0000);
+    offset_regch1.write(0x0000);
 
     return true;
 }
@@ -77,7 +90,7 @@ unsigned long FDC2214::readSensor(int channel){
     return reading;
 }
 
-float FDC2214::readCapacitance(){
+float FDC2214::readCapacitance(int channel){
     const double fixedL = 0.000010; // 10 μH
     #ifdef LOX
     const double diffC = .000000000038; 
@@ -87,24 +100,7 @@ float FDC2214::readCapacitance(){
 
     const double fRef = 40000000; //40 MHz
 
-    float fSens = readSensor(0) * fRef / pow(2, 28);
-    //float capVal0 = (1.0 / (fixedL * pow(2.0* PI * fSens0, 2.0))) * pow(10, 12);
-    float capVal = (pow(1/((fSens * 2) * PI * sqrt(fixedL * diffC)) - 1, 2) - 1) * diffC;
-
-    return capVal * pow(10, 12);
-}
-
-float FDC2214::readCapacitance1(){
-    const double fixedL = 0.000010; // 10 μH
-    #ifdef LOX
-    const double diffC = .000000000038; 
-    #elif FUEL
-    const double diffC = .000000000038; 
-    #endif
-
-    const double fRef = 40000000; //40 MHz
-
-    float fSens = readSensor(1) * fRef / pow(2, 28);
+    float fSens = readSensor(channel) * fRef / pow(2, 28);
     //float capVal0 = (1.0 / (fixedL * pow(2.0* PI * fSens0, 2.0))) * pow(10, 12);
     float capVal = (pow(1/((fSens * 2) * PI * sqrt(fixedL * diffC)) - 1, 2) - 1) * diffC;
 
