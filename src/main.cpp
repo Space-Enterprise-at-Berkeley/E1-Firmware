@@ -24,13 +24,31 @@ int indicatorDuty = 500;
 int indicatorPeriod = 1000;
 int indicatorLastTime = 0;
 
+// samhitag3 added variables for maintaining running average
+// int numSamples = 0;
+// int oldestSampleIndex = 0;
+// int const sampleSize = 100;
+// float samples[sampleSize];
+// float total = 0;
+
 const int timeBetweenTransmission = 100; // ms
 int lastTransmissionTime = 0;
+
+// //samhitag3 added runningAverage method
+// float runningAverage(){
+//   if (numSamples == 0) {
+//     return 0;
+//   }
+//   return total / numSamples;
+// }
 
 void setup()
 {
   Serial.begin(115200);
-  Serial1.begin(921600);
+  //samhitag3 testing slower baud rate
+  // Serial.begin(9600);
+  // samhitag3 commented out
+  // Serial1.begin(921600);
 
   Wire.begin();
   _capSens = FDC2214();
@@ -124,8 +142,24 @@ void loop()
   if (currentMillis - previousMillis >= interval)
   {
     previousMillis = currentMillis;
-
+    // samhitag3 changed readCapacitance input value
     float capValue = _capSens.readCapacitance(00);
+    // samhitag3 defined refValue, sensor0, sensor1
+    float sensor0 = _capSens.readSensor(00);
+    float sensor1 = _capSens.readSensor(01);
+    float refValue = _capSens.readCapacitance(01);
+
+    // samhitag3 passed data to running average method
+    // if (numSamples < sampleSize) {
+    //   samples[numSamples] = refValue;
+    //   total += refValue;
+    //   numSamples++;
+    // } else {
+    //   total -= samples[oldestSampleIndex];
+    //   total += refValue;
+    //   oldestSampleIndex = (oldestSampleIndex + 1) % sampleSize;
+    // }
+
     if(capValue < 0.0) {
       // error reading from sensor
       indicatorDuty = 200;
@@ -145,18 +179,35 @@ void loop()
     avgCap /= capBuffer.size();
 
     float tempValue = _tempSens.readTemperature();
+    float corrected = _capSens.correctedCapacitance(avgCap);
 
-    Serial.println(tempValue);
-    Serial.println(_capSens.readSensor(00));
-    Serial.println(_capSens.readSensor(01));
-    Serial.println(_capSens.readCapacitance(00));
-    Serial.println(_capSens.readCapacitance(01));
+
+    // samhitag3 test print statements
+    Serial.print(tempValue);
+    Serial.print("\t");
+    Serial.print(sensor0);
+    Serial.print("\t");
+    Serial.print(sensor1);
+    Serial.print("\t");
+    Serial.print(capValue);
+    Serial.print("\t");
+    Serial.print(refValue);
+    Serial.print("\t");
+    Serial.print(corrected);
+    Serial.print("\t");
+    // Serial.print(numSamples);
+    // Serial.print("\t");
+    Serial.print(avgCap);
+    Serial.print("\t");
     Serial.println();
 
     capPacket.len = 0;
-    Comms::packetAddFloat(&capPacket, capValue);
+    // samhitag3 changed packet variable from capValue to corrected
+    Comms::packetAddFloat(&capPacket, corrected);
     Comms::packetAddFloat(&capPacket, avgCap);
     Comms::packetAddFloat(&capPacket, tempValue);
+    // samhitag3 added packet variable refValue
+    Comms::packetAddFloat(&capPacket, refValue);
     // Comms::packetAddFloat(&capPacket, 0.0);
     
     uint32_t timestamp = millis();
