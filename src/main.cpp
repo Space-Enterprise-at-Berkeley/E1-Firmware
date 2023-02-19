@@ -25,22 +25,23 @@ int indicatorPeriod = 1000;
 int indicatorLastTime = 0;
 
 // samhitag3 added variables for maintaining running average
-// int numSamples = 0;
-// int oldestSampleIndex = 0;
-// int const sampleSize = 100;
-// float samples[sampleSize];
-// float total = 0;
+int numSamples = 0;
+int oldestSampleIndex = 0;
+int const sampleSize = 100;
+float samples[sampleSize];
+float total = 0;
+float baseline = 0;
 
 const int timeBetweenTransmission = 100; // ms
 int lastTransmissionTime = 0;
 
 // //samhitag3 added runningAverage method
-// float runningAverage(){
-//   if (numSamples == 0) {
-//     return 0;
-//   }
-//   return total / numSamples;
-// }
+float runningAverage(float total, int numSamples){
+  if (numSamples == 0) {
+    return 0;
+  }
+  return total / numSamples;
+}
 
 void setup()
 {
@@ -48,7 +49,7 @@ void setup()
   //samhitag3 testing slower baud rate
   // Serial.begin(9600);
   // samhitag3 commented out
-  // Serial1.begin(921600);
+  Serial1.begin(921600);
 
   Wire.begin();
   _capSens = FDC2214();
@@ -150,15 +151,24 @@ void loop()
     float refValue = _capSens.readCapacitance(01);
 
     // samhitag3 passed data to running average method
-    // if (numSamples < sampleSize) {
-    //   samples[numSamples] = refValue;
-    //   total += refValue;
-    //   numSamples++;
-    // } else {
-    //   total -= samples[oldestSampleIndex];
-    //   total += refValue;
-    //   oldestSampleIndex = (oldestSampleIndex + 1) % sampleSize;
-    // }
+    if (numSamples < sampleSize) {
+      if (numSamples == 0) {
+        baseline = refValue;
+      }
+      samples[numSamples] = refValue;
+      total += refValue;
+      if (numSamples == sampleSize - 1) {
+        baseline = total / numSamples;
+      }
+      numSamples++;
+    } else {
+      float total0 = total;
+      total -= samples[oldestSampleIndex];
+      total += refValue;
+      oldestSampleIndex = (oldestSampleIndex + 1) % sampleSize;
+      Serial.print(total0 - total);
+    }
+    float refAvg = runningAverage(total, numSamples);
 
     if(capValue < 0.0) {
       // error reading from sensor
@@ -179,26 +189,32 @@ void loop()
     avgCap /= capBuffer.size();
 
     float tempValue = _tempSens.readTemperature();
-    float corrected = _capSens.correctedCapacitance(avgCap);
+    float corrected = _capSens.correctedCapacitance(refAvg, baseline);
 
 
     // samhitag3 test print statements
-    Serial.print(tempValue);
-    Serial.print("\t");
+    // Serial.print("temp: ");
+    // Serial.print(tempValue);
+    Serial.print("  0: ");
     Serial.print(sensor0);
-    Serial.print("\t");
+    Serial.print("  1: ");
     Serial.print(sensor1);
-    Serial.print("\t");
+    Serial.print("  capVal: ");
     Serial.print(capValue);
-    Serial.print("\t");
+    Serial.print("  refVal: ");
     Serial.print(refValue);
-    Serial.print("\t");
+    Serial.print("  correct: ");
     Serial.print(corrected);
-    Serial.print("\t");
-    // Serial.print(numSamples);
-    // Serial.print("\t");
-    Serial.print(avgCap);
-    Serial.print("\t");
+    Serial.print("  numSamp: ");
+    Serial.print(numSamples);
+    Serial.print("  avg: ");
+    Serial.print(refAvg);
+    Serial.print("  total: ");
+    Serial.print(total);
+    Serial.print("  amt: ");
+    Serial.print(numSamples);
+    Serial.print("  base: ");
+    Serial.print(baseline);
     Serial.println();
 
     capPacket.len = 0;

@@ -74,7 +74,7 @@ public:
     // samhitag3 modified readCapacitance to allow for channel input
     float readCapacitance(int Channel);
     // samhitag3 add correctedCapacitance
-    float correctedCapacitance(float avgCap);
+    float correctedCapacitance(float avgCap, float baseline);
     float readDiffCapacitance();
 protected:
   uint8_t _device_id = 0;
