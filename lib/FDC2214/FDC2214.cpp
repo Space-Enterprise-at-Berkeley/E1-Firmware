@@ -120,8 +120,8 @@ float FDC2214::readCapacitance(int channel){
 }
 
 // samhitag3 added correctedCapacitance method
-float FDC2214::correctedCapacitance(float runningAverage, float baseline){
-    return (readCapacitance(00) - (readCapacitance(01) - 0));
+float FDC2214::correctedCapacitance(float avgRef, float baseline){
+    return (readCapacitance(00) - (avgRef - baseline));
 }
 
 float FDC2214::readDiffCapacitance(){

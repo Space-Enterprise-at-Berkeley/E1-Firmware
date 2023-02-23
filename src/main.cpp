@@ -35,7 +35,7 @@ float baseline = 0;
 const int timeBetweenTransmission = 100; // ms
 int lastTransmissionTime = 0;
 
-// //samhitag3 added runningAverage method
+//samhitag3 added runningAverage method
 float runningAverage(float total, int numSamples){
   if (numSamples == 0) {
     return 0;
@@ -80,6 +80,8 @@ const long interval = 25;
 const uint8_t logSecs = 5;
 
 CircularBuffer<float, (logSecs * 1000 / interval)> capBuffer;
+CircularBuffer<float, (logSecs * 1000 / interval)> refBuffer;
+CircularBuffer<float, (logSecs * 1000 / interval)> correctedBuffer;
 
 Comms::Packet capPacket = {.id = PACKET_ID};
 
@@ -161,14 +163,15 @@ void loop()
         baseline = total / numSamples;
       }
       numSamples++;
-    } else {
-      float total0 = total;
-      total -= samples[oldestSampleIndex];
-      total += refValue;
-      oldestSampleIndex = (oldestSampleIndex + 1) % sampleSize;
-      Serial.print(total0 - total);
     }
-    float refAvg = runningAverage(total, numSamples);
+    //  else {
+    //   float total0 = total;
+    //   total -= samples[oldestSampleIndex];
+    //   total += refValue;
+    //   oldestSampleIndex = (oldestSampleIndex + 1) % sampleSize;
+    //   // Serial.print(total0 - total);
+    // }
+    // float refAvg = runningAverage(total, numSamples);
 
     if(capValue < 0.0) {
       // error reading from sensor
@@ -181,41 +184,59 @@ void loop()
     DEBUG_FLUSH();
 
     capBuffer.push(capValue);
+    refBuffer.push(refValue);
 
     float avgCap = 0;
+    float avgRef = 0;
     for (int i = 0; i < capBuffer.size(); i++){
       avgCap += capBuffer[i];
+      avgRef += refBuffer[i];
     }
     avgCap /= capBuffer.size();
+    avgRef /= refBuffer.size();
 
     float tempValue = _tempSens.readTemperature();
-    float corrected = _capSens.correctedCapacitance(refAvg, baseline);
+    float corrected = _capSens.correctedCapacitance(avgRef, baseline);
+
+    correctedBuffer.push(corrected);
+    float avgCorrected = 0;
+    for (int i = 0; i < correctedBuffer.size(); i++){
+      avgCorrected += correctedBuffer[i];
+    }
+    avgCorrected /= correctedBuffer.size();
 
 
     // samhitag3 test print statements
     // Serial.print("temp: ");
-    // Serial.print(tempValue);
-    Serial.print("  0: ");
+    Serial.print(tempValue);
+    Serial.print("\t");
     Serial.print(sensor0);
-    Serial.print("  1: ");
+    Serial.print("\t");
     Serial.print(sensor1);
-    Serial.print("  capVal: ");
+    Serial.print("\t");
     Serial.print(capValue);
-    Serial.print("  refVal: ");
+    Serial.print("\t");
     Serial.print(refValue);
-    Serial.print("  correct: ");
+    Serial.print("\t");
+    Serial.print(avgCap);
+    Serial.print("\t");
+    Serial.print(avgRef);
+    Serial.print("\t");
     Serial.print(corrected);
-    Serial.print("  numSamp: ");
-    Serial.print(numSamples);
-    Serial.print("  avg: ");
-    Serial.print(refAvg);
-    Serial.print("  total: ");
-    Serial.print(total);
-    Serial.print("  amt: ");
-    Serial.print(numSamples);
-    Serial.print("  base: ");
-    Serial.print(baseline);
-    Serial.println();
+    Serial.print("\t");
+    Serial.println(avgCorrected);
+    // Serial.print(corrected);
+    // Serial.print("  numSamp: ");
+    // Serial.print(numSamples);
+    // Serial.print("  avg: ");
+    // Serial.print(refAvg);
+    // Serial.print("  total: ");
+    // Serial.print(total);
+    // Serial.print("  amt: ");
+    // Serial.print(numSamples);
+    // Serial.print("  base: ");
+    // Serial.print(baseline);
+    // Serial.println();
 
     capPacket.len = 0;
     // samhitag3 changed packet variable from capValue to corrected
