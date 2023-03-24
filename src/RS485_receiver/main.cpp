@@ -37,6 +37,9 @@ void setup() {
 }
 
 void loop() {
+        // if (LOX_SERIAL.available()) {
+        //     Serial.println("hello world");
+        // }
 
         // while(LOX_SERIAL.available()) {
         //     loxBuffer[loxCnt] = LOX_SERIAL.read();
