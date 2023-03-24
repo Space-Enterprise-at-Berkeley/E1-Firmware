@@ -146,8 +146,31 @@ namespace Comms {
      * @param packet Packet to be sent.
      */
     void emitPacket(Packet *packet) {
-        emitPacket(packet, 69);
-        emitPacket(packet, 70);
+        // emitPacket(packet, 169);
+        // emitPacket(packet, 170);
+        Udp.beginPacket(IPAddress(10, 0, 0, 169), 42069);
+        Udp.write(packet->id);
+        Udp.write(packet->len);
+        Udp.write(packet->timestamp, 4);
+        Udp.write(packet->checksum, 2);
+        Udp.write(packet->data, packet->len);
+        Udp.endPacket();
+
+        Udp.beginPacket(IPAddress(10, 0, 0, 170), 42070);
+        Udp.write(packet->id);
+        Udp.write(packet->len);
+        Udp.write(packet->timestamp, 4);
+        Udp.write(packet->checksum, 2);
+        Udp.write(packet->data, packet->len);
+        Udp.endPacket();
+
+        Udp.beginPacket(IPAddress(10, 0, 0, 171), 42071);
+        Udp.write(packet->id);
+        Udp.write(packet->len);
+        Udp.write(packet->timestamp, 4);
+        Udp.write(packet->checksum, 2);
+        Udp.write(packet->data, packet->len);
+        Udp.endPacket();
     }
 
     void emitPacket(Packet *packet, uint8_t end) {
