@@ -49,7 +49,7 @@ void setup()
   //samhitag3 testing slower baud rate
   // Serial.begin(9600);
   // samhitag3 commented out
-  Serial1.begin(921600);
+  Serial1.begin(115200);
 
   Wire.begin();
   _capSens = FDC2214();
@@ -208,6 +208,7 @@ void loop()
 
     // samhitag3 test print statements
     // Serial.print("temp: ");
+    Serial.print(PACKET_ID);
     Serial.print(tempValue);
     Serial.print("\t");
     Serial.print(sensor0);
